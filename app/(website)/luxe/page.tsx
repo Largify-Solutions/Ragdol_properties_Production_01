@@ -636,7 +636,7 @@
 // new code
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Database } from '@/lib/database.types'
 import PropertyCard, { PropertyCardProperty } from '@/components/property/PropertyCard'
 import {
@@ -768,7 +768,8 @@ function ViewDetailsModal({
   };
 
   const propertyImages = getPropertyImages();
-  const hasVideo = property.video_url && property.video_url.trim() !== '';
+  const videoUrl = property.video_url || '';
+  const hasVideo = videoUrl.trim() !== '';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in mt-33">
@@ -805,7 +806,7 @@ function ViewDetailsModal({
               <div className="relative h-64 md:h-80 bg-slate-100 overflow-hidden">
                 {hasVideo && isVideoPlaying ? (
                   <video
-                    src={property.video_url}
+                    src={videoUrl}
                     className="w-full h-full object-cover"
                     autoPlay
                     controls
@@ -1227,8 +1228,16 @@ function ViewDetailsModal({
   );
 }
 
+export default function LuxuryPropertiesPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
+      <LuxuryPropertiesPageContent />
+    </Suspense>
+  )
+}
+
 // Function to fetch property details by ID from specific collection
-async function fetchPropertyDetails(propertyId: string, collectionName: string) {
+async function fetchPropertyDetails(propertyId: string, collectionName: string): Promise<Record<string, any> | null> {
   try {
     console.log(`📋 Fetching details for property ${propertyId} from ${collectionName}...`);
     
@@ -1360,7 +1369,7 @@ function getTypeInfo(type: string) {
   return typeMap[type] || { label: type, emoji: '🏠', color: 'bg-gray-500' };
 }
 
-export default function LuxuryPropertiesPage() {
+function LuxuryPropertiesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -1434,7 +1443,7 @@ export default function LuxuryPropertiesPage() {
           updated_at: detailedProperty.updated_at
         };
         
-        setSelectedProperty(normalized);
+        setSelectedProperty(normalized as NormalizedProperty);
         setIsModalOpen(true);
         console.log('✅ Property details loaded successfully');
       } else {

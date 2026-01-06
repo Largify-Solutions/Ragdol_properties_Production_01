@@ -212,7 +212,7 @@ export default function UsersPage() {
 
   // TOGGLE USER STATUS
   const handleToggleStatus = async (user: User) => {
-    const newStatus = user.status === 'active' ? 'inactive' : 'active'
+    const newStatus: User['status'] = user.status === 'active' ? 'inactive' : 'active'
     
     try {
       // Update in Firestore
@@ -223,7 +223,7 @@ export default function UsersPage() {
       })
       
       // Update local state
-      const updatedUser = {
+      const updatedUser: User = {
         ...user,
         status: newStatus
       }

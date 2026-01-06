@@ -244,7 +244,7 @@ function AgentDetailsModal({
     return new Intl.NumberFormat('en-US').format(num);
   };
 
-  const formatDate = (dateString?: string) => {
+  const formatDate = (dateString?: string | null) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',

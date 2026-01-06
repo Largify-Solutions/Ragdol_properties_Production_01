@@ -468,7 +468,7 @@ const PropertyCard = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [showImageSlider, setShowImageSlider] = useState(false)
   const [autoPlay, setAutoPlay] = useState(false)
-  const autoPlayRef = useRef<NodeJS.Timeout>()
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
 
   // Auto-play functionality
   useEffect(() => {

@@ -17,7 +17,7 @@ import {
 import { db } from '@/lib/firebase'
 import { collection, addDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore'
 
-interface CategoryFormData {
+export interface CategoryFormData {
   id?: string
   name: string
   description: string
@@ -29,7 +29,7 @@ interface CategoryFormData {
   slug?: string
 }
 
-interface CategoryFormProps {
+export interface CategoryFormProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (data: CategoryFormData) => Promise<void> | void
@@ -145,7 +145,7 @@ export default function CategoryForm({
         throw new Error('Category name is required')
       }
 
-      if (!formData.slug.trim()) {
+      if (!formData.slug?.trim()) {
         throw new Error('Slug is required')
       }
 

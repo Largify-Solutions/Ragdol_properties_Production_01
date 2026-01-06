@@ -11,7 +11,7 @@ import {
   XCircleIcon,
   ChartBarIcon
 } from '@heroicons/react/24/outline'
-import CategoryForm from '@/components/forms/CategoryForm'
+import CategoryForm, { type CategoryFormData } from '@/components/forms/CategoryForm'
 import { db } from '@/lib/firebase'
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'
 
@@ -27,6 +27,19 @@ interface Category {
   slug?: string
   createdAt?: any
   updatedAt?: any
+}
+
+type StatsCard = {
+  title: string
+  value: number
+  icon: typeof BuildingOfficeIcon
+  color: string
+  iconColor: string
+  bgColor: string
+  description?: string
+  trendColor: string
+  percentage: number
+  trend: string
 }
 
 export default function Categories() {
@@ -88,6 +101,8 @@ export default function Categories() {
   const totalCategories = categories.length
   const activeCategories = categories.filter(c => c.isActive).length
   const inactiveCategories = categories.filter(c => !c.isActive).length
+  const activePercentage = totalCategories ? Math.round((activeCategories / totalCategories) * 100) : 0
+  const inactivePercentage = totalCategories ? Math.round((inactiveCategories / totalCategories) * 100) : 0
   const latestCategories = categories
     .sort((a, b) => {
       const dateA = a.createdAt?.toDate?.() || new Date(0)
@@ -97,7 +112,7 @@ export default function Categories() {
     .slice(0, 5)
 
   // Handle adding category
-  const handleAddCategory = async (data: Category) => {
+  const handleAddCategory = async (data: CategoryFormData) => {
     try {
       console.log('Category added, refreshing list...')
       await fetchCategories()
@@ -108,7 +123,7 @@ export default function Categories() {
   }
 
   // Handle editing category
-  const handleEditCategory = async (data: Category) => {
+  const handleEditCategory = async (data: CategoryFormData) => {
     try {
       console.log('Category updated, refreshing list...')
       await fetchCategories()
@@ -152,7 +167,7 @@ export default function Categories() {
   }
 
   // Stats Cards Data
-  const statsCards = [
+  const statsCards: StatsCard[] = [
     {
       title: 'Total Categories',
       value: totalCategories,
@@ -160,7 +175,8 @@ export default function Categories() {
       color: 'bg-blue-500',
       iconColor: 'text-blue-500',
       bgColor: 'bg-blue-50',
-     
+      percentage: 0,
+      trend: '',
       trendColor: 'text-emerald-600'
     },
     {
@@ -171,8 +187,8 @@ export default function Categories() {
       iconColor: 'text-emerald-500',
       bgColor: 'bg-emerald-50',
       description: 'Currently active categories',
-     
-     
+      percentage: activePercentage,
+      trend: '',
       trendColor: 'text-emerald-600'
     },
     {
@@ -183,7 +199,8 @@ export default function Categories() {
       iconColor: 'text-rose-500',
       bgColor: 'bg-rose-50',
       description: 'Currently hidden categories',
-    
+      percentage: inactivePercentage,
+      trend: '',
       trendColor: 'text-rose-600'
     },
     {
@@ -194,7 +211,8 @@ export default function Categories() {
       iconColor: 'text-purple-500',
       bgColor: 'bg-purple-50',
       description: 'Recently created categories',
-     
+      percentage: 0,
+      trend: '',
       trendColor: 'text-purple-600'
     }
   ]

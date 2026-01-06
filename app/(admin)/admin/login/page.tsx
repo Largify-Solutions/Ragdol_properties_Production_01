@@ -311,7 +311,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
 
-type UserRole = 'admin' | 'agent'
+type UserRole = 'admin' | 'agent' | 'customer'
 
 export default function EnhancedLoginPage() {
   const [isLogin, setIsLogin] = useState(true)
@@ -551,7 +551,7 @@ export default function EnhancedLoginPage() {
               <ArrowLeftIcon className="h-4 w-4" />
               Back to Home
             </Link>
-            <span className="text-xs text-slate-300 uppercase tracking-widest">© 2024 RAGDOL</span>
+            <span className="text-xs text-slate-300 uppercase tracking-widest">© 2026 RAGDOL</span>
           </div>
         </div>
       </div>

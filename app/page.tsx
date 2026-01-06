@@ -2952,7 +2952,7 @@ const AutoPlayProjectVideo = ({
 };
 
 // ALTERNATIVE: ULTRA SIMPLE AUTO-PLAY VIDEO
-const SimpleAutoPlayVideo = ({ url, poster, title }) => {
+const SimpleAutoPlayVideo = ({ url, poster, title }: { url: string; poster?: string; title?: string }) => {
   return (
     <video
       className="w-full h-full object-cover"
@@ -2981,7 +2981,7 @@ const SimpleAutoPlayVideo = ({ url, poster, title }) => {
         console.error("Video error:", url);
         // Fallback to poster
         e.currentTarget.style.display = 'none';
-        const img = e.currentTarget.nextElementSibling;
+        const img = e.currentTarget.nextElementSibling as HTMLElement | null;
         if (img) img.style.display = 'block';
       }}
     >

@@ -495,16 +495,16 @@ import { db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from '@/li
 interface Agent {
   id: string
   title: string
-  office?: string
-  license_no?: string
+  office?: string | null
+  license_no?: string | null
   brokerage: string
-  bio?: string
-  whatsapp?: string
-  telegram?: string
-  linkedin_url?: string
-  instagram_handle?: string
-  website_url?: string
-  profile_image?: string
+  bio?: string | null
+  whatsapp?: string | null
+  telegram?: string | null
+  linkedin_url?: string | null
+  instagram_handle?: string | null
+  website_url?: string | null
+  profile_image?: string | null
   approved: boolean
   verified: boolean
   rating: number

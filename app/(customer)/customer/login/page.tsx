@@ -54,7 +54,7 @@ export default function CustomerLogin() {
       } else {
         // Handle signup
         const { error } = await signUp(formData.email, formData.password, {
-          fullName: 'Demo User',
+          full_name: 'Demo User',
           phone: '+971501234567',
           role: 'customer'
         })

@@ -31,7 +31,9 @@ import bcrypt from 'bcryptjs'
 
 type UserType = {
   id: string
+  uid?: string
   email: string
+  displayName?: string | null
 }
 
 type ProfileType = {
@@ -41,8 +43,11 @@ type ProfileType = {
   phone?: string
   avatar_url?: string
   role: 'customer' | 'agent' | 'admin'
-  password?: string // For manually added users
+  user_type?: string
   status?: string
+  location?: string
+  bio?: string
+  preferences?: any
   created_at?: any
   updated_at?: any
 }
@@ -59,9 +64,10 @@ type AuthContextType = {
   signIn: (email: string, password: string, role?: string) => Promise<any>
   signInAsAgent: (email: string, password: string) => Promise<any>
   signInAsAdmin: (email: string, password: string) => Promise<any>
+  refreshProfile: () => Promise<void>
   logout: () => Promise<void>
+  signOut: () => Promise<void>
 }
-
 /* -------------------------------------------------------------------------- */
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -105,7 +111,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         setUser({
           id: firebaseUser.uid,
+          uid: firebaseUser.uid,
           email: firebaseUser.email!,
+          displayName: firebaseUser.displayName,
         })
 
         setProfile({
@@ -326,6 +334,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return await signIn(email, password, 'admin')
   }
 
+  /* ---------------------------------------------------------------------- */
+  /*                              REFRESH PROFILE                           */
+  /* ---------------------------------------------------------------------- */
+
+  const refreshProfile = async () => {
+    const currentUser = auth.currentUser
+    if (!currentUser) return
+
+    const profileRef = doc(db, 'users', currentUser.uid)
+    const snapshot = await getDoc(profileRef)
+
+    if (snapshot.exists()) {
+      const data = snapshot.data()
+
+      setUser({
+        id: currentUser.uid,
+        uid: currentUser.uid,
+        email: currentUser.email || data.email,
+        displayName: currentUser.displayName,
+      })
+
+      setProfile({
+        id: currentUser.uid,
+        ...data,
+      } as ProfileType)
+    }
+  }
+
   /* ------------------------------------------------------------------------ */
   /*                                  LOGOUT                                  */
   /* ------------------------------------------------------------------------ */
@@ -348,7 +384,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signInAsAgent,
         signInAsAdmin,
+        refreshProfile,
         logout,
+        signOut: logout,
       }}
     >
       {children}

@@ -343,12 +343,12 @@ export default function AdminSidebar() {
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="text-sm font-semibold text-primary">
-                  {profile.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                  {profile.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">
-                  {profile.name || 'Admin User'}
+                  {profile.full_name || 'Admin User'}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
                   {user?.email || 'admin@example.com'}

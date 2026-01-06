@@ -1279,7 +1279,7 @@
 // neww
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Database } from '@/lib/database.types'
 import PropertyCard, { PropertyCardProperty } from '@/components/property/PropertyCard'
 
@@ -1574,7 +1574,7 @@ function getTypeInfo(type: string) {
   return typeMap[type] || { label: type, emoji: '🏠', color: 'bg-gray-500' };
 }
 
-export default function CommercialPropertiesPage() {
+function CommercialPropertiesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -2118,4 +2118,12 @@ export default function CommercialPropertiesPage() {
       </section>
     </div>
   );
+}
+
+export default function CommercialPropertiesPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading...</div>}>
+      <CommercialPropertiesPageContent />
+    </Suspense>
+  )
 }

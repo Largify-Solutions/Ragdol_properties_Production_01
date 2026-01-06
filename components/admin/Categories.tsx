@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline'
-import CategoryForm from '@/components/forms/CategoryForm'
+import CategoryForm, { type CategoryFormData } from '@/components/forms/CategoryForm'
 
 interface Category {
   id: string
@@ -24,7 +24,7 @@ export default function Categories({ categories, setCategories }: CategoriesProp
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
 
-  const handleAddCategory = async (data: Category) => {
+  const handleAddCategory = async (data: CategoryFormData) => {
     try {
       const res = await fetch('/api/admin/categories', {
         method: 'POST',
@@ -41,16 +41,19 @@ export default function Categories({ categories, setCategories }: CategoriesProp
     }
   }
 
-  const handleEditCategory = async (data: Category) => {
+  const handleEditCategory = async (data: CategoryFormData) => {
+    const categoryId = data.id || editingCategory?.id
+    if (!categoryId) return
+
     try {
-      const res = await fetch(`/api/admin/categories/${data.id}`, {
+      const res = await fetch(`/api/admin/categories/${categoryId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       })
       if (res.ok) {
         const updatedCategory = await res.json()
-        setCategories(categories.map(cat => cat.id === data.id ? updatedCategory : cat))
+        setCategories(categories.map(cat => cat.id === categoryId ? updatedCategory : cat))
         setEditingCategory(null)
       }
     } catch (error) {

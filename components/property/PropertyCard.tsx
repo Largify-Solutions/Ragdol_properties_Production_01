@@ -22,6 +22,7 @@ export interface PropertyCardProperty {
   area?: string
   city?: string
   agent_id?: string | null
+  agent_name?: string | null
   video_url?: string | null
   agent?: {
     id: string

@@ -179,7 +179,7 @@ export default function PropertyValuation() {
         if (valuationIds.includes(response.valuation_id)) {
           responsesData.push(response)
         }
-      }) as ValuationResponse[]
+      })
       
       // Sort by date (newest first)
       responsesData.sort((a, b) => 
@@ -239,7 +239,7 @@ export default function PropertyValuation() {
         estimated_value: '',
         currency: 'AED',
         created_at: new Date().toISOString(),
-        completed_at: null
+        completed_at: undefined
       }
 
       const docRef = await addDoc(valuationsRef, newValuation)
