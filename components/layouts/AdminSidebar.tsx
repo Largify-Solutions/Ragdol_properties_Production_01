@@ -218,7 +218,7 @@ interface NavItem {
 export default function AdminSidebar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const { signOut, profile, user } = useAuth()
+  const {  logout, profile, user } = useAuth()
 
   const navItems: NavItem[] = [
     {
@@ -386,7 +386,7 @@ export default function AdminSidebar() {
         {/* Footer - Reduced padding */}
         <div className="border-t border-border">
           <button 
-            onClick={signOut}
+            onClick={logout}
             className="w-full flex items-center gap-3 px-3 py-2.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors text-sm"
           >
             <ArrowRightOnRectangleIcon className="h-5 w-5" />

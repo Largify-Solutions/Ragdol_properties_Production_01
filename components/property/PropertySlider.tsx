@@ -81,7 +81,7 @@ export default function PropertySlider({ title, properties, showCount = 3 }: Pro
         }
       `}</style>
       
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between ">
         <h2 className="text-3xl font-bold text-foreground">{title}</h2>
         <div className="flex gap-2">
           <button

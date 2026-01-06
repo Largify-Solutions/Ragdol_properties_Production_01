@@ -24,7 +24,7 @@ interface NavItem {
 export default function AgentSidebar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const { signOut } = useAuth()
+  const { logout } = useAuth()
 
   const navItems: NavItem[] = [
     {
@@ -108,7 +108,7 @@ export default function AgentSidebar() {
         {/* Footer */}
         <div className="p-4 border-t border-border space-y-3">
           <button 
-            onClick={signOut}
+            onClick={logout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <ArrowRightOnRectangleIcon className="h-5 w-5" />

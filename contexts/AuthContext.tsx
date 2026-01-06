@@ -1,212 +1,342 @@
 'use client'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth'
+import {
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  query,
+  where,
+  collection,
+  getDocs,
+} from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase'
+import bcrypt from 'bcryptjs'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { useRouter } from 'next/navigation'
-import { mockUsers } from '@/lib/mock-data'
+/* -------------------------------------------------------------------------- */
+/*                                   TYPES                                    */
+/* -------------------------------------------------------------------------- */
 
-interface User {
+type UserType = {
   id: string
   email: string
 }
 
-interface Profile {
+type ProfileType = {
   id: string
   email: string
-  full_name: string
-  role: 'customer' | 'admin' | 'agent'
-  phone: string
+  full_name?: string
+  phone?: string
   avatar_url?: string
-  location?: string
-  bio?: string
-  preferences?: any
-  created_at?: string
+  role: 'customer' | 'agent' | 'admin'
+  password?: string // For manually added users
+  status?: string
+  created_at?: any
+  updated_at?: any
 }
 
-interface AuthContextType {
-  user: User | null
-  profile: Profile | null
+type AuthContextType = {
+  user: UserType | null
+  profile: ProfileType | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: any | null }>
-  signUp: (email: string, password: string, userData?: any) => Promise<{ error: any | null }>
-  signOut: () => Promise<void>
-  signInAsAdmin: (email: string, password: string) => Promise<{ error: any | null }>
-  signInAsAgent: (email: string, password: string) => Promise<{ error: any | null }>
-  refreshProfile: () => Promise<void>
+  signUp: (
+    email: string,
+    password: string,
+    userData?: Partial<ProfileType>,
+  ) => Promise<any>
+  signIn: (email: string, password: string, role?: string) => Promise<any>
+  signInAsAgent: (email: string, password: string) => Promise<any>
+  signInAsAdmin: (email: string, password: string) => Promise<any>
+  logout: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+/* -------------------------------------------------------------------------- */
+
+const AuthContext = createContext<AuthContextType | null>(null)
+
+export const useAuth = () => {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
+  return ctx
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              AUTH PROVIDER                                 */
+/* -------------------------------------------------------------------------- */
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const router = useRouter()
-  const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
+  const [user, setUser] = useState<UserType | null>(null)
+  const [profile, setProfile] = useState<ProfileType | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Check if user is logged in from localStorage
+  /* ------------------------------------------------------------------------ */
+  /*                    🔥 FIREBASE SESSION LISTENER 🔥                        */
+  /* ------------------------------------------------------------------------ */
+
   useEffect(() => {
-    const savedUser = localStorage.getItem('ragdol_user')
-    if (savedUser) {
-      try {
-        const userData = JSON.parse(savedUser)
-        const mockUser = mockUsers.find((u) => u.id === userData.id)
-        if (mockUser) {
-          setUser({ id: mockUser.id, email: mockUser.email })
-          setProfile({
-            id: mockUser.id,
-            email: mockUser.email,
-            full_name: mockUser.full_name,
-            role: mockUser.role as any,
-            phone: mockUser.phone,
-            avatar_url: mockUser.avatar_url,
-          })
-        }
-      } catch (e) {
-        console.error('Error restoring session:', e)
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!firebaseUser) {
+        setUser(null)
+        setProfile(null)
+        setLoading(false)
+        return
       }
-    }
-    setLoading(false)
+
+      // First try to find user in Firestore by email (for manually added users)
+      const usersRef = collection(db, 'users')
+      const q = query(usersRef, where('email', '==', firebaseUser.email))
+      const querySnapshot = await getDocs(q)
+
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0]
+        const userData = userDoc.data()
+        
+        setUser({
+          id: firebaseUser.uid,
+          email: firebaseUser.email!,
+        })
+
+        setProfile({
+          id: firebaseUser.uid,
+          ...userData,
+        } as ProfileType)
+      }
+
+      setLoading(false)
+    })
+
+    return () => unsubscribe()
   }, [])
 
-  async function fetchProfile(userId: string) {
-    const mockUser = mockUsers.find((u) => u.id === userId)
-    if (mockUser) {
-      setProfile({
-        id: mockUser.id,
-        email: mockUser.email,
-        full_name: mockUser.full_name,
-        role: mockUser.role as any,
-        phone: mockUser.phone,
-        avatar_url: mockUser.avatar_url,
-      })
-    }
-  }
+  /* ------------------------------------------------------------------------ */
+  /*                           CHECK MANUALLY ADDED USER                      */
+  /* ------------------------------------------------------------------------ */
 
-  const signIn = async (email: string, password: string) => {
-    setLoading(true)
+  const checkManuallyAddedUser = async (email: string, password: string) => {
     try {
-      // Mock authentication - accept any email/password
-      const mockUser = mockUsers.find((u) => u.email === email)
-      if (!mockUser) {
-        return { error: { message: 'User not found' } }
+      // Find user in Firestore by email
+      const usersRef = collection(db, 'users')
+      const q = query(usersRef, where('email', '==', email))
+      const querySnapshot = await getDocs(q)
+
+      if (querySnapshot.empty) {
+        return null // User not found in Firestore
       }
 
-      const userData = { id: mockUser.id, email: mockUser.email }
-      localStorage.setItem('ragdol_user', JSON.stringify(userData))
+      const userDoc = querySnapshot.docs[0]
+      const userData = userDoc.data()
 
-      setUser({ id: mockUser.id, email: mockUser.email })
-      await fetchProfile(mockUser.id)
+      // Check if user has password stored (manually added user)
+      if (!userData.password) {
+        return null // Not a manually added user
+      }
 
-      return { error: null }
-    } catch (error: any) {
-      return { error }
-    } finally {
-      setLoading(false)
+      // IMPORTANT: In production, use proper password hashing!
+      // For now, using simple comparison (you should implement bcrypt)
+      if (userData.password !== password) {
+        return { error: { message: 'Invalid password' } }
+      }
+
+      // Check role
+      if (!userData.role) {
+        return { error: { message: 'User role not defined' } }
+      }
+
+      return {
+        user: {
+          id: userDoc.id,
+          email: userData.email,
+          role: userData.role,
+          ...userData
+        },
+        isManuallyAdded: true
+      }
+    } catch (error) {
+      console.error('Error checking manually added user:', error)
+      return null
     }
   }
 
-  const signUp = async (email: string, password: string, userData?: any) => {
+  /* ------------------------------------------------------------------------ */
+  /*                               SIGN UP                                    */
+  /* ------------------------------------------------------------------------ */
+
+  const signUp = async (
+    email: string,
+    password: string,
+    userData?: Partial<ProfileType>
+  ) => {
     setLoading(true)
     try {
-      // Mock sign up - create a new mock user
-      const newUser = {
-        id: `user-${Date.now()}`,
+      // First check if user already exists in Firestore (manually added)
+      const usersRef = collection(db, 'users')
+      const q = query(usersRef, where('email', '==', email))
+      const querySnapshot = await getDocs(q)
+
+      if (!querySnapshot.empty) {
+        const existingUser = querySnapshot.docs[0].data()
+        if (existingUser.password) {
+          return { error: { message: 'User already exists. Please login instead.' } }
+        }
+      }
+
+      // Create Firebase Auth user
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      const firebaseUser = userCredential.user
+
+      const profileData: ProfileType = {
+        id: firebaseUser.uid,
         email,
+        role: userData?.role || 'customer',
         full_name: userData?.full_name || '',
-        role: 'customer' as const,
         phone: userData?.phone || '',
-        avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-        created_at: new Date().toISOString(),
+        avatar_url: userData?.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
       }
 
-      const sessionData = { id: newUser.id, email: newUser.email }
-      localStorage.setItem('ragdol_user', JSON.stringify(sessionData))
-
-      setUser({ id: newUser.id, email: newUser.email })
-      setProfile({
-        id: newUser.id,
-        email: newUser.email,
-        full_name: newUser.full_name,
-        role: newUser.role,
-        phone: newUser.phone,
-        avatar_url: newUser.avatar_url,
-      })
+      await setDoc(doc(db, 'users', firebaseUser.uid), profileData)
 
       return { error: null }
     } catch (error: any) {
-      return { error }
+      return { error: { message: error.message } }
     } finally {
       setLoading(false)
     }
   }
 
-  const signOut = async () => {
-    localStorage.removeItem('ragdol_user')
-    setUser(null)
-    setProfile(null)
-    router.push('/')
-  }
+  /* ------------------------------------------------------------------------ */
+  /*                         SIGN IN (GENERIC)                                */
+  /* ------------------------------------------------------------------------ */
 
-  const signInAsAdmin = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, role?: string) => {
     setLoading(true)
     try {
-      // Check admin credentials
-      const validAdminEmails = ['admin@ragdol.com', 'superadmin@ragdol.com', 'manager@ragdol.com']
-      const validPassword = 'Admin123!'
+      // First check if it's a manually added user
+      const manualUser = await checkManuallyAddedUser(email, password)
+      
+      if (manualUser?.user) {
+        // Manually added user found and password matches
+        if (role && manualUser.user.role !== role) {
+          return { 
+            error: { 
+              message: `Access denied. ${role.charAt(0).toUpperCase() + role.slice(1)} only.` 
+            } 
+          }
+        }
 
-      if (!validAdminEmails.includes(email) || password !== validPassword) {
-        return { error: { message: 'Invalid admin credentials' } }
+        // For manually added users, we need to create Firebase Auth user
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+          const firebaseUser = userCredential.user
+
+          // Update Firestore with Firebase UID
+          const usersRef = collection(db, 'users')
+          const q = query(usersRef, where('email', '==', email))
+          const querySnapshot = await getDocs(q)
+          
+          if (!querySnapshot.empty) {
+            const userDoc = querySnapshot.docs[0]
+            await setDoc(doc(db, 'users', firebaseUser.uid), {
+              ...manualUser.user,
+              id: firebaseUser.uid,
+              password: null, // Remove password after linking with Firebase Auth
+              updated_at: serverTimestamp(),
+            }, { merge: true })
+            
+            // Delete old document
+            await setDoc(userDoc.ref, { 
+              migrated: true 
+            }, { merge: true })
+          }
+
+          return { error: null }
+        } catch (firebaseError: any) {
+          // If Firebase Auth user already exists, just sign in
+          if (firebaseError.code === 'auth/email-already-in-use') {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            return { error: null }
+          }
+          throw firebaseError
+        }
       }
 
-      const adminUser = mockUsers.find((u) => u.email === email && u.role === 'admin')
-      if (!adminUser) {
-        return { error: { message: 'Admin user not found' } }
+      // Regular Firebase Auth user
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const firebaseUser = userCredential.user
+
+      // Check role in Firestore
+      const usersRef = collection(db, 'users')
+      const q = query(usersRef, where('email', '==', email))
+      const querySnapshot = await getDocs(q)
+
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data()
+        
+        if (role && userData.role !== role) {
+          await signOut(auth)
+          return { 
+            error: { 
+              message: `Access denied. ${role.charAt(0).toUpperCase() + role.slice(1)} only.` 
+            } 
+          }
+        }
       }
-
-      const userData = { id: adminUser.id, email: adminUser.email }
-      localStorage.setItem('ragdol_user', JSON.stringify(userData))
-
-      setUser({ id: adminUser.id, email: adminUser.email })
-      await fetchProfile(adminUser.id)
 
       return { error: null }
+    } catch (error: any) {
+      console.error('Sign in error:', error)
+      return { 
+        error: { 
+          message: error.code === 'auth/invalid-credential' 
+            ? 'Invalid email or password' 
+            : error.message || 'Login failed' 
+        } 
+      }
     } finally {
       setLoading(false)
     }
   }
+
+  /* ------------------------------------------------------------------------ */
+  /*                              SIGN IN (AGENT)                             */
+  /* ------------------------------------------------------------------------ */
 
   const signInAsAgent = async (email: string, password: string) => {
-    setLoading(true)
-    try {
-      // Check agent credentials
-      const validAgentEmails = ['agent@ragdol.com']
-      const validPassword = 'Agent123!'
-
-      if (!validAgentEmails.includes(email) || password !== validPassword) {
-        return { error: { message: 'Invalid agent credentials' } }
-      }
-
-      const agentUser = mockUsers.find((u) => u.email === email && u.role === 'agent')
-      if (!agentUser) {
-        return { error: { message: 'Agent user not found' } }
-      }
-
-      const userData = { id: agentUser.id, email: agentUser.email }
-      localStorage.setItem('ragdol_user', JSON.stringify(userData))
-
-      setUser({ id: agentUser.id, email: agentUser.email })
-      await fetchProfile(agentUser.id)
-
-      return { error: null }
-    } finally {
-      setLoading(false)
-    }
+    return await signIn(email, password, 'agent')
   }
 
-  const refreshProfile = async () => {
-    if (user) {
-      await fetchProfile(user.id)
-    }
+  /* ------------------------------------------------------------------------ */
+  /*                              SIGN IN (ADMIN)                             */
+  /* ------------------------------------------------------------------------ */
+
+  const signInAsAdmin = async (email: string, password: string) => {
+    return await signIn(email, password, 'admin')
   }
+
+  /* ------------------------------------------------------------------------ */
+  /*                                  LOGOUT                                  */
+  /* ------------------------------------------------------------------------ */
+
+  const logout = async () => {
+    await signOut(auth)
+    setUser(null)
+    setProfile(null)
+  }
+
+  /* ------------------------------------------------------------------------ */
 
   return (
     <AuthContext.Provider
@@ -214,24 +344,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         profile,
         loading,
-        signIn,
         signUp,
-        signOut,
-        signInAsAdmin,
+        signIn,
         signInAsAgent,
-        refreshProfile,
+        signInAsAdmin,
+        logout,
       }}
     >
       {children}
     </AuthContext.Provider>
   )
 }
-
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return context
-}
-

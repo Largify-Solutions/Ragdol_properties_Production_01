@@ -9,12 +9,31 @@ import {
   QueueListIcon,
   MagnifyingGlassIcon,
   HomeIcon,
+  XMarkIcon,
+  MapPinIcon,
+  HomeModernIcon,
+  BuildingOffice2Icon,
+  CheckIcon,
+  VideoCameraIcon,
+  UserIcon,
+  CalendarIcon,
+  CurrencyDollarIcon,
+  ArrowsPointingOutIcon,
+ 
+ 
+  WifiIcon,
+  
+  ShieldCheckIcon,
+  BuildingStorefrontIcon,
+  ArrowPathIcon,
+  StarIcon
 } from '@heroicons/react/24/outline'
 import { useRouter, useSearchParams } from 'next/navigation';
+import { BathIcon,BedIcon,CarIcon } from 'lucide-react';
 
 // Firebase imports
 import { db } from '@/lib/firebase'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore'
 
 type Property = Database['public']['Tables']['properties']['Row']
 type NormalizedProperty = Property & {
@@ -45,6 +64,533 @@ type NormalizedProperty = Property & {
   review_status?: string
   submitted_at?: string
   collection?: string
+  address?: string
+  property_status?: string
+  property_age?: string
+  images?: string[]
+  floorplans?: string[]
+  inquiries_count?: number
+  coords?: {
+    lat: number
+    lng: number
+  }
+  agent_id?: string
+  slug?: string
+  created_at?: string
+  updated_at?: string
+}
+
+// View Details Modal Component
+function ViewDetailsModal({ 
+  property, 
+  onClose 
+}: { 
+  property: NormalizedProperty | null; 
+  onClose: () => void 
+}) {
+  if (!property) return null;
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex(prev => 
+      prev === 0 
+        ? (property.images?.length || property.floorplans?.length || 1) - 1 
+        : prev - 1
+    );
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex(prev => 
+      prev === (property.images?.length || property.floorplans?.length || 1) - 1 
+        ? 0 
+        : prev + 1
+    );
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US').format(price);
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const getPropertyImages = () => {
+    if (property.images && property.images.length > 0) {
+      return property.images;
+    }
+    if (property.floorplans && property.floorplans.length > 0) {
+      return property.floorplans;
+    }
+    return [property.image || ''];
+  };
+
+  const propertyImages = getPropertyImages();
+  const hasVideo = property.video_url && property.video_url.trim() !== '';
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in mt-30">
+      <div className="relative w-full max-w-7xl h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col">
+        {/* Header with Close Button */}
+        <div className="flex-shrink-0 p-6 border-b border-slate-100 bg-white">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-black text-slate-900 truncate">
+                {property.title || 'Untitled Property'}
+              </h2>
+              <div className="flex items-center gap-2 text-slate-600 mt-1">
+                <MapPinIcon className="h-4 w-4" />
+                <span className="font-medium truncate">
+                  {property.address || property.location || `${property.area || ''}${property.city ? ', ' + property.city : ''}`}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:text-primary hover:bg-slate-200 transition-colors"
+            >
+              <XMarkIcon className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Main Content with Scroll */}
+        <div className="flex-1 overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-3 h-full">
+            {/* Left Column - Images & Details - WITH SCROLL */}
+            <div className="lg:col-span-2 h-full overflow-y-auto custom-scrollbar">
+              {/* Main Image/Video */}
+              <div className="relative h-64 md:h-80 bg-slate-100 overflow-hidden">
+                {hasVideo && isVideoPlaying ? (
+                  <video
+                    src={property.video_url}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    controls
+                    onEnded={() => setIsVideoPlaying(false)}
+                  />
+                ) : (
+                  <img
+                    src={propertyImages[currentImageIndex]}
+                    alt={property.title || 'Property Image'}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop';
+                    }}
+                  />
+                )}
+
+                {/* Image Navigation */}
+                {propertyImages.length > 1 && !isVideoPlaying && (
+                  <>
+                    <button
+                      onClick={handlePrevImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-slate-700 hover:text-primary transition-colors shadow-lg"
+                    >
+                      ←
+                    </button>
+                    <button
+                      onClick={handleNextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-slate-700 hover:text-primary transition-colors shadow-lg"
+                    >
+                      →
+                    </button>
+                  </>
+                )}
+
+                {/* Video Play Button */}
+                {hasVideo && !isVideoPlaying && (
+                  <button
+                    onClick={() => setIsVideoPlaying(true)}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-16 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-primary hover:scale-110 transition-transform shadow-xl"
+                  >
+                    <VideoCameraIcon className="h-8 w-8" />
+                  </button>
+                )}
+
+                {/* Badges */}
+                <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                  <span className="px-3 py-1.5 bg-primary text-white text-xs font-bold uppercase tracking-widest rounded-full">
+                    {property.status === 'rent' ? 'For Rent' : 'For Sale'}
+                  </span>
+                  {property.featured && (
+                    <span className="px-3 py-1.5 bg-yellow-500 text-white text-xs font-bold uppercase tracking-widest rounded-full">
+                      Featured
+                    </span>
+                  )}
+                  {property.collection === 'agent_properties' && (
+                    <span className="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold uppercase tracking-widest rounded-full">
+                      Agent Property
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Thumbnail Gallery */}
+              {propertyImages.length > 1 && (
+                <div className="p-4 border-b border-slate-100">
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {propertyImages.map((img, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentImageIndex(idx)}
+                        className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                          idx === currentImageIndex 
+                            ? 'border-primary' 
+                            : 'border-transparent hover:border-slate-300'
+                        }`}
+                      >
+                        <img
+                          src={img}
+                          alt={`Thumbnail ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=200&auto=format&fit=crop';
+                          }}
+                        />
+                      </button>
+                    ))}
+                    {hasVideo && (
+                      <button
+                        onClick={() => setIsVideoPlaying(true)}
+                        className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-all relative group"
+                      >
+                        <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center">
+                          <VideoCameraIcon className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="text-[9px] text-white font-bold absolute bottom-1 left-1/2 -translate-x-1/2">
+                          Video
+                        </div>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Property Details - WITH SCROLL */}
+              <div className="p-6 space-y-6 ">
+                {/* Price */}
+                <div className="bg-slate-50 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm text-slate-500 font-bold uppercase tracking-widest mb-1">
+                        {property.status === 'rent' ? 'Yearly Rent' : 'Sale Price'}
+                      </div>
+                      <div className="text-2xl md:text-3xl font-black text-primary">
+                        {property.currency || 'AED'} {formatPrice(property.price)}
+                      </div>
+                      {property.status === 'rent' && (
+                        <div className="text-slate-500 text-sm mt-1">
+                          ≈ {property.currency || 'AED'} {formatPrice(Math.round(property.price / 12))} per month
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-slate-500 mb-1">Property ID</div>
+                      <div className="font-mono font-bold text-slate-700">
+                        {property.id.substring(0, 8).toUpperCase()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Key Features */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="bg-slate-50 rounded-lg p-3 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <BedIcon className="h-4 w-4 text-primary" />
+                      <span className="text-lg font-black text-slate-900">{property.beds || 0}</span>
+                    </div>
+                    <div className="text-xs text-slate-500 uppercase tracking-widest font-bold">Bedrooms</div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <BathIcon className="h-4 w-4 text-primary" />
+                      <span className="text-lg font-black text-slate-900">{property.baths || 0}</span>
+                    </div>
+                    <div className="text-xs text-slate-500 uppercase tracking-widest font-bold">Bathrooms</div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <ArrowsPointingOutIcon className="h-4 w-4 text-primary" />
+                      <span className="text-lg font-black text-slate-900">{property.sqft || 0}</span>
+                    </div>
+                    <div className="text-xs text-slate-500 uppercase tracking-widest font-bold">Sq. Ft.</div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <HomeModernIcon className="h-4 w-4 text-primary" />
+                      <span className="text-lg font-black text-slate-900">
+                        {property.property_age || property.propertyAge || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-500 uppercase tracking-widest font-bold">Property Age</div>
+                  </div>
+                </div>
+
+                {/* Basic Info */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-slate-500 mb-1">Property Type</div>
+                    <div className="font-medium text-slate-900">{property.type || 'Property Type'}</div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500 mb-1">Completion Status</div>
+                    <div className="font-medium text-slate-900">
+                      {property.completion || property.property_status || 'Ready'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500 mb-1">Furnishing</div>
+                    <div className="font-medium text-slate-900">
+                      {property.furnished ? 'Furnished' : 'Unfurnished'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-500 mb-1">Parking</div>
+                    <div className="font-medium text-slate-900">
+                      {property.parking === 'yes' ? 'Available' : 'Not Available'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Description */}
+                {property.description && (
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 mb-3">Description</h3>
+                    <div className="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                      <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+                        {property.description}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Features List */}
+                {property.features && property.features.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 mb-3">Features & Amenities</h3>
+                    <div className="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {property.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center gap-3">
+                            <CheckIcon className="h-4 w-4 text-green-500 flex-shrink-0" />
+                            <span className="text-slate-700">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Additional Details */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 mb-3">Property Details</h3>
+                    <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Inquiries</span>
+                        <span className="font-medium text-slate-900">
+                          {property.inquiries_count || 0}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Date Added</span>
+                        <span className="font-medium text-slate-900">
+                          {formatDate(property.created_at || property.submitted_at)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Last Updated</span>
+                        <span className="font-medium text-slate-900">
+                          {formatDate(property.updated_at)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Agent</span>
+                        <span className="font-medium text-slate-900">
+                          {property.agent_name || 'N/A'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 mb-3">Collection Info</h3>
+                    <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Source</span>
+                        <span className="font-medium text-slate-900">
+                          {property.collection === 'agent_properties' ? 'Agent Properties' : 'Main Properties'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Review Status</span>
+                        <span className={`font-medium ${
+                          property.review_status === 'published' 
+                            ? 'text-green-600' 
+                            : 'text-amber-600'
+                        }`}>
+                          {property.review_status || 'N/A'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Slug</span>
+                        <span className="font-medium text-slate-900 font-mono text-sm">
+                          {property.slug || 'N/A'}
+                        </span>
+                      </div>
+                      {property.agent_id && (
+                        <div className="flex justify-between py-2 border-b border-slate-100">
+                          <span className="text-slate-600">Agent ID</span>
+                          <span className="font-medium text-slate-900 font-mono text-sm">
+                            {property.agent_id.substring(0, 8)}...
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Coordinates */}
+                {property.coords && (
+                  <div className="bg-slate-50 rounded-xl p-4">
+                    <h3 className="text-lg font-black text-slate-900 mb-2">Location Coordinates</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="text-sm text-slate-500">Latitude</div>
+                        <div className="font-mono text-slate-900">{property.coords.lat}</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-slate-500">Longitude</div>
+                        <div className="font-mono text-slate-900">{property.coords.lng}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column - Action Panel - WITH SCROLL */}
+            <div className="lg:col-span-1 h-full overflow-y-auto custom-scrollbar border-l border-slate-100 bg-slate-50">
+              <div className="p-6 space-y-6">
+                {/* Contact Agent */}
+                <div className="bg-white rounded-xl p-4 shadow-sm">
+                  <h3 className="text-lg font-black text-slate-900 mb-4">Contact Information</h3>
+                  
+                  {property.agent_id ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                          <UserIcon className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900">{property.agent_name || 'Agent'}</div>
+                          <div className="text-sm text-slate-500">Property Agent</div>
+                        </div>
+                      </div>
+                      
+                     
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
+                        <BuildingStorefrontIcon className="h-6 w-6 text-slate-400" />
+                      </div>
+                      <div className="text-slate-700 mb-4 text-sm">
+                        This property is listed directly by our agency
+                      </div>
+                      <button className="w-full bg-primary text-white font-bold py-3 rounded-lg hover:bg-primary/90 transition-colors">
+                        Contact Our Team
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                
+
+                {/* Financial Calculator */}
+                <div className="bg-white rounded-xl p-4 shadow-sm">
+                  <h3 className="text-lg font-black text-slate-900 mb-4">Financial Calculator</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm text-slate-500 mb-1">Monthly Rent</div>
+                      <div className="text-xl font-black text-primary">
+                        {property.currency || 'AED'} {formatPrice(Math.round(property.price / 12))}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-slate-500 mb-1">Deposit (5%)</div>
+                      <div className="text-lg font-bold text-slate-900">
+                        {property.currency || 'AED'} {formatPrice(Math.round(property.price * 0.05))}
+                      </div>
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      *Calculations are approximate. Contact us for exact figures.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Share Property */}
+                <div className="border-t border-slate-200 pt-6">
+                  <h3 className="text-lg font-black text-slate-900 mb-4">Share This Property</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button className="h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors text-sm font-bold">
+                      Facebook
+                    </button>
+                    <button className="h-10 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center hover:bg-pink-200 transition-colors text-sm font-bold">
+                      Instagram
+                    </button>
+                    <button className="h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-200 transition-colors text-sm font-bold">
+                      WhatsApp
+                    </button>
+                  </div>
+                </div>
+
+                {/* Similar Properties Link */}
+                <div className="text-center pt-4">
+                  <button className="text-primary font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 w-full">
+                    View Similar Properties
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Custom Scrollbar CSS */}
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+      `}</style>
+    </div>
+  );
 }
 
 // Function to fetch RENT properties from 'properties' collection
@@ -64,14 +610,6 @@ async function fetchRentPropertiesFromMainCollection() {
     const properties: any[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      console.log(`📄 Main Property ${doc.id}:`, {
-        title: data.title,
-        status: data.status,
-        published: data.published,
-        price: data.price,
-        city: data.city
-      });
-      
       properties.push({
         id: doc.id,
         collection: 'properties',
@@ -93,7 +631,6 @@ async function fetchRentPropertiesFromAgentCollection() {
     console.log('🔥 Fetching RENT properties from agent_properties collection...');
     const agentPropertiesRef = collection(db, 'agent_properties');
     
-    // Only filter by status='rent' and review_status='published'
     const q = query(
       agentPropertiesRef,
       where('status', '==', 'rent'),
@@ -106,15 +643,6 @@ async function fetchRentPropertiesFromAgentCollection() {
     const properties: any[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      console.log(`📄 Agent Property ${doc.id}:`, {
-        title: data.title,
-        status: data.status,
-        review_status: data.review_status,
-        price: data.price,
-        city: data.city,
-        published: data.published
-      });
-      
       properties.push({
         id: doc.id,
         collection: 'agent_properties',
@@ -130,29 +658,48 @@ async function fetchRentPropertiesFromAgentCollection() {
   }
 }
 
+// Function to fetch property details by ID from specific collection
+async function fetchPropertyDetails(propertyId: string, collectionName: string) {
+  try {
+    console.log(`📋 Fetching details for property ${propertyId} from ${collectionName}...`);
+    
+    const docRef = doc(db, collectionName, propertyId);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      console.log(`✅ Found property details:`, {
+        title: data.title,
+        collection: collectionName
+      });
+      
+      return {
+        id: docSnap.id,
+        collection: collectionName,
+        ...data
+      };
+    } else {
+      console.log(`❌ No property found with ID: ${propertyId} in ${collectionName}`);
+      return null;
+    }
+  } catch (error) {
+    console.error(`❌ Error fetching property details from ${collectionName}:`, error);
+    return null;
+  }
+}
+
 // Main function to fetch all RENT properties from both collections
 async function fetchAllRentProperties() {
   try {
     console.log('🔄 Fetching RENT properties from ALL collections...');
     
-    // Fetch from both collections simultaneously
     const [mainProperties, agentProperties] = await Promise.all([
       fetchRentPropertiesFromMainCollection(),
       fetchRentPropertiesFromAgentCollection()
     ]);
     
-    console.log(`📊 Results: ${mainProperties.length} from main, ${agentProperties.length} from agent`);
-    
-    // Combine both collections
     const allProperties = [...mainProperties, ...agentProperties];
     console.log(`✅ Total RENT properties found: ${allProperties.length}`);
-    
-    // Debug: Show all properties data
-    console.log('📋 ALL PROPERTIES DATA:');
-    allProperties.forEach((p, i) => {
-      console.log(`  ${i + 1}. ${p.title || 'No Title'} - ${p.price} AED - ${p.status} - Collection: ${p.collection}`);
-      console.log(`     Published: ${p.published}, Review Status: ${p.review_status}`);
-    });
     
     return allProperties;
     
@@ -170,6 +717,7 @@ export default function PropertiesPage() {
   const [allProperties, setAllProperties] = useState<NormalizedProperty[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<NormalizedProperty[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProperty, setSelectedProperty] = useState<NormalizedProperty | null>(null);
   
   // Get filter values from URL
   const viewMode = searchParams.get('view') === 'list' ? 'list' : 'grid';
@@ -211,6 +759,75 @@ export default function PropertiesPage() {
     hasVideo,
     search
   });
+
+  // Handle View Details Click
+  const handleViewDetails = async (property: NormalizedProperty) => {
+    try {
+      console.log(`🔄 Loading details for property: ${property.id} from ${property.collection}`);
+      
+      // Fetch complete details from Firebase
+      const detailedProperty = await fetchPropertyDetails(property.id, property.collection || 'properties');
+      
+      if (detailedProperty) {
+        // Normalize the detailed property
+        const normalized = {
+          ...detailedProperty,
+          image: property.image || detailedProperty.images?.[0] || detailedProperty.image_url || '',
+          price: detailedProperty.price || 0,
+          priceLabel: 'yearly',
+          area: detailedProperty.area || detailedProperty.location || detailedProperty.address || 'Dubai',
+          city: detailedProperty.city || 'Dubai',
+          location: detailedProperty.address || detailedProperty.area || detailedProperty.city || 'Dubai',
+          beds: detailedProperty.beds || 0,
+          baths: detailedProperty.baths || 0,
+          sqft: detailedProperty.sqft || 0,
+          type: detailedProperty.type || detailedProperty.subtype || 'Apartment',
+          developer: detailedProperty.developer || null,
+          featured: Boolean(detailedProperty.featured),
+          category: detailedProperty.category || null,
+          parking: detailedProperty.parking || null,
+          propertyAge: detailedProperty.property_age || detailedProperty.propertyAge || null,
+          completion: detailedProperty.completion || detailedProperty.property_status || 'ready',
+          subtype: detailedProperty.subtype || null,
+          description: detailedProperty.description || null,
+          features: Array.isArray(detailedProperty.features) ? detailedProperty.features : [],
+          video_url: detailedProperty.video_url || null,
+          currency: detailedProperty.currency || 'AED',
+          status: detailedProperty.status || 'rent',
+          agent_name: detailedProperty.agent_name || null,
+          review_status: detailedProperty.review_status || null,
+          submitted_at: detailedProperty.submitted_at || null,
+          collection: detailedProperty.collection || 'properties',
+          address: detailedProperty.address,
+          property_status: detailedProperty.property_status,
+          property_age: detailedProperty.property_age,
+          images: detailedProperty.images || [],
+          floorplans: detailedProperty.floorplans || [],
+          inquiries_count: detailedProperty.inquiries_count || 0,
+          coords: detailedProperty.coords,
+          agent_id: detailedProperty.agent_id,
+          slug: detailedProperty.slug,
+          created_at: detailedProperty.created_at,
+          updated_at: detailedProperty.updated_at
+        };
+        
+        setSelectedProperty(normalized);
+        console.log('✅ Property details loaded successfully');
+      } else {
+        console.log('⚠️ Using cached property data');
+        setSelectedProperty(property);
+      }
+    } catch (error) {
+      console.error('❌ Error loading property details:', error);
+      // Fallback to cached property data
+      setSelectedProperty(property);
+    }
+  };
+
+  // Close Details Modal
+  const closeDetailsModal = () => {
+    setSelectedProperty(null);
+  };
 
   // Fetch RENT properties on component mount
   useEffect(() => {
@@ -303,32 +920,24 @@ export default function PropertiesPage() {
     }
     
     console.log(`🔄 Applying filters to ${allProperties.length} properties...`);
-    console.log('🔍 Current filters:', {
-      action, category, type, area, minPrice, maxPrice,
-      beds, baths, furnished, completion, search
-    });
 
     let filtered = [...allProperties];
     
     // Filter by action (rent/buy)
     if (action === 'rent') {
       filtered = filtered.filter(p => p.status === 'rent');
-      console.log(`✅ After rent filter: ${filtered.length}`);
     } else if (action === 'buy') {
       filtered = filtered.filter(p => p.status === 'sale');
-      console.log(`✅ After buy filter: ${filtered.length}`);
     }
 
     // Filter by category
     if (category) {
       filtered = filtered.filter(p => p.category === category);
-      console.log(`✅ After category filter: ${filtered.length}`);
     }
 
     // Filter by type
     if (type) {
       filtered = filtered.filter(p => p.type?.toLowerCase() === type.toLowerCase());
-      console.log(`✅ After type filter: ${filtered.length}`);
     }
 
     // Filter by area
@@ -338,78 +947,64 @@ export default function PropertiesPage() {
         p.city?.toLowerCase().includes(area.toLowerCase()) ||
         p.location?.toLowerCase().includes(area.toLowerCase())
       );
-      console.log(`✅ After area filter: ${filtered.length}`);
     }
 
     // Filter by developer
     if (developer) {
       filtered = filtered.filter(p => p.developer?.toLowerCase().includes(developer.toLowerCase()));
-      console.log(`✅ After developer filter: ${filtered.length}`);
     }
 
     // Filter by price
     if (minPrice) {
       filtered = filtered.filter(p => p.price >= parseInt(minPrice));
-      console.log(`✅ After minPrice filter: ${filtered.length}`);
     }
     if (maxPrice) {
       filtered = filtered.filter(p => p.price <= parseInt(maxPrice));
-      console.log(`✅ After maxPrice filter: ${filtered.length}`);
     }
 
     // Filter by beds
     if (beds) {
       filtered = filtered.filter(p => p.beds === parseInt(beds));
-      console.log(`✅ After beds filter: ${filtered.length}`);
     }
 
     // Filter by baths
     if (baths) {
       filtered = filtered.filter(p => p.baths === parseInt(baths));
-      console.log(`✅ After baths filter: ${filtered.length}`);
     }
 
     // Filter by sqft
     if (minSqft) {
       filtered = filtered.filter(p => p.sqft >= parseInt(minSqft));
-      console.log(`✅ After minSqft filter: ${filtered.length}`);
     }
     if (maxSqft) {
       filtered = filtered.filter(p => p.sqft <= parseInt(maxSqft));
-      console.log(`✅ After maxSqft filter: ${filtered.length}`);
     }
 
     // Filter by furnished
     if (furnished === 'true') {
       filtered = filtered.filter(p => p.furnished === true);
-      console.log(`✅ After furnished=true filter: ${filtered.length}`);
     } else if (furnished === 'false') {
       filtered = filtered.filter(p => p.furnished === false || p.furnished === null);
-      console.log(`✅ After furnished=false filter: ${filtered.length}`);
     }
 
     // Filter by parking
     if (parking) {
       filtered = filtered.filter(p => p.parking?.toLowerCase() === parking.toLowerCase());
-      console.log(`✅ After parking filter: ${filtered.length}`);
     }
 
     // Filter by property age
     if (propertyAge) {
       filtered = filtered.filter(p => p.propertyAge === propertyAge);
-      console.log(`✅ After propertyAge filter: ${filtered.length}`);
     }
 
     // Filter by completion
     if (completion) {
       filtered = filtered.filter(p => p.completion === completion);
-      console.log(`✅ After completion filter: ${filtered.length}`);
     }
 
     // Filter by video availability
     if (hasVideo === 'true') {
       filtered = filtered.filter(p => p.video_url && p.video_url.trim() !== '');
-      console.log(`✅ After hasVideo filter: ${filtered.length}`);
     }
 
     // Features filter
@@ -419,7 +1014,6 @@ export default function PropertiesPage() {
         if (!p.features || !Array.isArray(p.features)) return false;
         return featuresList.every(f => (p.features || []).includes(f));
       });
-      console.log(`✅ After features filter: ${filtered.length}`);
     }
 
     // Search filtering
@@ -434,7 +1028,6 @@ export default function PropertiesPage() {
         const inAgentName = ((p.agent_name || '') as string).toLowerCase().includes(sLower);
         return inTitle || inLocation || inArea || inDesc || inDeveloper || inAgentName;
       });
-      console.log(`✅ After search filter: ${filtered.length}`);
     }
 
     // Sorting
@@ -624,15 +1217,6 @@ export default function PropertiesPage() {
   const offset = (Math.max(page, 1) - 1) * limit;
   const paginatedProperties = filteredProperties.slice(offset, offset + limit);
 
-  console.log('📊 Display Stats:', {
-    allProperties: allProperties.length,
-    filteredProperties: filteredProperties.length,
-    paginatedProperties: paginatedProperties.length,
-    total,
-    totalPages,
-    page
-  });
-
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50/50 flex items-center justify-center">
@@ -646,6 +1230,14 @@ export default function PropertiesPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/50">
+      {/* View Details Modal */}
+      {selectedProperty && (
+        <ViewDetailsModal 
+          property={selectedProperty} 
+          onClose={closeDetailsModal} 
+        />
+      )}
+
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden bg-slate-900">
         <div className="absolute inset-0 opacity-20">
@@ -842,7 +1434,7 @@ export default function PropertiesPage() {
                     </select>
                   </div>
 
-                  {/* Price Range - For Rent properties (AED per year) */}
+                  {/* Price Range */}
                   <div className="space-y-3">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Price Range (AED/year)</label>
                     <div className="grid grid-cols-2 gap-3">
@@ -887,7 +1479,7 @@ export default function PropertiesPage() {
                     </div>
                   </div>
 
-                  {/* Furnished Status - More important for rent */}
+                  {/* Furnished Status */}
                   <div className="space-y-3">
                     <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Furnished</label>
                     <div className="space-y-2">
@@ -992,21 +1584,7 @@ export default function PropertiesPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto">
-                <div className="flex items-center gap-3">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest hidden sm:block">Sort By:</label>
-                  <div className="flex items-center gap-2">
-                    <select 
-                      value={sortBy}
-                      onChange={(e) => handleSortChange(e.target.value)}
-                      className="bg-slate-50 border-none rounded-xl px-3 sm:px-4 py-2 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-primary/20 cursor-pointer min-w-[140px]"
-                    >
-                      <option value="featured">Featured</option>
-                      <option value="price-low">Price: Low to High</option>
-                      <option value="price-high">Price: High to Low</option>
-                      <option value="newest">Newest First</option>
-                    </select>
-                  </div>
-                </div>
+                
 
                 <div className="h-8 w-[1px] bg-slate-100 hidden sm:block mx-2" />
 
@@ -1029,10 +1607,7 @@ export default function PropertiesPage() {
               </div>
             </div>
 
-            
-            
-
-            {/* Properties Grid/List from BOTH collections */}
+            {/* Properties Grid/List with View Details Button */}
             {filteredProperties.length > 0 ? (
               <>
                 <div className={`grid gap-8 ${
@@ -1042,27 +1617,41 @@ export default function PropertiesPage() {
                 }`}>
                   {paginatedProperties.map((property, i) => (
                     <div key={`${property.collection}-${property.id}`} className="animate-slide-up" style={{ animationDelay: `${i * 50}ms` }}>
-                      <PropertyCard
-                        property={{
-                          id: String(property.id),
-                          title: property.title || 'New Property',
-                          price: property.price ?? 0,
-                          priceLabel: 'yearly',
-                          image: property.image,
-                          location: property.location || `${property.area || ''}${property.city ? ', ' + property.city : ''}`,
-                          beds: property.beds ?? 0,
-                          baths: property.baths ?? 0,
-                          sqft: property.sqft ?? 0,
-                          type: property.type || 'Property',
-                          featured: Boolean(property.featured),
-                          currency: property.currency || 'AED',
-                          status: 'rent',
-                          area: property.area || undefined,
-                          city: property.city || undefined,
-                          video_url: property.video_url || undefined,
-                          agent_name: property.agent_name || undefined,
-                        }}
-                      />
+                      {/* View Details Button Overlay */}
+                      <div className="relative group">
+                        <PropertyCard
+                          property={{
+                            id: String(property.id),
+                            title: property.title || 'New Property',
+                            price: property.price ?? 0,
+                            priceLabel: 'yearly',
+                            image: property.image,
+                            location: property.location || `${property.area || ''}${property.city ? ', ' + property.city : ''}`,
+                            beds: property.beds ?? 0,
+                            baths: property.baths ?? 0,
+                            sqft: property.sqft ?? 0,
+                            type: property.type || 'Property',
+                            featured: Boolean(property.featured),
+                            currency: property.currency || 'AED',
+                            status: 'rent',
+                            area: property.area || undefined,
+                            city: property.city || undefined,
+                            video_url: property.video_url || undefined,
+                            agent_name: property.agent_name || undefined,
+                          }}
+                        />
+                        
+                        {/* View Details Button */}
+                        <button
+                          onClick={() => handleViewDetails(property)}
+                          className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-md rounded-xl px-4 py-2 shadow-lg hover:shadow-xl hover:bg-white border border-slate-200 flex items-center gap-2 text-slate-700 hover:text-primary font-bold text-sm"
+                        >
+                          <ArrowsPointingOutIcon className="h-4 w-4" />
+                          View Details
+                        </button>
+                      </div>
+
+                      {/* Property Badges */}
                       <div className="mt-2 flex gap-2">
                         {property.collection === 'agent_properties' && (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -1147,8 +1736,6 @@ export default function PropertiesPage() {
           </main>
         </div>
       </div>
-
-    
     </div>
   );
 }

@@ -26,7 +26,7 @@ interface NavItem {
 export default function CustomerSidebar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const { signOut, profile, user } = useAuth()
+  const { logout, profile, user } = useAuth()
 
   const navItems: NavItem[] = [
     {
@@ -122,7 +122,7 @@ export default function CustomerSidebar() {
         {/* Footer */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
           <button 
-            onClick={signOut}
+            onClick={logout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-red-500/20 hover:text-red-400 transition-colors"
           >
             <ArrowRightOnRectangleIcon className="h-5 w-5" />
