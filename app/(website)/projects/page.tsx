@@ -1,8 +1,8 @@
-
 "use client"
 
 import Image from 'next/image'
 import { Suspense, useState, useEffect } from 'react'
+import Link from 'next/link'
 import {
   BuildingOfficeIcon,
   MapPinIcon,
@@ -26,8 +26,17 @@ import {
   IdentificationIcon,
   TagIcon,
   ArrowUpRightIcon,
-  ArrowsPointingOutIcon
+  ArrowsPointingOutIcon,
+  HeartIcon,
+  ShareIcon,
+  ArrowLeftIcon,
+  PhotoIcon,
+  ChatBubbleLeftRightIcon,
+  StarIcon,
+  Square3Stack3DIcon,
+  PlayCircleIcon
 } from '@heroicons/react/24/outline'
+import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 import { db } from '@/lib/firebase'
 import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore'
 
@@ -78,6 +87,48 @@ const developers = [
   { id: 'nakheel', name: 'Nakheel Properties', count: 0 }
 ]
 
+// Helper function for formatting price
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('en-US').format(price);
+};
+
+// Helper function for formatting number
+const formatNumber = (num: number) => {
+  return new Intl.NumberFormat('en-US').format(num);
+};
+
+// Video URL type check karna
+const getVideoType = (url: string) => {
+  if (!url) return 'none';
+  if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+  if (url.includes('vimeo.com')) return 'vimeo';
+  if (/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)(\?.*)?$/i.test(url)) return 'direct';
+  return 'external';
+}
+
+// YouTube video ID extract karna
+const extractYouTubeId = (url: string) => {
+  let videoId = '';
+  if (url.includes('youtube.com/watch?v=')) {
+    videoId = url.split('v=')[1];
+    const ampersandPosition = videoId.indexOf('&');
+    if (ampersandPosition !== -1) {
+      videoId = videoId.substring(0, ampersandPosition);
+    }
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1];
+  } else if (url.includes('youtube.com/embed/')) {
+    videoId = url.split('embed/')[1];
+  }
+  return videoId;
+}
+
+// Vimeo video ID extract karna
+const extractVimeoId = (url: string) => {
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  return vimeoMatch ? vimeoMatch[1] : '';
+}
+
 function ProjectsPageContent() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
@@ -93,6 +144,8 @@ function ProjectsPageContent() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState<{[key: string]: number}>({})
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
 
   // Firebase se data fetch karna
   useEffect(() => {
@@ -220,6 +273,8 @@ function ProjectsPageContent() {
         }
         
         setDetailsModal({ isOpen: true, project: projectDetails })
+        setCurrentMediaIndex(0)
+        setIsVideoPlaying(false)
       }
     } catch (error) {
       console.error('Error fetching project details:', error)
@@ -284,36 +339,203 @@ function ProjectsPageContent() {
     }))
   }
 
-  // Video URL type check karna
-  const getVideoType = (url: string) => {
-    if (!url) return 'none';
-    if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
-    if (url.includes('vimeo.com')) return 'vimeo';
-    if (/\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)(\?.*)?$/i.test(url)) return 'direct';
-    return 'external';
-  }
-
-  // YouTube video ID extract karna
-  const extractYouTubeId = (url: string) => {
-    let videoId = '';
-    if (url.includes('youtube.com/watch?v=')) {
-      videoId = url.split('v=')[1];
-      const ampersandPosition = videoId.indexOf('&');
-      if (ampersandPosition !== -1) {
-        videoId = videoId.substring(0, ampersandPosition);
-      }
-    } else if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1];
-    } else if (url.includes('youtube.com/embed/')) {
-      videoId = url.split('embed/')[1];
+  // Get all media (images + video) for a project
+  const getProjectMedia = (project: Project) => {
+    const media = []
+    
+    // Add hero image
+    if (project.hero_image_url) {
+      media.push({
+        type: 'image',
+        url: project.hero_image_url,
+        thumbnail: project.hero_image_url
+      })
     }
-    return videoId;
+    
+    // Add other images
+    if (project.images && project.images.length > 0) {
+      project.images.forEach(img => {
+        media.push({
+          type: 'image',
+          url: img,
+          thumbnail: img
+        })
+      })
+    }
+    
+    // Add video as last item if exists
+    if (project.video_url && getVideoType(project.video_url) !== 'none') {
+      media.push({
+        type: 'video',
+        url: project.video_url,
+        thumbnail: project.video_url // We'll use a video thumbnail or icon
+      })
+    }
+    
+    return media
   }
 
-  // Vimeo video ID extract karna
-  const extractVimeoId = (url: string) => {
-    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
-    return vimeoMatch ? vimeoMatch[1] : '';
+  const handlePrevMedia = () => {
+    if (!detailsModal.project) return
+    const projectMedia = getProjectMedia(detailsModal.project)
+    setCurrentMediaIndex(prev => 
+      prev === 0 ? projectMedia.length - 1 : prev - 1
+    )
+    setIsVideoPlaying(false)
+  }
+
+  const handleNextMedia = () => {
+    if (!detailsModal.project) return
+    const projectMedia = getProjectMedia(detailsModal.project)
+    setCurrentMediaIndex(prev => 
+      prev === projectMedia.length - 1 ? 0 : prev + 1
+    )
+    setIsVideoPlaying(false)
+  }
+
+  const handlePlayVideo = () => {
+    setIsVideoPlaying(true)
+  }
+
+  const renderCurrentMedia = (project: Project) => {
+    const projectMedia = getProjectMedia(project)
+    const currentMedia = projectMedia[currentMediaIndex]
+    
+    if (!currentMedia) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-slate-100">
+          <div className="text-slate-400">No media available</div>
+        </div>
+      )
+    }
+
+    if (currentMedia.type === 'video') {
+      const videoType = getVideoType(currentMedia.url)
+      
+      if (videoType === 'youtube') {
+        const videoId = extractYouTubeId(currentMedia.url)
+        return (
+          <div className="relative w-full h-full">
+            {isVideoPlaying ? (
+              <iframe
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`}
+                className="w-full h-full"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                title={`${project.name} - YouTube Video`}
+              />
+            ) : (
+              <div className="relative w-full h-full">
+                <img
+                  src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+                  alt={project.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                  <button
+                    onClick={handlePlayVideo}
+                    className="w-20 h-20 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-transform hover:scale-110"
+                  >
+                    <PlayCircleIcon className="w-12 h-12 text-white" />
+                  </button>
+                </div>
+                <div className="absolute bottom-4 left-4 px-3 py-1 bg-red-600 text-white text-sm font-bold rounded-full">
+                  VIDEO
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      }
+      
+      else if (videoType === 'direct') {
+        return (
+          <div className="relative w-full h-full">
+            {isVideoPlaying ? (
+              <video
+                key={currentMedia.url}
+                controls
+                autoPlay
+                className="w-full h-full object-contain bg-black"
+                preload="metadata"
+                playsInline
+                controlsList="nodownload"
+              >
+                <source src={currentMedia.url} type={`video/${currentMedia.url.split('.').pop()?.split('?')[0]}`} />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <div className="relative w-full h-full">
+                <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-20 h-20 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
+                      <VideoCameraIcon className="w-10 h-10 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">Project Video</h3>
+                    <p className="text-slate-300 mb-6">Watch the project video tour</p>
+                    <button
+                      onClick={handlePlayVideo}
+                      className="px-6 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all flex items-center gap-2 mx-auto"
+                    >
+                      <PlayCircleIcon className="w-5 h-5" />
+                      Play Video
+                    </button>
+                  </div>
+                </div>
+                <div className="absolute bottom-4 left-4 px-3 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">
+                  VIDEO
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      }
+      
+      else {
+        // External video
+        return (
+          <div className="relative w-full h-full">
+            <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+              <div className="text-center p-8">
+                <div className="w-20 h-20 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
+                  <VideoCameraIcon className="w-10 h-10 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Project Video Available</h3>
+                <p className="text-slate-300 mb-4">Watch the video tour of this project</p>
+                <a
+                  href={currentMedia.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all"
+                >
+                  <ArrowUpRightIcon className="w-5 h-5" />
+                  Watch Video
+                </a>
+              </div>
+            </div>
+            <div className="absolute bottom-4 left-4 px-3 py-1 bg-purple-600 text-white text-sm font-bold rounded-full">
+              VIDEO
+            </div>
+          </div>
+        )
+      }
+    }
+    
+    // Image display
+    return (
+      <img
+        src={currentMedia.url}
+        alt={project.name}
+        className="w-full h-full object-cover"
+        onError={(e) => {
+          e.currentTarget.src = '/default-image.jpg'
+        }}
+      />
+    )
   }
 
   return (
@@ -327,7 +549,7 @@ function ProjectsPageContent() {
             fill
             className="object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-linear-to-b from-secondary/60 via-secondary/40 to-white"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/40 to-white"></div>
         </div>
         
         <div className="container-custom relative z-10 text-center">
@@ -425,7 +647,7 @@ function ProjectsPageContent() {
               {filteredProjects.map((project) => (
                 <div 
                   key={project.id}
-                  className="bg-white border border-slate-100 rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50 group flex flex-col lg:flex-row hover:shadow-primary/10 transition-shadow duration-500"
+                  className="bg-white h-[300px] border border-slate-100 rounded-[3rem] overflow-hidden shadow-2xl shadow-slate-200/50 group flex flex-col lg:flex-row hover:shadow-primary/10 transition-shadow duration-500"
                 >
                   {/* Image Section */}
                   <div className="lg:w-2/5 relative h-[400px] lg:h-auto overflow-hidden">
@@ -440,37 +662,6 @@ function ProjectsPageContent() {
                       }}
                     />
                     
-                    {/* Image Navigation */}
-                    {project.images && project.images.length > 1 && (
-                      <>
-                        <button 
-                          onClick={() => handleImageChange(project.id, 'prev')}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-secondary transition-all opacity-0 group-hover:opacity-100"
-                        >
-                          <ChevronLeftIcon className="h-5 w-5" />
-                        </button>
-                        <button 
-                          onClick={() => handleImageChange(project.id, 'next')}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-secondary transition-all opacity-0 group-hover:opacity-100"
-                        >
-                          <ChevronRightIcon className="h-5 w-5" />
-                        </button>
-                        
-                        {/* Image Indicators */}
-                        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {project.images.map((_, index) => (
-                            <button
-                              key={index}
-                              onClick={() => setSelectedImageIndex(prev => ({ ...prev, [project.id]: index }))}
-                              className={`w-2 h-2 rounded-full transition-all ${
-                                (selectedImageIndex[project.id] || 0) === index ? 'bg-white' : 'bg-white/50'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </>
-                    )}
-                    
                     <div className="absolute top-6 left-6">
                       <span className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg ${
                         project.status === 'completed' ? 'bg-emerald-500 text-white' : 'bg-primary text-secondary'
@@ -479,25 +670,32 @@ function ProjectsPageContent() {
                       </span>
                     </div>
                     
-                  
+                    {/* VIEW DETAILS BUTTON - LUXE STYLE */}
+                    <button
+                      onClick={() => handleViewDetails(project.id)}
+                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-md rounded-xl px-4 py-2 shadow-lg hover:shadow-xl hover:bg-white border border-slate-200 flex items-center gap-2 text-slate-700 hover:text-primary font-bold text-sm z-10"
+                    >
+                      <ArrowsPointingOutIcon className="h-4 w-4" />
+                      View Details
+                    </button>
                   </div>
 
                   {/* Content Section */}
-                  <div className="lg:w-3/5 p-10 md:p-16 flex flex-col justify-center">
-                    <div className="flex items-center gap-2 text-primary mb-4">
+                  <div className="lg:w-3/5 p-10 mt-2 md:p-16 flex flex-col justify-center">
+                    <div className="flex items-center gap-2 text-primary">
                       <SparklesIcon className="h-5 w-5" />
                       <span className="text-sm font-bold uppercase tracking-widest">{project.developer || 'Developer'}</span>
                     </div>
                     
-                    <h3 className="text-4xl font-serif text-secondary mb-6 group-hover:text-primary transition-colors">
+                    <h3 className="text-4xl font-serif text-secondary mb-2 group-hover:text-primary transition-colors">
                       {project.name}
                     </h3>
                     
-                    <p className="text-slate-500 mb-8 leading-relaxed text-lg">
-                      {project.description}
+                    <p className="text-slate-500 mb-2 leading-relaxed text-lg">
+                       {project.description.slice(0,30)}....
                     </p>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-2">
                       <div className="space-y-1">
                         <div className="text-xs text-slate-400 uppercase tracking-widest">Location</div>
                         <div className="text-secondary font-bold flex items-center gap-1">
@@ -524,13 +722,13 @@ function ProjectsPageContent() {
                       <div className="space-y-1">
                         <div className="text-xs text-slate-400 uppercase tracking-widest">Price Range</div>
                         <div className="text-secondary font-bold text-sm">
-                          {project.currency} {project.min_price ? `${project.min_price}K` : 'N/A'} - {project.max_price ? `${project.max_price}K` : 'N/A'}
+                          {project.currency} {project.min_price ? `${formatNumber(project.min_price)}` : 'N/A'} - {project.max_price ? `${formatNumber(project.max_price)}` : 'N/A'}
                         </div>
                       </div>
                     </div>
 
                     {/* Amenities/Facilities show karen */}
-                    <div className="mb-8">
+                    <div className="mb-2">
                       <div className="text-xs text-slate-400 uppercase tracking-widest mb-3">Amenities & Features</div>
                       <div className="flex flex-wrap gap-2">
                         {project.amenities && project.amenities.length > 0 ? (
@@ -617,333 +815,419 @@ function ProjectsPageContent() {
         </div>
       </section>
 
-      {/* Project Details Modal */}
+      {/* Project Details Modal - LUXE STYLE with VIDEO in Gallery */}
       {detailsModal.isOpen && detailsModal.project && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-secondary/90 backdrop-blur-lg overflow-y-auto">
-          <div className="bg-white w-full max-w-6xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-fadeIn my-8 mt-40">
-            {/* Modal Header with Close Button */}
-            <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-10 py-6 flex justify-between items-center">
-              <h2 className="text-3xl font-serif text-secondary">
-                {detailsModal.project.name} - Complete Details
-              </h2>
-              <button 
-                onClick={() => setDetailsModal({ isOpen: false, project: null })}
-                className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-secondary hover:bg-primary hover:text-white transition-all"
-              >
-                <XMarkIcon className="h-6 w-6" />
-              </button>
-            </div>
+        <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+          {/* Top Header Bar */}
+          <div className="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm">
+            <div className="container-custom py-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setDetailsModal({ isOpen: false, project: null })}
+                    className="h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors"
+                  >
+                    <ArrowLeftIcon className="h-5 w-5" />
+                  </button>
+                  <span className="text-sm font-bold text-slate-700">
+                    Back to Projects
+                  </span>
+                </div>
 
-            <div className="max-h-[80vh] overflow-y-auto">
-              {/* Hero Image and Basic Info */}
-              <div className="relative h-96">
-                <Image 
-                  src={detailsModal.project.hero_image_url || '/default-image.jpg'}
-                  alt={detailsModal.project.name}
-                  fill
-                  className="object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = '/default-image.jpg'
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/30 to-transparent flex items-end">
-                  <div className="p-10 text-white">
-                    <h3 className="text-4xl font-serif mb-2">{detailsModal.project.name}</h3>
-                    <p className="text-xl opacity-90">{detailsModal.project.developer}</p>
-                  </div>
+                <div className="flex items-center gap-4">
+                  <button className="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-colors text-sm">
+                    <HeartIcon className="h-4 w-4 mr-2 inline" />
+                    Save Project
+                  </button>
+                  <button className="px-5 py-2 border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-colors text-sm">
+                    <ShareIcon className="h-4 w-4 mr-2 inline" />
+                    Share
+                  </button>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div className="p-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Left Column - Basic Information */}
-                <div className="lg:col-span-2 space-y-8">
-                  {/* Project Description */}
-                  <div>
-                    <h3 className="text-2xl font-serif text-secondary mb-4 flex items-center gap-2">
-                      <DocumentTextIcon className="h-6 w-6 text-primary" />
-                      Project Description
-                    </h3>
-                    <p className="text-slate-600 leading-relaxed text-lg">
-                      {detailsModal.project.description}
-                    </p>
-                  </div>
+          {/* Main Content - Full Screen */}
+          <div className="container-custom pt-8 pb-12 mt-25">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+              {/* Left Column - Main Content */}
+              <div className="lg:col-span-8 space-y-12">
+                {/* Media Gallery (Images + Video) */}
+                <div className="overflow-hidden shadow-2xl rounded-3xl shadow-slate-200/50">
+                  <div className="relative h-[560px] bg-slate-100 overflow-hidden">
+                    {renderCurrentMedia(detailsModal.project)}
 
-                  {/* Key Features Grid */}
-                  <div>
-                    <h3 className="text-2xl font-serif text-secondary mb-4 flex items-center gap-2">
-                      <HomeModernIcon className="h-6 w-6 text-primary" />
-                      Key Features
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      <div className="bg-slate-50 p-4 rounded-xl">
-                        <div className="text-sm text-slate-400">Project Status</div>
-                        <div className="text-lg font-bold text-secondary">{detailsModal.project.status}</div>
+                    {/* Status Badges */}
+                    <div className="absolute top-4 left-4 right-4 flex justify-between">
+                      {/* Left side - Status badges */}
+                      <div className="flex gap-2">
+                        <span className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-full shadow-lg">
+                          OFF-PLAN
+                        </span>
+                        {detailsModal.project.featured && (
+                          <span className="px-4 py-2 bg-white text-black text-sm font-bold rounded-full shadow-lg">
+                            FEATURED
+                          </span>
+                        )}
+                        <span className="px-4 py-2 bg-black text-white text-sm font-bold rounded-full shadow-lg">
+                          {detailsModal.project.status?.toUpperCase() || 'IN-PROGRESS'}
+                        </span>
                       </div>
-                      <div className="bg-slate-50 p-4 rounded-xl">
-                        <div className="text-sm text-slate-400">Total Units</div>
-                        <div className="text-lg font-bold text-secondary">{detailsModal.project.total_units}</div>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-xl">
-                        <div className="text-sm text-slate-400">Available Units</div>
-                        <div className="text-lg font-bold text-secondary">{detailsModal.project.available_units}</div>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-xl">
-                        <div className="text-sm text-slate-400">Sold Units</div>
-                        <div className="text-lg font-bold text-secondary">{detailsModal.project.sold_units}</div>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-xl">
-                        <div className="text-sm text-slate-400">Price Range</div>
-                        <div className="text-lg font-bold text-secondary">
-                          {detailsModal.project.currency} {detailsModal.project.min_price}K - {detailsModal.project.max_price}K
-                        </div>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-xl">
-                        <div className="text-sm text-slate-400">Starting Price</div>
-                        <div className="text-lg font-bold text-secondary">
-                          {detailsModal.project.currency} {detailsModal.project.starting_price}K
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Video Section - Universal Video Player */}
-                  {detailsModal.project.video_url && getVideoType(detailsModal.project.video_url) !== 'none' && (
-                    <div>
-                      <h3 className="text-2xl font-serif text-secondary mb-4 flex items-center gap-2">
-                        <VideoCameraIcon className="h-6 w-6 text-primary" />
-                        Project Video
-                      </h3>
-                      
-                      <div className="rounded-2xl overflow-hidden bg-black border-2 border-slate-800">
-                        <div className="relative w-full h-[400px]">
-                          {(() => {
-                            const videoType = getVideoType(detailsModal.project.video_url);
-                            const videoUrl = detailsModal.project.video_url;
-                            
-                            if (videoType === 'youtube') {
-                              const videoId = extractYouTubeId(videoUrl);
-                              return (
-                                <iframe
-                                  src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`}
-                                  className="w-full h-full"
-                                  frameBorder="0"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                  allowFullScreen
-                                  title={`${detailsModal.project.name} - YouTube Video`}
-                                />
-                              );
-                            }
-                            
-                            else if (videoType === 'vimeo') {
-                              const videoId = extractVimeoId(videoUrl);
-                              return (
-                                <iframe
-                                  src={`https://player.vimeo.com/video/${videoId}?autoplay=0&title=0&byline=0&portrait=0`}
-                                  className="w-full h-full"
-                                  frameBorder="0"
-                                  allow="autoplay; fullscreen; picture-in-picture"
-                                  allowFullScreen
-                                  title={`${detailsModal.project.name} - Vimeo Video`}
-                                />
-                              );
-                            }
-                            
-                            else if (videoType === 'direct') {
-                              return (
-                                <video
-                                  key={videoUrl}
-                                  controls
-                                  className="w-full h-full object-contain bg-black"
-                                  preload="metadata"
-                                  playsInline
-                                  controlsList="nodownload"
-                                >
-                                  <source src={videoUrl} type={`video/${videoUrl.split('.').pop()?.split('?')[0]}`} />
-                                  Your browser does not support the video tag.
-                                </video>
-                              );
-                            }
-                            
-                            else {
-                              // External video link (Google Drive, Dropbox, etc.)
-                              return (
-                                <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
-                                  <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-4">
-                                    <VideoCameraIcon className="h-8 w-8 text-white" />
-                                  </div>
-                                  <h4 className="text-xl font-semibold text-white mb-2">Video Available</h4>
-                                  <p className="text-white/80 mb-6">This video is hosted externally. Click the button below to watch it.</p>
-                                  <a
-                                    href={videoUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-secondary font-bold rounded-lg hover:bg-secondary hover:text-white transition-all"
-                                  >
-                                    <ArrowUpRightIcon className="h-5 w-5" />
-                                    Watch Video
-                                  </a>
-                                </div>
-                              );
-                            }
-                          })()}
-                        </div>
-                        
-                        {/* Video Info Bar */}
-                        <div className="p-4 bg-slate-900/90 backdrop-blur-sm flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-                          <div>
-                            <p className="text-white font-medium">{detailsModal.project.name}</p>
-                            <p className="text-white/70 text-sm">Project Video Tour</p>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2">
-                            <a
-                              href={detailsModal.project.video_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-4 py-2 text-sm border border-white/30 text-white rounded-lg hover:bg-white hover:text-secondary transition-all inline-flex items-center gap-2"
-                            >
-                              <ArrowUpRightIcon className="h-4 w-4" />
-                              Open in New Tab
-                            </a>
-                            
-                            <div className="px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full">
-                              {getVideoType(detailsModal.project.video_url).charAt(0).toUpperCase() + getVideoType(detailsModal.project.video_url).slice(1)}
+                      {/* Right side - Media counter */}
+                      {(() => {
+                        const projectMedia = getProjectMedia(detailsModal.project)
+                        if (projectMedia.length > 0) {
+                          const currentMedia = projectMedia[currentMediaIndex]
+                          return (
+                            <div className="absolute top-2 right-4 px-3 py-1 bg-black/50 text-white text-sm rounded-full flex items-center gap-1 z-20">
+                              {currentMedia.type === 'video' ? (
+                                <VideoCameraIcon className="w-4 h-4" />
+                              ) : (
+                                <PhotoIcon className="w-4 h-4" />
+                              )}
+                              {currentMediaIndex + 1} / {projectMedia.length}
                             </div>
+                          )
+                        }
+                        return null
+                      })()}
+                    </div>
+
+                    {/* Media Navigation - Always show for multiple media */}
+                    {(() => {
+                      const projectMedia = getProjectMedia(detailsModal.project)
+                      if (projectMedia.length > 1) {
+                        return (
+                          <>
+                            <button
+                              onClick={handlePrevMedia}
+                              className="absolute left-6 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 flex items-center justify-center text-slate-700 hover:text-primary transition-colors shadow-xl"
+                            >
+                              <ChevronLeftIcon className="w-5 h-5 text-white" />
+                            </button>
+
+                            <button
+                              onClick={handleNextMedia}
+                              className="absolute right-6 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 flex items-center justify-center text-slate-700 hover:text-primary transition-colors shadow-xl"
+                            >
+                              <ChevronRightIcon className="w-5 h-5 text-white" />
+                            </button>
+                          </>
+                        )
+                      }
+                      return null
+                    })()}
+                  </div>
+
+                  {/* Thumbnail Gallery */}
+                  {(() => {
+                    const projectMedia = getProjectMedia(detailsModal.project)
+                    if (projectMedia.length > 1) {
+                      return (
+                        <div className="p-1 py-4">
+                          <div className="flex gap-4 overflow-x-auto pb-4">
+                            {projectMedia.map((media, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => {
+                                  setCurrentMediaIndex(idx)
+                                  if (media.type === 'video') {
+                                    setIsVideoPlaying(false)
+                                  }
+                                }}
+                                className={`flex-shrink-0 w-25 rounded-xl h-20 overflow-hidden border-4 transition-all relative ${
+                                  idx === currentMediaIndex
+                                    ? "border-primary"
+                                    : "border-transparent hover:border-slate-300"
+                                }`}
+                              >
+                                {media.type === 'video' ? (
+                                  <div className="relative w-full h-full">
+                                    <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+                                      <VideoCameraIcon className="w-8 h-8 text-white" />
+                                    </div>
+                                    <div className="absolute top-1 right-1 px-1 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded">
+                                      VIDEO
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <img
+                                    src={media.thumbnail || '/default-image.jpg'}
+                                    alt={`Thumbnail ${idx + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                )}
+                              </button>
+                            ))}
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Images Gallery */}
-                  {detailsModal.project.images && detailsModal.project.images.length > 0 && (
-                    <div>
-                      <h3 className="text-2xl font-serif text-secondary mb-4">Project Gallery</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {detailsModal.project.images.map((image, index) => (
-                          <div key={index} className="relative h-48 rounded-xl overflow-hidden">
-                            <Image
-                              src={image}
-                              alt={`${detailsModal.project?.name} - Image ${index + 1}`}
-                              fill
-                              className="object-cover hover:scale-110 transition-transform duration-500"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                      )
+                    }
+                    return null
+                  })()}
                 </div>
 
-                {/* Right Column - Details Card */}
-                <div className="space-y-8">
-                  {/* Project Timeline Card */}
-                  <div className="bg-secondary text-white p-6 rounded-2xl">
-                    <h3 className="text-xl font-serif mb-6 flex items-center gap-2">
-                      <CalendarIcon className="h-5 w-5" />
-                      Project Timeline
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center pb-3 border-b border-white/20">
-                        <span>Launch Date</span>
-                        <span className="font-bold">
-                          {detailsModal.project.launch_date ? new Date(detailsModal.project.launch_date).toLocaleDateString() : 'TBA'}
+                {/* Project Details Card */}
+                <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
+                  <div className="space-y-10">
+                    {/* Header Info */}
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <span className="px-4 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em] rounded-full">
+                            {detailsModal.project.property_types?.[0]?.toUpperCase() || 'DEVELOPMENT'}
+                          </span>
+                          <span className="px-4 py-1 bg-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] rounded-full">
+                            {detailsModal.project.status?.toUpperCase() || 'IN-PROGRESS'}
+                          </span>
+                        </div>
+                        <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                          {detailsModal.project.name}
+                        </h1>
+                        <div className="flex items-center gap-2 text-slate-500 font-medium">
+                          <MapPinIcon className="w-5 h-5 text-primary" />
+                          <span>
+                            {detailsModal.project.address || 
+                             detailsModal.project.area || 
+                             `${detailsModal.project.city || 'Dubai'}`}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">
+                          STARTING PRICE
+                        </div>
+                        <div className="text-4xl md:text-5xl font-black text-primary">
+                          {detailsModal.project.currency} {formatPrice(detailsModal.project.starting_price * 1000)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Key Stats */}
+                    <div className="flex gap-20 justify-around p-8 bg-slate-50 rounded-[2rem] border border-slate-100">
+                      <div className="space-y-1">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                          TOTAL UNITS
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <HomeIcon className="w-5 h-5 text-primary" />
+                          <span className="text-2xl font-black text-slate-900">
+                            {detailsModal.project.total_units || 0}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                          AVAILABLE UNITS
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <HomeModernIcon className="w-5 h-5 text-primary" />
+                          <span className="text-2xl font-black text-slate-900">
+                            {detailsModal.project.available_units || 0}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                          SOLD UNITS
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircleIcon className="w-5 h-5 text-primary" />
+                          <span className="text-2xl font-black text-slate-900">
+                            {detailsModal.project.sold_units || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-6">
+                      <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                        <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                          <DocumentTextIcon className="w-5 h-5" />
                         </span>
+                        Project Description
+                      </h2>
+                      <div className="prose prose-slate max-w-none">
+                        <p className="text-slate-600 leading-relaxed text-lg whitespace-pre-line font-medium bg-slate-50 p-8 rounded-3xl border border-slate-100">
+                          {detailsModal.project.description}
+                        </p>
                       </div>
-                      <div className="flex justify-between items-center pb-3 border-b border-white/20">
-                        <span>Completion Date</span>
-                        <span className="font-bold">
-                          {detailsModal.project.completion_date ? new Date(detailsModal.project.completion_date).toLocaleDateString() : 'TBA'}
-                        </span>
-                      </div>
-                      {detailsModal.project.handover_date && (
-                        <div className="flex justify-between items-center pb-3 border-b border-white/20">
-                          <span>Handover Date</span>
-                          <span className="font-bold">
-                            {new Date(detailsModal.project.handover_date).toLocaleDateString()}
+                    </div>
+
+                    {/* Amenities */}
+                    {detailsModal.project.amenities && detailsModal.project.amenities.length > 0 && (
+                      <div className="space-y-6 pt-10 border-t border-slate-100">
+                        <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                          <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                            <SparklesIcon className="w-5 h-5" />
                           </span>
+                          Amenities & Facilities
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {detailsModal.project.amenities.map((amenity, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:bg-white hover:shadow-md transition-all duration-300"
+                            >
+                              <CheckCircleIcon className="w-5 h-5 text-primary shrink-0" />
+                              <span className="text-slate-700 font-bold text-sm">
+                                {amenity}
+                              </span>
+                            </div>
+                          ))}
                         </div>
-                      )}
-                    </div>
-                  </div>
+                      </div>
+                    )}
 
-                  {/* Location Details Card */}
-                  <div className="border border-slate-200 p-6 rounded-2xl">
-                    <h3 className="text-xl font-serif text-secondary mb-6 flex items-center gap-2">
-                      <MapPinIcon className="h-5 w-5 text-primary" />
-                      Location Details
-                    </h3>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <IdentificationIcon className="h-5 w-5 text-primary mt-1" />
-                        <div>
-                          <div className="text-sm text-slate-400">Address</div>
-                          <div className="font-medium">{detailsModal.project.address || 'N/A'}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <BuildingLibraryIcon className="h-5 w-5 text-primary mt-1" />
-                        <div>
-                          <div className="text-sm text-slate-400">City</div>
-                          <div className="font-medium">{detailsModal.project.city}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <TagIcon className="h-5 w-5 text-primary mt-1" />
-                        <div>
-                          <div className="text-sm text-slate-400">Area/District</div>
-                          <div className="font-medium">{detailsModal.project.area} {detailsModal.project.district ? `- ${detailsModal.project.district}` : ''}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Amenities Card */}
-                  {detailsModal.project.amenities && detailsModal.project.amenities.length > 0 && (
-                    <div className="border border-slate-200 p-6 rounded-2xl">
-                      <h3 className="text-xl font-serif text-secondary mb-4">Amenities</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {detailsModal.project.amenities.map((amenity, index) => (
-                          <span key={index} className="px-3 py-1.5 bg-primary/10 text-primary text-sm rounded-full">
-                            {amenity}
+                    {/* Property Types */}
+                    {detailsModal.project.property_types && detailsModal.project.property_types.length > 0 && (
+                      <div className="space-y-6 pt-10 border-t border-slate-100">
+                        <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                          <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                            <HomeModernIcon className="w-5 h-5" />
                           </span>
-                        ))}
+                          Property Types Available
+                        </h2>
+                        <div className="flex flex-wrap gap-3">
+                          {detailsModal.project.property_types.map((type, index) => (
+                            <span
+                              key={index}
+                              className="px-6 py-3 bg-primary/10 text-primary font-bold rounded-2xl text-sm"
+                            >
+                              {type}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Property Types */}
-                  {detailsModal.project.property_types && detailsModal.project.property_types.length > 0 && (
-                    <div className="border border-slate-200 p-6 rounded-2xl">
-                      <h3 className="text-xl font-serif text-secondary mb-4">Property Types</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {detailsModal.project.property_types.map((type, index) => (
-                          <span key={index} className="px-3 py-1.5 bg-secondary/10 text-secondary text-sm rounded-full font-medium">
-                            {type}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className="space-y-3">
-                    
-                    {detailsModal.project.brochure_url && (
-                      <a
-                        href={detailsModal.project.brochure_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full py-4 border-2 border-secondary text-secondary font-bold rounded-xl hover:bg-secondary hover:text-white transition-all flex items-center justify-center gap-2"
-                      >
-                        <DocumentTextIcon className="h-5 w-5" />
-                        Download Brochure
-                      </a>
                     )}
                   </div>
                 </div>
               </div>
+
+              {/* Sidebar */}
+             
+ <aside className="lg:col-span-4 space-y-8">
+                <div className="sticky top-32 space-y-8">
+                  {/* Developer Card */}
+                  <div className="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
+                    <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
+                   
+                      <div>
+                      
+                    
+
+                      <div className="grid grid-cols-2 gap-4 py-6 border-y border-slate-50">
+                        <div className="text-center">
+                          <div className="text-lg font-black text-slate-900">
+                            {detailsModal.project.total_units || 0}
+                          </div>
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            TOTAL UNITS
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-black text-slate-900">
+                            {detailsModal.project.available_units || 0}
+                          </div>
+                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            AVAILABLE
+                          </div>
+                        </div>
+                      </div>
+                      {/* Contact Buttons */}
+                      <div className="space-y-3">
+                        <Link
+
+                         href='/customer/login'
+                          className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20"
+                        >
+                          <EnvelopeIcon className="w-5 h-5" />
+                          Request Information
+                        </Link>
+                        <button
+                          onClick={() => {
+                            const phone = "+971 4 123 4567";
+                            window.open(`https://wa.me/${phone}`, "_blank");
+                          }}
+                          className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-green-500/20"
+                        >
+                          <ChatBubbleLeftRightIcon className="w-5 h-5" />
+                          WhatsApp Inquiry
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Timeline Card */}
+                  <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden">
+                    <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
+                    <div className="relative z-10 space-y-6">
+                      <h3 className="text-2xl font-black tracking-tight">
+                        Project Timeline
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center pb-3 border-b border-white/20">
+                          <span className="text-slate-300">Launch Date</span>
+                          <span className="font-bold">
+                            {detailsModal.project.launch_date ? 
+                              new Date(detailsModal.project.launch_date).toLocaleDateString() : 
+                              'TBA'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center pb-3 border-b border-white/20">
+                          <span className="text-slate-300">Completion</span>
+                          <span className="font-bold">
+                            {detailsModal.project.completion_date ? 
+                              new Date(detailsModal.project.completion_date).toLocaleDateString() : 
+                              'TBA'}
+                          </span>
+                        </div>
+                        {detailsModal.project.handover_date && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-300">Handover</span>
+                            <span className="font-bold">
+                              {new Date(detailsModal.project.handover_date).toLocaleDateString()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price Range Card */}
+                  <div className="border border-slate-200 rounded-[2.5rem] p-8">
+                    <h3 className="text-xl font-black text-slate-900 mb-4">
+                      Price Range
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Starting Price</span>
+                        <span className="text-lg font-bold text-primary">
+                          {detailsModal.project.currency} {formatPrice(detailsModal.project.starting_price * 1000)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Min Price</span>
+                        <span className="text-lg font-bold text-slate-900">
+                          {detailsModal.project.currency} {formatNumber(detailsModal.project.min_price)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Max Price</span>
+                        <span className="text-lg font-bold text-slate-900">
+                          {detailsModal.project.currency} {formatNumber(detailsModal.project.max_price)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Download Brochure */}
+                 
+                </div>
+              </aside>
             </div>
           </div>
         </div>
@@ -1041,7 +1325,11 @@ function ProjectsPageContent() {
 
 export default function ProjectsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-white"><div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>}>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
       <ProjectsPageContent />
     </Suspense>
   )

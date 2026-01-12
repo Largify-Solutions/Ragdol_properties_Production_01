@@ -2998,20 +2998,9 @@ function LuxuryPropertiesPageContent() {
             </nav>
 
             <div className="flex items-center gap-3">
-              <Link
-                href="/properties"
-                className="flex items-center gap-2 text-slate-400 hover:text-primary transition-colors group text-xs font-bold uppercase tracking-widest"
-              >
-                <ArrowLeftIcon className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                Back to Search
-              </Link>
-              <div className="h-4 w-[1px] bg-slate-200 mx-2" />
-              <button className="p-2 text-slate-400 hover:text-primary transition-colors">
-                <ShareIcon className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-slate-400 hover:text-red-500 transition-colors">
-                <HeartIcon className="w-5 h-5" />
-              </button>
+             
+            
+            
             </div>
           </div>
         </div>
