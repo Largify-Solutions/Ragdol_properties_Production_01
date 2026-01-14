@@ -34,7 +34,8 @@ import {
   ChatBubbleLeftRightIcon,
   StarIcon,
   Square3Stack3DIcon,
-  PlayCircleIcon
+  PlayCircleIcon,
+  GlobeAltIcon
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 import { db } from '@/lib/firebase'
@@ -78,6 +79,8 @@ interface Project {
   handover_date?: string;
   enquiries_count?: number;
   views_count?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 const developers = [
@@ -127,6 +130,43 @@ const extractYouTubeId = (url: string) => {
 const extractVimeoId = (url: string) => {
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   return vimeoMatch ? vimeoMatch[1] : '';
+}
+
+// Get location coordinates for map based on project
+const getLocationCoordinates = (project: Project) => {
+  // Default coordinates for Dubai
+  const defaultCoords = { lat: 25.2048, lng: 55.2708 };
+  
+  // Check if project has specific coordinates
+  if (project.latitude && project.longitude) {
+    return { lat: project.latitude, lng: project.longitude };
+  }
+  
+  // Try to get approximate coordinates based on area/city
+  const locations: Record<string, { lat: number; lng: number }> = {
+    'downtown': { lat: 25.1972, lng: 55.2744 },
+    'dubai marina': { lat: 25.0736, lng: 55.1383 },
+    'jumeirah': { lat: 25.2146, lng: 55.2431 },
+    'business bay': { lat: 25.1867, lng: 55.2647 },
+    'palm jumeirah': { lat: 25.1121, lng: 55.1390 },
+    'dubai hills': { lat: 25.0883, lng: 55.2793 },
+    'meydan': { lat: 25.1798, lng: 55.2597 },
+    'jvc': { lat: 25.0345, lng: 55.2004 },
+    'dubai silicon oasis': { lat: 25.1148, lng: 55.3758 },
+    'international city': { lat: 25.1751, lng: 55.3587 },
+    'emirates hills': { lat: 25.0883, lng: 55.2793 },
+    'mirdif': { lat: 25.2181, lng: 55.4189 },
+    'al barsha': { lat: 25.1134, lng: 55.2000 }
+  };
+  
+  const area = project.area?.toLowerCase() || project.city?.toLowerCase() || '';
+  for (const [key, coords] of Object.entries(locations)) {
+    if (area.includes(key)) {
+      return coords;
+    }
+  }
+  
+  return defaultCoords;
 }
 
 function ProjectsPageContent() {
@@ -198,7 +238,9 @@ function ProjectsPageContent() {
           views_count: data.views_count || 0,
           seo_title: data.seo_title || null,
           seo_description: data.seo_description || null,
-          seo_keywords: data.seo_keywords || []
+          seo_keywords: data.seo_keywords || [],
+          latitude: data.latitude || null,
+          longitude: data.longitude || null
         })
       })
       
@@ -269,7 +311,9 @@ function ProjectsPageContent() {
           views_count: data.views_count || 0,
           seo_title: data.seo_title || null,
           seo_description: data.seo_description || null,
-          seo_keywords: data.seo_keywords || []
+          seo_keywords: data.seo_keywords || [],
+          latitude: data.latitude || null,
+          longitude: data.longitude || null
         }
         
         setDetailsModal({ isOpen: true, project: projectDetails })
@@ -368,7 +412,7 @@ function ProjectsPageContent() {
       media.push({
         type: 'video',
         url: project.video_url,
-        thumbnail: project.video_url // We'll use a video thumbnail or icon
+        thumbnail: project.video_url
       })
     }
     
@@ -418,7 +462,7 @@ function ProjectsPageContent() {
           <div className="relative w-full h-full">
             {isVideoPlaying ? (
               <iframe
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`}
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${videoId}`}
                 className="w-full h-full"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -455,68 +499,50 @@ function ProjectsPageContent() {
       else if (videoType === 'direct') {
         return (
           <div className="relative w-full h-full">
-            {isVideoPlaying ? (
-              <video
-                key={currentMedia.url}
-                controls
-                autoPlay
-                className="w-full h-full object-contain bg-black"
-                preload="metadata"
-                playsInline
-                controlsList="nodownload"
-              >
-                <source src={currentMedia.url} type={`video/${currentMedia.url.split('.').pop()?.split('?')[0]}`} />
-                Your browser does not support the video tag.
-              </video>
-            ) : (
-              <div className="relative w-full h-full">
-                <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-20 h-20 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
-                      <VideoCameraIcon className="w-10 h-10 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Project Video</h3>
-                    <p className="text-slate-300 mb-6">Watch the project video tour</p>
-                    <button
-                      onClick={handlePlayVideo}
-                      className="px-6 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all flex items-center gap-2 mx-auto"
-                    >
-                      <PlayCircleIcon className="w-5 h-5" />
-                      Play Video
-                    </button>
-                  </div>
-                </div>
-                <div className="absolute bottom-4 left-4 px-3 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">
-                  VIDEO
-                </div>
-              </div>
-            )}
+            <video
+              key={currentMedia.url}
+              controls
+              autoPlay
+              loop
+              muted
+              className="w-full h-full object-contain bg-black"
+              preload="auto"
+              playsInline
+              controlsList="nodownload"
+            >
+              <source src={currentMedia.url} type={`video/${currentMedia.url.split('.').pop()?.split('?')[0]}`} />
+              Your browser does not support the video tag.
+            </video>
+            <div className="absolute bottom-4 left-4 px-3 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">
+              VIDEO
+            </div>
           </div>
         )
       }
       
       else {
-        // External video
+        // External video - ab automatically play hoga aur loop mein chalega
+        // Pehle video play karne ki koshish karen
         return (
           <div className="relative w-full h-full">
-            <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
-              <div className="text-center p-8">
-                <div className="w-20 h-20 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
-                  <VideoCameraIcon className="w-10 h-10 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">Project Video Available</h3>
-                <p className="text-slate-300 mb-4">Watch the video tour of this project</p>
-                <a
-                  href={currentMedia.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-all"
-                >
-                  <ArrowUpRightIcon className="w-5 h-5" />
-                  Watch Video
-                </a>
-              </div>
-            </div>
+            <video
+              key={currentMedia.url}
+              controls
+              autoPlay
+              loop
+              muted
+              className="w-full h-full object-contain bg-black"
+              preload="auto"
+              playsInline
+              controlsList="nodownload"
+            >
+              <source src={currentMedia.url} type="video/mp4" />
+              <source src={currentMedia.url} type="video/webm" />
+              <source src={currentMedia.url} type="video/ogg" />
+              <source src={currentMedia.url} type="video/mov" />
+              <source src={currentMedia.url} type="video/avi" />
+              Your browser does not support the video tag.
+            </video>
             <div className="absolute bottom-4 left-4 px-3 py-1 bg-purple-600 text-white text-sm font-bold rounded-full">
               VIDEO
             </div>
@@ -1103,22 +1129,124 @@ function ProjectsPageContent() {
                         </div>
                       </div>
                     )}
+
+                    {/* Google Map Location */}
+                    <div className="space-y-6 pt-10 border-t border-slate-100">
+                      <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                        <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                          <GlobeAltIcon className="w-5 h-5" />
+                        </span>
+                        Project Location
+                      </h2>
+                      
+                      <div className="bg-gray-100 rounded-[2.5rem] h-[500px] overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50 relative">
+                        {/* Map iframe */}
+                        <div className="w-full h-full">
+                          {(() => {
+                            const coords = getLocationCoordinates(detailsModal.project);
+                            const address = encodeURIComponent(
+                              detailsModal.project.address || 
+                              detailsModal.project.area || 
+                              detailsModal.project.city || 
+                              'Dubai, United Arab Emirates'
+                            );
+                            const mapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d462562.65095637795!2d54.94728926249997!3d25.07575955953261!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!5e0!3m2!1sen!2s!4v1690465000000!5m2!1sen!2s`;
+                            
+                            // If we have specific coordinates, use them
+                            const preciseMapUrl = detailsModal.project.latitude && detailsModal.project.longitude 
+                              ? `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.178258875107!2d${detailsModal.project.longitude}!3d${detailsModal.project.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!4v${Date.now()}`
+                              : `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d462562.65095637795!2d54.94728926249997!3d25.07575955953261!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!5e0!3m2!1sen!2s!4v1690465000000!5m2!1sen!2s`;
+
+                            return (
+                              <iframe
+                                src={preciseMapUrl}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                title="Property Location Map"
+                                className="rounded-[2.5rem]"
+                              />
+                            );
+                          })()}
+
+                          {/* Map Pin Overlay */}
+                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                            <div className="flex flex-col items-center">
+                              {/* Pin Icon */}
+                              <div className="relative">
+                                <div className="h-16 w-16 rounded-full bg-red-500 flex items-center justify-center shadow-xl animate-pulse">
+                                  <MapPinIcon className="h-8 w-8 text-white" />
+                                </div>
+                                {/* Pin Tail */}
+                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2 w-4 h-4 bg-red-500 rotate-45"></div>
+                              </div>
+
+                              {/* Location Info Card */}
+                              <div className="mt-4 bg-white rounded-2xl p-4 shadow-2xl max-w-xs">
+                                <div className="font-bold text-slate-900 text-lg mb-1">
+                                  {detailsModal.project.name}
+                                </div>
+                                <div className="text-slate-600 text-sm">
+                                  {detailsModal.project.address || 
+                                   detailsModal.project.area || 
+                                   detailsModal.project.city ||
+                                   "Dubai, United Arab Emirates"}
+                                </div>
+                                <div className="mt-2 text-xs text-slate-500">
+                                  {(() => {
+                                    const coords = getLocationCoordinates(detailsModal.project);
+                                    return `Coordinates: ${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}`;
+                                  })()}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Map Controls */}
+                      <div className="flex flex-wrap gap-3 mt-4">
+                        <a
+                          href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                            detailsModal.project.address || 
+                            detailsModal.project.area || 
+                            detailsModal.project.city || 
+                            'Dubai'
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-6 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center gap-2"
+                        >
+                          <MapPinIcon className="w-5 h-5" />
+                          Get Directions
+                        </a>
+                        <button
+                          onClick={() => {
+                            const coords = getLocationCoordinates(detailsModal.project);
+                            const mapsUrl = `https://www.google.com/maps?q=${coords.lat},${coords.lng}`;
+                            window.open(mapsUrl, '_blank');
+                          }}
+                          className="px-6 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-all flex items-center gap-2"
+                        >
+                          <GlobeAltIcon className="w-5 h-5" />
+                          Open in Google Maps
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Sidebar */}
-             
- <aside className="lg:col-span-4 space-y-8">
+              <aside className="lg:col-span-4 space-y-8">
                 <div className="sticky top-32 space-y-8">
                   {/* Developer Card */}
                   <div className="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
                     <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
-                   
-                      <div>
-                      
-                    
-
+                    <div>
                       <div className="grid grid-cols-2 gap-4 py-6 border-y border-slate-50">
                         <div className="text-center">
                           <div className="text-lg font-black text-slate-900">
@@ -1140,8 +1268,7 @@ function ProjectsPageContent() {
                       {/* Contact Buttons */}
                       <div className="space-y-3">
                         <Link
-
-                         href='/customer/login'
+                          href='/customer/login'
                           className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20"
                         >
                           <EnvelopeIcon className="w-5 h-5" />
@@ -1223,9 +1350,6 @@ function ProjectsPageContent() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Download Brochure */}
-                 
                 </div>
               </aside>
             </div>

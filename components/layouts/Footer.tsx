@@ -63,7 +63,7 @@ export default function Footer() {
       <img 
         src="/ragdol.png" 
         alt="Ragdol Logo" 
-        className="h-15 mb-5 rounded-2xl group-hover:opacity-90 transition-opacity"
+        className="h-15 mb-15 -mt-10 rounded-2xl group-hover:opacity-90 transition-opacity"
       />
      
              

@@ -128,7 +128,7 @@ export default function AboutPage() {
                 transaction is as flawless as the properties we represent.
               </p>
               <div className="pt-6">
-                <Link href="/properties" className="inline-flex items-center gap-2 text-secondary font-bold group">
+                <Link href="/sale" className="inline-flex items-center gap-2 text-secondary font-bold group">
                   Explore Our Collection
                   <span className="w-10 h-10 bg-primary rounded-full flex items-center justify-center group-hover:translate-x-2 transition-transform">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>

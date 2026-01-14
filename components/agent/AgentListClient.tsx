@@ -69,7 +69,7 @@ interface Agent {
 // Firebase se agents fetch karne ka function
 async function fetchRealAgents(): Promise<Agent[]> {
   try {
-    console.log('Fetching REAL agents from Firebase...')
+    console.log('loading agents ...')
     const agentsRef = collection(db, 'agents')
     
     // Sirf approved agents fetch karo
