@@ -39,7 +39,7 @@ const faqCategories = [
       },
       {
         question: 'Can non-residents own 100% of their property in Dubai?',
-        answer: 'Absolutely. Dubai offers "Freehold" areas where international investors have 100% ownership rights. RAGDOL specializes exclusively in these high-growth, unrestricted zones.'
+        answer: 'Absolutely. Dubai offers "Freehold" areas where international investors have 100% ownership rights. RAGDOLL specializes exclusively in these high-growth, unrestricted zones.'
       },
       {
         question: 'What are the associated costs beyond the purchase price?',
@@ -66,7 +66,7 @@ const faqCategories = [
     icon: ScaleIcon,
     questions: [
       {
-        question: 'How does RAGDOL ensure transaction security?',
+        question: 'How does RAGDOLL ensure transaction security?',
         answer: 'Every transaction is processed through government-regulated escrow accounts. We work closely with the Dubai Land Department to ensure all title deeds are issued instantly upon completion.'
       },
       {
@@ -209,7 +209,7 @@ export default function FAQPage() {
               Real <span className="text-primary italic">Client</span> Experiences
             </h2>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Read genuine feedback from our valued clients about their experience with RAGDOL Properties.
+              Read genuine feedback from our valued clients about their experience with RAGDOLL Properties.
             </p>
           </div>
 
@@ -336,7 +336,7 @@ export default function FAQPage() {
           <div className="max-w-3xl mx-auto">
             <h2 className="text-4xl font-serif text-secondary mb-6">Ready to <span className="text-primary italic">Invest</span>?</h2>
             <p className="text-slate-500 text-lg mb-10">
-              Join thousands of global investors who trust RAGDOL for their Dubai property portfolio.
+              Join thousands of global investors who trust RAGDOLL for their Dubai property portfolio.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-10 py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300">

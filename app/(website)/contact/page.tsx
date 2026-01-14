@@ -76,7 +76,7 @@ export default function ContactPage() {
             </div>
             <h2 className="text-3xl font-serif text-secondary mb-4">Inquiry Received</h2>
             <p className="text-slate-500 mb-8 leading-relaxed">
-              Thank you for reaching out to RAGDOL. One of our senior property advisors will contact you shortly to discuss your requirements.
+              Thank you for reaching out to RAGDOLL. One of our senior property advisors will contact you shortly to discuss your requirements.
             </p>
             <button
               onClick={() => setSubmitted(false)}
@@ -350,7 +350,7 @@ export default function ContactPage() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="RAGDOL Real Estate Office Location"
+              title="RAGDOLL Real Estate Office Location"
               className="rounded-[2.5rem]"
             ></iframe>
 
@@ -369,7 +369,7 @@ export default function ContactPage() {
                 {/* Location Info Card */}
                 <div className="mt-4 bg-white rounded-2xl p-4 shadow-2xl max-w-xs">
                   <div className="font-bold text-slate-900 text-lg mb-1">
-                    RAGDOL Real Estate Office
+                    RAGDOLL Real Estate Office
                   </div>
                   <div className="text-slate-600 text-sm">
                     Burj Daman, Level 45, DIFC, Dubai

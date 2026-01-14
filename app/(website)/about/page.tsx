@@ -6,8 +6,8 @@ import AgentSlider from '@/components/agent/AgentSlider'
 import { getTopAgents } from '@/lib/mock-data'
 
 export const metadata: Metadata = {
-  title: 'About RAGDOL | The Pinnacle of Dubai Real Estate',
-  description: 'Discover the story of RAGDOL, Dubai\'s premier luxury real estate platform. Redefining property excellence since 2010.',
+  title: 'About RAGDOLL | The Pinnacle of Dubai Real Estate',
+  description: 'Discover the story of RAGDOLL, Dubai\'s premier luxury real estate platform. Redefining property excellence since 2010.',
 }
 
 export default function AboutPage() {
@@ -58,7 +58,7 @@ export default function AboutPage() {
             Redefining <span className="text-primary italic">Luxury</span> Real Estate
           </h1>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Since 2010, RAGDOL has been the cornerstone of Dubai's most prestigious property transactions, 
+            Since 2010, RAGDOLL has been the cornerstone of Dubai's most prestigious property transactions, 
             connecting discerning global investors with the city's most iconic addresses.
           </p>
         </div>
@@ -89,7 +89,7 @@ export default function AboutPage() {
               Our <span className="text-primary italic">Expert Team</span>
             </h2>
             <p className="text-xl text-slate-500 max-w-2xl mx-auto">
-              Meet the professionals who make RAGDOL the premier destination for luxury real estate in Dubai.
+              Meet the professionals who make RAGDOLL the premier destination for luxury real estate in Dubai.
             </p>
           </div>
           <AgentSlider agents={getTopAgents(4)} showCount={4} />
@@ -119,7 +119,7 @@ export default function AboutPage() {
                 Our Mission is to <span className="text-primary italic">Elevate</span> Your Lifestyle
               </h2>
               <p className="text-lg text-slate-600 leading-relaxed">
-                At RAGDOL, we believe that a home is more than just a structure; it's a masterpiece of personal expression. 
+                At RAGDOLL, we believe that a home is more than just a structure; it's a masterpiece of personal expression. 
                 Our mission is to provide a seamless, sophisticated platform that empowers our clients to acquire 
                 not just property, but a legacy.
               </p>
@@ -144,7 +144,7 @@ export default function AboutPage() {
       <section className="py-24">
         <div className="container-custom">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-4xl md:text-5xl font-serif text-secondary mb-6">The RAGDOL <span className="text-primary italic">Philosophy</span></h2>
+            <h2 className="text-4xl md:text-5xl font-serif text-secondary mb-6">The RAGDOLL <span className="text-primary italic">Philosophy</span></h2>
             <p className="text-slate-500 text-lg">
               Our core values are the foundation upon which we build lasting relationships with the world's most discerning property seekers.
             </p>
@@ -173,7 +173,7 @@ export default function AboutPage() {
               <h2 className="text-4xl md:text-5xl font-serif text-white">A Decade of <span className="text-primary italic">Excellence</span></h2>
               <div className="space-y-6 text-slate-300 text-lg leading-relaxed">
                 <p>
-                  Founded in 2010, RAGDOL began with a singular vision: to bring a new level of sophistication 
+                  Founded in 2010, RAGDOLL began with a singular vision: to bring a new level of sophistication 
                   to the Dubai real estate market. What started as a boutique agency has evolved into 
                   the region's most trusted luxury property platform.
                 </p>
@@ -183,7 +183,7 @@ export default function AboutPage() {
                   experiences that define the future of living.
                 </p>
                 <p>
-                  Today, RAGDOL stands as a symbol of prestige, representing the most exclusive 
+                  Today, RAGDOLL stands as a symbol of prestige, representing the most exclusive 
                   developments and serving a global clientele that demands nothing but the best.
                 </p>
               </div>

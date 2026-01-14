@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { CalendarIcon, UserIcon, ArrowRightIcon, SparklesIcon, ChartBarIcon, NewspaperIcon } from '@heroicons/react/24/outline'
 
 export const metadata: Metadata = {
-  title: 'Real Estate Blog & Market Insights | Dubai Property News | RAGDOL',
+  title: 'Real Estate Blog & Market Insights | Dubai Property News | RAGDOLL',
   description: 'Stay updated with the latest Dubai real estate news, market insights, investment tips, and expert guides.',
 }
 
@@ -91,7 +91,7 @@ export default function BlogPage() {
             Insights & News
           </h2>
           <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-8 animate-slide-up [animation-delay:100ms]">
-            RAGDOL <span className="text-gradient">Journal</span>
+            RAGDOLL <span className="text-gradient">Journal</span>
           </h1>
           <p className="text-xl text-white/80 max-w-2xl mx-auto font-medium animate-slide-up [animation-delay:200ms]">
             Stay ahead of the curve with expert market analysis, investment guides, and the latest real estate news from Dubai.

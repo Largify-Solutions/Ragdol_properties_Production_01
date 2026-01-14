@@ -133,11 +133,14 @@ const extractVimeoId = (url: string) => {
 }
 
 // Get location coordinates for map based on project
-const getLocationCoordinates = (project: Project) => {
-  // Default coordinates for Dubai
-  const defaultCoords = { lat: 25.2048, lng: 55.2708 };
+const getLocationCoordinates = (project: Project | null | undefined) => {
   
+  // Default coordinates for Dubai
+ const defaultCoords = { lat: 25.2048, lng: 55.2708 };
   // Check if project has specific coordinates
+    if (!project) {
+    return defaultCoords;
+  }
   if (project.latitude && project.longitude) {
     return { lat: project.latitude, lng: project.longitude };
   }
