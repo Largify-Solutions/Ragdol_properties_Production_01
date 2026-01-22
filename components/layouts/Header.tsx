@@ -467,7 +467,7 @@ export default function Header() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-[100] transition-all duration-500",
-        "bg-white/95 backdrop-blur-lg py-5"
+        "bg-white/95 backdrop-blur-lg py-3"
       )}
     >
       {/* Backdrop Overlay for Mega Menu */}
@@ -486,12 +486,12 @@ export default function Header() {
       <img 
         src="/ragdol.png" 
         alt="Ragdol Logo" 
-        className="h-15 mb-2 rounded-2xl group-hover:opacity-90 transition-opacity"
+        className="h-10 rounded-xl group-hover:opacity-90 transition-opacity"
       />
      
     </Link>
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-3">
+        <nav className="hidden lg:flex items-center gap-6">
           {navigation.map((item) => (
             <div key={item.label} className="relative">
               {item.hasDropdown ? (
@@ -518,7 +518,7 @@ export default function Header() {
                   }}
                 >
                   <button
-                    className="flex items-center gap-1 text-sm font-bold uppercase tracking-widest transition-all hover:text-primary cursor-pointer text-secondary"
+                    className="flex items-center gap-1 text-[13px] font-semibold uppercase tracking-wider transition-all hover:text-primary cursor-pointer text-secondary"
                     onClick={() => {
                       if (item.label === "Buy") setIsBuyOpen(!isBuyOpen);
                       else if (item.label === "Rent")
@@ -680,7 +680,7 @@ export default function Header() {
               ) : item.isValuation ? (
                 <button
                   onClick={() => setIsValuationModalOpen(true)}
-                  className="text-sm font-bold uppercase tracking-widest transition-all hover:text-primary relative group text-secondary"
+                  className="text-[13px] font-semibold uppercase tracking-wider transition-all hover:text-primary relative group text-secondary"
                 >
                   {item.label}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
@@ -688,7 +688,7 @@ export default function Header() {
               ) : (
                 <Link
                   href={item.href!}
-                  className="text-sm font-bold uppercase tracking-widest transition-all hover:text-primary relative group text-secondary"
+                  className="text-[13px] font-semibold uppercase tracking-wider transition-all hover:text-primary relative group text-secondary"
                 >
                   {item.label}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>

@@ -6068,7 +6068,7 @@ function PropertiesPageContent() {
                 }`}>
                   {paginatedProperties.map((property, i) => (
                     <div key={`${property.collection}-${property.id}`} className="animate-slide-up" style={{ animationDelay: `${i * 50}ms` }}>
-                      <div className="relative group">
+                      <div className="relative group cursor-pointer" onClick={() => handleViewDetails(property)}>
                         <PropertyCard
                           property={{
                             id: String(property.id),
@@ -6092,7 +6092,10 @@ function PropertiesPageContent() {
                         />
                         
                         <button
-                          onClick={() => handleViewDetails(property)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewDetails(property);
+                          }}
                           className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-md rounded-xl px-4 py-2 shadow-lg hover:shadow-xl hover:bg-white border border-slate-200 flex items-center gap-2 text-slate-700 hover:text-primary font-bold text-sm"
                         >
                           <ArrowsPointingOutIcon className="h-4 w-4" />

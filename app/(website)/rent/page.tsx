@@ -418,9 +418,9 @@ const FullScreenGallery = ({
   }, [isZoomed]);
   
   return (
-    <div className="fixed inset-0 z-[2000] bg-black">
+    <div className="fixed inset-0 z-2000 bg-black">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 p-6 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+      <div className="absolute top-0 left-0 right-0 z-10 p-6 flex justify-between items-center bg-linear-to-b from-black/80 to-transparent">
         <div className="text-white">
           <h2 className="text-xl font-bold">{property.title}</h2>
           <p className="text-sm text-gray-300">
@@ -492,7 +492,7 @@ const FullScreenGallery = ({
       
       {/* Thumbnails - Only show when not zoomed */}
       {propertyMedia.length > 1 && !isZoomed && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 to-transparent">
           <div className="flex gap-2 overflow-x-auto justify-center">
             {propertyMedia.map((media, index) => (
               <button
@@ -503,7 +503,7 @@ const FullScreenGallery = ({
                   setIsZoomed(false);
                   setImageLoaded(false);
                 }}
-                className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                   index === currentIndex 
                     ? 'border-white scale-110' 
                     : 'border-transparent hover:border-gray-400'
@@ -821,7 +821,7 @@ function FloorPlanForm({
 
   if (submitted) {
     return (
-      <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-100 bg-black/50 flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl max-w-2xl w-full p-8">
           <div className="text-center">
             <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -840,7 +840,7 @@ function FloorPlanForm({
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/50 overflow-y-auto p-4">
+    <div className="fixed inset-0 z-100 bg-black/50 overflow-y-auto p-4">
       <div className="min-h-full flex items-center justify-center py-8">
         <div className="bg-white rounded-3xl max-w-4xl w-full">
           <div className="border-b border-gray-200 p-6">
@@ -1032,7 +1032,7 @@ function AgentPopupModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
         <button
           onClick={onClose}
@@ -1042,7 +1042,7 @@ function AgentPopupModal({
         </button>
 
         <div className="p-0">
-          <div className="relative h-64 md:h-80 bg-gradient-to-r from-primary/20 to-secondary/20">
+          <div className="relative h-64 md:h-80 bg-linear-to-r from-primary/20 to-secondary/20">
             {agentData?.profile_image ? (
               <img
                 src={agentData.profile_image}
@@ -1050,13 +1050,13 @@ function AgentPopupModal({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+              <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/5">
                 <div className="text-6xl font-bold text-primary opacity-50">
                   {agentData?.title ? agentData.title.substring(0, 2).toUpperCase() : 'AG'}
                 </div>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
             
             <div className="absolute bottom-0 left-0 right-0 p-6">
               <div className="flex flex-col md:flex-row md:items-end justify-between">
@@ -1215,7 +1215,7 @@ function AgentPopupModal({
               </div>
 
               <div className="lg:col-span-2 space-y-8">
-                <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-6">
+                <div className="bg-linear-to-r from-primary/5 to-secondary/5 rounded-xl p-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                     <div>
                       <h3 className="text-xl font-bold text-secondary mb-2">Agent Rating</h3>
@@ -1781,7 +1781,7 @@ function ViewDetailsModal({
                         <button
                           key={idx}
                           onClick={() => setCurrentImageIndex(idx)}
-                          className={`flex-shrink-0 w-25 rounded-xl h-20 overflow-hidden border-4 transition-all ${
+                          className={`shrink-0 w-25 rounded-xl h-20 overflow-hidden border-4 transition-all ${
                             idx === currentImageIndex
                               ? "border-primary"
                               : "border-transparent hover:border-slate-300"
@@ -1838,7 +1838,7 @@ function ViewDetailsModal({
                     </div>
                   </div>
 
-                  <div className="flex  gap-20 justify-around p-8 bg-slate-50 rounded-[2rem] border border-slate-100">
+                  <div className="flex  gap-20 justify-around p-8 bg-slate-50 rounded-4xl border border-slate-100">
                     <div className="space-y-1">
                       <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         BEDROOMS
@@ -2016,7 +2016,7 @@ function ViewDetailsModal({
                       </div>
                     </div>
                     <div className="flex items-start gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <MapPinIcon className="h-6 w-6 text-primary" />
                       </div>
                       <div>
@@ -2911,7 +2911,7 @@ function PropertiesPageContent() {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-900/80 to-slate-900" />
+        <div className="absolute inset-0 bg-linear-to-b from-slate-900 via-slate-900/80 to-slate-900" />
         
         <div className="container-custom relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-6">

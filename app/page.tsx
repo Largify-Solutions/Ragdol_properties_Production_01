@@ -19,7 +19,7 @@ import {
   StarIcon,
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
-import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
+import { StarIcon as StarSolidIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 
 // Firebase imports
@@ -695,20 +695,51 @@ const ImageFallback = ({
 
 // SIMPLE AUTO-PLAY VIDEO PLAYER
 // AUTO-PLAY YOUTUBE PLAYER COMPONENT
-const AutoPlayYouTubeVideoPlayer = ({ url, title }: { url: string, title: string }) => {
+const AutoPlayYouTubeVideoPlayer = ({ url, title, poster }: { url: string, title: string, poster: string }) => {
   const videoId = getYouTubeId(url);
+  const [isPlaying, setIsPlaying] = useState(true);
   
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsPlaying(!isPlaying);
+  };
+
   return (
-    <div className="w-full h-full">
-      <iframe
-        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&playlist=${videoId}&mute=1&autoplay=1`}
-        title={title}
-        className="w-full h-full object-cover"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        loading="lazy"
-      />
+    <div className="w-full h-full relative cursor-pointer" onClick={togglePlay}>
+      {isPlaying ? (
+        <>
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&playsinline=1`}
+            title={title}
+            className="w-full h-full object-cover pointer-events-none"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+          <div className="absolute inset-0 z-10" />
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+            <div className="w-16 h-16 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-xl">
+              <PauseIcon className="w-8 h-8" />
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="w-full h-full relative">
+          <img 
+            src={poster} 
+            alt={title} 
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800";
+            }}
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-30">
+            <div className="w-16 h-16 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-2xl">
+              <PlayIcon className="w-8 h-8 ml-1" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -725,7 +756,22 @@ const AutoPlayVideoPlayer = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasError, setHasError] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(err => console.error("Error playing:", err));
+    }
+  };
+
   // Video ko automatically play karne ke liye
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -740,6 +786,7 @@ const AutoPlayVideoPlayer = ({
         setTimeout(async () => {
           try {
             await videoElement.play();
+            setIsPlaying(true);
             console.log("Video auto-played successfully:", title);
           } catch (playError) {
             console.log("Auto-play failed, trying muted play:", title);
@@ -748,12 +795,13 @@ const AutoPlayVideoPlayer = ({
             videoElement.muted = true;
             try {
               await videoElement.play();
+              setIsPlaying(true);
               console.log("Video auto-played with muted:", title);
             } catch (mutedError) {
               console.log("Auto-play completely failed:", title);
             }
           }
-        }, 100);
+        }, 300);
       } catch (error) {
         console.error("Video loading error:", error);
         setHasError(true);
@@ -764,11 +812,8 @@ const AutoPlayVideoPlayer = ({
     
     // Video end hone par restart karo
     const handleEnded = () => {
-      console.log("Video ended, restarting:", title);
       videoElement.currentTime = 0;
-      videoElement.play().catch(() => {
-        // Silent error handling
-      });
+      videoElement.play().catch(() => {});
     };
     
     videoElement.addEventListener('ended', handleEnded);
@@ -792,7 +837,7 @@ const AutoPlayVideoPlayer = ({
   }
   
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full cursor-pointer" onClick={togglePlay}>
       <video
         ref={videoRef}
         src={url}
@@ -804,13 +849,16 @@ const AutoPlayVideoPlayer = ({
         preload="auto"
         title={title}
         onError={handleVideoError}
-        onCanPlay={() => console.log("Video can play:", title)}
       />
       
-      {/* Loop indicator */}
-      <div className="absolute bottom-4 right-4 bg-black/60 rounded-full p-2">
-        <div className="flex items-center gap-1 text-white">
-        
+      {/* Play/Pause Overlay */}
+      <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100 bg-black/20'}`}>
+        <div className="w-16 h-16 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-xl">
+          {isPlaying ? (
+            <PauseIcon className="w-8 h-8" />
+          ) : (
+            <PlayIcon className="w-8 h-8 ml-1" />
+          )}
         </div>
       </div>
     </div>
@@ -1036,20 +1084,55 @@ async function fetchTestimonials() {
 
 //mainsection
 // AUTO-PLAY YOUTUBE PLAYER FOR PROJECT SHOWCASE
-const AutoPlayYouTubePlayer = ({ url, title }: { url: string, title: string }) => {
+const AutoPlayYouTubePlayer = ({ url, title, poster }: { url: string, title: string, poster: string }) => {
   const videoId = getYouTubeId(url);
+  const [isPlaying, setIsPlaying] = useState(true);
   
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsPlaying(!isPlaying);
+  };
+
   return (
-    <div className="w-full h-full bg-black">
-      <iframe
-        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3&start=0&end=0`}
-        title={title}
-        className="w-full h-full object-cover"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        loading="lazy"
-      />
+    <div className="w-full h-full bg-black relative cursor-pointer" onClick={togglePlay}>
+      {isPlaying ? (
+        <>
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3&start=0&end=0`}
+            title={title}
+            className="w-full h-full object-cover pointer-events-none"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
+          />
+          {/* Invisible overlay to capture clicks since pointer-events-none is on iframe */}
+          <div className="absolute inset-0 z-10" />
+          
+          {/* Pause indicator on hover */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+            <div className="w-16 h-16 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-xl">
+              <PauseIcon className="w-8 h-8" />
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="w-full h-full relative">
+          <img 
+            src={poster} 
+            alt={title} 
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800";
+            }}
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-30">
+            <div className="w-16 h-16 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-2xl">
+              <PlayIcon className="w-8 h-8 ml-1" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1065,7 +1148,23 @@ const AutoPlayProjectVideo = ({
   title: string 
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
   
+  // Toggle play/pause
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch((error) => console.error("Error playing video:", error));
+    }
+  };
+
   // Auto-play effect
   useEffect(() => {
     const video = videoRef.current;
@@ -1077,13 +1176,14 @@ const AutoPlayProjectVideo = ({
         video.muted = true;
         video.play()
           .then(() => {
+            setIsPlaying(true);
             console.log(`Auto-playing video: ${title}`);
           })
           .catch((error) => {
             console.log(`Auto-play failed for ${title}:`, error);
             // Retry after a short delay
             setTimeout(() => {
-              video.play().catch(() => {});
+              if (video) video.play().catch(() => {});
             }, 300);
           });
       } catch (error) {
@@ -1115,32 +1215,45 @@ const AutoPlayProjectVideo = ({
   }, [url, title]);
   
   return (
-    <video
-      ref={videoRef}
-      className="w-full h-full object-cover"
-      src={url}
-      poster={poster}
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="auto"
-      title={title}
-      onError={(e) => {
-        console.error(`Video load error for ${title}:`, url);
-        // Show poster image on error
-        const videoElement = e.currentTarget;
-        const parent = videoElement.parentElement;
-        if (parent) {
-          const img = document.createElement('img');
-          img.src = poster;
-          img.alt = title;
-          img.className = 'w-full h-full object-cover';
-          parent.appendChild(img);
-          videoElement.style.display = 'none';
-        }
-      }}
-    />
+    <div className="relative w-full h-full cursor-pointer" onClick={togglePlay}>
+      <video
+        ref={videoRef}
+        className="w-full h-full object-cover"
+        src={url}
+        poster={poster}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        title={title}
+        onError={(e) => {
+          console.error(`Video load error for ${title}:`, url);
+          // Show poster image on error
+          const videoElement = e.currentTarget;
+          const parent = videoElement.parentElement;
+          if (parent) {
+            const img = document.createElement('img');
+            img.src = poster;
+            img.alt = title;
+            img.className = 'w-full h-full object-cover';
+            parent.appendChild(img);
+            videoElement.style.display = 'none';
+          }
+        }}
+      />
+      
+      {/* Play/Pause Overlay */}
+      <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0 group-hover:opacity-100' : 'opacity-100 bg-black/20'}`}>
+        <div className="w-16 h-16 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-xl">
+          {isPlaying ? (
+            <PauseIcon className="w-8 h-8" />
+          ) : (
+            <PlayIcon className="w-8 h-8 ml-1" />
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -1525,6 +1638,7 @@ export default function HomePage() {
                     <AutoPlayYouTubePlayer 
                       url={project.videoUrl} 
                       title={project.title}
+                      poster={project.imageUrl}
                     />
                   ) : (
                     /* DIRECT VIDEO FILES - AUTO PLAY */
@@ -1547,7 +1661,7 @@ export default function HomePage() {
                 />
               )}
 
-              <div className="absolute inset-0 bg-linear-to-t from-slate-900/90 via-transparent to-transparent p-4 sm:p-6 flex flex-col justify-end">
+              <div className="absolute inset-0 bg-linear-to-t from-slate-900/90 via-transparent to-transparent p-4 sm:p-6 flex flex-col justify-end pointer-events-none">
                 <div className="flex justify-between items-start mb-2">
                   <div>
                     <h4 className="text-white font-bold text-base sm:text-lg">
@@ -1588,7 +1702,7 @@ export default function HomePage() {
 
               
 
-              <div className="absolute top-4 left-4">
+              <div className="absolute top-4 left-4 pointer-events-none">
                 <span className="px-2 py-1 bg-green-500/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest rounded">
                   LIVE
                 </span>
@@ -1658,7 +1772,7 @@ export default function HomePage() {
                   key={partner.id || index}
                   className="group flex flex-col items-center justify-center p-2 w-50 sm:p-6 rounded-2xl bg-gray-100 hover:bg-white "
                 >
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <img
                       src={partner.logo}
                       alt={`${partner.name} Logo`}
@@ -1681,7 +1795,7 @@ export default function HomePage() {
               // CHANGED: 6 fallback partners
               <>
                 <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <img
                       src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
                       alt="Emaar Logo"
@@ -1696,7 +1810,7 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <img
                       src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
                       alt="Sobha Logo"
@@ -1711,7 +1825,7 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <img
                       src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
                       alt="Damac Logo"
@@ -1726,7 +1840,7 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <img
                       src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
                       alt="Nakheel Logo"
@@ -1742,7 +1856,7 @@ export default function HomePage() {
                 </div>
                 {/* Added 2 more fallback partners */}
                 <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <img
                       src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
                       alt="Dubai Properties Logo"
@@ -1757,7 +1871,7 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <img
                       src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
                       alt="Meraas Logo"
@@ -1911,7 +2025,7 @@ export default function HomePage() {
             href={"/projects"}
             className="group"
           >
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden mb-6 shadow-lg">
+            <div className="relative aspect-4/5 rounded-3xl overflow-hidden mb-6 shadow-lg">
               
               {/* VIDEO DISPLAY LOGIC */}
               {project.video_url && project.video_url.trim() !== '' ? (
@@ -1922,6 +2036,7 @@ export default function HomePage() {
                     <AutoPlayYouTubeVideoPlayer 
                       url={project.video_url} 
                       title={project.name}
+                      poster={project.hero_image_url}
                     />
                   ) : 
                   
@@ -1961,14 +2076,14 @@ export default function HomePage() {
               )}
               
               {/* STATUS BADGE */}
-              <div className="absolute top-4 left-4">
+              <div className="absolute top-4 left-4 pointer-events-none z-20">
                 <span className="px-4 py-1.5 bg-white/90 backdrop-blur-md text-secondary text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">
                   {project.status}
                 </span>
               </div>
               
               {/* HOVER OVERLAY */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-linear-to-t from-slate-900/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               
             </div>
             
@@ -2031,7 +2146,7 @@ export default function HomePage() {
                   href={`/news`}
                   className="group"
                 >
-                  <div className="relative aspect-[16/10] rounded-3xl overflow-hidden mb-6 shadow-lg">
+                  <div className="relative aspect-16/10 rounded-3xl overflow-hidden mb-6 shadow-lg">
                     <img
                       src={post.image}
                       alt={post.title}
@@ -2189,7 +2304,7 @@ export default function HomePage() {
                   {/* CLIENT INFO - Screenshot style horizontal layout */}
                   <div className="flex items-center gap-4 pt-6 border-t border-slate-100">
                     {/* Client Avatar - Same firebase image */}
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                       <img
                         src={testimonial.avatar}
                         alt={testimonial.name}
@@ -2264,7 +2379,7 @@ export default function HomePage() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/40 to-slate-900/80" />
+            <div className="absolute inset-0 bg-linear-to-b from-slate-900/80 via-slate-900/40 to-slate-900/80" />
             <div className="relative z-10 max-w-4xl mx-auto">
               <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-white mb-6 sm:mb-8 tracking-tight leading-tight">
                 {t("homepage.readyToFindPerfectSpace")}
