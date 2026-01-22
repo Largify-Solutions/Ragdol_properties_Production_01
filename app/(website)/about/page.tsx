@@ -1,83 +1,635 @@
-import { BuildingOfficeIcon, UsersIcon, TrophyIcon, ShieldCheckIcon, HeartIcon, GlobeAltIcon, SparklesIcon, ChartBarIcon } from '@heroicons/react/24/outline'
-import { Metadata } from 'next'
+'use client'
+
+import { BuildingOfficeIcon, UsersIcon, TrophyIcon, ShieldCheckIcon, HeartIcon, GlobeAltIcon, SparklesIcon, ChartBarIcon, HomeIcon, CurrencyDollarIcon, KeyIcon, BuildingLibraryIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
-import AgentSlider from '@/components/agent/AgentSlider'
-import { getTopAgents } from '@/lib/mock-data'
+import { useState, useEffect } from 'react'
+import { collection, getDocs, query, where, limit } from 'firebase/firestore'
+import { db } from '@/lib/firebase'
 
-export const metadata: Metadata = {
-  title: 'About RAGDOLL | The Pinnacle of Dubai Real Estate',
-  description: 'Discover the story of RAGDOLL, Dubai\'s premier luxury real estate platform. Redefining property excellence since 2010.',
+interface AgentWithProfile {
+  id: string;
+  title: string;
+  bio: string | null;
+  experience_years: number;
+  rating: number;
+  review_count: number;
+  total_sales: number;
+  profile_image: string;
+  office: string;
+  license_no: string;
+  approved: boolean;
+  brokerage: string;
+  certifications: string[];
+  commission_rate: number;
+  verified: boolean;
+  location: string;
+}
+
+interface Partner {
+  id: string;
+  name: string;
+  description: string;
+  logo: string;
+  category: string;
+  website: string;
+  featured: boolean;
+  active: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+async function fetchTopAgents(): Promise<AgentWithProfile[]> {
+  try {
+    const agentsRef = collection(db, "agents");
+    const q = query(agentsRef, where("approved", "==", true), limit(6));
+    const querySnapshot = await getDocs(q);
+
+    const agents: AgentWithProfile[] = [];
+
+    for (const doc of querySnapshot.docs) {
+      const data = doc.data();
+      agents.push({
+        id: doc.id,
+        title: data.title || "Real Estate Agent",
+        bio: data.bio || null,
+        experience_years: data.experience_years || 0,
+        rating: data.rating || 0,
+        review_count: data.review_count || 0,
+        total_sales: data.total_sales || 0,
+        profile_image: data.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.title || "Agent")}&background=random`,
+        office: data.office || "Dubai",
+        license_no: data.license_no || "",
+        approved: data.approved || false,
+        brokerage: data.brokerage || "RAGDOLL Properties",
+        certifications: data.certifications || [],
+        commission_rate: data.commission_rate || 2.5,
+        verified: data.verified || false,
+        location: data.office || "Dubai",
+      });
+    }
+
+    agents.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    return agents.slice(0, 4);
+  } catch (error) {
+    console.error("Error fetching agents:", error);
+    return [];
+  }
+}
+
+async function fetchFeaturedPartners(): Promise<Partner[]> {
+  try {
+    console.log("🔍 Fetching partners from Firebase...");
+    
+    const partnersRef = collection(db, "partners");
+    
+    // Method 1: Try to fetch with where clause (if index exists)
+    try {
+      const q = query(
+        partnersRef,
+        where("active", "==", true),
+        limit(10)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      console.log(`✅ Found ${querySnapshot.size} partners with active=true`);
+      
+      if (querySnapshot.size > 0) {
+        const partners: Partner[] = [];
+        
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          
+          // Handle timestamp conversion
+          const createdAt = data.createdAt?.toDate?.()?.toISOString() || 
+                           (typeof data.createdAt === 'string' ? data.createdAt : new Date().toISOString());
+          const updatedAt = data.updatedAt?.toDate?.()?.toISOString() || 
+                           (typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString());
+          
+          partners.push({
+            id: doc.id,
+            name: data.name || "Partner",
+            description: data.description || "Trusted partner providing exceptional services",
+            logo: data.logo || "https://via.placeholder.com/150x100",
+            category: data.category || "Services",
+            website: data.website || "#",
+            featured: data.featured || false,
+            active: data.active || false,
+            order: data.order || 999,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          });
+        });
+        
+        // Sort on client side
+        partners.sort((a, b) => {
+          if (a.featured && !b.featured) return -1;
+          if (!a.featured && b.featured) return 1;
+          return (a.order || 999) - (b.order || 999);
+        });
+        
+        console.log(`🎯 Returning ${partners.length} active partners`);
+        return partners.slice(0, 6);
+      }
+    } catch (indexError) {
+      console.log("⚠️ Index error, trying alternative method...");
+    }
+    
+    // Method 2: Fetch all and filter on client side
+    console.log("🔄 Trying alternative fetch method...");
+    const allPartnersSnapshot = await getDocs(partnersRef);
+    console.log(`📊 Total documents in partners collection: ${allPartnersSnapshot.size}`);
+    
+    if (allPartnersSnapshot.empty) {
+      console.log("❌ No documents found in partners collection");
+      return [];
+    }
+    
+    const allPartners: Partner[] = [];
+    
+    allPartnersSnapshot.forEach((doc) => {
+      const data = doc.data();
+      console.log(`📄 Document: ${doc.id}`, { 
+        name: data.name, 
+        active: data.active,
+        exists: !!data 
+      });
+      
+      // Convert timestamps
+      const createdAt = data.createdAt?.toDate?.()?.toISOString() || 
+                       (typeof data.createdAt === 'string' ? data.createdAt : new Date().toISOString());
+      const updatedAt = data.updatedAt?.toDate?.()?.toISOString() || 
+                       (typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString());
+      
+      allPartners.push({
+        id: doc.id,
+        name: data.name || "Partner",
+        description: data.description || "Trusted partner providing exceptional services",
+        logo: data.logo || "https://via.placeholder.com/150x100",
+        category: data.category || "Services",
+        website: data.website || "#",
+        featured: data.featured || false,
+        active: data.active === true, // Convert to boolean
+        order: data.order || 999,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
+      });
+    });
+    
+    // Filter active partners
+    const activePartners = allPartners.filter(partner => partner.active === true);
+    console.log(`✅ Found ${activePartners.length} active partners after filtering`);
+    
+    // Sort
+    activePartners.sort((a, b) => {
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      return (a.order || 999) - (b.order || 999);
+    });
+    
+    return activePartners.slice(0, 6);
+    
+  } catch (error) {
+    console.error("🔥 Error fetching partners:", error);
+    
+    // Return mock data for testing
+    console.log("📝 Returning mock partners data for testing");
+    return [
+      {
+        id: "mock-1",
+        name: "Largify Solutions",
+        description: "A company partner description outlines the role of a senior leader or co-owner driving growth, strategy, and operations, sharing profits/losses, and managing key relationships.",
+        logo: "https://images.pexels.com/photos/12437056/pexels-photo-12437056.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+        category: "Mortgage Services",
+        website: "https://twitter.com",
+        featured: false,
+        active: true,
+        order: 3,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: "mock-2",
+        name: "Dubai Financial Services",
+        description: "Premium financial services and investment solutions for high-net-worth individuals.",
+        logo: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=300&h=200&fit=crop",
+        category: "Financial Services",
+        website: "https://dubaifs.com",
+        featured: true,
+        active: true,
+        order: 1,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      {
+        id: "mock-3",
+        name: "Property Legal Advisors",
+        description: "Expert legal services for real estate transactions and property law.",
+        logo: "https://images.unsplash.com/photo-1589391886085-8b6b0ac72a1a?w=300&h=200&fit=crop",
+        category: "Legal Services",
+        website: "https://propertylegal.com",
+        featured: true,
+        active: true,
+        order: 2,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+    ];
+  }
 }
 
 export default function AboutPage() {
+  const [topAgents, setTopAgents] = useState<AgentWithProfile[]>([]);
+  const [featuredPartners, setFeaturedPartners] = useState<Partner[]>([]);
+  const [loadingPartners, setLoadingPartners] = useState(true);
+  const [partnersError, setPartnersError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        console.log("📦 Loading data for About page...");
+        
+        const [agents, partners] = await Promise.all([
+          fetchTopAgents(),
+          fetchFeaturedPartners()
+        ]);
+        
+        console.log(`👥 Agents loaded: ${agents.length}`);
+        console.log(`🤝 Partners loaded: ${partners.length}`);
+        
+        setTopAgents(agents);
+        setFeaturedPartners(partners);
+        
+        if (partners.length === 0) {
+          setPartnersError("No active partners found. Please add partners to Firebase.");
+        }
+      } catch (error) {
+        console.error("Error loading data:", error);
+        setPartnersError("Failed to load partners. Using demo data.");
+        
+        // Set demo partners
+        setFeaturedPartners([
+          {
+            id: "demo-1",
+            name: "Largify Solutions",
+            description: "Leading mortgage services provider for premium properties.",
+            logo: "https://images.pexels.com/photos/12437056/pexels-photo-12437056.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+            category: "Mortgage Services",
+            website: "https://twitter.com",
+            featured: false,
+            active: true,
+            order: 3,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: "demo-2",
+            name: "Dubai Bank",
+            description: "Premium banking and financial services for international clients.",
+            logo: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w-300&h=200&fit=crop",
+            category: "Banking",
+            website: "https://dubaibank.com",
+            featured: true,
+            active: true,
+            order: 1,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }
+        ]);
+      } finally {
+        setLoadingPartners(false);
+      }
+    };
+    
+    loadData();
+  }, []);
+
   const stats = [
-    { label: 'Premium Listings', value: '50,000+', icon: BuildingOfficeIcon },
-    { label: 'Elite Clients', value: '25,000+', icon: UsersIcon },
-    { label: 'Years of Mastery', value: '15+', icon: TrophyIcon },
-    { label: 'Global Reach', value: '50+', icon: GlobeAltIcon },
+    { label: 'Properties Sold', value: '5,000+', icon: HomeIcon, description: 'Prime Dubai real estate transactions' },
+    { label: 'Client Portfolio', value: '10,000+', icon: UsersIcon, description: 'Satisfied global investors' },
+    { label: 'Market Experience', value: '15+ Years', icon: TrophyIcon, description: 'Established 2008' },
+    { label: 'Portfolio Value', value: 'AED 20B+', icon: CurrencyDollarIcon, description: 'Total property value managed' },
   ]
 
   const values = [
     {
       icon: ShieldCheckIcon,
-      title: 'Uncompromising Integrity',
-      description: 'In the world of luxury, trust is the ultimate currency. We maintain the highest standards of transparency in every transaction.'
+      title: 'Integrity & Transparency',
+      description: 'Every transaction is built on trust and complete transparency. We believe honesty is the foundation of lasting relationships.'
     },
     {
       icon: SparklesIcon,
-      title: 'Excellence as Standard',
-      description: 'We don\'t just meet expectations; we redefine them. Every property and every interaction is handled with meticulous care.'
+      title: 'Excellence in Service',
+      description: 'We deliver exceptional service at every touchpoint, ensuring every client experience exceeds expectations.'
     },
     {
       icon: ChartBarIcon,
-      title: 'Data-Driven Insights',
-      description: 'Our expertise is backed by sophisticated market analysis, ensuring our clients make informed, high-yield decisions.'
+      title: 'Market Intelligence',
+      description: 'Leveraging deep market insights and data analytics to provide strategic real estate investment advice.'
     },
+    {
+      icon: BuildingLibraryIcon,
+      title: 'Sustainable Growth',
+      description: 'Committed to responsible real estate development that benefits communities and preserves value.'
+    },
+  ]
+
+  const services = [
+    { title: 'Residential Sales', count: '2,500+', description: 'Luxury apartments, villas & penthouses' },
+    { title: 'Commercial Leasing', count: '1,200+', description: 'Office spaces & retail locations' },
+    { title: 'Property Management', count: '800+', description: 'Premium portfolio management' },
+    { title: 'Investment Advisory', count: '500+', description: 'Strategic investment guidance' },
   ]
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden bg-secondary">
+      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-secondary to-slate-900">
         <div className="absolute inset-0">
           <Image 
-            src="https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt="Dubai Skyline"
+            src="https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg?auto=compress&cs=tinysrgb&w=1600"
+            alt="Dubai Luxury Properties"
             fill
-            className="object-cover opacity-40"
+            className="object-cover opacity-20"
+            priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/40 to-secondary"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary/90 via-secondary/70 to-transparent"></div>
         </div>
         
-        <div className="container-custom relative z-10 text-center">
-          <span className="inline-block px-4 py-1 bg-primary/20 text-primary text-sm font-bold tracking-widest uppercase rounded-full mb-6">
-            Our Legacy
-          </span>
-          <h1 className="text-5xl md:text-7xl font-serif text-white mb-8">
-            Redefining <span className="text-primary italic">Luxury</span> Real Estate
-          </h1>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Since 2010, RAGDOLL has been the cornerstone of Dubai's most prestigious property transactions, 
-            connecting discerning global investors with the city's most iconic addresses.
-          </p>
+        <div className="container-custom relative z-10">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-8">
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
+              <span className="text-white text-sm font-bold tracking-widest uppercase">Since 2008</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-white mb-6 leading-tight">
+              <span className="text-primary">RAGDOLL</span><br />
+              Properties
+            </h1>
+            <p className="text-xl text-slate-200 mb-8 leading-relaxed">
+              Premier real estate specialists connecting discerning clients with Dubai's most exclusive properties. 
+              Your gateway to luxury living and smart investments in the world's most dynamic property market.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link 
+                href="/properties" 
+                className="px-8 py-4 bg-primary text-secondary font-bold rounded-xl hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl text-center"
+              >
+                View Our Portfolio
+              </Link>
+              <Link 
+                href="/contact" 
+                className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-secondary transition-all duration-300 text-center"
+              >
+                Book Consultation
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust Badges */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
+          <div className="flex items-center gap-8 text-white/80 text-sm">
+            <div className="flex items-center gap-2">
+              <ShieldCheckIcon className="h-5 w-5 text-primary" />
+              <span>RERA Certified</span>
+            </div>
+            <div className="h-4 w-px bg-white/30"></div>
+            <div className="flex items-center gap-2">
+              <TrophyIcon className="h-5 w-5 text-primary" />
+              <span>15+ Industry Awards</span>
+            </div>
+            <div className="h-4 w-px bg-white/30"></div>
+            <div className="flex items-center gap-2">
+              <GlobeAltIcon className="h-5 w-5 text-primary" />
+              <span>Global Network</span>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 -mt-20 relative z-20">
+      <section className="py-20 bg-white">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <div key={index} className="bg-white p-10 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 text-center group hover:-translate-y-2 transition-all duration-500">
-                <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/10 transition-colors">
-                  <stat.icon className="h-8 w-8 text-primary" />
+              <div key={index} className="text-center p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 transition-all duration-300 group hover:-translate-y-2">
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                  <stat.icon className="h-8 w-8 text-primary group-hover:text-white" />
                 </div>
-                <div className="text-4xl font-serif text-secondary mb-2">{stat.value}</div>
-                <div className="text-slate-500 font-medium uppercase tracking-wider text-xs">{stat.label}</div>
+                <div className="text-4xl font-black text-secondary mb-2">{stat.value}</div>
+                <div className="text-lg font-bold text-slate-800 mb-2">{stat.label}</div>
+                <div className="text-sm text-slate-500">{stat.description}</div>
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Our Story */}
+      <section className="py-24 bg-slate-50">
+        <div className="container-custom">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative">
+              <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+                <Image 
+                  src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1600"
+                  alt="RAGDOLL Properties Team"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-primary/10 rounded-full -z-10"></div>
+            </div>
+            
+            <div className="space-y-8">
+              <div>
+                <span className="inline-block px-4 py-1 bg-primary/10 text-primary text-sm font-bold tracking-widest uppercase rounded-full mb-4">
+                  Our Journey
+                </span>
+                <h2 className="text-4xl md:text-5xl font-serif text-secondary leading-tight">
+                  Building <span className="text-primary">Trust</span> Since 2008
+                </h2>
+              </div>
+              
+              <div className="space-y-4 text-slate-600 leading-relaxed">
+                <p className="text-lg">
+                  Founded in 2008, RAGDOLL Properties emerged as a visionary real estate firm dedicated to transforming Dubai's property landscape. What began as a boutique agency has grown into one of the region's most respected property consultancies.
+                </p>
+                <p>
+                  Our name, RAGDOLL, represents flexibility and personalized service - adapting to our clients' needs while maintaining the highest standards of professionalism. Over the past decade, we have been instrumental in shaping Dubai's luxury residential and commercial sectors.
+                </p>
+                <p>
+                  Today, we stand as a bridge between international investors and Dubai's dynamic real estate market, combining local expertise with global perspectives to deliver exceptional results.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6 pt-4">
+                {services.map((service, index) => (
+                  <div key={index} className="p-4 bg-white rounded-xl border border-slate-100">
+                    <div className="text-2xl font-black text-primary mb-1">{service.count}</div>
+                    <div className="font-bold text-slate-800 mb-1">{service.title}</div>
+                    <div className="text-sm text-slate-500">{service.description}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Core Values */}
+      <section className="py-24 bg-white">
+        <div className="container-custom">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-4xl md:text-5xl font-serif text-secondary mb-6">
+              Our <span className="text-primary">Core Values</span>
+            </h2>
+            <p className="text-lg text-slate-600">
+              The principles that guide every decision and define our relationship with clients
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {values.map((value, index) => (
+              <div key={index} className="group">
+                <div className="h-full p-8 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:border-primary/20 transition-all duration-300">
+                  <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <value.icon className="h-7 w-7 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-800 mb-4">{value.title}</h3>
+                  <p className="text-slate-600">{value.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Strategic Partners Section */}
+      <section className="py-24 bg-gradient-to-br from-slate-900 to-secondary">
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-serif text-white mb-6">
+              Our <span className="text-primary">Strategic Partners</span>
+            </h2>
+            <p className="text-xl text-slate-300 max-w-2xl mx-auto">
+              Collaborating with industry leaders to provide comprehensive real estate solutions
+            </p>
+          </div>
+
+          {loadingPartners ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <p className="text-white/70 mt-4">Loading our partners...</p>
+            </div>
+          ) : featuredPartners.length > 0 ? (
+            <>
+              {partnersError && (
+                <div className="mb-8 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg max-w-2xl mx-auto">
+                  <p className="text-yellow-200 text-sm text-center">
+                    {partnersError}
+                  </p>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                {featuredPartners.map((partner) => (
+                  <div 
+                    key={partner.id} 
+                    className="group relative bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 hover:border-primary/30 transition-all duration-300 hover:scale-105"
+                  >
+                    {partner.featured && (
+                      <div className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                        Featured
+                      </div>
+                    )}
+                    
+                    <div className="flex flex-col items-center h-full">
+                      {/* Partner Logo */}
+                      <div className="w-20 h-20 rounded-lg bg-white/10 p-2 flex items-center justify-center mb-4">
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={partner.logo}
+                            alt={partner.name}
+                            fill
+                            className="object-contain p-1"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 16vw"
+                            onError={(e) => {
+                              e.currentTarget.src = "https://via.placeholder.com/150x100";
+                            }}
+                          />
+                        </div>
+                      </div>
+                      
+                      {/* Partner Info */}
+                      <div className="text-center flex-1">
+                        <h3 className="text-sm font-bold text-white mb-1 line-clamp-1">
+                          {partner.name}
+                        </h3>
+                        
+                        <div className="mb-2">
+                          <span className="inline-block px-2 py-0.5 bg-primary/20 text-primary text-xs font-medium rounded">
+                            {partner.category}
+                          </span>
+                        </div>
+                        
+                        <p className="text-xs text-slate-300 mb-2 line-clamp-2">
+                          {partner.description.length > 80 ? partner.description.substring(0, 80) + '...' : partner.description}
+                        </p>
+                      </div>
+                      
+                     
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Partners Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+                <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="text-2xl font-black text-primary mb-1">{featuredPartners.length}</div>
+                  <div className="text-sm text-white/80">Active Partners</div>
+                </div>
+                <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="text-2xl font-black text-primary mb-1">
+                    {featuredPartners.filter(p => p.category.includes('Mortgage') || p.category.includes('Finance')).length}
+                  </div>
+                  <div className="text-sm text-white/80">Finance Partners</div>
+                </div>
+                <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="text-2xl font-black text-primary mb-1">
+                    {featuredPartners.filter(p => p.featured).length}
+                  </div>
+                  <div className="text-sm text-white/80">Featured Partners</div>
+                </div>
+                <div className="text-center p-4 bg-white/5 rounded-xl border border-white/10">
+                  <div className="text-2xl font-black text-primary mb-1">
+                    {new Set(featuredPartners.map(p => p.category)).size}
+                  </div>
+                  <div className="text-sm text-white/80">Service Categories</div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-12 bg-white/5 rounded-2xl border border-white/10">
+              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-white/10 rounded-full">
+                <svg className="w-8 h-8 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">No Partners Found</h3>
+              <p className="text-slate-300 mb-4">
+                Add partners to Firebase "partners" collection with "active: true"
+              </p>
+              <div className="text-sm text-slate-400 space-y-1">
+                <p>Required fields: name, logo, category, website</p>
+                <p>Optional: featured (boolean), order (number), description</p>
+                <p>Make sure "active" field is set to true</p>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -86,137 +638,100 @@ export default function AboutPage() {
         <div className="container-custom">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-serif text-secondary mb-6">
-              Our <span className="text-primary italic">Expert Team</span>
+              Our <span className="text-primary">Top Performing</span> Agents
             </h2>
             <p className="text-xl text-slate-500 max-w-2xl mx-auto">
-              Meet the professionals who make RAGDOLL the premier destination for luxury real estate in Dubai.
+              Award-winning professionals dedicated to finding your perfect property match
             </p>
           </div>
-          <AgentSlider agents={getTopAgents(4)} showCount={4} />
-        </div>
-      </section>
-
-      {/* Mission Section */}
-      <section className="py-24 bg-slate-50/50">
-        <div className="container-custom">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="relative">
-              <div className="relative h-[600px] rounded-3xl overflow-hidden shadow-2xl">
-                <Image 
-                  src="https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=1000"
-                  alt="Luxury Interior"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-primary rounded-3xl -z-10 hidden lg:block"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full border-2 border-primary/20 rounded-3xl translate-x-6 translate-y-6 -z-10"></div>
-            </div>
-            
-            <div className="space-y-8">
-              <div className="inline-block w-20 h-1 bg-primary"></div>
-              <h2 className="text-4xl md:text-5xl font-serif text-secondary leading-tight">
-                Our Mission is to <span className="text-primary italic">Elevate</span> Your Lifestyle
-              </h2>
-              <p className="text-lg text-slate-600 leading-relaxed">
-                At RAGDOLL, we believe that a home is more than just a structure; it's a masterpiece of personal expression. 
-                Our mission is to provide a seamless, sophisticated platform that empowers our clients to acquire 
-                not just property, but a legacy.
-              </p>
-              <p className="text-lg text-slate-600 leading-relaxed">
-                We combine traditional expertise with cutting-edge technology to ensure that every 
-                transaction is as flawless as the properties we represent.
-              </p>
-              <div className="pt-6">
-                <Link href="/sale" className="inline-flex items-center gap-2 text-secondary font-bold group">
-                  Explore Our Collection
-                  <span className="w-10 h-10 bg-primary rounded-full flex items-center justify-center group-hover:translate-x-2 transition-transform">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Values Section */}
-      <section className="py-24">
-        <div className="container-custom">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-4xl md:text-5xl font-serif text-secondary mb-6">The RAGDOLL <span className="text-primary italic">Philosophy</span></h2>
-            <p className="text-slate-500 text-lg">
-              Our core values are the foundation upon which we build lasting relationships with the world's most discerning property seekers.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-12">
-            {values.map((value, index) => (
-              <div key={index} className="relative p-10 rounded-3xl bg-white border border-slate-100 shadow-xl shadow-slate-200/30 group hover:border-primary/30 transition-all duration-500">
-                <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary transition-colors duration-500">
-                  <value.icon className="h-8 w-8 text-white group-hover:text-secondary transition-colors duration-500" />
+          
+          {topAgents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {topAgents.map((agent) => (
+                <div key={agent.id} className="group">
+                  <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                    <div className="relative h-64">
+                      <Image
+                        src={agent.profile_image}
+                        alt={agent.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(agent.title || "Agent")}&background=random`;
+                        }}
+                      />
+                      {agent.verified && (
+                        <div className="absolute top-4 right-4 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full">
+                          Verified
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-slate-800 mb-2">{agent.title}</h3>
+                      <div className="flex items-center gap-2 text-slate-500 text-sm mb-3">
+                        <BuildingOfficeIcon className="h-4 w-4" />
+                        <span>{agent.brokerage}</span>
+                      </div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <svg key={i} className={`h-4 w-4 ${i < Math.floor(agent.rating) ? 'text-yellow-400' : 'text-slate-300'}`} fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                          <span className="ml-1 text-slate-600 font-medium">{agent.rating}</span>
+                        </div>
+                        <div className="text-sm text-slate-500">{agent.review_count} reviews</div>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="text-slate-600">
+                          <span className="font-bold">{agent.experience_years} years</span> experience
+                        </div>
+                        <div className="text-primary font-bold">
+                          {agent.total_sales}+ sales
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-serif text-secondary mb-4">{value.title}</h3>
-                <p className="text-slate-600 leading-relaxed">{value.description}</p>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-slate-400 mb-4">Loading our elite agents...</div>
+            </div>
+          )}
+
+          <div className="text-center mt-12">
+            <Link
+              href="/agents"
+              className="inline-flex items-center justify-center gap-3 bg-primary text-white font-bold py-4 px-8 rounded-xl hover:bg-secondary transition-all duration-300"
+            >
+              View All Team Members
+              <ArrowRightIcon className="h-5 w-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Partnerships & Recognition */}
+      <section className="py-20 bg-slate-50">
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <h3 className="text-2xl font-bold text-slate-800 mb-4">Trusted By Industry Leaders</h3>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              We partner with Dubai's premier developers and maintain accreditations with global real estate bodies
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center">
+            {['Emaar', 'Damac', 'Dubai Properties', 'Meraas', 'Nakheel', 'Deyaar'].map((developer) => (
+              <div key={developer} className="h-16 flex items-center justify-center p-4 bg-white rounded-lg border border-slate-100 hover:shadow-md transition-shadow">
+                <div className="text-lg font-bold text-slate-700 opacity-70 hover:opacity-100 transition-opacity">
+                  {developer}
+                </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Story Section */}
-      <section className="py-24 bg-secondary relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 -skew-x-12 translate-x-1/4"></div>
-        <div className="container-custom relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="order-2 lg:order-1 space-y-8">
-              <h2 className="text-4xl md:text-5xl font-serif text-white">A Decade of <span className="text-primary italic">Excellence</span></h2>
-              <div className="space-y-6 text-slate-300 text-lg leading-relaxed">
-                <p>
-                  Founded in 2010, RAGDOLL began with a singular vision: to bring a new level of sophistication 
-                  to the Dubai real estate market. What started as a boutique agency has evolved into 
-                  the region's most trusted luxury property platform.
-                </p>
-                <p>
-                  Our growth has been fueled by a relentless pursuit of perfection and an intimate 
-                  understanding of the luxury lifestyle. We don't just sell properties; we curate 
-                  experiences that define the future of living.
-                </p>
-                <p>
-                  Today, RAGDOLL stands as a symbol of prestige, representing the most exclusive 
-                  developments and serving a global clientele that demands nothing but the best.
-                </p>
-              </div>
-              <div className="pt-4">
-                <div className="flex items-center gap-8">
-                  <div>
-                    <div className="text-3xl font-serif text-primary">2010</div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest">Established</div>
-                  </div>
-                  <div className="w-px h-12 bg-white/10"></div>
-                  <div>
-                    <div className="text-3xl font-serif text-primary">150+</div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest">Elite Partners</div>
-                  </div>
-                  <div className="w-px h-12 bg-white/10"></div>
-                  <div>
-                    <div className="text-3xl font-serif text-primary">$10B+</div>
-                    <div className="text-xs text-slate-400 uppercase tracking-widest">Total Sales</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="order-1 lg:order-2">
-              <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                <Image 
-                  src="https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg?auto=compress&cs=tinysrgb&w=1000"
-                  alt="Dubai Night"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -224,27 +739,45 @@ export default function AboutPage() {
       {/* CTA Section */}
       <section className="py-24">
         <div className="container-custom">
-          <div className="bg-slate-50 rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden border border-slate-100">
-            <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
+          <div className="bg-gradient-to-r from-primary to-secondary rounded-3xl p-12 md:p-16 text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 -skew-x-12 translate-x-1/4"></div>
             <div className="relative z-10 max-w-3xl mx-auto">
-              <h2 className="text-4xl md:text-6xl font-serif text-secondary mb-8">Begin Your <span className="text-primary italic">Journey</span></h2>
-              <p className="text-xl text-slate-600 mb-12">
-                Whether you are looking to acquire a penthouse in the clouds or a villa by the sea, 
-                our experts are ready to guide you home.
+              <h2 className="text-4xl md:text-5xl font-serif text-white mb-8">
+                Ready to Find Your <span className="text-slate-900">Dream Property</span>?
+              </h2>
+              <p className="text-xl text-slate-200 mb-12">
+                Join thousands of satisfied clients who have trusted RAGDOLL Properties with their real estate journey
               </p>
               <div className="flex flex-col sm:flex-row gap-6 justify-center">
                 <Link
-                  href="/properties"
-                  className="px-10 py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300 shadow-xl shadow-secondary/20"
+                  href="/contact"
+                  className="px-10 py-4 bg-white text-secondary font-bold rounded-xl hover:bg-slate-100 transition-all duration-300 shadow-xl"
                 >
-                  View Exclusive Listings
+                  Schedule a Consultation
                 </Link>
                 <Link
-                  href="/contact"
-                  className="px-10 py-4 bg-white text-secondary border-2 border-secondary font-bold rounded-xl hover:bg-secondary hover:text-white transition-all duration-300"
+                  href="/properties"
+                  className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-secondary transition-all duration-300"
                 >
-                  Speak with an Advisor
+                  Browse Properties
                 </Link>
+              </div>
+              
+              <div className="mt-12 pt-8 border-t border-white/10">
+                <div className="flex flex-wrap justify-center gap-8 text-white/80 text-sm">
+                  <div className="flex items-center gap-2">
+                    <KeyIcon className="h-5 w-5" />
+                    <span>Free Property Valuation</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ShieldCheckIcon className="h-5 w-5" />
+                    <span>100% Transaction Security</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <HeartIcon className="h-5 w-5" />
+                    <span>Personalized Service</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

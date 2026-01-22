@@ -158,7 +158,7 @@ export default function Footer() {
         {/* Bottom Bar - YEH SECTION SE SOCIAL LINKS REMOVE KIYE HAIN */}
         <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-sm text-slate-500">
-            © {currentYear} RAGDOL Premium Real Estate. All rights reserved.
+            © {currentYear} RAGDOLL PROPERTIES Premium Real Estate. All rights reserved.
           </div>
           <div className="flex gap-8">
             {footerLinks.legal.map((link) => (

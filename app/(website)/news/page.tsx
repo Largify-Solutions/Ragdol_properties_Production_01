@@ -218,12 +218,10 @@ export default function NewsPage() {
               Stay informed with the latest Dubai real estate market insights and industry updates
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-primary text-secondary font-bold rounded-xl hover:bg-primary/90 transition-all shadow-sm hover:shadow-md">
-                Latest Updates
-              </button>
-              <button className="px-8 py-4 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all">
+             
+              <Link href={'/why-invest-dubai'} className="px-8 py-4 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all">
                 Market Reports
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -519,21 +517,12 @@ export default function NewsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <NewspaperIcon className="h-16 w-16 mx-auto mb-6 text-primary" />
           <h2 className="text-3xl md:text-4xl font-black text-secondary tracking-tight mb-4">
-            <span className="text-secondary">Stay Updated</span> <span className="text-primary">with Latest News</span>
+           <span className="text-primary"> Stay Updated  with Latest News</span>
           </h2>
           <p className="text-lg mb-8 text-slate-300 max-w-2xl mx-auto">
             Subscribe to our newsletter for exclusive market insights and property updates.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-3 border border-primary/30 bg-slate-800 text-white rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-            />
-            <button className="px-8 py-3 bg-primary text-secondary font-bold rounded-xl hover:bg-white transition-all whitespace-nowrap">
-              Subscribe
-            </button>
-          </div>
+          
         </div>
       </div>
 

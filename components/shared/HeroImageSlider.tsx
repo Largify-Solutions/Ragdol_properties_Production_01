@@ -195,7 +195,7 @@ export default function HeroImageSlider() {
 
     const timer = setInterval(() => {
       handleNext()
-    }, 5000)
+    }, 1000)
 
     return () => clearInterval(timer)
   }, [currentIndex, autoPlay])

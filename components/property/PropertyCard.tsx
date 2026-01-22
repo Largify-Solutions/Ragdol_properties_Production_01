@@ -60,8 +60,22 @@ export default function PropertyCard({ property, isSaved = false, onSaveToggle }
 
   const imageSrc = getValidImageSrc(property.image)
 
+  // ✅ Dynamic link based on property status
+  const getPropertyLink = () => {
+    // Check multiple conditions for rent properties
+    const isRentProperty = 
+      property.status === 'rent' || 
+      property.priceLabel === 'rent' ||
+      property.priceLabel === 'per_year' ||
+      property.priceLabel === 'per_month'
+    
+    return isRentProperty ? '/rent' : '/properties'
+  }
+
+  const propertyLink = getPropertyLink()
+
   return (
-    <Link href={`/`} className="group block h-full">
+    <Link href={propertyLink} className="group block h-full">
       <div className="card-custom overflow-hidden hover:shadow-xl transition-all duration-500 h-full flex flex-col">
         {/* Image with Background */}
         <div className="relative h-48 md:h-56 overflow-hidden bg-muted">
@@ -128,6 +142,7 @@ export default function PropertyCard({ property, isSaved = false, onSaveToggle }
           {/* Price */}
           <div className="text-xl font-bold text-primary group-hover:text-primary/80 transition-colors duration-300">
             {property.currency || 'AED'} {property.price.toLocaleString()}
+            {propertyLink === '/rent' && <span className="text-sm font-normal text-muted-foreground"> /year</span>}
           </div>
 
           {/* Title */}
@@ -196,4 +211,3 @@ export default function PropertyCard({ property, isSaved = false, onSaveToggle }
     </Link>
   )
 }
-

@@ -314,20 +314,16 @@ export default function PartnersPage() {
           <p className="text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
             Collaborating with industry leaders to deliver exceptional real estate experiences in Dubai.
           </p>
+          <p className="text-lg text-white/80 max-w-2xl mx-auto">
+              We collaborate with the finest companies and professionals across various industries.
+            </p>
         </div>
       </section>
 
       {/* Partners Section */}
       <section className="py-24 bg-slate-50/50">
         <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif text-secondary mb-6">
-              Our <span className="text-primary italic">Network</span> of Excellence
-            </h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              We collaborate with the finest companies and professionals across various industries.
-            </p>
-          </div>
+         
 
           {loading ? (
             <div className="text-center py-12">

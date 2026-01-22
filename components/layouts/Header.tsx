@@ -3,9 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import ValuationModal, { ValuationData } from "../forms/ValuationModal";
+import { addDoc, collection } from "firebase/firestore"; // NEW: Firebase imports
+import { db } from "@/lib/firebase"; // NEW: Firebase db import
 
 import { useTranslation } from "react-i18next";
 import {
@@ -76,7 +79,7 @@ const dubaiAreas = [
   {
     name: "Dubai Silicon Oasis",
     image:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&q=80",
+      "https://images.unsplash.com/ photo-1486406146926-c627a92ad1ab?w=400&q=80",
   },
   {
     name: "Deira",
@@ -386,6 +389,16 @@ export default function Header() {
       href: "/agents",
       hasDropdown: false,
     },
+     {
+      label: t("contact Us"),
+      href: "/contact",
+      hasDropdown: false,
+    },
+     {
+      label: t("About Us"),
+      href: "/about",
+      hasDropdown: false,
+    },
     {
       label: t("header.navigation.services"),
       hasDropdown: true,
@@ -395,10 +408,10 @@ export default function Header() {
           href: "/services#property-management",
         },
         {
-          label: t("header.navigation.snaggingAndHandover"),
-          href: "/services#snagging",
+          label: t("contact Us"),
+          href: "/contact",
         },
-        { label: t("header.navigation.allServices"), href: "/services" },
+        { label: t("About Us"), href: "/about" },
       ],
     },
     {
@@ -417,14 +430,38 @@ export default function Header() {
     },
   ];
 
+  // UPDATED: handleValuationSubmit function
   const handleValuationSubmit = async (data: ValuationData) => {
-    // For now, just log the data. In a real implementation, this would send to an API
+  try {
     console.log("Valuation request:", data);
-    // You could add a toast notification here or redirect to a thank you page
-    alert(
-      "Thank you for your valuation request! Our team will contact you soon."
-    );
-  };
+    
+    // Ensure all required fields have values
+    const formData = {
+      type: 'valuation_request',
+      name: data.name || '',
+      email: data.email || '',
+      phone: data.phone || '',
+      
+      status: 'new',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    
+    console.log("Processed data for Firebase:", formData);
+    
+    // Firebase mein "request_information" collection mein save karna
+    const requestInfoRef = collection(db, 'request_information');
+    
+    await addDoc(requestInfoRef, formData);
+    
+    alert("Thank you for your valuation request! Our team will contact you soon.");
+    setIsValuationModalOpen(false);
+    
+  } catch (error) {
+    console.error('Error saving valuation request:', error);
+    alert("Something went wrong. Please try again.");
+  }
+};
 
   return (
     <header
@@ -663,16 +700,16 @@ export default function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <Link
-            href="/customer/login"
+          <button
+            onClick={() => setIsValuationModalOpen(true)} // Changed from Link to button
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all bg-primary text-white hover:bg-primary/90 hover:scale-105 shadow-lg hover:shadow-xl"
           >
             <CalculatorIcon className="h-4 w-4" />
             Valuation
-          </Link>
+          </button>
 
           <Link
-            href="/admin/login"
+            href="/customer/login"
             className="px-6 py-2.5 rounded-xl font-bold text-sm transition-all bg-secondary text-white hover:bg-primary hover:text-secondary"
           >
             Sign In
@@ -1146,3 +1183,4 @@ export default function Header() {
     </header>
   );
 }
+

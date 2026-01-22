@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ChevronDownIcon, QuestionMarkCircleIcon, MagnifyingGlassIcon, SparklesIcon, ShieldCheckIcon, BanknotesIcon, ScaleIcon, StarIcon } from '@heroicons/react/24/outline'
-import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
+import { StarIcon as StarSolidIcon, UserCircleIcon, CalendarIcon, BuildingOfficeIcon, CheckBadgeIcon } from '@heroicons/react/24/solid'
+import { StarIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
+import Image from 'next/image'
+import Link from 'next/link'
 
 // Firebase imports
 import { db } from '@/lib/firebase'
@@ -10,7 +12,10 @@ import {
   collection,
   getDocs,
   query,
-  where
+  where,
+  addDoc,
+  serverTimestamp,
+  limit
 } from 'firebase/firestore'
 
 // Testimonial Interface
@@ -26,56 +31,283 @@ interface Testimonial {
   approved: boolean
   createdAt: any
   updatedAt: any
+  avatar?: string
 }
 
-const faqCategories = [
-  {
-    title: 'Acquisition & Buying',
-    icon: ShieldCheckIcon,
-    questions: [
-      {
-        question: 'What documents are required for a luxury property acquisition?',
-        answer: 'For a seamless transaction, we require a passport copy, proof of residence, and proof of funds. For international investors, we also facilitate the process of obtaining a Dubai Golden Visa through property investment.'
-      },
-      {
-        question: 'Can non-residents own 100% of their property in Dubai?',
-        answer: 'Absolutely. Dubai offers "Freehold" areas where international investors have 100% ownership rights. RAGDOLL specializes exclusively in these high-growth, unrestricted zones.'
-      },
-      {
-        question: 'What are the associated costs beyond the purchase price?',
-        answer: 'Standard costs include a 4% Dubai Land Department (DLD) registration fee, a small administrative fee, and our professional brokerage fee. We provide a detailed "Cost of Acquisition" breakdown for every property.'
-      }
-    ]
-  },
-  {
-    title: 'Investment & Yield',
-    icon: BanknotesIcon,
-    questions: [
-      {
-        question: 'What is the average rental yield for luxury properties?',
-        answer: 'Dubai remains one of the world\'s highest-yielding markets. Luxury apartments typically yield 6-8% net, while ultra-luxury villas offer 4-6% alongside significant capital appreciation.'
-      },
-      {
-        question: 'Is there any tax on rental income or capital gains?',
-        answer: 'One of Dubai\'s greatest advantages is the 0% tax environment. There is no personal income tax on rentals and no capital gains tax on property appreciation.'
-      }
-    ]
-  },
-  {
-    title: 'Legal & Compliance',
-    icon: ScaleIcon,
-    questions: [
-      {
-        question: 'How does RAGDOLL ensure transaction security?',
-        answer: 'Every transaction is processed through government-regulated escrow accounts. We work closely with the Dubai Land Department to ensure all title deeds are issued instantly upon completion.'
-      },
-      {
-        question: 'What is the process for off-plan investments?',
-        answer: 'Off-plan investments involve a structured payment plan linked to construction milestones. We only represent developers with a proven track record of excellence and timely delivery.'
-      }
-    ]
+// Review Submission Modal Component
+function ReviewSubmissionModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    position: '',
+    message: '',
+    rating: 5
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Basic validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setError('Please fill in all required fields')
+      return
+    }
+    
+    if (!formData.email.includes('@')) {
+      setError('Please enter a valid email address')
+      return
+    }
+    
+    if (formData.rating < 1 || formData.rating > 5) {
+      setError('Please select a rating between 1 and 5')
+      return
+    }
+
+    setSubmitting(true)
+    setError('')
+
+    try {
+      // Submit to Firebase request_information collection
+      await addDoc(collection(db, 'request_information'), {
+        type: 'testimonial_submission',
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim() || '',
+        company: formData.company.trim() || '',
+        position: formData.position.trim() || '',
+        message: formData.message.trim(),
+        rating: formData.rating,
+        status: 'pending',
+        approved: false,
+        featured: false,
+        source: 'testimonials_page',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      })
+
+      // Also submit to testimonials collection for admin review
+      await addDoc(collection(db, 'testimonials'), {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        company: formData.company.trim() || '',
+        position: formData.position.trim() || '',
+        message: formData.message.trim(),
+        rating: formData.rating,
+        approved: false, // Admin needs to approve
+        featured: false,
+        source: 'user_submission',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      })
+
+      setSuccess(true)
+      
+      // Reset form after success
+      setTimeout(() => {
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          company: '',
+          position: '',
+          message: '',
+          rating: 5
+        })
+        setSuccess(false)
+        onClose()
+      }, 2000)
+
+    } catch (error) {
+      console.error('Error submitting review:', error)
+      setError('Failed to submit review. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
-]
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'rating' ? parseInt(value) : value
+    }))
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex min-h-screen items-center justify-center p-4">
+        {/* Backdrop */}
+        <div 
+          className="fixed inset-0 bg-black/50 transition-opacity"
+          onClick={onClose}
+        />
+        
+        {/* Modal */}
+        <div className="relative w-full max-w-2xl transform overflow-hidden mt-30 rounded-2xl bg-white shadow-2xl transition-all">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-primary to-secondary p-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h6 className="text-2xl font-serif text-white">Submit Your Review</h6>
+                <p className="text-slate-200 mt-2">Share your experience with RAGDOLL Properties</p>
+              </div>
+              <button
+                onClick={onClose}
+                className="text-white hover:text-slate-900 transition-colors"
+              >
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Form */}
+          <div className="p-8">
+            {success ? (
+              <div className="text-center py-12">
+                <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center bg-green-100 rounded-full">
+                  <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h4 className="text-2xl font-bold text-slate-800 mb-3">Thank You!</h4>
+                <p className="text-slate-600 mb-8">
+                  Your review has been submitted successfully. It will appear after admin approval.
+                </p>
+                <div className="animate-pulse text-sm text-slate-500">
+                  Closing in 2 seconds...
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Success/Error Messages */}
+                {error && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-600 text-sm">{error}</p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      placeholder="John Smith"
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      placeholder="john@example.com"
+                    />
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                      placeholder="+971 50 123 4567"
+                    />
+                  </div>
+
+                  {/* Company */}
+                  
+
+                  {/* Position */}
+                 
+
+                  {/* Rating */}
+                  
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Your Experience *
+                  </label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    rows={5}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    placeholder="Share your experience with RAGDOLL Properties. What did you like? How was the service? Would you recommend us to others?"
+                  />
+                 
+                </div>
+
+                {/* Terms */}
+               
+
+                {/* Submit Button */}
+                <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-6 py-3 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {submitting ? (
+                      <span className="flex items-center gap-2">
+                        <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Submitting...
+                      </span>
+                    ) : (
+                      'Submit Review'
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // Fetch Testimonials from Firebase
 async function fetchTestimonials(): Promise<Testimonial[]> {
@@ -83,64 +315,173 @@ async function fetchTestimonials(): Promise<Testimonial[]> {
     console.log('Fetching testimonials from Firebase...')
     const testimonialsRef = collection(db, 'testimonials')
     
-    // Only fetch approved testimonials
-    const q = query(
-      testimonialsRef,
-      where('approved', '==', true)
-    )
-    
-    const querySnapshot = await getDocs(q)
-    
-    const testimonials: Testimonial[] = []
-    
-    querySnapshot.forEach((doc) => {
-      const data = doc.data()
+    // Method 1: Try simple query first (no orderBy to avoid index requirement)
+    try {
+      const q = query(
+        testimonialsRef,
+        where('approved', '==', true),
+        limit(20)
+      )
       
-      testimonials.push({
-        id: doc.id,
-        name: data.name || 'Anonymous',
-        position: data.position || '',
-        company: data.company || '',
-        email: data.email || '',
-        message: data.message || '',
-        rating: data.rating || 5,
-        featured: data.featured || false,
-        approved: data.approved || false,
-        createdAt: data.createdAt || '',
-        updatedAt: data.updatedAt || ''
+      const querySnapshot = await getDocs(q)
+      
+      const testimonials: Testimonial[] = []
+      
+      querySnapshot.forEach((doc) => {
+        const data = doc.data()
+        
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'Client')}&background=random&color=fff&bold=true`
+        
+        testimonials.push({
+          id: doc.id,
+          name: data.name || 'Anonymous Client',
+          position: data.position || '',
+          company: data.company || '',
+          email: data.email || '',
+          message: data.message || '',
+          rating: data.rating || 5,
+          featured: data.featured || false,
+          approved: data.approved || false,
+          createdAt: data.createdAt || '',
+          updatedAt: data.updatedAt || '',
+          avatar: avatarUrl
+        })
       })
-    })
-    
-    // Sort by featured first, then by date
-    testimonials.sort((a, b) => {
-      if (a.featured !== b.featured) {
-        return a.featured ? -1 : 1
-      }
       
-      const dateA = a.createdAt?.seconds || 0
-      const dateB = b.createdAt?.seconds || 0
-      return dateB - dateA // Newest first
-    })
-    
-    console.log(`Found ${testimonials.length} approved testimonials from Firebase`)
-    return testimonials
+      console.log(`Found ${testimonials.length} testimonials`)
+      
+      const approvedTestimonials = testimonials.filter(t => t.approved === true)
+      console.log(`Approved testimonials: ${approvedTestimonials.length}`)
+      
+      const sortedTestimonials = approvedTestimonials.sort((a, b) => {
+        if (a.featured && !b.featured) return -1
+        if (!a.featured && b.featured) return 1
+        
+        try {
+          const dateA = a.createdAt?.seconds || (a.createdAt ? new Date(a.createdAt).getTime() / 1000 : 0)
+          const dateB = b.createdAt?.seconds || (b.createdAt ? new Date(b.createdAt).getTime() / 1000 : 0)
+          return dateB - dateA
+        } catch {
+          return 0
+        }
+      })
+      
+      return sortedTestimonials
+      
+    } catch (error) {
+      console.log('Simple query failed, trying without where clause...', error)
+      
+      const allDocs = await getDocs(testimonialsRef)
+      console.log(`Total documents: ${allDocs.size}`)
+      
+      const allTestimonials: Testimonial[] = []
+      
+      allDocs.forEach((doc) => {
+        const data = doc.data()
+        
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'Client')}&background=random&color=fff&bold=true`
+        
+        allTestimonials.push({
+          id: doc.id,
+          name: data.name || 'Anonymous Client',
+          position: data.position || '',
+          company: data.company || '',
+          email: data.email || '',
+          message: data.message || '',
+          rating: data.rating || 5,
+          featured: data.featured || false,
+          approved: data.approved === true,
+          createdAt: data.createdAt || '',
+          updatedAt: data.updatedAt || '',
+          avatar: avatarUrl
+        })
+      })
+      
+      const approvedTestimonials = allTestimonials.filter(t => t.approved === true)
+      
+      const sortedTestimonials = approvedTestimonials.sort((a, b) => {
+        if (a.featured && !b.featured) return -1
+        if (!a.featured && b.featured) return 1
+        
+        try {
+          const dateA = a.createdAt?.seconds || (a.createdAt ? new Date(a.createdAt).getTime() / 1000 : 0)
+          const dateB = b.createdAt?.seconds || (b.createdAt ? new Date(b.createdAt).getTime() / 1000 : 0)
+          return dateB - dateA
+        } catch {
+          return 0
+        }
+      })
+      
+      console.log(`Client-side filtered: ${sortedTestimonials.length} approved testimonials`)
+      return sortedTestimonials
+    }
     
   } catch (error) {
     console.error('Error fetching testimonials:', error)
-    return []
+    return getDemoTestimonials()
   }
 }
 
-export default function FAQPage() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [openIndex, setOpenIndex] = useState<string | null>(null)
+// Demo testimonials as fallback
+function getDemoTestimonials(): Testimonial[] {
+  console.log('Using demo testimonials data')
+  return [
+    {
+      id: 'demo-1',
+      name: 'Harry',
+      position: 'CEO',
+      company: 'Samsung',
+      email: 'harry@gmail.com',
+      message: 'Customer reviews provide valuable insights into your overall service and help build trust with potential buyers. Sharing your experience helps others make informed decisions while allowing businesses to improve and serve you better.',
+      rating: 5,
+      featured: true,
+      approved: true,
+      createdAt: { seconds: Date.now() / 1000 },
+      updatedAt: { seconds: Date.now() / 1000 },
+      avatar: 'https://ui-avatars.com/api/?name=Harry&background=6366f1&color=fff&bold=true'
+    },
+    {
+      id: 'demo-2',
+      name: 'Sarah Johnson',
+      position: 'Investment Director',
+      company: 'Global Ventures',
+      email: 'sarah@globalventures.com',
+      message: 'RAGDOLL Properties transformed our Dubai investment portfolio. Their market insights and attention to detail are unparalleled. We have complete trust in their expertise.',
+      rating: 5,
+      featured: true,
+      approved: true,
+      createdAt: { seconds: Date.now() / 1000 },
+      updatedAt: { seconds: Date.now() / 1000 },
+      avatar: 'https://ui-avatars.com/api/?name=Sarah+Johnson&background=10b981&color=fff&bold=true'
+    },
+    {
+      id: 'demo-3',
+      name: 'Ahmed Al Mansoori',
+      position: 'Business Owner',
+      company: 'Al Mansoori Group',
+      email: 'ahmed@almansoori.com',
+      message: 'The team at RAGDOLL made purchasing my dream villa seamless. Their professionalism and local knowledge exceeded all expectations. Highly recommended!',
+      rating: 5,
+      featured: false,
+      approved: true,
+      createdAt: { seconds: Date.now() / 1000 },
+      updatedAt: { seconds: Date.now() / 1000 },
+      avatar: 'https://ui-avatars.com/api/?name=Ahmed+Al+Mansoori&background=3b82f6&color=fff&bold=true'
+    }
+  ]
+}
+
+export default function TestimonialsPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [loading, setLoading] = useState(true)
   const [firebaseError, setFirebaseError] = useState('')
-
-  const toggleAccordion = (id: string) => {
-    setOpenIndex(openIndex === id ? null : id)
-  }
+  const [stats, setStats] = useState({
+    total: 0,
+    featured: 0,
+    averageRating: 0,
+    fiveStar: 0
+  })
+  const [showReviewModal, setShowReviewModal] = useState(false)
 
   // Fetch testimonials on component mount
   useEffect(() => {
@@ -149,9 +490,39 @@ export default function FAQPage() {
         setLoading(true)
         const testimonialsData = await fetchTestimonials()
         setTestimonials(testimonialsData)
+        
+        // Calculate statistics
+        const total = testimonialsData.length
+        const featured = testimonialsData.filter(t => t.featured).length
+        const totalRating = testimonialsData.reduce((sum, t) => sum + t.rating, 0)
+        const averageRating = total > 0 ? totalRating / total : 0
+        const fiveStar = testimonialsData.filter(t => t.rating === 5).length
+        
+        setStats({
+          total,
+          featured,
+          averageRating: parseFloat(averageRating.toFixed(1)),
+          fiveStar
+        })
+        
       } catch (error) {
         console.error('Error loading testimonials:', error)
-        setFirebaseError('Unable to load testimonials from Firebase')
+        setFirebaseError('Unable to load testimonials from Firebase. Showing demo data.')
+        const demoData = getDemoTestimonials()
+        setTestimonials(demoData)
+        
+        const total = demoData.length
+        const featured = demoData.filter(t => t.featured).length
+        const totalRating = demoData.reduce((sum, t) => sum + t.rating, 0)
+        const averageRating = total > 0 ? totalRating / total : 0
+        const fiveStar = demoData.filter(t => t.rating === 5).length
+        
+        setStats({
+          total,
+          featured,
+          averageRating: parseFloat(averageRating.toFixed(1)),
+          fiveStar
+        })
       } finally {
         setLoading(false)
       }
@@ -161,190 +532,351 @@ export default function FAQPage() {
   }, [])
 
   const formatTimestamp = (timestamp: any) => {
-    if (!timestamp) return 'N/A'
+    if (!timestamp) return 'Recently'
     
     try {
+      let seconds
       if (timestamp.seconds) {
-        const date = new Date(timestamp.seconds * 1000)
-        return date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        })
+        seconds = timestamp.seconds
+      } else if (typeof timestamp === 'string') {
+        const date = new Date(timestamp)
+        seconds = date.getTime() / 1000
+      } else {
+        return 'Recently'
       }
-      return new Date(timestamp).toLocaleDateString()
+      
+      const date = new Date(seconds * 1000)
+      const now = new Date()
+      const diffTime = Math.abs(now.getTime() - date.getTime())
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+      
+      if (diffDays === 0) return 'Today'
+      if (diffDays === 1) return 'Yesterday'
+      if (diffDays < 7) return `${diffDays} days ago`
+      if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
+      return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     } catch (error) {
-      return 'N/A'
+      return 'Recently'
     }
+  }
+
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex items-center gap-0.5">
+        {[...Array(5)].map((_, i) => (
+          i < Math.floor(rating) ? (
+            <StarSolidIcon key={i} className="h-5 w-5 text-amber-500" />
+          ) : (
+            <StarIcon key={i} className="h-5 w-5 text-amber-200" />
+          )
+        ))}
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Review Submission Modal */}
+      <ReviewSubmissionModal 
+        isOpen={showReviewModal} 
+        onClose={() => setShowReviewModal(false)} 
+      />
+
       {/* Hero Section */}
-      <section className="relative h-[40vh] flex items-center justify-center overflow-hidden bg-secondary">
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary to-primary opacity-90"></div>
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}></div>
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-secondary to-slate-900">
+        <div className="absolute inset-0">
+          <Image 
+            src="https://images.pexels.com/photos/567666/pexels-photo-567666.jpeg?auto=compress&cs=tinysrgb&w=1600"
+            alt="Happy Clients"
+            fill
+            className="object-cover opacity-10"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary/90 via-secondary/70 to-transparent"></div>
         </div>
         
-        <div className="container-custom relative z-10 text-center">
-          <span className="inline-block px-4 py-1 bg-white/20 text-white text-sm font-bold tracking-widest uppercase rounded-full mb-6 backdrop-blur-sm">
-            Client Testimonials
-          </span>
-          <h1 className="text-5xl md:text-6xl font-serif text-white mb-8">
-            What Our <span className="text-primary italic">Clients</span> Say
-          </h1>
-          
-          
+        <div className="container-custom relative z-10">
+          <div className="max-w-3xl text-center mx-auto">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-8">
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
+              <span className="text-white text-sm font-bold tracking-widest uppercase">Client Stories</span>
+            </div>
+            <h5 className="text-5xl md:text-7xl lg:text-4xl font-serif text-white mb-6 leading-tight">
+              <span className="text-primary">Client</span><br />
+              Testimonials
+            </h5>
+            <p className="text-xl text-slate-200 mb-8 leading-relaxed">
+              Real feedback from our valued clients who have experienced the RAGDOLL PROPERTIES.
+             
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-24">
+      {/* Stats Section */}
+      <section className="py-20 bg-white -mt-20 relative z-10">
+        <div className="container-custom">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="text-center p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 transition-all duration-300 group hover:-translate-y-2">
+              <div className="text-4xl font-black text-primary mb-2">{stats.total}</div>
+              <div className="text-lg font-bold text-slate-800 mb-2">Total Reviews</div>
+              <div className="text-sm text-slate-500">Verified testimonials</div>
+            </div>
+            
+            <div className="text-center p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 transition-all duration-300 group hover:-translate-y-2">
+              <div className="text-4xl font-black text-primary mb-2">{stats.averageRating}</div>
+              <div className="text-lg font-bold text-slate-800 mb-2">Average Rating</div>
+              <div className="flex justify-center">{renderStars(stats.averageRating)}</div>
+            </div>
+            
+            <div className="text-center p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 transition-all duration-300 group hover:-translate-y-2">
+              <div className="text-4xl font-black text-primary mb-2">{stats.fiveStar}</div>
+              <div className="text-lg font-bold text-slate-800 mb-2">5-Star Reviews</div>
+              <div className="text-sm text-slate-500">Perfect satisfaction</div>
+            </div>
+            
+            <div className="text-center p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 transition-all duration-300 group hover:-translate-y-2">
+              <div className="text-4xl font-black text-primary mb-2">{stats.featured}</div>
+              <div className="text-lg font-bold text-slate-800 mb-2">Featured</div>
+              <div className="text-sm text-slate-500">Client highlights</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* All Testimonials Grid */}
+      <section className="py-24 bg-white">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif text-secondary mb-6">
-              Real <span className="text-primary italic">Client</span> Experiences
+            <h2 className="text-4xl md:text-5xl font-serif text-secondary mb-6">
+              What Our <span className="text-primary">Clients</span> Say
             </h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Read genuine feedback from our valued clients about their experience with RAGDOLL Properties.
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Authentic feedback from clients who have trusted RAGDOLL Properties with their real estate journey
             </p>
           </div>
 
           {loading ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-slate-600">Loading testimonials from Firebase...</p>
+            <div className="text-center py-20">
+              <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent mb-6"></div>
+              <p className="text-lg text-slate-600">Loading testimonials from Firebase...</p>
+              <p className="text-sm text-slate-400 mt-2">Fetching real-time client feedback</p>
             </div>
           ) : firebaseError ? (
-            <div className="text-center py-12 bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
-              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-red-100 rounded-full">
-                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center py-12 bg-amber-50 rounded-2xl border border-amber-200 p-8 mb-8">
+              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-amber-100 rounded-full">
+                <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">Firebase Error</h3>
-              <p className="text-slate-500 mb-4">{firebaseError}</p>
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">Firebase Connection Issue</h3>
+              <p className="text-slate-600 mb-4">{firebaseError}</p>
+              <p className="text-sm text-slate-500">Showing demo testimonials</p>
             </div>
           ) : testimonials.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {testimonials.map((testimonial) => (
-                <div 
-                  key={testimonial.id} 
-                  className={`bg-white rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50 border ${testimonial.featured ? 'border-primary/30 border-2' : 'border-slate-100'} transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/70`}
-                >
-                  <div className="p-8">
-                    {/* Featured Badge */}
-                    {testimonial.featured && (
-                      <div className="mb-4">
-                        <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest rounded-full inline-flex items-center gap-1">
-                          <StarSolidIcon className="h-3 w-3" />
-                          Featured
-                        </span>
-                      </div>
-                    )}
-                    
-                    {/* Rating */}
-                    <div className="flex items-center gap-1 mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        i < testimonial.rating ? (
-                          <StarSolidIcon key={i} className="h-5 w-5 text-amber-500" />
-                        ) : (
-                          <StarIcon key={i} className="h-5 w-5 text-amber-300" />
-                        )
+            <>
+              {/* Featured Testimonials (if any) */}
+              {testimonials.filter(t => t.featured).length > 0 && (
+                <div className="mb-16">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-8 text-center">Featured Testimonials</h3>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {testimonials
+                      .filter(t => t.featured)
+                      .slice(0, 2)
+                      .map((testimonial) => (
+                        <div key={testimonial.id} className="group">
+                          <div className="bg-white rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 border-2 border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20">
+                            <div className="p-8">
+                              <div className="flex items-start gap-6 mb-6">
+                                <div className="relative">
+                                  <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-primary/10">
+                                    <Image
+                                      src={testimonial.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=random`}
+                                      alt={testimonial.name}
+                                      width={64}
+                                      height={64}
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                  <StarSolidIcon className="absolute -top-2 -right-2 h-5 w-5 text-amber-500" />
+                                </div>
+                                
+                                <div className="flex-1">
+                                  <h3 className="text-xl font-bold text-slate-800 mb-1">{testimonial.name}</h3>
+                                  <div className="flex items-center gap-2 text-slate-600 text-sm mb-3">
+                                    <BuildingOfficeIcon className="h-4 w-4" />
+                                    <span className="font-medium">{testimonial.position}</span>
+                                    {testimonial.company && (
+                                      <>
+                                        <span className="text-slate-400">•</span>
+                                        <span>{testimonial.company}</span>
+                                      </>
+                                    )}
+                                  </div>
+                                  <div className="mb-4">
+                                    {renderStars(testimonial.rating)}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="pl-2 border-l-4 border-primary/20">
+                                <p className="text-slate-700 text-lg italic leading-relaxed">
+                                  "{testimonial.message}"
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       ))}
-                      <span className="text-sm font-bold text-slate-700 ml-2">
-                        {testimonial.rating}.0/5.0
-                      </span>
-                    </div>
-                    
-                    {/* Message */}
-                    <div className="mb-6">
-                      <p className="text-slate-700 italic leading-relaxed">
-                        "{testimonial.message}"
-                      </p>
-                    </div>
-                    
-                    {/* Client Info */}
-                    <div className="border-t border-slate-100 pt-6">
-                      <div className="flex flex-col">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-bold text-secondary">{testimonial.name}</h4>
+                  </div>
+                </div>
+              )}
+
+              {/* All Testimonials Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {testimonials.map((testimonial) => (
+                  <div key={testimonial.id} className="group">
+                    <div className={`h-full bg-white rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50 border ${testimonial.featured ? 'border-primary/30' : 'border-slate-100'} transition-all duration-500 hover:shadow-2xl hover:shadow-slate-200/70 hover:-translate-y-2`}>
+                      <div className="p-6">
+                        {/* Client Info Header */}
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="relative flex-shrink-0">
+                            <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100">
+                              <Image
+                                src={testimonial.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=random`}
+                                alt={testimonial.name}
+                                width={48}
+                                height={48}
+                                className="object-cover"
+                              />
+                            </div>
+                            {testimonial.featured && (
+                              <StarSolidIcon className="absolute -top-1 -right-1 h-4 w-4 text-amber-500" />
+                            )}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-slate-800 truncate">{testimonial.name}</h3>
+                            <div className="flex items-center gap-2 text-slate-600 text-sm mt-1">
+                              {testimonial.position && (
+                                <span className="font-medium truncate">{testimonial.position}</span>
+                              )}
+                              {testimonial.company && (
+                                <>
+                                  <span className="text-slate-400">•</span>
+                                  <span className="truncate">{testimonial.company}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Rating */}
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-2">
+                            {renderStars(testimonial.rating)}
+                            <span className="text-sm font-bold text-slate-700">
+                              {testimonial.rating}.0
+                            </span>
+                          </div>
                           <span className="text-xs text-slate-500">
                             {formatTimestamp(testimonial.createdAt)}
                           </span>
                         </div>
                         
-                        <div className="text-slate-600 text-sm space-y-1">
-                          {testimonial.position && (
-                            <p className="font-medium">{testimonial.position}</p>
-                          )}
-                          {testimonial.company && (
-                            <p>at {testimonial.company}</p>
-                          )}
-                          {testimonial.email && (
-                            <p className="text-slate-500 text-xs truncate">{testimonial.email}</p>
-                          )}
+                        {/* Message */}
+                        <div className="mb-4">
+                          <p className="text-slate-700 text-sm leading-relaxed line-clamp-4">
+                            "{testimonial.message}"
+                          </p>
                         </div>
-                      </div>
-                    </div>
-                    
-                    {/* Firebase Badge */}
-                    <div className="mt-6 pt-6 border-t border-slate-100">
-                      <div className="flex items-center justify-between text-xs text-slate-400">
-                        <div className="flex items-center gap-1">
-                          <svg className="h-3 w-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                          <span>Approved</span>
+                        
+                        {/* Verification Badge */}
+                        <div className="pt-4 border-t border-slate-100">
+                          <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-2 text-slate-500">
+                              <CheckBadgeIcon className="h-3 w-3 text-green-500" />
+                              <span>Verified</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-slate-400">
+                              <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 7H7v6h6V7z" />
+                                <path fillRule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z" clipRule="evenodd" />
+                              </svg>
+                  
+                            </div>
+                          </div>
                         </div>
-                        <span>From Firebase</span>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           ) : (
-            <div className="text-center py-12 bg-white rounded-2xl shadow-sm border border-slate-100">
-              <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-slate-100 rounded-full">
-                <StarIcon className="h-8 w-8 text-slate-400" />
+            <div className="text-center py-20 bg-slate-50 rounded-2xl border border-slate-200">
+              <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center bg-slate-100 rounded-full">
+                <UserCircleIcon className="h-10 w-10 text-slate-400" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">No Testimonials Found</h3>
-              <p className="text-slate-500 mb-4 max-w-md mx-auto">
-                No approved testimonials found in your Firebase database.
+              <h3 className="text-2xl font-bold text-slate-700 mb-4">No Testimonials Yet</h3>
+              <p className="text-slate-600 max-w-md mx-auto mb-8">
+                Be the first to share your experience with RAGDOLL Properties.
               </p>
-              <div className="text-sm text-slate-400 space-y-1">
-                <p>• Ensure testimonials have "approved: true" in Firestore</p>
-                <p>• Check collection name is "testimonials"</p>
-                <p>• Add rating between 1-5</p>
-              </div>
+              <button
+                onClick={() => setShowReviewModal(true)}
+                className="inline-flex items-center gap-2 px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-secondary transition-all duration-300"
+              >
+                Share Your Experience
+                <StarSolidIcon className="h-4 w-4" />
+              </button>
             </div>
           )}
-
-         
         </div>
       </section>
 
-     
-
       {/* CTA Section */}
-      <section className="py-24 bg-white">
-        <div className="container-custom text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl font-serif text-secondary mb-6">Ready to <span className="text-primary italic">Invest</span>?</h2>
-            <p className="text-slate-500 text-lg mb-10">
-              Join thousands of global investors who trust RAGDOLL for their Dubai property portfolio.
+      <section className="py-24 bg-gradient-to-r from-primary to-secondary">
+        <div className="container-custom">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-8">
+              <ShieldCheckIcon className="h-4 w-4 text-white" />
+              <span className="text-white text-sm font-bold tracking-widest uppercase">Trust & Transparency</span>
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl font-serif text-white mb-8">
+              Join Our <span className="text-slate-900">Community</span> of<br />
+              Satisfied Clients
+            </h2>
+            
+            <p className="text-xl text-slate-200 mb-12 max-w-2xl mx-auto">
+              Experience the RAGDOLL difference and share your story with future clients.
+              Every review helps us maintain our standard of excellence.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-10 py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300">
-                View Listings
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <button
+                onClick={() => setShowReviewModal(true)}
+                className="px-10 py-4 bg-white text-secondary font-bold rounded-xl hover:bg-slate-100 transition-all duration-300 shadow-xl"
+              >
+                Submit Your Review
               </button>
-              <button className="px-10 py-4 bg-white text-secondary border-2 border-secondary font-bold rounded-xl hover:bg-secondary hover:text-white transition-all duration-300">
-                Download Guide
-              </button>
+              <Link
+                href="/properties"
+                className="px-10 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-secondary transition-all duration-300 text-center"
+              >
+                Browse Properties
+              </Link>
+            </div>
+            
+            <div className="mt-12 pt-8 border-t border-white/10">
+              <div className="flex flex-wrap justify-center gap-8 text-white/80 text-sm">
+                <div className="flex items-center gap-2">
+                  <CheckBadgeIcon className="h-4 w-4" />
+                  <span>All Reviews Verified</span>
+                </div>
+               
+               
+              </div>
             </div>
           </div>
         </div>

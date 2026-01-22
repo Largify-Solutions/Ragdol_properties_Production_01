@@ -1827,8 +1827,8 @@ export default function HomePage() {
           {featuredProperties.length > 0 ? (
             <PropertySlider
               title=""
-              properties={featuredProperties.slice(0, 4)}
-              showCount={4}
+              properties={featuredProperties.slice(0, 8)}
+              showCount={4} 
             />
           ) : (
             <div className="text-center py-12">
@@ -1858,7 +1858,7 @@ export default function HomePage() {
             <p className="text-lg text-slate-600 max-w-2xl mx-auto mt-6">
               Includes properties from our main listings and verified agents
             </p>
-            <Link href="/properties" className="btn-outline mt-5">
+            <Link href="/rent" className="btn-outline mt-5">
               View All properties for rent
             </Link>
           </div>
@@ -1866,7 +1866,7 @@ export default function HomePage() {
           {rentalProperties.length > 0 ? (
             <PropertySlider
               title=""
-              properties={rentalProperties.slice(0, 4)}
+              properties={rentalProperties.slice(0, 8)}
               showCount={4}
             />
           ) : (
@@ -1908,7 +1908,7 @@ export default function HomePage() {
         newProjects.slice(0, 4).map((project) => (
           <Link
             key={project.id}
-            href={`/projects/${project.id}`}
+            href={"/projects"}
             className="group"
           >
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden mb-6 shadow-lg">
@@ -2028,7 +2028,7 @@ export default function HomePage() {
               blogPosts.slice(0, 4).map((post) => (
                 <Link
                   key={post.id}
-                  href={`/blog/${post.slug}`}
+                  href={`/news`}
                   className="group"
                 >
                   <div className="relative aspect-[16/10] rounded-3xl overflow-hidden mb-6 shadow-lg">

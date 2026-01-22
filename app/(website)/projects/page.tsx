@@ -35,11 +35,12 @@ import {
   StarIcon,
   Square3Stack3DIcon,
   PlayCircleIcon,
-  GlobeAltIcon
+  GlobeAltIcon,
+  Squares2X2Icon // NEW: Added for gallery icon
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 import { db } from '@/lib/firebase'
-import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore'
+import { collection, getDocs, query, where, doc, getDoc, addDoc } from 'firebase/firestore' // addDoc import kiya
 
 // Types define karen
 interface Project {
@@ -172,12 +173,25 @@ const getLocationCoordinates = (project: Project | null | undefined) => {
   return defaultCoords;
 }
 
-function ProjectsPageContent() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedDeveloper, setSelectedDeveloper] = useState('all')
-  const [inquiryModal, setInquiryModal] = useState<{ isOpen: boolean; project: Project | null }>({ isOpen: false, project: null })
-  const [detailsModal, setDetailsModal] = useState<{ isOpen: boolean; project: Project | null }>({ isOpen: false, project: null })
+// Gallery Icon Component - NEW
+const GalleryIcon = ({ onClick }: { onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/90 backdrop-blur-md rounded-xl px-4 py-2 shadow-lg hover:shadow-xl hover:bg-white border border-slate-200 flex items-center gap-2 text-slate-700 hover:text-primary font-bold text-sm z-10"
+  >
+    <Squares2X2Icon className="h-4 w-4" />
+    View Gallery
+  </button>
+)
+
+// Request Information Form Component - NEW
+const RequestInfoForm = ({ 
+  project, 
+  onClose 
+}: { 
+  project: Project; 
+  onClose: () => void 
+}) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -186,6 +200,456 @@ function ProjectsPageContent() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+    if (error) setError('')
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Form validation
+    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
+      setError('Please fill all required fields')
+      return
+    }
+    
+    setIsSubmitting(true)
+    setError('')
+    
+    try {
+      // Firebase mein data save karna
+      const requestInfoRef = collection(db, 'request_information')
+      
+      await addDoc(requestInfoRef, {
+        project_id: project.id,
+        project_name: project.name,
+        developer: project.developer || '',
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message || '',
+        status: 'new',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      
+      setSubmitSuccess(true)
+      
+      // Success message ke baad modal close karna
+      setTimeout(() => {
+        onClose()
+        // Reset form
+        setFormData({ name: '', email: '', phone: '', message: '' })
+        setIsSubmitting(false)
+        setSubmitSuccess(false)
+      }, 3000)
+      
+    } catch (err) {
+      console.error('Error saving request information:', err)
+      setError('Something went wrong. Please try again.')
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-secondary/80 backdrop-blur-sm mt-20">
+      <div className="bg-white w-full max-w-2xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-fadeIn">
+        <div className="relative h-15">
+        
+          <div className="absolute inset-0 bg-secondary/60 flex items-center justify-center">
+            <h3 className="text-3xl font-serif text-white text-center px-4">Request Information: {project.name}</h3>
+         </div>
+          <button 
+            onClick={onClose}
+            className="absolute top-2 right-6 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-secondary transition-all"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
+        </div>
+        <div className="p-10">
+          {submitSuccess ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircleIcon className="h-8 w-8 text-emerald-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-secondary mb-2">Request Submitted!</h3>
+              <p className="text-slate-600 mb-2">Thank you for your interest in <span className="font-bold">{project.name}</span>.</p>
+              <p className="text-slate-500 text-sm">Our team will contact you within 24 hours with detailed information.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    name="name"
+                    placeholder="Enter your full name" 
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-6 py-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-primary/50 text-slate-700" 
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Email Address <span className="text-red-500">*</span>
+                    </label>
+                    <input 
+                      type="email" 
+                      name="email"
+                      placeholder="your@email.com" 
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-6 py-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-primary/50 text-slate-700" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Phone Number <span className="text-red-500">*</span>
+                    </label>
+                    <input 
+                      type="tel" 
+                      name="phone"
+                      placeholder="+971 50 123 4567" 
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-6 py-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-primary/50 text-slate-700" 
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Message (Optional)
+                  </label>
+                  <textarea 
+                    name="message"
+                    placeholder="Please provide any specific information you're looking for..." 
+                    rows={4} 
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    className="w-full px-6 py-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-primary/50 resize-none text-slate-700"
+                  ></textarea>
+                </div>
+              </div>
+
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
+              )}
+
+              <button 
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-5 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Submitting...
+                  </span>
+                ) : 'Submit Request'}
+              </button>
+
+            
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Full Screen Gallery Component - NEW
+const FullScreenGallery = ({ 
+  project, 
+  onClose 
+}: { 
+  project: Project; 
+  onClose: () => void 
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  
+  // Get all media (images + video) for the project
+  const getProjectMedia = () => {
+    const media = []
+    
+    // Add hero image
+    if (project.hero_image_url) {
+      media.push({
+        type: 'image',
+        url: project.hero_image_url,
+        thumbnail: project.hero_image_url
+      })
+    }
+    
+    // Add other images
+    if (project.images && project.images.length > 0) {
+      project.images.forEach(img => {
+        media.push({
+          type: 'image',
+          url: img,
+          thumbnail: img
+        })
+      })
+    }
+    
+    // Add video as last item if exists
+    if (project.video_url) {
+      const videoType = getVideoType(project.video_url);
+      if (videoType !== 'none') {
+        media.push({
+          type: 'video',
+          url: project.video_url,
+          thumbnail: project.video_url
+        })
+      }
+    }
+    
+    return media;
+  }
+  
+  const projectMedia = getProjectMedia();
+  
+  const handlePrev = () => {
+    setCurrentIndex(prev => prev === 0 ? projectMedia.length - 1 : prev - 1)
+    setIsVideoPlaying(false)
+  }
+  
+  const handleNext = () => {
+    setCurrentIndex(prev => prev === projectMedia.length - 1 ? 0 : prev + 1)
+    setIsVideoPlaying(false)
+  }
+  
+  const renderMedia = () => {
+    const media = projectMedia[currentIndex];
+    if (!media) return null;
+    
+    if (media.type === 'video') {
+      const videoType = getVideoType(media.url);
+      
+      if (videoType === 'youtube') {
+        const videoId = extractYouTubeId(media.url);
+        return isVideoPlaying ? (
+          <div className="w-full h-full">
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&loop=1&playlist=${videoId}`}
+              className="w-full h-full"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              title={`${project.name} - YouTube Video`}
+            />
+          </div>
+        ) : (
+          <div className="relative w-full h-full">
+            <img
+              src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+              alt={project.name}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                e.currentTarget.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+              }}
+            />
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <button
+                onClick={() => setIsVideoPlaying(true)}
+                className="w-20 h-20 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-transform hover:scale-110"
+              >
+                <PlayCircleIcon className="w-12 h-12 text-white" />
+              </button>
+            </div>
+            <div className="absolute bottom-4 left-4 px-3 py-1 bg-red-600 text-white text-sm font-bold rounded-full">
+              VIDEO
+            </div>
+          </div>
+        )
+      }
+      
+      else if (videoType === 'direct') {
+        return (
+          <div className="relative w-full h-full">
+            <video
+              key={media.url}
+              controls
+              autoPlay
+              loop
+              muted
+              className="w-full h-full object-contain bg-black"
+              preload="auto"
+              playsInline
+              controlsList="nodownload"
+            >
+              <source src={media.url} type={`video/${media.url.split('.').pop()?.split('?')[0]}`} />
+              Your browser does not support the video tag.
+            </video>
+            <div className="absolute bottom-4 left-4 px-3 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">
+              VIDEO
+            </div>
+          </div>
+        )
+      }
+      
+      else {
+        return (
+          <div className="relative w-full h-full">
+            <video
+              key={media.url}
+              controls
+              autoPlay
+              loop
+              muted
+              className="w-full h-full object-contain bg-black"
+              preload="auto"
+              playsInline
+              controlsList="nodownload"
+            >
+              <source src={media.url} type="video/mp4" />
+              <source src={media.url} type="video/webm" />
+              <source src={media.url} type="video/ogg" />
+              <source src={media.url} type="video/mov" />
+              <source src={media.url} type="video/avi" />
+              Your browser does not support the video tag.
+            </video>
+            <div className="absolute bottom-4 left-4 px-3 py-1 bg-purple-600 text-white text-sm font-bold rounded-full">
+              VIDEO
+            </div>
+          </div>
+        )
+      }
+    }
+    
+    // Image display
+    return (
+      <img
+        src={media.url}
+        alt={`${project.name} - Image ${currentIndex + 1}`}
+        className="w-full h-full object-contain"
+        onError={(e) => {
+          e.currentTarget.src = '/default-image.jpg'
+        }}
+      />
+    )
+  }
+  
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') handlePrev();
+      if (e.key === 'ArrowRight') handleNext();
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+  
+  return (
+    <div className="fixed inset-0 z-[100] bg-black">
+      {/* Header */}
+      <div className="absolute top-0 left-0 right-0 z-10 p-6 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+        <div className="text-white">
+          <h2 className="text-xl font-bold">{project.name}</h2>
+          <p className="text-sm text-gray-300">
+            {currentIndex + 1} / {projectMedia.length}
+          </p>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+        >
+          <XMarkIcon className="w-6 h-6 text-white" />
+        </button>
+      </div>
+      
+      {/* Main Media */}
+      <div className="w-full h-full flex items-center justify-center p-4">
+        <div className="w-full h-full max-w-7xl">
+          {renderMedia()}
+        </div>
+      </div>
+      
+      {/* Navigation Arrows */}
+      {projectMedia.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+          >
+            <ChevronLeftIcon className="w-8 h-8 text-white" />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+          >
+            <ChevronRightIcon className="w-8 h-8 text-white" />
+          </button>
+        </>
+      )}
+      
+      {/* Thumbnails */}
+      {projectMedia.length > 1 && (
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+          <div className="flex gap-2 overflow-x-auto justify-center">
+            {projectMedia.map((media, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setCurrentIndex(index);
+                  setIsVideoPlaying(false);
+                }}
+                className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                  index === currentIndex 
+                    ? 'border-white scale-110' 
+                    : 'border-transparent hover:border-gray-400'
+                }`}
+              >
+                {media.type === 'video' ? (
+                  <div className="w-full h-full bg-gray-800 flex items-center justify-center relative">
+                    <VideoCameraIcon className="w-6 h-6 text-white" />
+                    <div className="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full"></div>
+                  </div>
+                ) : (
+                  <img
+                    src={media.thumbnail}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = '/default-image.jpg'
+                    }}
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ProjectsPageContent() {
+  const [projects, setProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedDeveloper, setSelectedDeveloper] = useState('all')
+  const [detailsModal, setDetailsModal] = useState<{ isOpen: boolean; project: Project | null }>({ isOpen: false, project: null })
+  const [galleryModal, setGalleryModal] = useState<{ isOpen: boolean; project: Project | null }>({ isOpen: false, project: null })
+  const [requestInfoModal, setRequestInfoModal] = useState<{ isOpen: boolean; project: Project | null }>({ isOpen: false, project: null }) // NEW: Request Info Modal
   const [selectedImageIndex, setSelectedImageIndex] = useState<{[key: string]: number}>({})
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
@@ -328,6 +792,11 @@ function ProjectsPageContent() {
     }
   }
 
+  // NEW: Request Information button handler
+  const handleRequestInfo = (project: Project) => {
+    setRequestInfoModal({ isOpen: true, project: project })
+  }
+
   const filteredProjects = selectedDeveloper === 'all' 
     ? projects 
     : projects.filter(project => {
@@ -340,31 +809,6 @@ function ProjectsPageContent() {
         }
         return false
       })
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setSubmitSuccess(true)
-    setIsSubmitting(false)
-    
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setSubmitSuccess(false)
-      setInquiryModal({ isOpen: false, project: null })
-      setFormData({ name: '', email: '', phone: '', message: '' })
-    }, 3000)
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }))
-  }
 
   const handleImageChange = (projectId: string, direction: 'next' | 'prev') => {
     const currentIndex = selectedImageIndex[projectId] || 0
@@ -591,73 +1035,21 @@ function ProjectsPageContent() {
           <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
             Discover Dubai's most ambitious architectural marvels and high-yield investment opportunities in off-plan properties.
           </p>
-        </div>
-      </section>
-
-      {/* About Off-Plan Properties Section */}
-      <section className="py-24 bg-slate-50">
-        <div className="container-custom">
-          <div className="max-w-4xl mx-auto text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif text-secondary mb-8">
-              Why Invest in <span className="text-primary italic">Off-Plan Properties</span>?
-            </h2>
-            <p className="text-xl text-slate-600 leading-relaxed">
-              Off-plan properties represent one of the most lucrative investment opportunities in Dubai's dynamic real estate market. 
-              By purchasing properties before construction begins, investors can secure prime locations at competitive prices with significant appreciation potential.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <ArrowTrendingUpIcon className="h-10 w-10 text-primary" />
-              </div>
-              <h3 className="text-2xl font-serif text-secondary mb-4">Capital Appreciation</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Dubai's property market has shown consistent growth, with off-plan properties offering 8-15% annual appreciation 
-                as developments progress and infrastructure improves.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CurrencyDollarIcon className="h-10 w-10 text-primary" />
-              </div>
-              <h3 className="text-2xl font-serif text-secondary mb-4">Flexible Payment Plans</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Developers offer extended payment plans spanning 4-6 years, allowing investors to spread payments over time 
-                while construction progresses and value increases.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <HomeIcon className="h-10 w-10 text-primary" />
-              </div>
-              <h3 className="text-2xl font-serif text-secondary mb-4">Modern Specifications</h3>
-              <p className="text-slate-600 leading-relaxed">
-                New developments feature cutting-edge technology, sustainable design, and premium finishes that exceed 
-                current standards, ensuring long-term value and modern living.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Grid */}
-      <section className="py-24">
-        <div className="container-custom">
-          <div className="mb-12 text-center">
-            <h2 className="text-4xl font-serif text-secondary mb-4">
-              Featured {selectedDeveloper === 'all' ? 'Projects' : developers.find(d => d.id === selectedDeveloper)?.name}
-            </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+           <p className="text-xl text-white max-w-2xl mx-auto">
               {selectedDeveloper === 'all' 
                 ? 'Explore our curated selection of premium off-plan properties from Dubai\'s leading developers'
                 : `Discover exceptional properties from ${developers.find(d => d.id === selectedDeveloper)?.name}`
               }
             </p>
-          </div>
+        </div>
+      </section>
+
+     
+
+      {/* Projects Grid */}
+      <section className="py-5">
+        <div className="container-custom">
+          
 
           {loading ? (
             <div className="flex justify-center items-center py-20">
@@ -698,6 +1090,9 @@ function ProjectsPageContent() {
                         {project.status === 'completed' ? 'Completed' : 'In Progress'}
                       </span>
                     </div>
+                    
+                    {/* NEW: Gallery Icon */}
+                    <GalleryIcon onClick={() => setGalleryModal({ isOpen: true, project: project })} />
                     
                     {/* VIEW DETAILS BUTTON - LUXE STYLE */}
                     <button
@@ -844,6 +1239,22 @@ function ProjectsPageContent() {
         </div>
       </section>
 
+      {/* NEW: Full Screen Gallery Modal */}
+      {galleryModal.isOpen && galleryModal.project && (
+        <FullScreenGallery 
+          project={galleryModal.project} 
+          onClose={() => setGalleryModal({ isOpen: false, project: null })} 
+        />
+      )}
+
+      {/* NEW: Request Information Modal */}
+      {requestInfoModal.isOpen && requestInfoModal.project && (
+        <RequestInfoForm 
+          project={requestInfoModal.project} 
+          onClose={() => setRequestInfoModal({ isOpen: false, project: null })} 
+        />
+      )}
+
       {/* Project Details Modal - LUXE STYLE with VIDEO in Gallery */}
       {detailsModal.isOpen && detailsModal.project && (
         <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
@@ -884,7 +1295,7 @@ function ProjectsPageContent() {
               <div className="lg:col-span-8 space-y-12">
                 {/* Media Gallery (Images + Video) */}
                 <div className="overflow-hidden shadow-2xl rounded-3xl shadow-slate-200/50">
-                  <div className="relative h-[560px] bg-slate-100 overflow-hidden">
+                  <div className="relative h-[500px] bg-slate-100 overflow-hidden">
                     {renderCurrentMedia(detailsModal.project)}
 
                     {/* Status Badges */}
@@ -902,6 +1313,16 @@ function ProjectsPageContent() {
                         <span className="px-4 py-2 bg-black text-white text-sm font-bold rounded-full shadow-lg">
                           {detailsModal.project.status?.toUpperCase() || 'IN-PROGRESS'}
                         </span>
+
+                       <button
+                onClick={() => setGalleryModal({ isOpen: true, project: detailsModal.project })}
+                className="px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full text-slate-700 hover:text-primary font-bold text-sm flex items-center gap-1 shadow-lg hover:shadow-xl hover:bg-white transition-all duration-300 z-20"
+                title="Open Full Screen Gallery"
+              >
+                <Squares2X2Icon className="w-4 h-4" />
+                <span>Gallery</span>
+              </button>
+
                       </div>
 
                       {/* Right side - Media counter */}
@@ -966,7 +1387,7 @@ function ProjectsPageContent() {
                                     setIsVideoPlaying(false)
                                   }
                                 }}
-                                className={`flex-shrink-0 w-25 rounded-xl h-20 overflow-hidden border-4 transition-all relative ${
+                                className={`flex-shrink-0 w-25 rounded-xl h-20 overflow-hidden border-4 transition-all ${
                                   idx === currentMediaIndex
                                     ? "border-primary"
                                     : "border-transparent hover:border-slate-300"
@@ -1157,7 +1578,7 @@ function ProjectsPageContent() {
                             
                             // If we have specific coordinates, use them
                             const preciseMapUrl = detailsModal.project.latitude && detailsModal.project.longitude 
-                              ? `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.178258875107!2d${detailsModal.project.longitude}!3d${detailsModal.project.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!4v${Date.now()}`
+                              ? `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.178258875107!2d${detailsModal.project.longitude}!3d${detailsModal.project.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab% Emirates!4v${Date.now()}`
                               : `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d462562.65095637795!2d54.94728926249997!3d25.07575955953261!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!5e0!3m2!1sen!2s!4v1690465000000!5m2!1sen!2s`;
 
                             return (
@@ -1268,15 +1689,15 @@ function ProjectsPageContent() {
                           </div>
                         </div>
                       </div>
-                      {/* Contact Buttons */}
+                      {/* Contact Buttons - UPDATED */}
                       <div className="space-y-3">
-                        <Link
-                          href='/customer/login'
+                        <button
+                          onClick={() => handleRequestInfo(detailsModal.project!)}
                           className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20"
                         >
                           <EnvelopeIcon className="w-5 h-5" />
                           Request Information
-                        </Link>
+                        </button>
                         <button
                           onClick={() => {
                             const phone = "+971 4 123 4567";
@@ -1355,93 +1776,6 @@ function ProjectsPageContent() {
                   </div>
                 </div>
               </aside>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Existing Inquiry Modal */}
-      {inquiryModal.isOpen && inquiryModal.project && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-secondary/80 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-2xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-fadeIn">
-            <div className="relative h-48">
-              <Image 
-                src={inquiryModal.project.hero_image_url || '/default-image.jpg'}
-                alt={inquiryModal.project.name}
-                fill
-                className="object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement
-                  target.src = '/default-image.jpg'
-                }}
-              />
-              <div className="absolute inset-0 bg-secondary/60 flex items-center justify-center">
-                <h3 className="text-3xl font-serif text-white">Inquire: {inquiryModal.project.name}</h3>
-              </div>
-              <button 
-                onClick={() => setInquiryModal({ isOpen: false, project: null })}
-                className="absolute top-6 right-6 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-secondary transition-all"
-              >
-                <XMarkIcon className="h-6 w-6" />
-              </button>
-            </div>
-            <div className="p-10">
-              {submitSuccess ? (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircleIcon className="h-8 w-8 text-emerald-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-secondary mb-2">Inquiry Sent Successfully!</h3>
-                  <p className="text-slate-600">We'll get back to you within 24 hours with detailed information about {inquiryModal.project.name}.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleFormSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <input 
-                      type="text" 
-                      name="name"
-                      placeholder="Full Name" 
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-6 py-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-primary/50" 
-                    />
-                    <input 
-                      type="email" 
-                      name="email"
-                      placeholder="Email Address" 
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-6 py-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-primary/50" 
-                    />
-                  </div>
-                  <input 
-                    type="tel" 
-                    name="phone"
-                    placeholder="Phone Number" 
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-6 py-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-primary/50" 
-                  />
-                  <textarea 
-                    name="message"
-                    placeholder="Your Message" 
-                    rows={4} 
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    className="w-full px-6 py-4 bg-slate-50 rounded-xl border-none focus:ring-2 focus:ring-primary/50 resize-none"
-                  ></textarea>
-                  <button 
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-5 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? 'Sending...' : 'Submit Inquiry'}
-                  </button>
-                </form>
-              )}
             </div>
           </div>
         </div>

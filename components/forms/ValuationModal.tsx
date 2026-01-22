@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
 export interface ValuationData {
+  name: string
   full_name: string
   email: string
   phone: string
@@ -26,7 +27,8 @@ export default function ValuationModal({
     full_name: '',
     email: '',
     phone: '',
-    message: ''
+    message: '',
+    name: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Partial<ValuationData>>({})
@@ -57,7 +59,8 @@ export default function ValuationModal({
         full_name: '',
         email: '',
         phone: '',
-        message: ''
+        message: '',
+        name: ''
       })
     } catch (error) {
       console.error('Error submitting valuation request:', error)

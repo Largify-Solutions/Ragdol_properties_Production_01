@@ -40,6 +40,8 @@ import {
   ShareIcon,
   HeartIcon,
   PhotoIcon,
+  ArrowsPointingInIcon,
+  ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
 import {
   StarIcon as StarSolidIcon,
@@ -427,7 +429,7 @@ function FloorPlanForm({
       doc.setFontSize(10);
       doc.setTextColor(100, 100, 100);
       doc.text(`Document ID: ${property.id || "N/A"}`, 105, 250, {
-        align: "center",
+        align: "center" 
       });
       doc.text(
         `Generated: ${new Date().toLocaleDateString("en-US")}`,
@@ -884,145 +886,44 @@ function FloorPlanForm({
                       placeholder="+971 XX XXX XXXX"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Nationality
-                    </label>
-                    <input
-                      type="text"
-                      name="nationality"
-                      value={formData.nationality}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your nationality"
-                    />
-                  </div>
+                 
                 </div>
               </div>
 
               {/* Professional Information Section */}
               <div>
-                <h4 className="text-xl font-black text-gray-900 mb-6 pb-2 border-b border-gray-200">
-                  <span className="text-blue-600">2.</span> Professional
-                  Information
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Occupation
-                    </label>
-                    <input
-                      type="text"
-                      name="occupation"
-                      value={formData.occupation}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="e.g. Engineer, Doctor, Business Owner"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Employer/Company
-                    </label>
-                    <input
-                      type="text"
-                      name="employerCompany"
-                      value={formData.employerCompany}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your employer"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Monthly Income (AED)
-                    </label>
-                    <input
-                      type="number"
-                      name="monthlyIncome"
-                      value={formData.monthlyIncome}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your monthly income"
-                    />
-                  </div>
-                </div>
+                
+                
               </div>
 
               {/* Property Interest Section */}
               <div>
-                <h4 className="text-xl font-black text-gray-900 mb-6 pb-2 border-b border-gray-200">
-                  <span className="text-blue-600">3.</span> Property Interest
-                </h4>
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Budget Range
-                    </label>
-                    <select
-                      name="budgetRange"
-                      value={formData.budgetRange}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      {budgetOptions.map((option, index) => (
-                        <option key={index} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      Timeline
-                    </label>
-                    <select
-                      name="timeline"
-                      value={formData.timeline}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      {timelineOptions.map((option, index) => (
-                        <option key={index} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  
+                  
+                  
                 </div>
 
-                <div className="mt-6">
-                  <label className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      name="interestedInFinancing"
-                      checked={formData.interestedInFinancing}
-                      onChange={handleChange}
-                      className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-gray-700 font-medium">
-                      Interested in financing/mortgage options
-                    </span>
-                  </label>
-                </div>
+               
 
-                <div className="mt-6">
+                <div className="">
                   <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Additional Notes
+                    Message 
                   </label>
                   <textarea
                     name="additionalNotes"
                     value={formData.additionalNotes}
                     onChange={handleChange}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-1 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Any additional information or specific requirements..."
                   />
                 </div>
               </div>
 
               {/* Submit Button */}
-              <div className="pt-6 border-t border-gray-200">
+              <div className="pt-2 border-t border-gray-200">
                 <div className="flex flex-col sm:flex-row gap-4">
                   <button
                     type="button"
@@ -1049,11 +950,7 @@ function FloorPlanForm({
                     )}
                   </button>
                 </div>
-                <p className="text-gray-500 text-sm mt-4">
-                  By submitting, you agree to receive the floor plan PDF and
-                  allow our team to contact you regarding this property. Your
-                  information will be stored securely in our database.
-                </p>
+              
               </div>
             </div>
           </form>
@@ -1479,6 +1376,202 @@ function AgentPopupModal({
   );
 }
 
+// Gallery Modal Component
+function GalleryModal({ 
+  isOpen, 
+  onClose, 
+  images 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  images: string[]; 
+}) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showThumbnails, setShowThumbnails] = useState(true);
+  
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+  
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+  
+  const handleThumbnailClick = (index: number) => {
+    setCurrentIndex(index);
+  };
+  
+  // Fullscreen function
+  const toggleFullscreen = () => {
+    if (!isFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+    setIsFullscreen(!isFullscreen);
+  };
+  
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+      
+      switch(e.key) {
+        case 'ArrowLeft':
+          handlePrev();
+          break;
+        case 'ArrowRight':
+          handleNext();
+          break;
+        case 'Escape':
+          if (isFullscreen) {
+            document.exitFullscreen();
+            setIsFullscreen(false);
+          } else {
+            onClose();
+          }
+          break;
+        case ' ':
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+        case 't':
+          e.preventDefault();
+          setShowThumbnails(prev => !prev);
+          break;
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, isFullscreen, images.length, onClose]);
+  
+  // Fullscreen change listener
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+  
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-[9999] bg-black">
+      {/* Top Controls */}
+      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-20">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4 text-white">
+            <button
+              onClick={onClose}
+              className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            >
+              <XMarkIcon className="h-5 w-5" />
+            </button>
+            <span className="text-lg font-semibold">
+              {currentIndex + 1} / {images.length}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleFullscreen}
+              className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              title="Toggle Fullscreen (Space)"
+            >
+              {isFullscreen ? (
+                <ArrowsPointingInIcon className="h-5 w-5 text-white" />
+              ) : (
+                <ArrowsPointingOutIcon className="h-5 w-5 text-white" />
+              )}
+            </button>
+            
+            <button
+              onClick={() => setShowThumbnails(prev => !prev)}
+              className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              title="Toggle Thumbnails (T)"
+            >
+              <QueueListIcon className="h-5 w-5 text-white" />
+            </button>
+            
+            <a
+              href={images[currentIndex]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-10 px-4 rounded-full bg-white/10 hover:bg-white/20 flex items-center gap-2 transition-colors text-white"
+            >
+              <ArrowDownTrayIcon className="h-4 w-4" />
+              Download
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      {/* Main Image */}
+      <div className="absolute inset-0 flex items-center justify-center p-4">
+        <div className="relative w-full h-full flex items-center justify-center">
+          <button
+            onClick={handlePrev}
+            className="absolute left-4 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all z-10"
+          >
+            <ChevronLeftIcon className="h-6 w-6 text-white" />
+          </button>
+          
+          <img
+            src={images[currentIndex]}
+            alt={`Gallery image ${currentIndex + 1}`}
+            className="max-w-full max-h-full object-contain cursor-pointer"
+            onClick={handleNext}
+            onError={(e) => {
+              e.currentTarget.src = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop";
+            }}
+          />
+          
+          <button
+            onClick={handleNext}
+            className="absolute right-4 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all z-10"
+          >
+            <ChevronRightIcon className="h-6 w-6 text-white" />
+          </button>
+        </div>
+      </div>
+      
+      {/* Thumbnails */}
+      {showThumbnails && (
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent p-4 overflow-x-auto">
+          <div className="flex gap-2 h-full justify-center">
+            {images.map((img, index) => (
+              <button
+                key={index}
+                onClick={() => handleThumbnailClick(index)}
+                className={`flex-shrink-0 h-full rounded-lg overflow-hidden border-2 transition-all ${
+                  index === currentIndex
+                    ? 'border-white ring-2 ring-white scale-105'
+                    : 'border-transparent hover:border-white/50'
+                }`}
+              >
+                <img
+                  src={img}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="h-full w-auto object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Bottom Info */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white/70 text-sm">
+        Use arrow keys to navigate • Space for fullscreen • ESC to close
+      </div>
+    </div>
+  );
+}
+
 // Add AgentCard Component inside ViewDetailsModal function
 function ViewDetailsModal({
   property,
@@ -1498,6 +1591,7 @@ function ViewDetailsModal({
   const [agentData, setAgentData] = useState<AgentData | null>(null);
   const [agentLoading, setAgentLoading] = useState(true);
   const [showFloorPlanForm, setShowFloorPlanForm] = useState(false);
+  const [showGallery, setShowGallery] = useState(false); // NEW STATE FOR GALLERY
 
   // NEW STATES FOR AGENT POPUP
   const [showAgentPopup, setShowAgentPopup] = useState(false);
@@ -1765,6 +1859,15 @@ useEffect(() => {
         />
       )}
 
+      {/* Gallery Modal */}
+      {showGallery && (
+        <GalleryModal
+          isOpen={showGallery}
+          onClose={() => setShowGallery(false)}
+          images={propertyImages}
+        />
+      )}
+
       {/* Agent Popup Modal */}
       {showAgentPopup && agentPopupData && (
         <AgentPopupModal
@@ -1823,8 +1926,23 @@ useEffect(() => {
 
                   {/* Status Badges - TOP LEFT */}
                   <div className="absolute top-4 left-4 right-4 flex justify-between">
+
+
+
                     {/* Left side - Status badges */}
+
+                    
                     <div className="flex gap-2">
+ <button
+                        onClick={() => setShowGallery(true)}
+                        className="w-15 group p-1 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-2 border-dashed border-blue-200 hover:border-blue-400 rounded-1xl transition-all duration-300 flex flex-col items-center justify-center gap-1"
+                      >
+                        Gallery
+                      
+                      </button>
+
+
+                      
                       <span className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-full shadow-lg">
                         {property.status === "rent" ? "for rent" : "For sale"}
                       </span>
@@ -1836,7 +1954,13 @@ useEffect(() => {
                       <span className="px-4 py-2 bg-black text-white text-sm font-bold rounded-full shadow-lg">
                         {property.property_status || "ready"}
                       </span>
+
+
+
                     </div>
+                    
+
+
 
                     {/* Right side - Image counter */}
                     <div className="absolute top-2 right-4 px-3 py-1 bg-black/50 text-white text-sm rounded-full flex items-center gap-1 z-20">
@@ -1844,6 +1968,7 @@ useEffect(() => {
                       {currentImageIndex + 1} / {propertyImages.length}
                     </div>
                   </div>
+                  
 
                   {/* Image Navigation */}
                   {propertyImages.length > 1 && (
@@ -2058,6 +2183,9 @@ useEffect(() => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Gallery Section - NEW ADDED SECTION */}
+                  
 
                   {/* Map Location */}
                   <div className="space-y-6 pt-10 border-t border-slate-100">
@@ -3019,30 +3147,7 @@ function LuxuryPropertiesPageContent() {
 
             <div className="flex items-center gap-3">
               {/* View Toggle */}
-              <div className="flex bg-slate-50 p-1 rounded-xl">
-                <button
-                  type="button"
-                  onClick={() => handleViewChange("grid")}
-                  className={`p-2 rounded-lg transition-all ${
-                    viewMode === "grid"
-                      ? "bg-white shadow-sm text-primary"
-                      : "text-slate-400 hover:text-primary"
-                  }`}
-                >
-                  <ViewColumnsIcon className="h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleViewChange("list")}
-                  className={`p-2 rounded-lg transition-all ${
-                    viewMode === "list"
-                      ? "bg-white shadow-sm text-primary"
-                      : "text-slate-400 hover:text-primary"
-                  }`}
-                >
-                  <QueueListIcon className="h-5 w-5" />
-                </button>
-              </div>
+              
             </div>
           </div>
 
@@ -3318,9 +3423,9 @@ function LuxuryPropertiesPageContent() {
               Browse our collection of premium properties from both our main
               listings and agent submissions.
             </p>
-            <button className="px-8 py-4 bg-white text-slate-900 font-bold rounded-full hover:bg-slate-100 transition-all shadow-lg">
+            <Link href={'/contact'} className="px-8 py-4 bg-white text-slate-900 font-bold rounded-full hover:bg-slate-100 transition-all shadow-lg">
               Contact for More Information
-            </button>
+            </Link>
           </div>
         </div>
       </section>

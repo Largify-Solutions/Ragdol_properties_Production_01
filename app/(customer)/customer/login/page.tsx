@@ -3,8 +3,12 @@
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
+import ValuationModal, { ValuationData } from '@/components/forms/ValuationModal'
 import Link from 'next/link'
 import { EyeIcon, EyeSlashIcon, HomeIcon, SparklesIcon, BuildingOfficeIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
+
+import { db } from '@/lib/firebase'
+import { collection, addDoc } from 'firebase/firestore'
 
 export default function CustomerLogin() {
   const [formData, setFormData] = useState({
@@ -16,6 +20,8 @@ export default function CustomerLogin() {
   const [error, setError] = useState('')
   const [isLogin, setIsLogin] = useState(true)
   const [success, setSuccess] = useState('')
+  const [showValuationModal, setShowValuationModal] = useState(false)
+  const [isSubmittingValuation, setIsSubmittingValuation] = useState(false)
 
   const { signIn, signUp } = useAuth()
   const router = useRouter()
@@ -73,6 +79,41 @@ export default function CustomerLogin() {
       setError('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // ✅ SIMPLE FIREBASE SUBMIT FUNCTION
+  const handleValuationSubmit = async (valuationData: ValuationData) => {
+    setIsSubmittingValuation(true)
+    
+    try {
+      // Direct Firestore mein save karein
+      const docRef = await addDoc(collection(db, 'request_information'), {
+        // Basic information
+        fullName: valuationData.full_name,
+        email: valuationData.email,
+        phone: valuationData.phone,
+        
+        
+        // Metadata
+        submittedAt: new Date().toISOString(),
+        status: 'pending',
+        requestType: 'property_valuation',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+
+      console.log('✅ Document saved with ID: ', docRef.id)
+      
+      // Success message show karein
+      alert('✅ Valuation request submitted successfully! Our team will contact you soon.')
+      setShowValuationModal(false)
+      
+    } catch (error) {
+      console.error('❌ Error adding document: ', error)
+      alert('❌ Failed to submit valuation request. Please try again.')
+    } finally {
+      setIsSubmittingValuation(false)
     }
   }
 
@@ -140,18 +181,19 @@ export default function CustomerLogin() {
 
                 {/* Quick Links */}
                 <div className="flex flex-wrap gap-4">
-                  <Link
-                    href="/properties"
+                  <button
+                   onClick={() => setShowValuationModal(true)}
+                   
                     className="btn-primary"
                   >
                     Browse Properties
-                  </Link>
-                  <Link
-                    href="/customer/property-valuation"
+                  </button>
+                  <button
+                    onClick={() => setShowValuationModal(true)}
                     className="btn-outline"
                   >
-                    Need Valuation
-                  </Link>
+                    Request Valuation
+                  </button>
                 </div>
               </div>
 
@@ -251,7 +293,21 @@ export default function CustomerLogin() {
                   </form>
 
                   {/* Demo Credentials */}
-                 
+                  <div className="mt-6 space-y-2">
+                    <p className="text-sm text-muted-foreground text-center">Try demo accounts:</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {Object.keys(DEMO_CREDENTIALS).map((key) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => fillDemoCredentials(key as keyof typeof DEMO_CREDENTIALS)}
+                          className="text-xs px-3 py-1.5 bg-secondary/20 hover:bg-secondary/30 rounded-lg transition-colors"
+                        >
+                          Demo {key.replace('customer', '')}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
                   {/* Toggle between Login/Signup */}
                   <div className="text-center mt-6">
@@ -324,6 +380,16 @@ export default function CustomerLogin() {
           </div>
         </div>
       </section>
+
+      {/* Valuation Modal */}
+      {showValuationModal && (
+        <ValuationModal
+          isOpen={showValuationModal}
+          onClose={() => setShowValuationModal(false)}
+          onSubmit={handleValuationSubmit}
+          isSubmitting={isSubmittingValuation}
+        />
+      )}
     </div>
   )
 }
