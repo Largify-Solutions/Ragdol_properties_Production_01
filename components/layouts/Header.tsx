@@ -177,49 +177,49 @@ export default function Header() {
       items: [
         {
           label: "Property Types",
-          href: "/properties?action=buy",
+          href: "/luxe",
           subItems: [
-            { label: "All Properties", href: "/properties?action=buy" },
+            { label: "All Properties", href: "/luxe" },
             {
               label: "Apartments",
-              href: "/properties?action=buy&type=apartment",
+              href: "/luxe?type=apartment",
             },
 
-            { label: "Villas", href: "/properties?action=buy&type=villa" },
+            { label: "Villas", href: "/luxe?type=villa" },
 
             {
               label: "Townhouses",
-              href: "/properties?action=buy&type=townhouse",
+              href: "/luxe?type=townhouse",
             },
 
-            { label: "plot", href: "/properties?action=buy&type=plot" },
+            { label: "plot", href: "/luxe?type=plot" },
 
             {
               label: "Studios",
-              href: "/properties?action=buy&type=furnished-studio",
+              href: "/luxe?type=furnished-studio",
             },
 
             {
               label: "residential plot",
-              href: "/properties?action=buy&type=residential-plot",
+              href: "/luxe?type=residential-plot",
             },
             {
               label: " industrial plot",
-              href: "/properties?action=buy&type=industrial-plot",
+              href: "/luxe?type=industrial-plot",
             },
 
             {
               label: "commercial",
-              href: "/properties?action=buy&type=commercial",
+              href: "/luxe?type=commercial",
             },
           ],
         },
         {
           label: "Popular Areas",
-          href: "/properties?action=buy",
+          href: "/luxe",
           subItems: dubaiAreas.map((area) => ({
             label: area.name,
-            href: `/properties?action=buy&area=${area.name
+            href: `/luxe?area=${area.name
               .toLowerCase()
               .replace(/\s+/g, "-")}`,
           })),
@@ -237,40 +237,35 @@ export default function Header() {
           label: "Property Types",
           href: "/rent",
           subItems: [
-            // { label: "All Properties", href: "/properties?action=rent" },
             { label: "All Properties", href: "/rent" },
             {
               label: "Apartments",
-              href: "/rent?action=rent&type=apartment",
+              href: "/rent?type=apartment",
             },
-
-            { label: "Villas", href: "/rent?action=rent&type=villa" },
-
+            { label: "Villas", href: "/rent?type=villa" },
             {
               label: "Townhouses",
-              href: "/rent?action=rent&type=townhouse",
+              href: "/rent?type=townhouse",
             },
-
              {
               label: "Plot",
-              href: "/rent?action=rent&type=plot",
+              href: "/rent?type=plot",
             },
              {
               label: "commercial",
-              href: "/rent?action=rent&type=commercial",
+              href: "/rent?type=commercial",
             },
              {
               label: "residential plot",
-              href: "/rent?action=rent&type=residential-plot",
+              href: "/rent?type=residential-plot",
             },
              {
               label: "industrial plot",
-              href: "/rent?action=rent&type=industrial-plot",
+              href: "/rent?type=industrial-plot",
             },
-            
             {
               label: "Studios",
-              href: "/rent?action=rent&type=furnished-studio",
+              href: "/rent?type=furnished-studio",
             },
           ],
         },
@@ -279,7 +274,7 @@ export default function Header() {
           href: "/rent",
           subItems: dubaiAreas.map((area) => ({
             label: area.name,
-            href: `/properties?action=rent&area=${area.name
+            href: `/rent?area=${area.name
               .toLowerCase()
               .replace(/\s+/g, "-")}`,
           })),

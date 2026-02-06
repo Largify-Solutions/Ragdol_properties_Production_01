@@ -143,7 +143,7 @@ export default function PropertyInquiryPage() {
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
             <span>/</span>
-            <Link href="/properties" className="hover:text-primary transition-colors">Properties</Link>
+            <Link href="/luxe" className="hover:text-primary transition-colors">Properties</Link>
             <span>/</span>
             <span className="text-foreground font-medium">Inquiry</span>
           </nav>

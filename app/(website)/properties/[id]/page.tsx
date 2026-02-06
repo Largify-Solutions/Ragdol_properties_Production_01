@@ -342,7 +342,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
             
             <div className="flex items-center gap-3">
               <Link
-                href="/properties"
+                href="/luxe"
                 className="flex items-center gap-2 text-slate-400 hover:text-primary transition-colors group text-xs font-bold uppercase tracking-widest"
               >
                 <ArrowLeftIcon className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
