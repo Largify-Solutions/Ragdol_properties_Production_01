@@ -1542,7 +1542,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Landing Section with Image Slider */}
-      <section className="relative w-[60vh] h-screen overflow-hidden">
+      <section className="relative w-full h-screen overflow-hidden">
         <HeroImageSlider />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center z-0">
