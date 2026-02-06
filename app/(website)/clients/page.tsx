@@ -152,7 +152,7 @@ function ReviewSubmissionModal({ isOpen, onClose }: { isOpen: boolean; onClose: 
         {/* Modal */}
         <div className="relative w-full max-w-2xl transform overflow-hidden mt-30 rounded-2xl bg-white shadow-2xl transition-all">
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary to-secondary p-2">
+          <div className="bg-linear-to-r from-primary to-secondary p-2">
             <div className="flex items-center justify-between">
               <div>
                 <h6 className="text-2xl font-serif text-white">Submit Your Review</h6>
@@ -285,7 +285,7 @@ function ReviewSubmissionModal({ isOpen, onClose }: { isOpen: boolean; onClose: 
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-8 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-8 py-3 bg-linear-to-r from-primary to-secondary text-white font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submitting ? (
                       <span className="flex items-center gap-2">
@@ -583,7 +583,7 @@ export default function TestimonialsPage() {
       />
 
       {/* Hero Section */}
-      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-secondary to-slate-900">
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden bg-linear-to-br from-secondary to-slate-900">
         <div className="absolute inset-0">
           <Image 
             src="https://images.pexels.com/photos/567666/pexels-photo-567666.jpeg?auto=compress&cs=tinysrgb&w=1600"
@@ -592,7 +592,7 @@ export default function TestimonialsPage() {
             className="object-cover opacity-10"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary/90 via-secondary/70 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-secondary/90 via-secondary/70 to-transparent"></div>
         </div>
         
         <div className="container-custom relative z-10">
@@ -740,7 +740,7 @@ export default function TestimonialsPage() {
                       <div className="p-6">
                         {/* Client Info Header */}
                         <div className="flex items-start gap-4 mb-4">
-                          <div className="relative flex-shrink-0">
+                          <div className="relative shrink-0">
                             <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100">
                               <Image
                                 src={testimonial.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=random`}
@@ -835,7 +835,7 @@ export default function TestimonialsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-primary to-secondary">
+      <section className="py-24 bg-linear-to-r from-primary to-secondary">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-8">

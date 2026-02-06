@@ -76,7 +76,7 @@ export default function MortgageCalculatorPage() {
     <div className="min-h-screen bg-[#0d0d0d] text-[#f5f5f5]">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#d4af37]/10 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-[#d4af37]/10 to-transparent"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -269,29 +269,29 @@ export default function MortgageCalculatorPage() {
 
               <div className="space-y-4 text-sm text-[#a3a3a3]">
                 <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-[#d4af37] rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-[#d4af37] rounded-full mt-2 shrink-0"></div>
                   <p>This calculator provides estimates only. Actual payments may vary based on your credit score and lender terms.</p>
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-[#d4af37] rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-[#d4af37] rounded-full mt-2 shrink-0"></div>
                   <p>Most Pakistani banks require a minimum 20% down payment for home loans.</p>
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-[#d4af37] rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-[#d4af37] rounded-full mt-2 shrink-0"></div>
                   <p>Interest rates are subject to change. Current rates shown are approximate.</p>
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-[#d4af37] rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-[#d4af37] rounded-full mt-2 shrink-0"></div>
                   <p>This calculation does not include property taxes, insurance, or maintenance costs.</p>
                 </div>
               </div>
             </div>
 
             {/* CTA */}
-            <div className="bg-gradient-to-r from-[#d4af37]/20 to-[#d4af37]/5 rounded-lg border border-[#d4af37]/30 p-8 text-center">
+            <div className="bg-linear-to-r from-[#d4af37]/20 to-[#d4af37]/5 rounded-lg border border-[#d4af37]/30 p-8 text-center">
               <h3 className="text-xl font-bold mb-4">Ready to Apply?</h3>
               <p className="text-[#a3a3a3] mb-6">
                 Get pre-approved for your mortgage and find the best rates available.

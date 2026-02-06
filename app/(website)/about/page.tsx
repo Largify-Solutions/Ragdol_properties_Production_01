@@ -153,7 +153,7 @@ async function fetchFeaturedPartners(): Promise<Partner[]> {
       console.log(`📄 Document: ${doc.id}`, { 
         name: data.name, 
         active: data.active,
-        exists: !!data 
+        exists: !data! 
       });
       
       // Convert timestamps
@@ -345,7 +345,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-secondary to-slate-900">
+      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden bg-linear-to-br from-secondary to-slate-900">
         <div className="absolute inset-0">
           <Image 
             src="https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg?auto=compress&cs=tinysrgb&w=1600"
@@ -354,7 +354,7 @@ export default function AboutPage() {
             className="object-cover opacity-20"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary/90 via-secondary/70 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-secondary/90 via-secondary/70 to-transparent"></div>
         </div>
         
         <div className="container-custom relative z-10">
@@ -508,7 +508,7 @@ export default function AboutPage() {
       </section>
 
       {/* Strategic Partners Section */}
-      <section className="py-24 bg-gradient-to-br from-slate-900 to-secondary">
+      <section className="py-24 bg-linear-to-br from-slate-900 to-secondary">
         <div className="container-custom">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-serif text-white mb-6">
@@ -739,7 +739,7 @@ export default function AboutPage() {
       {/* CTA Section */}
       <section className="py-24">
         <div className="container-custom">
-          <div className="bg-gradient-to-r from-primary to-secondary rounded-3xl p-12 md:p-16 text-center relative overflow-hidden">
+          <div className="bg-linear-to-r from-primary to-secondary rounded-3xl p-12 md:p-16 text-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 -skew-x-12 translate-x-1/4"></div>
             <div className="relative z-10 max-w-3xl mx-auto">
               <h2 className="text-4xl md:text-5xl font-serif text-white mb-8">

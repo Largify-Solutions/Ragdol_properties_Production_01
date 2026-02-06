@@ -270,7 +270,7 @@ export default function AreaGuidesPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-secondary to-slate-900">
+      <section className="relative overflow-hidden bg-linear-to-br from-secondary to-slate-900">
         <div className="absolute inset-0">
           <Image 
             src="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1600"
@@ -279,7 +279,7 @@ export default function AreaGuidesPage() {
             className="object-cover opacity-20"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary/90 via-secondary/70 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-secondary/90 via-secondary/70 to-transparent"></div>
         </div>
         
         <div className="relative container-custom py-32">
@@ -350,7 +350,7 @@ export default function AreaGuidesPage() {
                 onClick={() => setSelectedCategory(category.title)}
                 className={`text-left p-8 rounded-2xl bg-white border-2 ${selectedCategory === category.title ? 'border-primary shadow-xl' : 'border-slate-100 shadow-lg'} hover:shadow-xl transition-all duration-300 hover:-translate-y-2`}
               >
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-r ${category.color} flex items-center justify-center mb-6`}>
+                <div className={`w-14 h-14 rounded-xl bg-linear-to-r ${category.color} flex items-center justify-center mb-6`}>
                   <category.icon className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-secondary mb-3">{category.title}</h3>
@@ -358,7 +358,7 @@ export default function AreaGuidesPage() {
                 <div className="space-y-2">
                   {category.areas.slice(0, 3).map((area, idx) => (
                     <div key={idx} className="flex items-center text-sm text-slate-500">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 shrink-0" />
                       <span className="truncate">{area}</span>
                     </div>
                   ))}
@@ -424,7 +424,7 @@ export default function AreaGuidesPage() {
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-slate-900/60 via-transparent to-transparent"></div>
                     
                     {/* Price Trend Badge */}
                     <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
@@ -543,7 +543,7 @@ export default function AreaGuidesPage() {
                             <ul className="space-y-2">
                               {area.amenities.map((amenity, idx) => (
                                 <li key={idx} className="flex items-center gap-2 text-slate-600">
-                                  <CheckCircleIcon className="h-4 w-4 text-green-500 flex-shrink-0" />
+                                  <CheckCircleIcon className="h-4 w-4 text-green-500 shrink-0" />
                                   <span>{amenity}</span>
                                 </li>
                               ))}
@@ -553,15 +553,15 @@ export default function AreaGuidesPage() {
                             <h4 className="text-lg font-bold text-secondary mb-4">Why Invest Here?</h4>
                             <ul className="space-y-3">
                               <li className="flex items-start gap-2">
-                                <TrendingUpIcon className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                                <TrendingUpIcon className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                                 <span className="text-slate-600"><strong>High Appreciation:</strong> Average {area.priceTrend} price increase annually</span>
                               </li>
                               <li className="flex items-start gap-2">
-                                <CurrencyDollarIcon className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                                <CurrencyDollarIcon className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                                 <span className="text-slate-600"><strong>Strong Rental Yield:</strong> {area.avgRentalYield} average annual return</span>
                               </li>
                               <li className="flex items-start gap-2">
-                                <UsersIcon className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                                <UsersIcon className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                                 <span className="text-slate-600"><strong>High Demand:</strong> {area.properties}+ properties with 98% occupancy rate</span>
                               </li>
                             </ul>
@@ -595,7 +595,7 @@ export default function AreaGuidesPage() {
       </section>
 
       {/* Guide Sections */}
-      <section className="py-24 bg-gradient-to-br from-slate-50 to-white">
+      <section className="py-24 bg-linear-to-br from-slate-50 to-white">
         <div className="container-custom">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-serif text-secondary mb-6">
@@ -617,7 +617,7 @@ export default function AreaGuidesPage() {
                   <ul className="space-y-3">
                     {section.content.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-slate-600 text-sm">
-                        <CheckCircleIcon className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <CheckCircleIcon className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </li>
                     ))}
@@ -710,7 +710,7 @@ export default function AreaGuidesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-primary to-secondary">
+      <section className="py-24 bg-linear-to-r from-primary to-secondary">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-8">

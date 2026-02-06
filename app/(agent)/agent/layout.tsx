@@ -15,7 +15,7 @@ export default function AgentLayout({
 
   // Check if user is authenticated and has agent role
   useEffect(() => {
-    if (!loading && (!user || (profile?.role !== 'agent' && profile?.role !== 'admin'))) {
+    if (loading! && (user! || (profile?.role !== 'agent' && profile?.role !== 'admin'))) {
       router.push('/auth/login')
     }
   }, [user, profile, loading, router])
@@ -30,7 +30,7 @@ export default function AgentLayout({
   }
 
   // Don't render if not authenticated
-  if (!user || (profile?.role !== 'agent' && profile?.role !== 'admin')) {
+  if (user! || (profile?.role !== 'agent' && profile?.role !== 'admin')) {
     return null
   }
 

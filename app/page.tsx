@@ -21,7 +21,6 @@ import {
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolidIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
-import { SkeletonLoader } from "@/components/ui/SkeletonLoader";
 
 // Firebase imports
 import { db } from "@/lib/firebase";
@@ -66,11 +65,34 @@ interface ProjectVideo {
   isRealProject: boolean;
 }
 
+// Cache for data (in-memory)
+const dataCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+// Helper function to get cached data
+function getCachedData(key: string) {
+  const cached = dataCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    console.log(`✓ Using cached data for ${key}`);
+    return cached.data;
+  }
+  return null;
+}
+
+// Helper function to set cached data
+function setCachedData(key: string, data: any) {
+  dataCache.set(key, { data, timestamp: Date.now() });
+}
+
 // Firebase data fetching functions
 
 // 1. Properties for Buy/Sale - Status = "buy" OR "sale" - INCLUDES AGENT PROPERTIES TOO
 async function fetchFeaturedProperties(): Promise<UIProperty[]> {
   try {
+    // Check cache first
+    const cached = getCachedData('featured_properties');
+    if (cached) return cached;
+
     console.log("Fetching ALL properties for sale from Firebase...");
 
     const allProperties: UIProperty[] = [];
@@ -162,7 +184,9 @@ async function fetchFeaturedProperties(): Promise<UIProperty[]> {
     allProperties.sort((a, b) => b.id.localeCompare(a.id));
 
     // CHANGED: MAXIMUM 4 ITEMS (previously 3)
-    return allProperties.slice(0, 4);
+    const result = allProperties.slice(0, 4);
+    setCachedData('featured_properties', result);
+    return result;
   } catch (error) {
     console.error("Error fetching sale properties:", error);
     return [];
@@ -172,6 +196,10 @@ async function fetchFeaturedProperties(): Promise<UIProperty[]> {
 // 2. Rental Properties - Status = "rent" - INCLUDES AGENT PROPERTIES TOO
 async function fetchRentalProperties(): Promise<UIProperty[]> {
   try {
+    // Check cache first
+    const cached = getCachedData('rental_properties');
+    if (cached) return cached;
+
     console.log("Fetching ALL rental properties from Firebase...");
 
     const allRentalProperties: UIProperty[] = [];
@@ -260,7 +288,9 @@ async function fetchRentalProperties(): Promise<UIProperty[]> {
     allRentalProperties.sort((a, b) => b.id.localeCompare(a.id));
 
     // CHANGED: MAXIMUM 4 ITEMS (previously 3)
-    return allRentalProperties.slice(0, 4);
+    const result = allRentalProperties.slice(0, 4);
+    setCachedData('rental_properties', result);
+    return result;
   } catch (error) {
     console.error("Error fetching rental properties:", error);
     return [];
@@ -270,6 +300,9 @@ async function fetchRentalProperties(): Promise<UIProperty[]> {
 // 3. REAL Project Videos - ONLY from Firebase - MAX 5
 async function fetchProjectVideos(): Promise<ProjectVideo[]> {
   try {
+    // Check cache first
+    const cached = getCachedData('project_videos');
+    if (cached) return cached;
     console.log("Fetching REAL projects for video showcase from Firebase...");
     const projectsRef = collection(db, "projects");
 
@@ -384,7 +417,9 @@ async function fetchProjectVideos(): Promise<ProjectVideo[]> {
     }
 
     // CHANGED: MAXIMUM 5 ITEMS (previously 4)
-    return projectVideos.slice(0, 5);
+    const result = projectVideos.slice(0, 5);
+    setCachedData('project_videos', result);
+    return result;
   } catch (error) {
     console.error("Error fetching project videos:", error);
     return [];
@@ -394,6 +429,9 @@ async function fetchProjectVideos(): Promise<ProjectVideo[]> {
 // 4. New Projects (for projects section) - MAX 4
 async function fetchNewProjects() {
   try {
+    // Check cache first
+    const cached = getCachedData('new_projects');
+    if (cached) return cached;
     console.log("Fetching projects from Firebase...");
     const projectsRef = collection(db, "projects");
 
@@ -1396,79 +1434,72 @@ export default function HomePage() {
   // Video refs
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
 
-  // Fetch all data on component mount - PROGRESSIVE LOADING
+  // Fetch all data on component mount - OPTIMIZED CONCURRENT LOADING
   useEffect(() => {
     const fetchAllData = async () => {
-      console.log("Starting progressive data fetch from Firebase...");
+      console.log("🚀 Starting optimized data fetch from Firebase...");
 
       try {
         const isConnected = await checkFirebaseConnection();
         setFirebaseConnected(isConnected);
 
         if (isConnected) {
-          console.log("Firebase connected, fetching data progressively...");
+          console.log("✓ Firebase connected, fetching all data concurrently...");
 
-          // Fetch critical data first (featured properties for hero section)
-          fetchFeaturedProperties()
-            .then(setFeaturedProperties)
-            .catch(console.error);
-
-          // Fetch rental properties in parallel
-          fetchRentalProperties()
-            .then(setRentalProperties)
-            .catch(console.error);
-
-          // Fetch project videos
-          fetchProjectVideos()
-            .then((data) => {
-              setProjectVideos(data);
-              // Initialize video states
-              const initialVideoStates: {
-                [key: string]: { isPlaying: boolean; isMuted: boolean };
-              } = {};
-              data.forEach((project) => {
-                initialVideoStates[project.id] = {
-                  isPlaying: false,
-                  isMuted: true,
-                };
-              });
-              setVideoStates(initialVideoStates);
-            })
-            .catch(console.error);
-
-          // Fetch non-critical data (can be delayed)
-          Promise.all([
+          // Fetch all critical data in parallel (fast & efficient)
+          const [
+            featuredData,
+            rentalData,
+            projectData,
+            newProjectsData,
+            partnersData,
+            agentsData,
+            testimonialsData,
+            blogsData
+          ] = await Promise.all([
+            fetchFeaturedProperties(),
+            fetchRentalProperties(),
+            fetchProjectVideos(),
             fetchNewProjects(),
             fetchTrustedPartners(),
             fetchTopAgents(),
             fetchTestimonials(),
-            fetchBlogPosts(),
-          ])
-            .then(
-              ([
-                projectsData,
-                partnersData,
-                agentsData,
-                testimonialsData,
-                blogsData,
-              ]) => {
-                setNewProjects(projectsData);
-                setTrustedPartners(partnersData);
-                setTopAgents(agentsData);
-                setTestimonials(testimonialsData);
-                setBlogPosts(blogsData);
+            fetchBlogPosts()
+          ]).catch(error => {
+            console.error("Error in concurrent data fetch:", error);
+            return [[], [], [], [], [], [], [], []];
+          });
 
-                console.log("All data fetched successfully");
-              }
-            )
-            .catch(console.error);
+          // Update all state at once
+          setFeaturedProperties(featuredData);
+          setRentalProperties(rentalData);
+          setNewProjects(newProjectsData);
+          setTrustedPartners(partnersData);
+          setTopAgents(agentsData);
+          setTestimonials(testimonialsData);
+          setBlogPosts(blogsData);
+
+          // Initialize video states for projects
+          if (projectData.length > 0) {
+            setProjectVideos(projectData);
+            const initialVideoStates: {
+              [key: string]: { isPlaying: boolean; isMuted: boolean };
+            } = {};
+            projectData.forEach((project) => {
+              initialVideoStates[project.id] = {
+                isPlaying: false,
+                isMuted: true,
+              };
+            });
+            setVideoStates(initialVideoStates);
+          }
+
+          console.log("✓ All data loaded successfully!");
         } else {
           console.log("Firebase not connected, using empty data");
-          setProjectVideos([]);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setProjectVideos([]);
       }
     };
 
@@ -1511,20 +1542,20 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Landing Section with Image Slider */}
-      <section className="relative w-full h-[95vh] min-h-[700px] overflow-hidden">
+      <section className="relative w-[60vh] h-screen overflow-hidden">
         <HeroImageSlider />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center z-0">
-          <div className="container-custom w-full pt-20">
-            <div className="text-center max-w-6xl mx-auto space-y-10">
-              <div className="space-y-4 sm:space-y-6">
-                <h2 className="text-primary font-bold tracking-[0.4em] uppercase text-xs sm:text-sm drop-shadow-md">
+          <div className="container-custom w-full">
+            <div className="text-center max-w-6xl mx-auto space-y-4">
+              <div className="space-y-2 sm:space-y-3">
+                <h2 className="text-primary font-bold tracking-[0.4em] uppercase text-xs sm:text-xs drop-shadow-md">
                   {t("homepage.premiumRealEstate")}
                 </h2>
-                <h1 className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight text-white drop-shadow-2xl leading-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white drop-shadow-2xl leading-tight">
                   Find Your <span className="text-primary">Dream Home</span>
                 </h1>
-                <p className="text-base sm:text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed font-medium drop-shadow-lg px-4 sm:px-0">
+                <p className="text-xs sm:text-sm md:text-base text-white/90 max-w-3xl mx-auto leading-relaxed font-medium drop-shadow-lg px-4 sm:px-0">
                   {t("homepage.discoverExclusiveProperties")}
                 </p>
               </div>
@@ -1533,7 +1564,7 @@ export default function HomePage() {
                 <HeroSearch />
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-12 pt-8 sm:pt-12 max-w-3xl mx-auto animate-fade-in [animation-delay:400ms] px-4 sm:px-0">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 pt-4 sm:pt-6 max-w-3xl mx-auto animate-fade-in [animation-delay:400ms] px-4 sm:px-0">
                 <div className="text-center group">
                   <div className="text-3xl sm:text-4xl font-black text-white mb-1 group-hover:text-primary transition-colors">
                     {featuredProperties.length +
@@ -1931,16 +1962,8 @@ export default function HomePage() {
               showCount={4} 
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="space-y-3">
-                  <div className="bg-slate-200 rounded-xl h-48 animate-pulse" />
-                  <div className="space-y-2">
-                    <div className="bg-slate-200 h-4 rounded animate-pulse w-3/4" />
-                    <div className="bg-slate-200 h-3 rounded animate-pulse w-1/2" />
-                  </div>
-                </div>
-              ))}
+            <div className="text-center py-12">
+              <p className="text-slate-500 font-medium">Loading premium properties...</p>
             </div>
           )}
         </div>
@@ -1972,16 +1995,8 @@ export default function HomePage() {
               showCount={4}
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="space-y-3">
-                  <div className="bg-slate-200 rounded-xl h-48 animate-pulse" />
-                  <div className="space-y-2">
-                    <div className="bg-slate-200 h-4 rounded animate-pulse w-3/4" />
-                    <div className="bg-slate-200 h-3 rounded animate-pulse w-1/2" />
-                  </div>
-                </div>
-              ))}
+            <div className="text-center py-12">
+              <p className="text-slate-500 font-medium">Loading rental properties...</p>
             </div>
           )}
         </div>

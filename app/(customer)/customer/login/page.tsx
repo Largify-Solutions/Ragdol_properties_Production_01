@@ -118,7 +118,7 @@ export default function CustomerLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-linear-to-b from-background to-muted/20">
       {/* Header */}
       <header className="border-b border-border/40 bg-card/50 backdrop-blur-sm">
         <div className="container-custom">
@@ -201,7 +201,7 @@ export default function CustomerLogin() {
               <div className="lg:pl-8">
                 <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
                   <div className="text-center mb-8">
-                    <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-linear-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
                       <HomeIcon className="h-8 w-8 text-primary-foreground" />
                     </div>
                     <h2 className="text-2xl font-bold text-foreground">
@@ -279,7 +279,7 @@ export default function CustomerLogin() {
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                      className="w-full bg-linear-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                     >
                       {isLoading ? (
                         <div className="flex items-center justify-center">

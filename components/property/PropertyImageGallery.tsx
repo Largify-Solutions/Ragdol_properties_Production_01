@@ -133,7 +133,7 @@ export default function PropertyImageGallery({
               <button
                 key={index}
                 onClick={() => setCurrentMediaIndex(index)}
-                className={`flex-shrink-0 w-16 h-16 md:w-20 md:h-20 relative rounded-lg overflow-hidden border-2 transition-colors ${
+                className={`shrink-0 w-16 h-16 md:w-20 md:h-20 relative rounded-lg overflow-hidden border-2 transition-colors ${
                   index === currentMediaIndex
                     ? 'border-primary'
                     : 'border-transparent hover:border-primary/50'

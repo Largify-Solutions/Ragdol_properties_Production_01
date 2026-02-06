@@ -417,7 +417,7 @@ function FloorPlansContent() {
                       <div className="grid md:grid-cols-2 gap-2">
                         {plan.features.map((feature, index) => (
                           <div key={index} className="flex items-center gap-3">
-                            <CheckCircleIcon className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+                            <CheckCircleIcon className="h-5 w-5 text-emerald-500 shrink-0" />
                             <span className="text-slate-600">{feature}</span>
                           </div>
                         ))}
@@ -446,7 +446,7 @@ function FloorPlansContent() {
       {/* Inquiry Modal */}
       {inquiryModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-secondary/80 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-md rounded-[2rem] overflow-hidden shadow-2xl">
+          <div className="bg-white w-full max-w-md rounded-4xl overflow-hidden shadow-2xl">
             <div className="p-8">
               <h3 className="text-2xl font-serif text-secondary mb-6 text-center">Request Floor Plans</h3>
               <form className="space-y-4">

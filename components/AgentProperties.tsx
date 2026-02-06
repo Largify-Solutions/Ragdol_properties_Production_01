@@ -195,7 +195,7 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+                        <div className="w-full h-full bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
                           <div className="text-4xl font-bold text-primary/30">
                             {property.title.substring(0, 2).toUpperCase()}
                           </div>

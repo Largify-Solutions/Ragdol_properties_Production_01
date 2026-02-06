@@ -764,7 +764,7 @@ function FloorPlanForm({
 
   if (submitted) {
     return (
-      <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-100 bg-black/50 flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl max-w-2xl w-full p-8">
           <div className="text-center">
             <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -788,7 +788,7 @@ function FloorPlanForm({
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/50 overflow-y-auto p-4">
+    <div className="fixed inset-0 z-100 bg-black/50 overflow-y-auto p-4">
       <div className="min-h-full flex items-center justify-center py-8">
         <div className="bg-white rounded-3xl max-w-4xl w-full">
           {/* Header */}
@@ -997,7 +997,7 @@ function AgentPopupModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
         {/* Close Button */}
         <button
@@ -1010,7 +1010,7 @@ function AgentPopupModal({
         {/* Modal Content */}
         <div className="p-0">
           {/* Header with Image */}
-          <div className="relative h-64 md:h-80 bg-gradient-to-r from-primary/20 to-secondary/20">
+          <div className="relative h-64 md:h-80 bg-linear-to-r from-primary/20 to-secondary/20">
             {agentData?.profile_image ? (
               <img
                 src={agentData.profile_image}
@@ -1018,13 +1018,13 @@ function AgentPopupModal({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+              <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/5">
                 <div className="text-6xl font-bold text-primary opacity-50">
                   {agentData?.title ? agentData.title.substring(0, 2).toUpperCase() : 'AG'}
                 </div>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
             
             {/* Agent Title */}
             <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -1195,7 +1195,7 @@ function AgentPopupModal({
               {/* Right Column - Detailed Information */}
               <div className="lg:col-span-2 space-y-8">
                 {/* Rating & Reviews */}
-                <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-6">
+                <div className="bg-linear-to-r from-primary/5 to-secondary/5 rounded-xl p-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                     <div>
                       <h3 className="text-xl font-bold text-secondary mb-2">Agent Rating</h3>
@@ -1460,9 +1460,9 @@ function GalleryModal({
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 z-[9999] bg-black">
+    <div className="fixed inset-0 z-9999 bg-black">
       {/* Top Controls */}
-      <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent z-20">
+      <div className="absolute top-0 left-0 right-0 p-4 bg-linear-to-b from-black/80 to-transparent z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4 text-white">
             <button
@@ -1541,13 +1541,13 @@ function GalleryModal({
       
       {/* Thumbnails */}
       {showThumbnails && (
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent p-4 overflow-x-auto">
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-black/80 to-transparent p-4 overflow-x-auto">
           <div className="flex gap-2 h-full justify-center">
             {images.map((img, index) => (
               <button
                 key={index}
                 onClick={() => handleThumbnailClick(index)}
-                className={`flex-shrink-0 h-full rounded-lg overflow-hidden border-2 transition-all ${
+                className={`shrink-0 h-full rounded-lg overflow-hidden border-2 transition-all ${
                   index === currentIndex
                     ? 'border-white ring-2 ring-white scale-105'
                     : 'border-transparent hover:border-white/50'
@@ -1935,7 +1935,7 @@ useEffect(() => {
                     <div className="flex gap-2">
  <button
                         onClick={() => setShowGallery(true)}
-                        className="w-15 group p-1 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-2 border-dashed border-blue-200 hover:border-blue-400 rounded-1xl transition-all duration-300 flex flex-col items-center justify-center gap-1"
+                        className="w-15 group p-1 bg-linear-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-2 border-dashed border-blue-200 hover:border-blue-400 rounded-1xl transition-all duration-300 flex flex-col items-center justify-center gap-1"
                       >
                         Gallery
                       
@@ -1998,7 +1998,7 @@ useEffect(() => {
                         <button
                           key={idx}
                           onClick={() => setCurrentImageIndex(idx)}
-                          className={`flex-shrink-0 w-25 rounded-xl h-20 overflow-hidden border-4 transition-all ${
+                          className={`shrink-0 w-25 rounded-xl h-20 overflow-hidden border-4 transition-all ${
                             idx === currentImageIndex
                               ? "border-primary"
                               : "border-transparent hover:border-slate-300"
@@ -2054,7 +2054,7 @@ useEffect(() => {
                     </div>
                   </div>
 
-                  <div className="flex  gap-20 justify-around p-8 bg-slate-50 rounded-[2rem] border border-slate-100">
+                  <div className="flex  gap-20 justify-around p-8 bg-slate-50 rounded-4xl border border-slate-100">
                     <div className="space-y-1">
                       <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         BEDROOMS
@@ -2246,7 +2246,7 @@ useEffect(() => {
                     </div>
                     {/* Location Address Display */}
                     <div className="flex items-start gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                         <MapPinIcon className="h-6 w-6 text-primary" />
                       </div>
                       <div>
@@ -3034,7 +3034,7 @@ function LuxuryPropertiesPageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-b from-amber-50 to-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
           <p className="mt-4 text-primary font-medium">Loading properties...</p>
@@ -3044,7 +3044,7 @@ function LuxuryPropertiesPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-white">
+    <div className="min-h-screen bg-linear-to-b from-white to-white">
       {/* View Details Modal - ALL SECTIONS VISIBLE */}
       {isModalOpen && selectedProperty && (
         <ViewDetailsModal
@@ -3054,7 +3054,7 @@ function LuxuryPropertiesPageContent() {
       )}
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <section className="relative pt-32 pb-20 overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="absolute inset-0 opacity-10">
           <img
             src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1600&q=80"
@@ -3062,7 +3062,7 @@ function LuxuryPropertiesPageContent() {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900/90 via-slate-900/80 to-slate-900" />
+        <div className="absolute inset-0 bg-linear-to-b from-slate-900/90 via-slate-900/80 to-slate-900" />
 
         <div className="container-custom relative z-10">
           <div className="max-w-5xl mx-auto text-center space-y-6">
@@ -3171,7 +3171,7 @@ function LuxuryPropertiesPageContent() {
                       style={{ animationDelay: `${i * 50}ms` }}
                     >
                       <div className="relative group">
-                        <div className="bg-white rounded-[1.5rem] overflow-hidden shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-xl hover:shadow-slate-200/70 transition-all duration-300">
+                        <div className="bg-white rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50 border border-slate-100 hover:shadow-xl hover:shadow-slate-200/70 transition-all duration-300">
                           {/* Property Image */}
                           <div className="relative h-64 overflow-hidden">
                             <img
@@ -3250,7 +3250,7 @@ function LuxuryPropertiesPageContent() {
 
                               {/* Location */}
                               <div className="flex items-center gap-2 text-slate-500">
-                                <MapPinIcon className="w-4 h-4 flex-shrink-0" />
+                                <MapPinIcon className="w-4 h-4 shrink-0" />
                                 <span className="text-sm font-medium line-clamp-1">
                                   {property.location ||
                                     property.area ||
@@ -3413,7 +3413,7 @@ function LuxuryPropertiesPageContent() {
       </div>
 
       {/* Simple CTA Section */}
-      <section className="bg-gradient-to-r from-slate-900 to-slate-800 py-20">
+      <section className="bg-linear-to-r from-slate-900 to-slate-800 py-20">
         <div className="container-custom">
           <div className="max-w-4xl mx-auto text-center text-white">
             <h2 className="text-3xl md:text-5xl font-black mb-6">

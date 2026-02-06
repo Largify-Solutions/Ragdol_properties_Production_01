@@ -130,6 +130,7 @@ export default function Header() {
   const [isLuxeOpen, setIsLuxeOpen] = useState(false);
   const [isCommercialOpen, setIsCommercialOpen] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const [isTrendsOpen, setIsTrendsOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
 
@@ -225,6 +226,8 @@ export default function Header() {
         },
       ],
     },
+
+    
 
     {
       label: t("header.navigation.rent"),
@@ -408,48 +411,100 @@ export default function Header() {
         },
       ],
     },
+    {
+      label: "Sell",
+      hasDropdown: false,
+      href: "/sell",
+    },
 
     {
       label: t("header.navigation.agents"),
       href: "/agents",
       hasDropdown: false,
     },
-     {
-      label: t("contact Us"),
-      href: "/contact",
-      hasDropdown: false,
-    },
-     {
-      label: t("About Us"),
-      href: "/about",
-      hasDropdown: false,
-    },
+    
     {
       label: t("header.navigation.services"),
+      hasDropdown: false,
+      href: "/services",
+    },
+
+    {
+      label: "Trends",
       hasDropdown: true,
       items: [
         {
-          label: t("header.navigation.propertyManagementService"),
-          href: "/services#property-management",
+          label: "Market Insights",
+          href: "/trends/market-insights",
+          subItems: [
+            { label: "Investment Map", href: "/trends/investment-map" },
+            { label: "Investment Analysis", href: "/trends/investment-analysis" },
+            { label: "Top Investment Areas", href: "/trends/top-investment-areas" },
+            { label: "Dubai Projects Map", href: "/trends/dubai-projects-map" },
+            { label: "New Developments", href: "/trends/new-developments" },
+          ],
         },
         {
-          label: t("contact Us"),
-          href: "/contact",
+          label: "Market Data",
+          href: "/trends/market-data",
+          subItems: [
+            { label: "Dubai population", href: "/trends/dubai-population" },
+            { label: "Market Performance", href: "/trends/market-performance" },
+            { label: "Transactions & Supply", href: "/trends/transactions-supply" },
+            { label: "Monthly Market Updates", href: "/trends/monthly-updates" },
+            { label: "Quarterly Market Updates", href: "/trends/quarterly-updates" },
+            { label: "Yearly Market Updates", href: "/trends/yearly-updates" },
+          ],
         },
-        { label: t("About Us"), href: "/about" },
+        {
+          label: "Tools",
+          href: "/trends/tools",
+          subItems: [
+            { label: "Calculator", href: "/trends/calculator" },
+            { label: "Projects", href: "/trends/projects" },
+          ],
+        },
       ],
     },
+
     {
       label: t("header.navigation.more"),
       hasDropdown: true,
       items: [
-        { label: t("partner"), href: "/partners" },
-        { label: t("clients"), href: "/clients" },
-        { label: t("header.navigation.news"), href: "/news" },
-        { label: t("header.navigation.guides"), href: "/guides" },
         {
-          label: t("header.navigation.whyInvestInDubai"),
-          href: "/why-invest-dubai",
+          label: "Market Insights",
+          href: "/market",
+          subItems: [
+            { label: "Investments Map", href: "/market/investments-map" },
+            { label: "Projects Sales Transactions", href: "/market/projects-sales" },
+            { label: "Market Performance 2024", href: "/market/performance-2024" },
+            { label: "Dubai Properties Prices 2024", href: "/market/prices-2024" },
+            { label: "Dubai Property Supply", href: "/market/property-supply" },
+            { label: "Properties Prices Index", href: "/market/prices-index" },
+            { label: "Dubai In Numbers", href: "/market/dubai-numbers" },
+            { label: "Best Property Investments In Dubai", href: "/market/best-investments" },
+          ],
+        },
+        {
+          label: "Resources & Information",
+          href: "/resources",
+          subItems: [
+            { label: t("header.navigation.guides"), href: "/guides" },
+            { label: t("header.navigation.news"), href: "/news" },
+            { label: t("header.navigation.whyInvestInDubai"), href: "/why-invest-dubai" },
+            { label: "FAQs", href: "/faqs" },
+            { label: "Blog", href: "/blog" },
+          ],
+        },
+        {
+          label: "Company",
+          href: "/company",
+          subItems: [
+            { label: t("partner"), href: "/partners" },
+            { label: t("clients"), href: "/clients" },
+            { label: t("header.navigation.about"), href: "/about" },
+            { label: t("header.navigation.contact"), href: "/contact" },
+          ],
         },
       ],
     },
@@ -513,7 +568,7 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-[100] transition-all duration-500",
+        "fixed top-0 left-0 right-0 z-100 transition-all duration-500",
         "bg-white/95 backdrop-blur-lg py-4"
       )}
     >
@@ -523,12 +578,13 @@ export default function Header() {
         isLuxeOpen ||
         isCommercialOpen ||
         isServicesOpen ||
+        isTrendsOpen ||
         isMoreOpen) && (
         <div className="fixed inset-0 bg-secondary/20 backdrop-blur-sm z-[-1]" />
       )}
       <div className="container-custom flex items-center justify-between px-4 sm:px-6 lg:px-8">
         
-<Link href="/" className="flex items-center group flex-shrink-0">
+<Link href="/" className="flex items-center group shrink-0">
       <img 
         src="/ragdol.png" 
         alt="Ragdol Logo" 
@@ -549,6 +605,7 @@ export default function Header() {
                     else if (item.label === "Commercial")
                       setIsCommercialOpen(true);
                     else if (item.label === "Services") setIsServicesOpen(true);
+                    else if (item.label === "Trends") setIsTrendsOpen(true);
                     else if (item.label === "More") setIsMoreOpen(true);
                   }}
                   onMouseLeave={() => {
@@ -559,6 +616,8 @@ export default function Header() {
                       setIsCommercialOpen(false);
                     else if (item.label === "Services")
                       setIsServicesOpen(false);
+                    else if (item.label === "Trends")
+                      setIsTrendsOpen(false);
                     else if (item.label === "More") setIsMoreOpen(false);
                   }}
                 >
@@ -574,6 +633,8 @@ export default function Header() {
                         setIsCommercialOpen(!isCommercialOpen);
                       else if (item.label === "Services")
                         setIsServicesOpen(!isServicesOpen);
+                      else if (item.label === "Trends")
+                        setIsTrendsOpen(!isTrendsOpen);
                       else if (item.label === "More")
                         setIsMoreOpen(!isMoreOpen);
                     }}
@@ -587,6 +648,7 @@ export default function Header() {
                           (item.label === "Luxe" && isLuxeOpen) ||
                           (item.label === "Commercial" && isCommercialOpen) ||
                           (item.label === "Services" && isServicesOpen) ||
+                          (item.label === "Trends" && isTrendsOpen) ||
                           (item.label === "More" && isMoreOpen)) &&
                           "rotate-180"
                       )}
@@ -597,8 +659,8 @@ export default function Header() {
                   <div
                     className={cn(
                       "bg-white shadow-2xl transition-all duration-300 z-50 top-full",
-                      // Compact dropdown for Services and More
-                      item.label === "Services" || item.label === "More"
+                      // Compact dropdown only for Services
+                      item.label === "Services"
                         ? "absolute right-0 w-64 py-4 rounded-xl mt-2"
                         : "fixed left-0 right-0 w-screen py-12",
                       (item.label === "Buy" && isBuyOpen) ||
@@ -606,6 +668,7 @@ export default function Header() {
                         (item.label === "Luxe" && isLuxeOpen) ||
                         (item.label === "Commercial" && isCommercialOpen) ||
                         (item.label === "Services" && isServicesOpen) ||
+                        (item.label === "Trends" && isTrendsOpen) ||
                         (item.label === "More" && isMoreOpen)
                         ? "opacity-100 scale-100 translate-y-0 visible"
                         : "opacity-0 scale-95 -translate-y-2 invisible"
@@ -613,13 +676,13 @@ export default function Header() {
                   >
                     <div
                       className={cn(
-                        item.label === "Services" || item.label === "More"
+                        item.label === "Services"
                           ? "px-4"
                           : "container-custom mx-auto grid grid-cols-12 gap-12"
                       )}
                     >
-                      {/* Compact dropdown for Services and More */}
-                      {item.label === "Services" || item.label === "More" ? (
+                      {/* Compact dropdown only for Services */}
+                      {item.label === "Services" ? (
                         <div className="space-y-1">
                           {item.items?.map((navItem) => (
                             <Link
@@ -627,10 +690,7 @@ export default function Header() {
                               href={navItem.href}
                               className="block px-4 py-2.5 text-sm font-medium text-secondary hover:text-primary hover:bg-slate-50 rounded-lg transition-all"
                               onClick={() => {
-                                if (item.label === "Services")
-                                  setIsServicesOpen(false);
-                                else if (item.label === "More")
-                                  setIsMoreOpen(false);
+                                setIsServicesOpen(false);
                               }}
                             >
                               {navItem.label}
@@ -646,7 +706,9 @@ export default function Header() {
                             <div
                               key={navItem.label}
                               className={cn(
-                                isAreaList ? "col-span-6" : "col-span-3"
+                                isAreaList ? "col-span-6" : 
+                                item.label === "More" ? "col-span-4" :
+                                "col-span-3"
                               )}
                             >
                               <Link
@@ -660,6 +722,8 @@ export default function Header() {
                                     setIsLuxeOpen(false);
                                   else if (item.label === "Commercial")
                                     setIsCommercialOpen(false);
+                                  else if (item.label === "More")
+                                    setIsMoreOpen(false);
                                 }}
                               >
                                 {navItem.label}
@@ -690,10 +754,12 @@ export default function Header() {
                                             setIsLuxeOpen(false);
                                           else if (item.label === "Commercial")
                                             setIsCommercialOpen(false);
+                                          else if (item.label === "More")
+                                            setIsMoreOpen(false);
                                         }}
                                       >
                                         {areaInfo && isAreaList && (
-                                          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-slate-100 shadow-sm">
+                                          <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-slate-100 shadow-sm">
                                             <img
                                               src={areaInfo.image}
                                               alt={subItem.label}
@@ -808,10 +874,9 @@ export default function Header() {
             // Sign In Button
             <Link
               href="/customer/login"
-              className="px-3 py-2 rounded-lg font-bold text-xs transition-all bg-secondary text-white hover:bg-primary"
+              className="h-10 w-10 rounded-full font-bold text-sm transition-all bg-primary text-white hover:bg-secondary hover:scale-110 flex items-center justify-center shadow-lg hover:shadow-xl"
             >
-              <span className="hidden sm:inline"></span>
-              <UserIcon className="h-5 w-5 inline sm:hidden" />
+              <UserIcon className="h-5 w-5" />
             </Link>
           )}
 
@@ -844,7 +909,7 @@ export default function Header() {
                 <span className="text-lg font-bold text-secondary group-hover:text-white">
                   {t("header.navigation.newProjects")}
                 </span>
-                <ChevronDownIcon className="h-5 w-5 text-slate-400 group-hover:text-white rotate-[-90deg]" />
+                <ChevronDownIcon className="h-5 w-5 text-slate-400 group-hover:text-white -rotate-90" />
               </Link>
 
               {/* Buy Section */}
@@ -1166,7 +1231,7 @@ export default function Header() {
                     <span className="text-base font-bold text-secondary">
                       {t("header.navigation.propertyManagement")}
                     </span>
-                    <ChevronDownIcon className="h-4 w-4 text-slate-400 rotate-[-90deg]" />
+                    <ChevronDownIcon className="h-4 w-4 text-slate-400 -rotate-90" />
                   </Link>
                   <Link
                     href="/services/consultation"
@@ -1176,7 +1241,7 @@ export default function Header() {
                     <span className="text-base font-bold text-secondary">
                       {t("header.navigation.consultation")}
                     </span>
-                    <ChevronDownIcon className="h-4 w-4 text-slate-400 rotate-[-90deg]" />
+                    <ChevronDownIcon className="h-4 w-4 text-slate-400 -rotate-90" />
                   </Link>
                   <Link
                     href="/services/investment"
@@ -1186,7 +1251,7 @@ export default function Header() {
                     <span className="text-base font-bold text-secondary">
                       {t("header.navigation.investment")}
                     </span>
-                    <ChevronDownIcon className="h-4 w-4 text-slate-400 rotate-[-90deg]" />
+                    <ChevronDownIcon className="h-4 w-4 text-slate-400 -rotate-90" />
                   </Link>
                 </div>
               </div>
@@ -1197,35 +1262,138 @@ export default function Header() {
                   {t("header.navigation.more")}
                 </div>
                 <div className="space-y-2">
+                  {/* Market Insights */}
+                  <div className="text-xs font-bold text-slate-600 px-4 mt-3">
+                    Market Insights
+                  </div>
                   <Link
-                    href="/about"
+                    href="/market/investments-map"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-slate-50 transition-all"
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
-                    <span className="text-base font-bold text-secondary">
-                      {t("header.navigation.about")}
-                    </span>
-                    <ChevronDownIcon className="h-4 w-4 text-slate-400 rotate-[-90deg]" />
+                    Investments Map
+                  </Link>
+                  <Link
+                    href="/market/projects-sales"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    Projects Sales Transactions
+                  </Link>
+                  <Link
+                    href="/market/performance-2024"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    Market Performance 2024
+                  </Link>
+                  <Link
+                    href="/market/prices-2024"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    Dubai Properties Prices 2024
+                  </Link>
+                  <Link
+                    href="/market/property-supply"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    Dubai Property Supply
+                  </Link>
+                  <Link
+                    href="/market/prices-index"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    Properties Prices Index
+                  </Link>
+                  <Link
+                    href="/market/dubai-numbers"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    Dubai In Numbers
+                  </Link>
+                  <Link
+                    href="/market/best-investments"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    Best Property Investments In Dubai
+                  </Link>
+
+                  {/* Resources & Information */}
+                  <div className="text-xs font-bold text-slate-600 px-4 mt-3">
+                    Resources & Information
+                  </div>
+                  <Link
+                    href="/guides"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    {t("header.navigation.guides")}
+                  </Link>
+                  <Link
+                    href="/news"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    {t("header.navigation.news")}
+                  </Link>
+                  <Link
+                    href="/why-invest-dubai"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    {t("header.navigation.whyInvestInDubai")}
+                  </Link>
+                  <Link
+                    href="/faqs"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    FAQs
                   </Link>
                   <Link
                     href="/blog"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-slate-50 transition-all"
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
-                    <span className="text-base font-bold text-secondary">
-                      {t("header.navigation.blog")}
-                    </span>
-                    <ChevronDownIcon className="h-4 w-4 text-slate-400 rotate-[-90deg]" />
+                    Blog
+                  </Link>
+
+                  {/* Company */}
+                  <div className="text-xs font-bold text-slate-600 px-4 mt-3">
+                    Company
+                  </div>
+                  <Link
+                    href="/partners"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    {t("partner")}
+                  </Link>
+                  <Link
+                    href="/clients"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    {t("clients")}
+                  </Link>
+                  <Link
+                    href="/about"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
+                  >
+                    {t("header.navigation.about")}
                   </Link>
                   <Link
                     href="/contact"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-slate-50 transition-all"
+                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
-                    <span className="text-base font-bold text-secondary">
-                      {t("header.navigation.contact")}
-                    </span>
-                    <ChevronDownIcon className="h-4 w-4 text-slate-400 rotate-[-90deg]" />
+                    {t("header.navigation.contact")}
                   </Link>
                 </div>
               </div>
@@ -1255,7 +1423,7 @@ export default function Header() {
                         : '/customer/dashboard'
                     }
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full py-4 bg-secondary text-white text-center font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-primary hover:text-secondary transition-all shadow-lg block"
+                    className="w-full py-4 bg-secondary text-white text-center font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-primary hover:text-secondary transition-all shadow-lg"
                   >
                     <UserIcon className="h-5 w-5" />
                     Dashboard
@@ -1272,7 +1440,7 @@ export default function Header() {
                 <Link
                   href="/customer/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full py-4 bg-secondary text-white text-center font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-primary hover:text-secondary transition-all shadow-lg block"
+                  className="w-full py-4 bg-secondary text-white text-center font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-primary hover:text-secondary transition-all shadow-lg"
                 >
                   <UserIcon className="h-5 w-5" />
                   Sign In

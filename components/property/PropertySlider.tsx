@@ -233,7 +233,7 @@ export default function PropertySlider({ title, properties, showCount = 4}: Prop
           {Array.from({ length: totalSlides }).map((_, slideIndex) => (
             <div 
               key={slideIndex}
-              className="w-full flex-shrink-0 px-2"
+              className="w-full shrink-0 px-2"
               style={{ width: `${100 / totalSlides}%` }}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -253,8 +253,8 @@ export default function PropertySlider({ title, properties, showCount = 4}: Prop
         </div>
 
         {/* Gradient Overlay for smooth edges */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-white to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-white to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-linear-to-r from-white to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-linear-to-l from-white to-transparent" />
       </div>
 
       {/* Dots Navigation */}

@@ -550,7 +550,7 @@ export default function Partners() {
                     {/* Logo and Name */}
                     <div className="flex items-start space-x-3 mb-3">
                       {partner.logo ? (
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg p-2 flex items-center justify-center flex-shrink-0">
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg p-2 flex items-center justify-center shrink-0">
                           <img
                             src={partner.logo}
                             alt={partner.name}
@@ -563,7 +563,7 @@ export default function Partners() {
                           />
                         </div>
                       ) : (
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg p-2 flex items-center justify-center flex-shrink-0">
+                        <div className="w-16 h-16 bg-gray-100 rounded-lg p-2 flex items-center justify-center shrink-0">
                           <PhotoIcon className="h-8 w-8 text-gray-400" />
                         </div>
                       )}
@@ -571,7 +571,7 @@ export default function Partners() {
                         <div className="flex items-center space-x-2 mb-1">
                           <h4 className="font-medium text-gray-900 truncate">{partner.name}</h4>
                           {partner.featured && (
-                            <StarIcon className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                            <StarIcon className="h-4 w-4 text-yellow-500 shrink-0" />
                           )}
                         </div>
                         {partner.category && (

@@ -143,7 +143,7 @@ const RecentPropertyCard = ({ property }: { property: AgentProperty }) => {
   return (
     <div className="flex items-center gap-4 p-4 bg-white border border-slate-100 rounded-xl hover:shadow-md transition-all">
       {/* Property Image */}
-      <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+      <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 shrink-0">
         {property.images && property.images.length > 0 ? (
           <img 
             src={property.images[0]} 
@@ -354,7 +354,7 @@ export default function AgentDashboard() {
 
       {/* Quick Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
+        <div className="bg-linear-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-100 text-sm font-medium mb-1">Total Portfolio Value</p>
@@ -370,7 +370,7 @@ export default function AgentDashboard() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white">
+        <div className="bg-linear-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-emerald-100 text-sm font-medium mb-1">Properties Live</p>
@@ -386,7 +386,7 @@ export default function AgentDashboard() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white">
+        <div className="bg-linear-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-amber-100 text-sm font-medium mb-1">Under Review</p>
@@ -402,7 +402,7 @@ export default function AgentDashboard() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white">
+        <div className="bg-linear-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-purple-100 text-sm font-medium mb-1">Recent Activity</p>
@@ -574,7 +574,7 @@ export default function AgentDashboard() {
         {/* Quick Actions & Insights */}
         <div className="space-y-6">
           {/* Quick Actions */}
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
+          <div className="bg-linear-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white">
             <h3 className="text-xl font-bold mb-6">Quick Actions</h3>
             <div className="space-y-4">
               <Link

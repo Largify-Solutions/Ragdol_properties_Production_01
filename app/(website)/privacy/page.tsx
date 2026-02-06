@@ -33,7 +33,7 @@ export default function PrivacyPolicyPage() {
             fill
             className="object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/40 to-white"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-secondary/60 via-secondary/40 to-white"></div>
         </div>
         
         <div className="container-custom relative z-10 text-center">

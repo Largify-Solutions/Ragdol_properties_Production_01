@@ -159,7 +159,7 @@ const PartnerDetailModal = ({ partner, isOpen, onClose }: {
                     className="inline-flex items-center gap-2 px-4 py-3 bg-primary/10 text-primary font-semibold rounded-xl hover:bg-primary/20 transition-colors"
                   >
                     <span className="truncate max-w-[200px]">{partner.website}</span>
-                    <ArrowTopRightOnSquareIcon className="h-4 w-4 flex-shrink-0" />
+                    <ArrowTopRightOnSquareIcon className="h-4 w-4 shrink-0" />
                   </a>
                 </div>
               )}
@@ -297,7 +297,7 @@ export default function PartnersPage() {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="relative h-[50vh] flex items-center justify-center overflow-hidden bg-secondary">
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary to-primary opacity-90"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-secondary to-primary opacity-90"></div>
         <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -349,7 +349,7 @@ export default function PartnersPage() {
                     className="bg-white rounded-3xl overflow-hidden shadow-lg shadow-slate-200/50 border border-slate-100 group hover:shadow-2xl hover:shadow-slate-200/70 transition-all duration-500 hover:-translate-y-2"
                   >
                     {/* Logo Container */}
-                    <div className="relative h-48 bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-8">
+                    <div className="relative h-48 bg-linear-to-br from-slate-50 to-slate-100 flex items-center justify-center p-8">
                       {partner.featured && (
                         <div className="absolute top-4 left-4 z-10">
                           <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase tracking-widest rounded-full">
@@ -476,7 +476,7 @@ export default function PartnersPage() {
       {/* CTA Section */}
       <section className="py-24 bg-white">
         <div className="container-custom">
-          <div className="bg-gradient-to-br from-secondary to-primary rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden">
+          <div className="bg-linear-to-br from-secondary to-primary rounded-[3rem] p-12 md:p-20 text-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0" style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,

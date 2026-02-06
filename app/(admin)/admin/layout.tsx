@@ -16,7 +16,7 @@ export default function AdminLayout({
   const isLoginPage = pathname === '/admin/login'
 
   useEffect(() => {
-    if (!loading && !isLoginPage && (!user || profile?.role !== 'admin')) {
+    if (loading! && !isLoginPage && (user! || profile?.role !== 'admin')) {
       router.push('/admin/login')
     }
   }, [user, profile, loading, router, isLoginPage])
@@ -36,7 +36,7 @@ export default function AdminLayout({
     return <>{children}</>
   }
 
-  if (!user || profile?.role !== 'admin') {
+  if (user! || profile?.role !== 'admin') {
     return null
   }
 

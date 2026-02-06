@@ -121,15 +121,15 @@ export default function Footer() {
             <h4 className="text-white font-bold uppercase tracking-widest text-sm mb-8">{t('footer.contact')}</h4>
             <ul className="space-y-6">
               <li className="flex items-start gap-4">
-                <MapPinIcon className="h-6 w-6 text-primary flex-shrink-0" />
+                <MapPinIcon className="h-6 w-6 text-primary shrink-0" />
                 <span className="text-sm leading-relaxed">Level 42, Emirates Towers, Sheikh Zayed Road, Dubai, UAE</span>
               </li>
               <li className="flex items-center gap-4">
-                <PhoneIcon className="h-6 w-6 text-primary flex-shrink-0" />
+                <PhoneIcon className="h-6 w-6 text-primary shrink-0" />
                 <span className="text-sm">+971 4 123 4567</span>
               </li>
               <li className="flex items-center gap-4">
-                <EnvelopeIcon className="h-6 w-6 text-primary flex-shrink-0" />
+                <EnvelopeIcon className="h-6 w-6 text-primary shrink-0" />
                 <span className="text-sm">concierge@ragdol.com</span>
               </li>
               

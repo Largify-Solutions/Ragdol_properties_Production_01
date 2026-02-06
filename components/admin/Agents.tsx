@@ -257,7 +257,7 @@
 //                   <tr key={agent.id} className="hover:bg-gray-50 transition-colors">
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       <div className="flex items-center">
-//                         <div className="h-10 w-10 flex-shrink-0">
+//                         <div className="h-10 w-10 shrink-0">
 //                           {agent.profile_image ? (
 //                             <img
 //                               src={agent.profile_image}
@@ -926,7 +926,7 @@ export default function Agents() {
                   <tr key={agent.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="h-10 w-10 flex-shrink-0">
+                        <div className="h-10 w-10 shrink-0">
                           {agent.profile_image ? (
                             <img
                               src={agent.profile_image}

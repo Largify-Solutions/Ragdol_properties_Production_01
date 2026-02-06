@@ -83,7 +83,7 @@ export default function BlogPage() {
             fill
             className="object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/40 to-white"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-secondary/60 via-secondary/40 to-white"></div>
         </div>
         
         <div className="container-custom relative z-10 text-center">
@@ -165,7 +165,7 @@ export default function BlogPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {posts.slice(1).map((post, i) => (
               <Link key={post.id} href={`/blog/${post.id}`} className="group animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
-                <div className="relative aspect-[16/10] rounded-[2rem] overflow-hidden mb-8 shadow-xl">
+                <div className="relative aspect-[16/10] rounded-4xl overflow-hidden mb-8 shadow-xl">
                   <img 
                     src={post.image} 
                     alt={post.title}
@@ -193,7 +193,7 @@ export default function BlogPage() {
           </div>
           
           <div className="text-center mt-20">
-            <button className="btn-outline !rounded-full !px-12 !py-4">
+            <button className="btn-outline rounded-full! !px-12 !py-4">
               Load More Articles
             </button>
           </div>

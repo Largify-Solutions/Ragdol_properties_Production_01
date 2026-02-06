@@ -560,9 +560,9 @@ const FullScreenGallery = ({
   }, []);
   
   return (
-    <div className="fixed inset-0 z-[100] bg-black">
+    <div className="fixed inset-0 z-100 bg-black">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 p-6 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+      <div className="absolute top-0 left-0 right-0 z-10 p-6 flex justify-between items-center bg-linear-to-b from-black/80 to-transparent">
         <div className="text-white">
           <h2 className="text-xl font-bold">{project.name}</h2>
           <p className="text-sm text-gray-300">
@@ -604,7 +604,7 @@ const FullScreenGallery = ({
       
       {/* Thumbnails */}
       {projectMedia.length > 1 && (
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 to-transparent">
           <div className="flex gap-2 overflow-x-auto justify-center">
             {projectMedia.map((media, index) => (
               <button
@@ -613,7 +613,7 @@ const FullScreenGallery = ({
                   setCurrentIndex(index);
                   setIsVideoPlaying(false);
                 }}
-                className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                className={`shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                   index === currentIndex 
                     ? 'border-white scale-110' 
                     : 'border-transparent hover:border-gray-400'
@@ -1022,7 +1022,7 @@ function ProjectsPageContent() {
             fill
             className="object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/40 to-white"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-secondary/60 via-secondary/40 to-white"></div>
         </div>
         
         <div className="container-custom relative z-10 text-center">
@@ -1387,7 +1387,7 @@ function ProjectsPageContent() {
                                     setIsVideoPlaying(false)
                                   }
                                 }}
-                                className={`flex-shrink-0 w-25 rounded-xl h-20 overflow-hidden border-4 transition-all ${
+                                className={`shrink-0 w-25 rounded-xl h-20 overflow-hidden border-4 transition-all ${
                                   idx === currentMediaIndex
                                     ? "border-primary"
                                     : "border-transparent hover:border-slate-300"
@@ -1395,7 +1395,7 @@ function ProjectsPageContent() {
                               >
                                 {media.type === 'video' ? (
                                   <div className="relative w-full h-full">
-                                    <div className="w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center">
+                                    <div className="w-full h-full bg-linear-to-br from-slate-900 to-slate-800 flex items-center justify-center">
                                       <VideoCameraIcon className="w-8 h-8 text-white" />
                                     </div>
                                     <div className="absolute top-1 right-1 px-1 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded">
@@ -1456,7 +1456,7 @@ function ProjectsPageContent() {
                     </div>
 
                     {/* Key Stats */}
-                    <div className="flex gap-20 justify-around p-8 bg-slate-50 rounded-[2rem] border border-slate-100">
+                    <div className="flex gap-20 justify-around p-8 bg-slate-50 rounded-4xl border border-slate-100">
                       <div className="space-y-1">
                         <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                           TOTAL UNITS

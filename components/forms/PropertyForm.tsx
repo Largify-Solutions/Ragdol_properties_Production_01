@@ -790,7 +790,7 @@ export default function PropertyForm({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-card border border-border rounded-xl w-full max-w-5xl max-h-[95vh] overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg">
+        <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg">
           <div className="flex justify-between items-center">
             <div>
              

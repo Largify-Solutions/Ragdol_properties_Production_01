@@ -1,172 +1,3 @@
-// "use client";
-
-// import { useState } from "react";
-// import Link from "next/link";
-// import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
-// import {
-//   ChevronLeftIcon,
-//   ChevronRightIcon,
-//   ArrowRightIcon,
-//   UserIcon,
-// } from "@heroicons/react/24/outline";
-
-// interface Agent {
-//   id: string;
-//   title?: string | null;
-//   bio?: string | null;
-//   experience_years?: number | null;
-//   rating?: number | null;
-//   review_count?: number | null;
-//   total_sales?: number | null;
-//   profile_image?: string | null;
-//   profiles?: {
-//     full_name?: string | null;
-//     avatar_url?: string | null;
-//   } | null;
-// }
-
-// interface AgentSliderProps {
-//   agents: Agent[];
-//   showCount?: number;
-// }
-
-// export default function AgentSlider({
-//   agents,
-//   showCount = 4,
-// }: AgentSliderProps) {
-//   const [currentIndex, setCurrentIndex] = useState(0);
-//   const [isTransitioning, setIsTransitioning] = useState(false);
-
-//   const nextSlide = () => {
-//     setIsTransitioning(true);
-//     setCurrentIndex((prevIndex) =>
-//       prevIndex + showCount >= agents.length ? 0 : prevIndex + showCount
-//     );
-//     setTimeout(() => setIsTransitioning(false), 300);
-//   };
-
-//   const prevSlide = () => {
-//     setIsTransitioning(true);
-//     setCurrentIndex((prevIndex) =>
-//       prevIndex - showCount < 0
-//         ? Math.max(0, agents.length - showCount)
-//         : prevIndex - showCount
-//     );
-//     setTimeout(() => setIsTransitioning(false), 300);
-//   };
-
-//   const visibleAgents = agents.slice(currentIndex, currentIndex + showCount);
-
-//   return (
-//     <div className="container-custom">
-//       <style>{`
-//         @keyframes slideIn {
-//           from {
-//             opacity: 0;
-//             transform: translateX(20px);
-//           }
-//           to {
-//             opacity: 1;
-//             transform: translateX(0);
-//           }
-//         }
-
-//         @keyframes slideOut {
-//           from {
-//             opacity: 1;
-//             transform: translateX(0);
-//           }
-//           to {
-//             opacity: 0;
-//             transform: translateX(-20px);
-//           }
-//         }
-
-//         .slide-item {
-//           animation: slideIn 0.5s ease-out forwards;
-//         }
-
-//         .slide-item.transitioning {
-//           animation: slideOut 0.3s ease-in forwards;
-//         }
-//       `}</style>
-
-    
-
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 overflow-hidden">
-//         {visibleAgents.map((agent, idx) => (
-//           <div key={agent.id} className={`slide-item h-full`}>
-//             <div className="card-custom group p-8 text-center">
-//               <div className="relative mb-6 inline-block">
-//                 <div className="w-32 h-32 mx-auto rounded-full overflow-hidden ring-4 ring-slate-50 group-hover:ring-primary/20 transition-all duration-500">
-//                   <img
-//                     src={
-//                       agent.profiles?.avatar_url ||
-//                       agent.profile_image ||
-//                       "/api/placeholder/128/128"
-//                     }
-//                     alt={agent.profiles?.full_name || agent.title || "Agent"}
-//                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-//                   />
-//                 </div>
-//                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-md flex items-center gap-1">
-//                   <StarSolidIcon className="h-4 w-4 text-yellow-400" />
-//                   <span className="text-xs font-bold text-slate-900">
-//                     {agent.rating || "5.0"}
-//                   </span>
-//                 </div>
-//               </div>
-
-//               <h3 className="font-black text-2xl text-slate-900 mb-1 group-hover:text-primary transition-colors">
-//                 {agent.profiles?.full_name || agent.title || "Agent"}
-//               </h3>
-//               <p className="text-sm text-primary font-bold uppercase tracking-widest mb-4">
-//                 {agent.title}
-//               </p>
-
-//               <div className="flex justify-center gap-6 py-4 border-y border-slate-50 mb-6">
-//                 <div className="text-center">
-//                   <div className="font-black text-slate-900">
-//                     {agent.experience_years || "8"}+
-//                   </div>
-//                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-//                     Years
-//                   </div>
-//                 </div>
-//                 <div className="text-center">
-//                   <div className="font-black text-slate-900">
-//                     {agent.total_sales
-//                       ? Math.floor(agent.total_sales / 1000000)
-//                       : "45"}
-//                     M+
-//                   </div>
-//                   <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-//                     Sales
-//                   </div>
-//                 </div>
-//               </div>
-
-//               {/* VIEW PROFILE BUTTON - Added at bottom */}
-//               <Link
-//                 href={`/agents/${agent.id}`}
-//                 className="w-full bg-white text-primary font-bold py-4 px-6 rounded-xl border-2 border-primary hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl"
-//               >
-                
-//                 View Profile
-                
-//               </Link>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-
-//       <div className="text-center mt-12"></div>
-//     </div>
-//   );
-// }
-
-
-// new code
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -269,7 +100,7 @@ function AgentDetailsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in mt-30">
       <div className="relative w-full max-w-4xl h-[85vh] bg-white rounded-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col">
         {/* Header */}
-        <div className="flex-shrink-0 p-6 border-b border-slate-100 bg-white">
+        <div className="shrink-0 p-6 border-b border-slate-100 bg-white">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-black text-slate-900">
@@ -295,7 +126,7 @@ function AgentDetailsModal({
             {/* Agent Header with Image */}
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               {/* Profile Image */}
-              <div className="flex-shrink-0 relative">
+              <div className="shrink-0 relative">
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden ring-4 ring-primary/20">
                   <img
                     src={agent.profiles?.avatar_url || agent.profile_image || '/api/placeholder/160/160'}

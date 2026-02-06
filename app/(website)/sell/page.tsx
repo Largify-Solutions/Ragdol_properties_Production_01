@@ -142,7 +142,7 @@ export default function SellPage() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/20 via-background to-secondary/10 py-20 md:py-32">
+      <section className="bg-linear-to-br from-primary/20 via-background to-secondary/10 py-20 md:py-32">
         <div className="container-custom">
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <h1 className="text-5xl md:text-6xl font-bold leading-tight">
@@ -435,7 +435,7 @@ export default function SellPage() {
                       ) : (
                         <div className="flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-xl">
                           <div className="flex items-center gap-3 overflow-hidden">
-                            <DocumentIcon className="w-6 h-6 text-primary flex-shrink-0" />
+                            <DocumentIcon className="w-6 h-6 text-primary shrink-0" />
                             <div className="truncate">
                               <p className="text-sm font-medium text-foreground truncate">{formData.floorPlan.name}</p>
                               <p className="text-xs text-muted-foreground">{(formData.floorPlan.size / 1024 / 1024).toFixed(2)} MB</p>
@@ -472,7 +472,7 @@ export default function SellPage() {
                       ) : (
                         <div className="flex items-center justify-between p-4 bg-primary/5 border border-primary/20 rounded-xl">
                           <div className="flex items-center gap-3 overflow-hidden">
-                            <DocumentTextIcon className="w-6 h-6 text-primary flex-shrink-0" />
+                            <DocumentTextIcon className="w-6 h-6 text-primary shrink-0" />
                             <div className="truncate">
                               <p className="text-sm font-medium text-foreground truncate">{formData.brochure.name}</p>
                               <p className="text-xs text-muted-foreground">{(formData.brochure.size / 1024 / 1024).toFixed(2)} MB</p>

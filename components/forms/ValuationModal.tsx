@@ -91,7 +91,7 @@ export default function ValuationModal({
   return createPortal(
     <div>
       {/* Backdrop */}
-      <div className="fixed inset-0 z-[100] bg-black/50" onClick={onClose} />
+      <div className="fixed inset-0 z-100 bg-black/50" onClick={onClose} />
       
       {/* Modal */}
       <div className="fixed inset-0 z-[101] flex items-center justify-center p-4">

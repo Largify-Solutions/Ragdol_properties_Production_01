@@ -300,7 +300,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {mockExperts.map((expert) => (
                   <div key={expert.id} className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted/50 transition-colors">
-                    <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                    <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted shrink-0">
                       <Image
                         src={expert.avatar}
                         alt={expert.name}
@@ -424,7 +424,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                   <div className="grid grid-cols-1 gap-3">
                     {project.amenities?.map((amenity, index) => (
                       <div key={index} className="flex items-center gap-3">
-                        <CheckCircleIcon className="w-5 h-5 text-primary flex-shrink-0" />
+                        <CheckCircleIcon className="w-5 h-5 text-primary shrink-0" />
                         <span className="text-sm">{amenity}</span>
                       </div>
                     ))}

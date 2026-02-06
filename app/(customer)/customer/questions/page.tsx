@@ -245,7 +245,7 @@
 
 //   // Fetch all replies for the current user - FIXED WITHOUT ORDERBY
 //   const fetchAllReplies = async () => {
-//     if (!user || enquiries.length === 0) {
+//     if (user! || enquiries.length === 0) {
 //       setAllReplies([]);
 //       setLoadingReplies(false);
 //       return;
@@ -1130,7 +1130,7 @@
 //                     {allReplies.map((reply) => {
 //                       const enquiry = getEnquiryById(reply.enquiry_id)
 //                       return (
-//                         <div key={reply.id} className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+//                         <div key={reply.id} className="bg-linear-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
 //                           <div className="flex items-start justify-between mb-6">
 //                             <div>
 //                               <h3 className="font-bold text-secondary text-lg flex items-center gap-2">
@@ -1162,7 +1162,7 @@
 //                           {/* Reply Message - Highlighted Section */}
 //                           <div className="bg-white rounded-xl p-4 border border-green-100 mb-4">
 //                             <div className="flex items-start gap-3">
-//                               <div className="flex-shrink-0">
+//                               <div className="shrink-0">
 //                                 <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
 //                                   <UserIcon className="h-5 w-5 text-green-600" />
 //                                 </div>
@@ -1234,7 +1234,7 @@
 //                   </div>
 //                 ) : (
 //                   <div className="text-center py-16">
-//                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200 max-w-2xl mx-auto">
+//                     <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200 max-w-2xl mx-auto">
 //                       <ChatBubbleLeftRightIcon className="h-16 w-16 text-blue-300 mx-auto mb-4" />
 //                       <h3 className="text-lg font-bold text-secondary mb-2">No replies yet</h3>
 //                       <p className="text-slate-500 mb-4">
@@ -1658,7 +1658,7 @@ export default function CustomerQuestions() {
 
   // Fetch all replies for the current user - FIXED WITHOUT ORDERBY
   const fetchAllReplies = async () => {
-    if (!user || enquiries.length === 0) {
+    if (user! || enquiries.length === 0) {
       setAllReplies([]);
       setLoadingReplies(false);
       return;
@@ -2609,7 +2609,7 @@ export default function CustomerQuestions() {
                     {allReplies.map((reply) => {
                       const enquiry = getEnquiryById(reply.enquiry_id)
                       return (
-                        <div key={reply.id} className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+                        <div key={reply.id} className="bg-linear-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
                           <div className="flex items-start justify-between mb-6">
                             <div>
                               <h3 className="font-bold text-secondary text-lg flex items-center gap-2">
@@ -2641,7 +2641,7 @@ export default function CustomerQuestions() {
                           {/* Reply Message - Highlighted Section */}
                           <div className="bg-white rounded-xl p-4 border border-green-100 mb-4">
                             <div className="flex items-start gap-3">
-                              <div className="flex-shrink-0">
+                              <div className="shrink-0">
                                 <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                                   <UserIcon className="h-5 w-5 text-green-600" />
                                 </div>
@@ -2713,7 +2713,7 @@ export default function CustomerQuestions() {
                   </div>
                 ) : (
                   <div className="text-center py-16">
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200 max-w-2xl mx-auto">
+                    <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200 max-w-2xl mx-auto">
                       <ChatBubbleLeftRightIcon className="h-16 w-16 text-blue-300 mx-auto mb-4" />
                       <h3 className="text-lg font-bold text-secondary mb-2">No replies yet</h3>
                       <p className="text-slate-500 mb-4">

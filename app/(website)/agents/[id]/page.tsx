@@ -492,7 +492,7 @@ export default async function AgentDetail({ params }: { params: Promise<{ id: st
 
   const propertiesCount = Array.isArray(mockProperties) ? mockProperties.length : 0
 
-  if (!agent && !profile) {
+  if (agent! && !profile) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
@@ -535,7 +535,7 @@ export default async function AgentDetail({ params }: { params: Promise<{ id: st
             <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100 sticky top-24">
               <div className="relative h-96">
                 <Image src={image} alt={name} fill className="object-cover" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-secondary/90 to-transparent">
+                <div className="absolute bottom-0 left-0 right-0 p-6 bg-linear-to-t from-secondary/90 to-transparent">
                   <div className="flex items-center gap-2 text-primary mb-1">
                     <CheckBadgeIcon className="w-5 h-5" />
                     <span className="text-xs font-bold uppercase tracking-widest">Verified Expert</span>

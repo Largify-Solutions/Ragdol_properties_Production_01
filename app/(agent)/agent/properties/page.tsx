@@ -137,7 +137,7 @@ const StatsCards = ({ stats, filter, setFilter }: {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {/* Total Properties Card */}
       <div 
-        className={`bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+        className={`bg-linear-to-br from-blue-500 to-blue-600 rounded-2xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
           filter === 'all' ? 'ring-4 ring-blue-300 ring-opacity-50' : ''
         }`}
         onClick={() => setFilter('all')}
@@ -162,7 +162,7 @@ const StatsCards = ({ stats, filter, setFilter }: {
 
       {/* Published Properties Card */}
       <div 
-        className={`bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+        className={`bg-linear-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
           filter === 'published' ? 'ring-4 ring-emerald-300 ring-opacity-50' : ''
         }`}
         onClick={() => setFilter('published')}
@@ -189,7 +189,7 @@ const StatsCards = ({ stats, filter, setFilter }: {
 
       {/* Under Review Card */}
       <div 
-        className={`bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
+        className={`bg-linear-to-br from-amber-500 to-amber-600 rounded-2xl p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
           filter === 'pending_review' ? 'ring-4 ring-amber-300 ring-opacity-50' : ''
         }`}
         onClick={() => setFilter('pending_review')}
@@ -216,7 +216,7 @@ const StatsCards = ({ stats, filter, setFilter }: {
       <div className="grid grid-cols-2 gap-4">
         {/* Approved Card */}
         <div 
-          className={`bg-gradient-to-br from-sky-500 to-sky-600 rounded-2xl p-4 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+          className={`bg-linear-to-br from-sky-500 to-sky-600 rounded-2xl p-4 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
             filter === 'approved' ? 'ring-4 ring-sky-300 ring-opacity-50' : ''
           }`}
           onClick={() => setFilter('approved')}
@@ -237,7 +237,7 @@ const StatsCards = ({ stats, filter, setFilter }: {
 
         {/* Rejected Card */}
         <div 
-          className={`bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl p-4 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
+          className={`bg-linear-to-br from-rose-500 to-rose-600 rounded-2xl p-4 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-xl ${
             filter === 'rejected' ? 'ring-4 ring-rose-300 ring-opacity-50' : ''
           }`}
           onClick={() => setFilter('rejected')}
@@ -431,7 +431,7 @@ const ImageSliderModal = ({ images, isOpen, onClose, initialIndex = 0 }: ImageSl
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                  className={`shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                     currentIndex === index 
                       ? 'border-blue-500 scale-105' 
                       : 'border-transparent hover:border-white/50'
@@ -513,7 +513,7 @@ const PropertyCard = ({
       <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden hover:shadow-xl transition-all group flex flex-col h-full">
         {/* Image Section with Slider */}
         <div 
-          className="relative h-56 w-full bg-slate-100 overflow-hidden cursor-pointer flex-shrink-0"
+          className="relative h-56 w-full bg-slate-100 overflow-hidden cursor-pointer shrink-0"
           onClick={() => setShowImageSlider(true)}
           onMouseEnter={() => property.images.length > 1 && setAutoPlay(true)}
           onMouseLeave={() => {
@@ -599,7 +599,7 @@ const PropertyCard = ({
         </div>
 
         {/* Content Section */}
-        <div className="p-4 flex-grow">
+        <div className="p-4 grow">
           <div className="mb-3">
             <h3 className="font-bold text-slate-800 text-lg mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
               {property.title}
@@ -1025,7 +1025,7 @@ const PropertyFormModal = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+        <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white p-6">
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold">
@@ -1533,7 +1533,7 @@ const TimePeriodStatsDropdown = ({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-4 py-3 bg-gradient-to-r ${periods.find(p => p.id === selectedPeriod)?.color} text-white font-medium rounded-xl hover:opacity-90 transition-all shadow-lg`}
+        className={`flex items-center gap-2 px-4 py-3 bg-linear-to-r ${periods.find(p => p.id === selectedPeriod)?.color} text-white font-medium rounded-xl hover:opacity-90 transition-all shadow-lg`}
       >
         {(() => {
           const Icon = periods.find(p => p.id === selectedPeriod)?.icon || CalendarIcon
@@ -1568,7 +1568,7 @@ const TimePeriodStatsDropdown = ({
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg bg-gradient-to-r ${period.color}`}>
+                    <div className={`p-2 rounded-lg bg-linear-to-r ${period.color}`}>
                       <Icon className="h-5 w-5 text-white" />
                     </div>
                     <div className="text-left">
@@ -2236,7 +2236,7 @@ export default function AgentProperties() {
       {/* Success Message */}
       {showSuccessMessage && (
         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-8 flex items-center gap-3">
-          <CheckCircleIcon className="h-6 w-6 text-emerald-600 flex-shrink-0" />
+          <CheckCircleIcon className="h-6 w-6 text-emerald-600 shrink-0" />
           <div>
             <p className="text-emerald-800 font-medium">
               {isEditing ? 'Property Updated Successfully!' : 'Property Submitted Successfully!'}

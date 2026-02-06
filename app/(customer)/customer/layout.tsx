@@ -16,7 +16,7 @@ export default function CustomerLayout({
   const isAuthPage = pathname === '/customer/login' || pathname === '/customer/signup'
 
   useEffect(() => {
-    if (!loading && !isAuthPage && !user) {
+    if (loading! && !isAuthPage && !user) {
       router.push('/customer/login')
     }
   }, [user, loading, router, isAuthPage])

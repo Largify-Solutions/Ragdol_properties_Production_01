@@ -69,7 +69,7 @@ export default function ExplorePage() {
             fill
             className="object-cover opacity-40"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/40 to-white"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-secondary/60 via-secondary/40 to-white"></div>
         </div>
         
         <div className="container-custom relative z-10 text-center">
@@ -127,7 +127,7 @@ export default function ExplorePage() {
                     </div>
                   </div>
                   
-                  <p className="text-slate-500 font-medium leading-relaxed mb-8 flex-grow">
+                  <p className="text-slate-500 font-medium leading-relaxed mb-8 grow">
                     {area.description}
                   </p>
                   
@@ -170,7 +170,7 @@ export default function ExplorePage() {
           <p className="text-xl text-white/70 max-w-2xl mx-auto mb-12 font-medium">
             Our area specialists can help you find the perfect neighborhood that matches your lifestyle and investment goals.
           </p>
-          <Link href="/contact" className="btn-primary !rounded-full !px-12 !py-5">
+          <Link href="/contact" className="btn-primary rounded-full! px-12! py-5!">
             Talk to an Expert
           </Link>
         </div>

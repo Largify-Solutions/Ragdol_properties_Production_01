@@ -33,7 +33,7 @@ export default function TermsOfServicePage() {
             fill
             className="object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/40 to-white"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-secondary/60 via-secondary/40 to-white"></div>
         </div>
         
         <div className="container-custom relative z-10 text-center">
@@ -120,7 +120,7 @@ export default function TermsOfServicePage() {
                       'Notify us immediately of any unauthorized use'
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-4 text-slate-600">
-                        <div className="w-6 h-6 bg-slate-50 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                        <div className="w-6 h-6 bg-slate-50 rounded-full flex items-center justify-center shrink-0 mt-1">
                           <span className="text-xs font-bold text-primary">{i + 1}</span>
                         </div>
                         {item}

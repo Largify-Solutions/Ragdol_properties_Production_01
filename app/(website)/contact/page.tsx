@@ -109,7 +109,7 @@ export default function ContactPage() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-4 py-12">
         <div className="max-w-md w-full text-center">
-          <div className="bg-white rounded-[2rem] shadow-2xl shadow-slate-200 p-12 border border-slate-100">
+          <div className="bg-white rounded-4xl shadow-2xl shadow-slate-200 p-12 border border-slate-100">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-8">
               <PaperAirplaneIcon className="h-10 w-10 text-primary" />
             </div>
@@ -140,7 +140,7 @@ export default function ContactPage() {
             fill
             className="object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-secondary/60 via-secondary/40 to-white"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-secondary/60 via-secondary/40 to-white"></div>
         </div>
         
         <div className="container-custom relative z-10 text-center">
@@ -423,7 +423,7 @@ export default function ContactPage() {
               </div>
 
               <div className="mt-6 flex items-start gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                   <MapPinIcon className="h-6 w-6 text-primary" />
                 </div>
                 <div>

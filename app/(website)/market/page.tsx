@@ -88,7 +88,7 @@ export default function MarketInsightsPage() {
     <div className="min-h-screen bg-[#0d0d0d] text-[#f5f5f5]">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#d4af37]/10 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-[#d4af37]/10 to-transparent"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">

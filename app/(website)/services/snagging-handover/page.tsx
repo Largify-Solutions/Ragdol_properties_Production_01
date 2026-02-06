@@ -204,7 +204,7 @@ export default function SnaggingHandoverPage() {
               {process.map((item, index) => (
                 <div key={index} className="flex items-start">
                   <div
-                    className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold mr-6"
+                    className="shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold mr-6"
                     style={{ backgroundColor: '#d4af37', color: '#0d0d0d' }}
                   >
                     {item.step}
@@ -233,7 +233,7 @@ export default function SnaggingHandoverPage() {
                   className="flex items-center p-4 rounded-lg"
                   style={{ backgroundColor: '#141414' }}
                 >
-                  <CheckCircleIcon className="h-6 w-6 mr-3 flex-shrink-0" style={{ color: '#d4af37' }} />
+                  <CheckCircleIcon className="h-6 w-6 mr-3 shrink-0" style={{ color: '#d4af37' }} />
                   <span style={{ color: '#f5f5f5' }}>{benefit}</span>
                 </div>
               ))}

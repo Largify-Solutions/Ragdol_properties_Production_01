@@ -407,7 +407,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                 </div>
 
                 {/* Key Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 bg-slate-50 rounded-[2rem] border border-slate-100">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-8 bg-slate-50 rounded-4xl border border-slate-100">
                   <div className="space-y-1">
                     <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Bedrooms</div>
                     <div className="flex items-center gap-2">
@@ -618,7 +618,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                     </div>
 
                     <div className="space-y-3">
-                      <button className="btn-primary !w-full !rounded-2xl !py-4 flex items-center justify-center gap-3 shadow-lg shadow-primary/20">
+                      <button className="btn-primary w-full! !rounded-2xl !py-4 flex items-center justify-center gap-3 shadow-lg shadow-primary/20">
                         <PhoneIcon className="w-5 h-5" />
                         Call Agent
                       </button>
@@ -663,7 +663,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                     />
                     <button
                       type="submit"
-                      className="btn-primary !w-full !rounded-2xl !py-4 shadow-xl shadow-primary/20"
+                      className="btn-primary w-full! !rounded-2xl !py-4 shadow-xl shadow-primary/20"
                     >
                       Send Inquiry
                     </button>
@@ -689,7 +689,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                   You Might Also Like
                 </h3>
               </div>
-              <Link href="/properties" className="btn-outline !rounded-full !px-8">
+              <Link href="/properties" className="btn-outline rounded-full! !px-8">
                 View All Properties
               </Link>
             </div>

@@ -44,7 +44,7 @@ export default function AccountPage() {
   ])
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (loading! && !user) {
       router.push('/auth/login')
     }
   }, [user, loading, router])
@@ -72,7 +72,7 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="bg-gradient-to-br from-primary/5 via-primary/3 to-secondary/5 border-b border-border">
+      <section className="bg-linear-to-br from-primary/5 via-primary/3 to-secondary/5 border-b border-border">
         <div className="container-custom py-8 lg:py-12">
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
             <Link href="/" className="hover:text-primary transition-colors">Home</Link>

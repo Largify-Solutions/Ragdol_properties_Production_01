@@ -121,7 +121,7 @@ export function OptimizedPropertyListing({
           )}
 
           {/* Empty state */}
-          {!loading && properties.length === 0 && (
+          {loading! && properties.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500">No properties found</p>
             </div>
@@ -291,13 +291,7 @@ export function OptimizedPropertyDetailsModal({
           <div className="border-t pt-4">
             <h3 className="font-semibold mb-3">Agent Information</h3>
             {agentLoading ? (
-              <div className="flex gap-3">
-                <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-              </div>
+              <p className="text-sm text-gray-400">Loading agent details...</p>
             ) : agentData ? (
               <div className="flex gap-3 items-center">
                 <div className="w-12 h-12 rounded-full bg-gray-300"></div>

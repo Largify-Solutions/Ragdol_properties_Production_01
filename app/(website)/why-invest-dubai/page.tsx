@@ -319,7 +319,7 @@
 //                   key={index}
 //                   className="flex items-center p-4 rounded-2xl bg-white border border-slate-200 hover:border-primary/40 shadow-sm hover:shadow-md transition-all duration-300"
 //                 >
-//                   <CheckCircleIcon className="h-6 w-6 mr-3 flex-shrink-0 text-primary" />
+//                   <CheckCircleIcon className="h-6 w-6 mr-3 shrink-0 text-primary" />
 //                   <span className="text-secondary font-medium">{benefit}</span>
 //                 </div>
 //               ))}
@@ -1010,7 +1010,7 @@ export default function WhyInvestDubaiPage() {
                   key={index}
                   className="flex items-center p-4 rounded-2xl bg-white border border-slate-200 hover:border-primary/40 shadow-sm hover:shadow-md transition-all duration-300"
                 >
-                  <CheckCircleIcon className="h-6 w-6 mr-3 flex-shrink-0 text-primary" />
+                  <CheckCircleIcon className="h-6 w-6 mr-3 shrink-0 text-primary" />
                   <span className="text-secondary font-medium">{benefit}</span>
                 </div>
               ))}

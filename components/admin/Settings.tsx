@@ -785,7 +785,7 @@ const Settings: React.FC<SettingsProps> = () => {
       {hasUnsavedChanges && (
         <div className="fixed bottom-4 right-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 max-w-sm">
           <div className="flex items-start gap-3">
-            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-yellow-500">Unsaved Changes</p>
               <p className="text-xs text-muted-foreground mt-1">

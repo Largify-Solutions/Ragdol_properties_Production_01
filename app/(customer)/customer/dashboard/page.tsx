@@ -181,7 +181,7 @@
 //       {/* Stats Grid - REAL COUNTS */}
 //       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
 //         {stats.map((stat, index) => (
-//           <div key={index} className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
+//           <div key={index} className="bg-white p-8 rounded-4xl border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
 //             <div className="flex items-center justify-between mb-4">
 //               <div className={`p-3 ${stat.bgColor} rounded-xl group-hover:opacity-90 transition-colors`}>
 //                 <stat.icon className={`h-6 w-6 ${stat.color}`} />
@@ -235,7 +235,7 @@
 //               <div className="space-y-6">
 //                 {savedProperties.map((saved) => (
 //                   <div key={saved.id} className="flex items-center gap-6 p-4 hover:bg-slate-50 rounded-2xl transition-all group">
-//                     <div className="w-20 h-20 relative rounded-xl overflow-hidden flex-shrink-0">
+//                     <div className="w-20 h-20 relative rounded-xl overflow-hidden shrink-0">
 //                       <Image 
 //                         src={saved.property?.image || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=200&auto=format&fit=crop'}
 //                         alt={saved.property?.title || 'Property'}
@@ -952,7 +952,7 @@ export default function CustomerDashboard() {
           </div>
 
           {/* Firebase Status */}
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-[2.5rem] p-6 border border-emerald-200">
+          <div className="bg-linear-to-r from-emerald-50 to-green-50 rounded-[2.5rem] p-6 border border-emerald-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-white rounded-full shadow-sm">
                 <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center">

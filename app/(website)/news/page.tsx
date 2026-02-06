@@ -208,7 +208,7 @@ export default function NewsPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative py-20 bg-gradient-to-br from-primary/5 to-slate-50">
+      <div className="relative py-20 bg-linear-to-br from-primary/5 to-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-black text-secondary mb-6 tracking-tight">
@@ -300,7 +300,7 @@ export default function NewsPage() {
                     
                     {/* Image Container with High Quality */}
                     <div 
-                      className="h-48 bg-cover bg-center group-hover:scale-105 transition-transform duration-300 cursor-pointer relative overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300"
+                      className="h-48 bg-cover bg-center group-hover:scale-105 transition-transform duration-300 cursor-pointer relative overflow-hidden bg-linear-to-br from-slate-200 to-slate-300"
                       onClick={() => handleReadMore(blog)}
                     >
                       {/* High Quality Image */}
@@ -320,7 +320,7 @@ export default function NewsPage() {
                       
                       {/* Loading Skeleton */}
                       {!imageLoaded[blog.id] && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300">
+                        <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-slate-200 to-slate-300">
                           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                         </div>
                       )}
@@ -560,7 +560,7 @@ export default function NewsPage() {
                   </div>
                   
                   {/* Gradient Overlay for better text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent"></div>
                   
                   {/* Overlay Content */}
                   <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white z-20">
