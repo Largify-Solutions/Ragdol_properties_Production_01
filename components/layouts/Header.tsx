@@ -2265,8 +2265,8 @@ export default function Header() {
                   <nav className="py-2">
                     <Link
                       href={
-                        profile.role === 'admin'
-                          ? '/admin/properties'
+                        profile.role == 'admin'
+                          ? '/admin/dashboard'
                           : profile.role === 'agent'
                           ? '/agent/dashboard'
                           : '/customer/dashboard'

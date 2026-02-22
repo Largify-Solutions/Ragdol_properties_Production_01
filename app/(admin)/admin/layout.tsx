@@ -36,9 +36,11 @@ export default function AdminLayout({
     return <>{children}</>
   }
 
-  if (user! || profile?.role !== 'admin') {
+// ✅ New correct condition
+if (!user)
+if (profile?.role !== 'admin') { 
     return null
-  }
+}
 
   return (
     <div className="flex min-h-screen bg-background">
