@@ -686,8 +686,13 @@ function FloorPlanForm({
         updated_at: new Date().toISOString(),
       };
 
-      await supabase.from('request_information').insert(floorplanData as any);
-      console.log("✅ Floor plan request saved to Supabase");
+      const res = await fetch('/api/request-info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(floorplanData),
+      });
+      if (!res.ok) throw new Error('Failed to submit request');
+      console.log("✅ Floor plan request saved via API");
       generatePDF();
       setSubmitted(true);
       setTimeout(() => {

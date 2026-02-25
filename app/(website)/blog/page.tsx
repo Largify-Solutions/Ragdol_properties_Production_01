@@ -1,77 +1,113 @@
-import { Metadata } from 'next'
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState, useEffect, useCallback } from 'react'
 import { CalendarIcon, UserIcon, ArrowRightIcon, SparklesIcon, ChartBarIcon, NewspaperIcon } from '@heroicons/react/24/outline'
+import { supabase } from '@/lib/supabase-browser'
+import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
 
-export const metadata: Metadata = {
-  title: 'Real Estate Blog & Market Insights | Dubai Property News | RAGDOLL',
-  description: 'Stay updated with the latest Dubai real estate news, market insights, investment tips, and expert guides.',
+interface BlogPost {
+  id: string
+  title: string | null
+  excerpt: string | null
+  content: string
+  category: string | null
+  featured_image: string | null
+  images: string[] | null
+  tags: string[] | null
+  status: string | null
+  author_id: string | null
+  published_at: string | null
+  created_at: string | null
+  views_count: number | null
 }
 
-const posts = [
-  {
-    id: '1',
-    title: 'Dubai Real Estate Market Trends 2024: What to Expect',
-    excerpt: 'An in-depth analysis of the projected growth, emerging hotspots, and regulatory changes shaping the Dubai property market in the coming year.',
-    category: 'Market Update',
-    author: 'Sarah Ahmed',
-    date: 'Dec 15, 2023',
-    image: 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800',
-    readTime: '8 min read'
-  },
-  {
-    id: '2',
-    title: 'Top 5 Areas for High-Yield Property Investment in Dubai',
-    excerpt: 'Discover the communities offering the best rental returns and capital appreciation potential for savvy investors in 2024.',
-    category: 'Investment',
-    author: 'Ahmed Hassan',
-    date: 'Dec 10, 2023',
-    image: 'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=800',
-    readTime: '6 min read'
-  },
-  {
-    id: '3',
-    title: 'The Ultimate Guide to Buying Off-Plan Property in Dubai',
-    excerpt: 'Everything you need to know about the off-plan buying process, from payment plans and escrow accounts to developer reputation.',
-    category: 'Guides',
-    author: 'Fatima Khan',
-    date: 'Dec 05, 2023',
-    image: 'https://images.pexels.com/photos/1350789/pexels-photo-1350789.jpeg?auto=compress&cs=tinysrgb&w=800',
-    readTime: '12 min read'
-  },
-  {
-    id: '4',
-    title: 'Luxury Living: The Rise of Branded Residences in Dubai',
-    excerpt: 'Exploring the growing trend of fashion and automotive brands entering the real estate space with ultra-luxury residential projects.',
-    category: 'Lifestyle',
-    author: 'Sarah Ahmed',
-    date: 'Nov 28, 2023',
-    image: 'https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=800',
-    readTime: '10 min read'
-  },
-  {
-    id: '5',
-    title: 'Sustainable Real Estate: Green Buildings in the UAE',
-    excerpt: 'How Dubai is leading the way in sustainable urban development and what it means for future property owners and the environment.',
-    category: 'Sustainability',
-    author: 'Michael Chen',
-    date: 'Nov 20, 2023',
-    image: 'https://images.pexels.com/photos/2121287/pexels-photo-2121287.jpeg?auto=compress&cs=tinysrgb&w=800',
-    readTime: '7 min read'
-  },
-  {
-    id: '6',
-    title: 'Navigating the Golden Visa: Real Estate Requirements',
-    excerpt: 'A comprehensive breakdown of the UAE Golden Visa program for property investors and how to qualify through real estate acquisition.',
-    category: 'Legal',
-    author: 'Fatima Khan',
-    date: 'Nov 15, 2023',
-    image: 'https://images.pexels.com/photos/4819372/pexels-photo-4819372.jpeg?auto=compress&cs=tinysrgb&w=800',
-    readTime: '9 min read'
-  }
-]
+// Module cache
+const CACHE_DURATION = 3 * 60 * 1000
+let blogCache: { data: BlogPost[] | null; timestamp: number } = { data: null, timestamp: 0 }
+
+function getCachedBlogs() {
+  if (blogCache.data && Date.now() - blogCache.timestamp < CACHE_DURATION) return blogCache.data
+  return null
+}
+function setCachedBlogs(data: BlogPost[]) { blogCache.data = data; blogCache.timestamp = Date.now() }
+function clearBlogCache() { blogCache.data = null; blogCache.timestamp = 0 }
+
+function formatDate(dateStr: string | null) {
+  if (!dateStr) return ''
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [activeCategory, setActiveCategory] = useState('All Posts')
+
+  const fetchPosts = useCallback(async (silent = false) => {
+    if (!silent) {
+      const cached = getCachedBlogs()
+      if (cached) { setPosts(cached); setLoading(false); return }
+    }
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(50)
+      if (error) throw error
+      const result = (data || []) as BlogPost[]
+      setPosts(result)
+      setCachedBlogs(result)
+    } catch (err) {
+      console.error('Error fetching blog posts:', err)
+    } finally {
+      if (!silent) setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { fetchPosts() }, [fetchPosts])
+
+  useRealtimeMulti([
+    { table: 'posts', onChange: () => { clearBlogCache(); fetchPosts(true) } }
+  ])
+
+  const categories = ['All Posts', ...Array.from(new Set(posts.map(p => p.category).filter((c): c is string => !!c)))]
+  const filteredPosts = activeCategory === 'All Posts' ? posts : posts.filter(p => p.category === activeCategory)
+  const featuredPost = filteredPosts[0]
+  const gridPosts = filteredPosts.slice(1)
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (posts.length === 0) {
+    return (
+      <div className="min-h-screen bg-white">
+        <section className="relative h-[50vh] flex items-center justify-center overflow-hidden bg-secondary">
+          <div className="absolute inset-0">
+            <Image 
+              src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1600"
+              alt="Blog Hero"
+              fill
+              className="object-cover opacity-30"
+            />
+            <div className="absolute inset-0 bg-linear-to-b from-secondary/60 via-secondary/40 to-white"></div>
+          </div>
+          <div className="container-custom relative z-10 text-center">
+            <h2 className="text-primary font-bold tracking-[0.4em] uppercase text-sm mb-6">Insights & News</h2>
+            <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-8">RAGDOLL <span className="text-gradient">Journal</span></h1>
+            <p className="text-xl text-white/80 max-w-2xl mx-auto font-medium">No posts published yet. Check back soon!</p>
+          </div>
+        </section>
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -100,13 +136,14 @@ export default function BlogPage() {
       </section>
 
       {/* Featured Post */}
+      {featuredPost && (
       <section className="py-24">
         <div className="container-custom">
           <div className="group relative bg-slate-900 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row animate-slide-up">
             <div className="lg:w-1/2 relative h-96 lg:h-auto overflow-hidden">
               <img 
-                src={posts[0].image} 
-                alt={posts[0].title}
+                src={featuredPost.featured_image || 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800'} 
+                alt={featuredPost.title || 'Blog post'}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
               />
               <div className="absolute top-8 left-8">
@@ -117,15 +154,15 @@ export default function BlogPage() {
             </div>
             <div className="lg:w-1/2 p-12 lg:p-20 flex flex-col justify-center">
               <div className="flex items-center gap-4 text-primary text-xs font-bold uppercase tracking-widest mb-6">
-                <span>{posts[0].category}</span>
+                <span>{featuredPost.category || 'Blog'}</span>
                 <span className="w-1 h-1 bg-white/20 rounded-full"></span>
-                <span>{posts[0].date}</span>
+                <span>{formatDate(featuredPost.published_at || featuredPost.created_at)}</span>
               </div>
               <h2 className="text-4xl md:text-5xl font-black text-white mb-8 leading-tight group-hover:text-primary transition-colors">
-                {posts[0].title}
+                {featuredPost.title}
               </h2>
               <p className="text-xl text-slate-400 leading-relaxed mb-10 font-medium">
-                {posts[0].excerpt}
+                {featuredPost.excerpt}
               </p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -133,11 +170,11 @@ export default function BlogPage() {
                     <UserIcon className="h-6 w-6" />
                   </div>
                   <div>
-                    <div className="text-white font-bold">{posts[0].author}</div>
-                    <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">{posts[0].readTime}</div>
+                    <div className="text-white font-bold">RAGDOLL</div>
+                    <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">{formatDate(featuredPost.published_at || featuredPost.created_at)}</div>
                   </div>
                 </div>
-                <Link href={`/blog/${posts[0].id}`} className="h-14 w-14 bg-primary rounded-2xl flex items-center justify-center text-secondary hover:bg-white transition-all">
+                <Link href={`/blog/${featuredPost.id}`} className="h-14 w-14 bg-primary rounded-2xl flex items-center justify-center text-secondary hover:bg-white transition-all">
                   <ArrowRightIcon className="h-6 w-6" />
                 </Link>
               </div>
@@ -145,13 +182,22 @@ export default function BlogPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Categories */}
       <section className="py-12 border-y border-slate-100">
         <div className="container-custom">
           <div className="flex flex-wrap justify-center gap-4">
-            {['All Posts', 'Market Update', 'Investment', 'Guides', 'Lifestyle', 'Legal', 'Sustainability'].map(cat => (
-              <button key={cat} className="px-8 py-3 rounded-full border border-slate-200 text-slate-600 font-bold text-sm hover:border-primary hover:text-primary transition-all">
+            {categories.map(cat => (
+              <button 
+                key={cat} 
+                onClick={() => setActiveCategory(cat)} 
+                className={`px-8 py-3 rounded-full border text-sm font-bold transition-all ${
+                  activeCategory === cat 
+                    ? 'border-primary bg-primary text-white' 
+                    : 'border-slate-200 text-slate-600 hover:border-primary hover:text-primary'
+                }`}
+              >
                 {cat}
               </button>
             ))}
@@ -163,24 +209,24 @@ export default function BlogPage() {
       <section className="py-24">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {posts.slice(1).map((post, i) => (
+            {gridPosts.map((post, i) => (
               <Link key={post.id} href={`/blog/${post.id}`} className="group animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
                 <div className="relative aspect-[16/10] rounded-4xl overflow-hidden mb-8 shadow-xl">
                   <img 
-                    src={post.image} 
-                    alt={post.title}
+                    src={post.featured_image || 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800'} 
+                    alt={post.title || 'Blog post'}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   <div className="absolute top-6 left-6">
                     <span className="px-4 py-1.5 bg-white/90 backdrop-blur-md text-primary text-[10px] font-black uppercase tracking-widest rounded-full">
-                      {post.category}
+                      {post.category || 'Blog'}
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4">
-                  <span>{post.date}</span>
+                  <span>{formatDate(post.published_at || post.created_at)}</span>
                   <span className="w-1 h-1 bg-slate-200 rounded-full"></span>
-                  <span>{post.readTime}</span>
+                  <span>{post.views_count || 0} views</span>
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 group-hover:text-primary transition-colors leading-tight mb-4">
                   {post.title}

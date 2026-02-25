@@ -430,16 +430,43 @@ export default function Blogs() {
 
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
-                  Featured Image URL
+                  Featured Image
                 </label>
-                <input
-                  type="url"
-                  name="featured_image"
-                  value={formData.featured_image}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="https://example.com/image.jpg"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    name="featured_image"
+                    value={formData.featured_image}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="https://example.com/image.jpg or upload →"
+                  />
+                  <label className="mt-1 cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 whitespace-nowrap">
+                    Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
+                        try {
+                          const fd = new FormData()
+                          fd.append('file', file)
+                          const res = await fetch('/api/admin/blogs/upload-image', { method: 'POST', body: fd })
+                          const json = await res.json()
+                          if (!res.ok) throw new Error(json.error)
+                          setFormData(prev => ({ ...prev, featured_image: json.url }))
+                        } catch (err: any) {
+                          alert('Upload failed: ' + err.message)
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {formData.featured_image && (
+                  <img src={formData.featured_image} alt="Preview" className="mt-2 h-32 w-auto rounded-lg object-cover" />
+                )}
               </div>
 
               <div className="space-y-2">

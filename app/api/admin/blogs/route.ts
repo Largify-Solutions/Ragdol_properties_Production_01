@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
 
+const ALLOWED_COLUMNS = new Set([
+  'title', 'content', 'excerpt', 'featured_image', 'images', 'category',
+  'tags', 'status', 'author_id', 'published_at', 'seo_title',
+  'seo_description', 'seo_keywords', 'created_at', 'updated_at',
+  'views_count', 'likes_count', 'comments_count',
+])
+
+function sanitize(body: Record<string, any>): Record<string, any> {
+  const clean: Record<string, any> = {}
+  for (const key of Object.keys(body)) {
+    if (ALLOWED_COLUMNS.has(key)) clean[key] = body[key]
+  }
+  return clean
+}
+
 export async function GET(req: NextRequest) {
   const supabase = createServiceClient()
   const { searchParams } = new URL(req.url)
@@ -30,7 +45,8 @@ export async function POST(req: NextRequest) {
   const supabase = createServiceClient()
   try {
     const body = await req.json()
-    const { data, error } = await supabase.from('posts').insert(body).select().single()
+    const clean = sanitize(body)
+    const { data, error } = await supabase.from('posts').insert(clean as any).select().single()
     if (error) throw error
     return NextResponse.json(data, { status: 201 })
   } catch (error: any) {
@@ -46,9 +62,11 @@ export async function PUT(req: NextRequest) {
     const { id, ...updates } = body
     if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
 
+    const clean = sanitize(updates)
+    clean.updated_at = new Date().toISOString()
     const { data, error } = await supabase
       .from('posts')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update(clean)
       .eq('id', id)
       .select()
       .single()

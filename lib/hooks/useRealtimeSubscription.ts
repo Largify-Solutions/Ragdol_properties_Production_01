@@ -136,14 +136,16 @@ export function useRealtimeSubscription(options: RealtimeOptions) {
  */
 export function useRealtimeMulti(subscriptions: RealtimeOptions[]) {
   const channelsRef = useRef<RealtimeChannel[]>([])
+  const subsRef = useRef(subscriptions)
+  subsRef.current = subscriptions
 
   useEffect(() => {
     const channels: RealtimeChannel[] = []
 
-    subscriptions.forEach((sub) => {
+    subsRef.current.forEach((sub, idx) => {
       if (sub.enabled === false) return
 
-      const { table, schema = 'public', event = '*', filter, onInsert, onUpdate, onDelete, onChange } = sub
+      const { table, schema = 'public', event = '*', filter } = sub
       const channelName = `realtime:${schema}:${table}${filter ? `:${filter}` : ''}:${Date.now()}`
 
       const channelConfig: any = { event, schema, table }
@@ -155,11 +157,13 @@ export function useRealtimeMulti(subscriptions: RealtimeOptions[]) {
           'postgres_changes' as any,
           channelConfig,
           (payload: RealtimePostgresChangesPayload<any>) => {
-            onChange?.(payload)
+            const current = subsRef.current[idx]
+            if (!current) return
+            current.onChange?.(payload)
             switch (payload.eventType) {
-              case 'INSERT': onInsert?.(payload); break
-              case 'UPDATE': onUpdate?.(payload); break
-              case 'DELETE': onDelete?.(payload); break
+              case 'INSERT': current.onInsert?.(payload); break
+              case 'UPDATE': current.onUpdate?.(payload); break
+              case 'DELETE': current.onDelete?.(payload); break
             }
           }
         )

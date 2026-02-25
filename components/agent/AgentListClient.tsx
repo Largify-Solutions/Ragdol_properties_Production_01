@@ -266,7 +266,7 @@ export default function AgentListClient() {
   const [showPropertiesModal, setShowPropertiesModal] = useState(false)
   const [selectedAgentForProperties, setSelectedAgentForProperties] = useState<Agent | null>(null)
 
-  // Supabase se agents fetch karo
+  // Supabase se agents fetch karo (with loading spinner — for initial mount)
   const loadAgents = useCallback(async () => {
     setLoading(true)
     try {
@@ -279,13 +279,23 @@ export default function AgentListClient() {
     }
   }, [])
 
+  // Silent refresh — no loading spinner, used by realtime subscription
+  const refreshAgents = useCallback(async () => {
+    try {
+      const realAgents = await fetchRealAgents()
+      setAgents(realAgents)
+    } catch (error) {
+      console.error('Failed to refresh agents:', error)
+    }
+  }, [])
+
   useEffect(() => {
     loadAgents()
   }, [loadAgents])
 
-  // Real-time: auto-refresh when agents table changes
+  // Real-time: silently refresh when agents table changes
   useRealtimeMulti([
-    { table: 'agents', onChange: () => { loadAgents() } }
+    { table: 'agents', onChange: () => { refreshAgents() } }
   ])
 
   // Filter and search agents

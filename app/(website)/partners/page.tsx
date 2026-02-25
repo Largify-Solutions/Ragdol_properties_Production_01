@@ -276,13 +276,23 @@ export default function PartnersPage() {
     }
   }, [])
 
+  // Silent refresh — no spinner, used by realtime subscription
+  const refreshPartners = useCallback(async () => {
+    try {
+      const partnersData = await fetchPartners()
+      setPartners(partnersData)
+    } catch (error) {
+      console.error('Error refreshing partners:', error)
+    }
+  }, [])
+
   useEffect(() => {
     loadPartners()
   }, [loadPartners])
 
-  // Real-time: auto-refresh when partners table changes
+  // Real-time: silently refresh when partners table changes
   useRealtimeMulti([
-    { table: 'partners', onChange: () => { loadPartners() } }
+    { table: 'partners', onChange: () => { refreshPartners() } }
   ])
 
   return (

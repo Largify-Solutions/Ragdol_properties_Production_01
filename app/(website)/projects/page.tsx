@@ -41,7 +41,20 @@ import {
 import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
 import { supabase } from "@/lib/supabase-browser";
 import { useRealtimeMulti } from "@/lib/hooks/useRealtimeSubscription";
-// addDoc import removed (using Supabase now)
+
+// Module-level cache for projects data
+const CACHE_DURATION = 3 * 60 * 1000 // 3 minutes
+let projectsCache: { data: any[] | null; timestamp: number } = { data: null, timestamp: 0 }
+function getCachedProjects() {
+  if (projectsCache.data && Date.now() - projectsCache.timestamp < CACHE_DURATION) return projectsCache.data
+  return null
+}
+function setCachedProjects(data: any[]) {
+  projectsCache.data = data; projectsCache.timestamp = Date.now()
+}
+function clearProjectsCache() {
+  projectsCache.data = null; projectsCache.timestamp = 0
+}
 
 // Types define karen
 interface Project {
@@ -689,10 +702,17 @@ function ProjectsPageContent() {
 
   // Real-time: auto-refresh when projects table changes
   useRealtimeMulti([
-    { table: 'projects', onChange: () => { fetchProjects() } }
+    { table: 'projects', onChange: () => { clearProjectsCache(); fetchProjects() } }
   ]);
 
   const fetchProjects = async () => {
+    // Check cache first
+    const cached = getCachedProjects()
+    if (cached) {
+      setProjects(cached as Project[])
+      updateDeveloperCounts(cached as Project[])
+      return
+    }
     try {
       const { data: projectsRows, error } = await supabase
         .from('projects')
@@ -743,6 +763,7 @@ function ProjectsPageContent() {
       }));
 
       setProjects(projectsData);
+      setCachedProjects(projectsData);
 
       // Developer counts update karen
       updateDeveloperCounts(projectsData);

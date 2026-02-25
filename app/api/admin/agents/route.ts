@@ -1,6 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
 
+const ALLOWED_COLUMNS = new Set([
+  'title', 'bio', 'profile_image', 'profile_images', 'office', 'brokerage',
+  'license_no', 'areas', 'specializations', 'languages', 'certifications',
+  'experience_years', 'total_sales', 'commission_rate', 'rating', 'review_count',
+  'location', 'website_url', 'linkedin_url', 'instagram_handle', 'whatsapp',
+  'telegram', 'social', 'approved', 'verified', 'user_id',
+  'created_at', 'updated_at',
+])
+
+function sanitize(body: Record<string, any>): Record<string, any> {
+  const clean: Record<string, any> = {}
+  for (const key of Object.keys(body)) {
+    if (ALLOWED_COLUMNS.has(key)) clean[key] = body[key]
+  }
+  return clean
+}
+
 export async function GET(req: NextRequest) {
   const supabase = createServiceClient()
   const { searchParams } = new URL(req.url)
@@ -30,7 +47,8 @@ export async function POST(req: NextRequest) {
   const supabase = createServiceClient()
   try {
     const body = await req.json()
-    const { data, error } = await supabase.from('agents').insert(body).select().single()
+    const clean = sanitize(body)
+    const { data, error } = await supabase.from('agents').insert(clean as any).select().single()
     if (error) throw error
     return NextResponse.json(data, { status: 201 })
   } catch (error: any) {
@@ -43,9 +61,11 @@ export async function PUT(req: NextRequest) {
   try {
     const body = await req.json()
     const { id, ...updates } = body
+    const clean = sanitize(updates)
+    clean.updated_at = new Date().toISOString()
     const { data, error } = await supabase
       .from('agents')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update(clean)
       .eq('id', id)
       .select()
       .single()

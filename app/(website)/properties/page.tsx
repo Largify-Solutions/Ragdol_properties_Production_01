@@ -67,6 +67,27 @@ import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+// Module-level cache for properties data
+const CACHE_DURATION = 3 * 60 * 1000 // 3 minutes
+let propertiesCache: { data: any[] | null; timestamp: number } = { data: null, timestamp: 0 }
+
+function getCachedProperties() {
+  if (propertiesCache.data && Date.now() - propertiesCache.timestamp < CACHE_DURATION) {
+    return propertiesCache.data
+  }
+  return null
+}
+
+function setCachedProperties(data: any[]) {
+  propertiesCache.data = data
+  propertiesCache.timestamp = Date.now()
+}
+
+function clearPropertiesCache() {
+  propertiesCache.data = null
+  propertiesCache.timestamp = 0
+}
+
 type Property = Database['public']['Tables']['properties']['Row']
 
 // Agent Data Interface
@@ -685,8 +706,13 @@ function FloorPlanForm({
         updated_at: new Date().toISOString(),
       };
 
-      await supabase.from('request_information').insert(floorplanData as any);
-      console.log("✅ Floor plan request saved to Supabase");
+      const res = await fetch('/api/request-info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(floorplanData),
+      });
+      if (!res.ok) throw new Error('Failed to submit request');
+      console.log("✅ Floor plan request saved via API");
       generatePDF();
       setSubmitted(true);
       setTimeout(() => {
@@ -2258,12 +2284,15 @@ async function fetchPropertyDetails(
   }
 }
 
-// Function to fetch ALL properties from 'properties' collection (NO FILTERS)
+// Function to fetch ALL published properties from 'properties' collection
 async function fetchAllPropertiesFromMainCollection() {
   try {
     const { data: propertiesData, error } = await supabase
       .from('properties')
-      .select('*');
+      .select('id,title,slug,description,short_description,type,status,property_status,price,currency,beds,baths,sqft,images,image_url,features,amenities,address,city,area,coords,featured,agent_id,furnishing,parking_spaces,video_url,category_id,project_id,developer_id,created_at,updated_at')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(500);
     
     if (error) throw error;
     
@@ -2281,12 +2310,15 @@ async function fetchAllPropertiesFromMainCollection() {
   }
 }
 
-// Function to fetch ALL properties from 'agent_properties' collection
+// Function to fetch ALL published properties from 'agent_properties' collection
 async function fetchAllPropertiesFromAgentCollection() {
   try {
     const { data: propertiesData, error } = await supabase
       .from('agent_properties')
-      .select('*');
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(500);
     
     if (error) throw error;
     
@@ -2304,8 +2336,12 @@ async function fetchAllPropertiesFromAgentCollection() {
   }
 }
 
-// Main function to fetch ALL properties from both collections (NO FILTERS)
+// Main function to fetch ALL published properties from both collections
 async function fetchAllProperties() {
+  // Return cached data if available
+  const cached = getCachedProperties()
+  if (cached) return cached
+
   try {
     const [mainProperties, agentProperties] = await Promise.all([
       fetchAllPropertiesFromMainCollection(),
@@ -2313,13 +2349,7 @@ async function fetchAllProperties() {
     ]);
     
     const allProperties = [...mainProperties, ...agentProperties];
-    
-    console.log(`📊 Total properties fetched: ${allProperties.length}`);
-    console.log('📊 Status breakdown:', {
-      sale: allProperties.filter(p => p.status === 'sale').length,
-      rent: allProperties.filter(p => p.status === 'rent').length,
-      other: allProperties.filter(p => p.status !== 'sale' && p.status !== 'rent').length
-    });
+    setCachedProperties(allProperties)
     
     return allProperties;
     
@@ -2557,8 +2587,8 @@ function PropertiesPageContent() {
 
   // Real-time: auto-refresh when properties or agent_properties change
   useRealtimeMulti([
-    { table: 'properties', onChange: () => { loadProperties() } },
-    { table: 'agent_properties', onChange: () => { loadProperties() } }
+    { table: 'properties', onChange: () => { clearPropertiesCache(); loadProperties() } },
+    { table: 'agent_properties', onChange: () => { clearPropertiesCache(); loadProperties() } }
   ]);
 
   // Apply filters locally - NO REDIRECT

@@ -145,7 +145,7 @@ export default function NewsPage() {
     loadBlogs().finally(() => setLoading(false))
   }, [loadBlogs])
 
-  // Real-time: auto-refresh when posts table changes
+  // Real-time: silently refresh when posts table changes (no loading flash)
   useRealtimeMulti([
     { table: 'posts', onChange: () => { loadBlogs() } }
   ])

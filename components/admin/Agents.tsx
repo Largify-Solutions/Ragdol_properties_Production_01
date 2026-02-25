@@ -543,7 +543,7 @@ export default function Agents() {
     instagram_handle: '',
     website_url: '',
     profile_image: '',
-    approved: false,
+    approved: true,
     rating: 4.5,
     review_count: 0,
     total_sales: 0,

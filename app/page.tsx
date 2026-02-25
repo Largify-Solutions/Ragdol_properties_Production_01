@@ -263,7 +263,7 @@ async function fetchNewProjects() {
 
     if (error) throw error;
 
-    return (data || []).map((p: any) => ({
+    const result = (data || []).map((p: any) => ({
       id: p.id,
       name: p.name || "Untitled Project",
       location: p.city || p.address || p.area || "Dubai",
@@ -276,6 +276,8 @@ async function fetchNewProjects() {
       available_units: p.available_units || 0,
       total_units: p.total_units || 0,
     }));
+    setCachedData('new_projects', result);
+    return result;
   } catch (error) {
     console.error("Error fetching projects:", error);
     return [];
@@ -710,6 +712,9 @@ const AutoPlayVideoPlayer = ({
 // 5. Trusted Partners - MAX 6
 async function fetchTrustedPartners() {
   try {
+    const cached = getCachedData('trusted_partners');
+    if (cached) return cached;
+
     const { data, error } = await supabase
       .from('partners')
       .select('*')
@@ -736,13 +741,15 @@ async function fetchTrustedPartners() {
     }
 
     if (data && data.length > 0) {
-      return data.map((p: any) => ({
+      const result = data.map((p: any) => ({
         id: p.id,
         name: p.name || "Partner",
         logo: p.logo_url || "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop",
         category: p.category || "Real Estate",
         order: p.sort_order || 0,
       }));
+      setCachedData('trusted_partners', result);
+      return result;
     }
 
     // Default partners fallback
@@ -770,6 +777,9 @@ async function fetchTrustedPartners() {
 // 6. Top Agents - MAX 4
 async function fetchTopAgents(): Promise<AgentWithProfile[]> {
   try {
+    const cached = getCachedData('top_agents');
+    if (cached) return cached;
+
     const { data, error } = await supabase
       .from('agents')
       .select('*, profiles(*)')
@@ -780,7 +790,7 @@ async function fetchTopAgents(): Promise<AgentWithProfile[]> {
     if (error) throw error;
 
     if (data && data.length > 0) {
-      return data.map((agent: any) => ({
+      const result = data.map((agent: any) => ({
         id: agent.id,
         title: agent.title || "Real Estate Agent",
         bio: agent.bio || "Experienced real estate professional",
@@ -817,6 +827,8 @@ async function fetchTopAgents(): Promise<AgentWithProfile[]> {
         telegram: agent.telegram || null,
         profiles: agent.profiles || null,
       }));
+      setCachedData('top_agents', result);
+      return result;
     }
 
     return [];
@@ -829,6 +841,9 @@ async function fetchTopAgents(): Promise<AgentWithProfile[]> {
 // 7. Testimonials - MAX 3 (Client Requirement: "Use 3 only to have them landscape")
 async function fetchTestimonials() {
   try {
+    const cached = getCachedData('testimonials');
+    if (cached) return cached;
+
     const { data, error } = await supabase
       .from('testimonials')
       .select('*')
@@ -837,17 +852,12 @@ async function fetchTestimonials() {
       .limit(3);
 
     if (error) {
-      console.error("Supabase error fetching testimonials:", {
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
-      });
+      console.error("Supabase error fetching testimonials:", error.message);
       return [];
     }
 
     if (data && data.length > 0) {
-      return data.map((t: any) => ({
+      const result = data.map((t: any) => ({
         id: t.id,
         name: t.name || "Anonymous",
         role: t.role || t.company || "Client",
@@ -860,6 +870,8 @@ async function fetchTestimonials() {
         rating: t.rating || 5,
         createdAt: t.created_at || new Date(),
       }));
+      setCachedData('testimonials', result);
+      return result;
     }
 
     return [];
@@ -1089,6 +1101,9 @@ const SimpleAutoPlayVideo = ({ url, poster, title }: { url: string; poster?: str
 // 8. Blog Posts - MAX 4
 async function fetchBlogPosts() {
   try {
+    const cached = getCachedData('blog_posts');
+    if (cached) return cached;
+
     const { data, error } = await supabase
       .from('posts')
       .select('*')
@@ -1099,7 +1114,7 @@ async function fetchBlogPosts() {
     if (error) throw error;
 
     if (data && data.length > 0) {
-      return data.map((post: any) => ({
+      const result = data.map((post: any) => ({
         id: post.id,
         title: post.title || "Untitled Blog",
         date: post.created_at
@@ -1118,6 +1133,8 @@ async function fetchBlogPosts() {
         readTime: "3 min read",
         slug: post.slug || post.id,
       }));
+      setCachedData('blog_posts', result);
+      return result;
     }
 
     return [];
