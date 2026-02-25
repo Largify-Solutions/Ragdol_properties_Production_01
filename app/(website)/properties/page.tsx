@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense, useRef } from 'react';
+import { useState, useEffect, Suspense, useRef, useCallback } from 'react';
 import { Database } from '@/lib/database.types'
 import MortgageCalculator from '@/components/shared/MortgageCalculator';
 import PropertyCard, { PropertyCardProperty } from '@/components/property/PropertyCard'
@@ -61,6 +61,7 @@ import Link from 'next/link';
 
 // Supabase imports
 import { supabase } from '@/lib/supabase-browser'
+import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
 
 // Import jsPDF for PDF generation
 import jsPDF from 'jspdf';
@@ -2479,79 +2480,86 @@ function PropertiesPageContent() {
     setShowFullScreenGallery(false);
   };
 
+  // Load ALL properties (used on mount and by realtime subscription)
+  const loadProperties = useCallback(async () => {
+    const properties = await fetchAllProperties();
+      
+    const normalized = properties.map((p: any) => {
+      let imageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop';
+        
+      if (p.images && Array.isArray(p.images) && p.images.length > 0) {
+        imageUrl = p.images[0];
+      } else if (p.image) {
+        imageUrl = p.image;
+      } else if (p.image_url) {
+        imageUrl = p.image_url;
+      }
+        
+      const price = typeof p.price === 'string' ? parseFloat(p.price) : (p.price ?? 0);
+      const location = p.location || p.address || p.area || p.city || 'Dubai';
+      const completionStatus = p.completion || p.property_status || 'ready';
+      const propertyArea = p.area || p.location || p.address || p.neighborhood || p.district || 'Dubai';
+        
+      let featuresArray: string[] = [];
+      if (Array.isArray(p.features)) {
+        featuresArray = p.features;
+      } else if (typeof p.features === 'string') {
+        featuresArray = p.features.split(',').map((f: string) => f.trim());
+      }
+        
+      return {
+        ...p,
+        image: imageUrl,
+        price: price,
+        priceLabel: p.status === 'rent' ? 'yearly' : 'total',
+        area: propertyArea,
+        city: p.city || 'Dubai',
+        location: location,
+        beds: p.beds ?? 0,
+        baths: p.baths ?? 0,
+        sqft: p.sqft ?? 0,
+        type: p.type || p.subtype || 'Property',
+        developer: p.developer || (p.developers?.name ? p.developers.name : null) || p.developer_id || null,
+        featured: Boolean(p.featured),
+        category: p.category || null,
+        parking: p.parking || null,
+        propertyAge: p.property_age || p.propertyAge || null,
+        completion: completionStatus,
+        subtype: p.subtype || null,
+        description: p.description || null,
+        features: featuresArray,
+        video_url: p.video_url || null,
+        currency: p.currency || 'AED',
+        status: p.status || 'sale',
+        agent_name: p.agent_name || null,
+        review_status: p.review_status || null,
+        submitted_at: p.submitted_at || null,
+        collection: p.collection || 'properties',
+        agent_image: p.profile_image ||
+          "https://img.freepik.com/free-photo/blond-businessman-happy-expression_1194-3866.jpg",
+        agent_office: p.office || "DUBAI OFFICE",
+        agent_experience: p.experience_years || 8,
+        agent_properties: p.total_sales || 150,
+        agent_phone: p.phone || "03291082882",
+        agent_whatsapp: p.whatsapp || "03291082882",
+        views: p.views || 1250,
+      };
+    });
+      
+    setAllProperties(normalized);
+    setDataLoaded(true);
+  }, [])
+
   // Load ALL properties once on mount (NO FILTERS)
   useEffect(() => {
-    async function loadProperties() {
-      const properties = await fetchAllProperties();
-      
-      const normalized = properties.map((p: any) => {
-        let imageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop';
-        
-        if (p.images && Array.isArray(p.images) && p.images.length > 0) {
-          imageUrl = p.images[0];
-        } else if (p.image) {
-          imageUrl = p.image;
-        } else if (p.image_url) {
-          imageUrl = p.image_url;
-        }
-        
-        const price = typeof p.price === 'string' ? parseFloat(p.price) : (p.price ?? 0);
-        const location = p.location || p.address || p.area || p.city || 'Dubai';
-        const completionStatus = p.completion || p.property_status || 'ready';
-        const propertyArea = p.area || p.location || p.address || p.neighborhood || p.district || 'Dubai';
-        
-        let featuresArray: string[] = [];
-        if (Array.isArray(p.features)) {
-          featuresArray = p.features;
-        } else if (typeof p.features === 'string') {
-          featuresArray = p.features.split(',').map((f: string) => f.trim());
-        }
-        
-        return {
-          ...p,
-          image: imageUrl,
-          price: price,
-          priceLabel: p.status === 'rent' ? 'yearly' : 'total',
-          area: propertyArea,
-          city: p.city || 'Dubai',
-          location: location,
-          beds: p.beds ?? 0,
-          baths: p.baths ?? 0,
-          sqft: p.sqft ?? 0,
-          type: p.type || p.subtype || 'Property',
-          developer: p.developer || (p.developers?.name ? p.developers.name : null) || p.developer_id || null,
-          featured: Boolean(p.featured),
-          category: p.category || null,
-          parking: p.parking || null,
-          propertyAge: p.property_age || p.propertyAge || null,
-          completion: completionStatus,
-          subtype: p.subtype || null,
-          description: p.description || null,
-          features: featuresArray,
-          video_url: p.video_url || null,
-          currency: p.currency || 'AED',
-          status: p.status || 'sale',
-          agent_name: p.agent_name || null,
-          review_status: p.review_status || null,
-          submitted_at: p.submitted_at || null,
-          collection: p.collection || 'properties',
-          agent_image: p.profile_image ||
-            "https://img.freepik.com/free-photo/blond-businessman-happy-expression_1194-3866.jpg",
-          agent_office: p.office || "DUBAI OFFICE",
-          agent_experience: p.experience_years || 8,
-          agent_properties: p.total_sales || 150,
-          agent_phone: p.phone || "03291082882",
-          agent_whatsapp: p.whatsapp || "03291082882",
-          views: p.views || 1250,
-        };
-      });
-      
-      setAllProperties(normalized);
-      setDataLoaded(true);
-    }
-    
     loadProperties();
-  }, []);
+  }, [loadProperties]);
+
+  // Real-time: auto-refresh when properties or agent_properties change
+  useRealtimeMulti([
+    { table: 'properties', onChange: () => { loadProperties() } },
+    { table: 'agent_properties', onChange: () => { loadProperties() } }
+  ]);
 
   // Apply filters locally - NO REDIRECT
   useEffect(() => {

@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
 import { 
   StarIcon as StarSolid, 
   PhoneIcon, 
@@ -266,21 +267,26 @@ export default function AgentListClient() {
   const [selectedAgentForProperties, setSelectedAgentForProperties] = useState<Agent | null>(null)
 
   // Supabase se agents fetch karo
-  useEffect(() => {
-    const loadAgents = async () => {
-      setLoading(true)
-      try {
-        const realAgents = await fetchRealAgents()
-        setAgents(realAgents)
-      } catch (error) {
-        console.error('Failed to load agents:', error)
-      } finally {
-        setLoading(false)
-      }
+  const loadAgents = useCallback(async () => {
+    setLoading(true)
+    try {
+      const realAgents = await fetchRealAgents()
+      setAgents(realAgents)
+    } catch (error) {
+      console.error('Failed to load agents:', error)
+    } finally {
+      setLoading(false)
     }
-    
-    loadAgents()
   }, [])
+
+  useEffect(() => {
+    loadAgents()
+  }, [loadAgents])
+
+  // Real-time: auto-refresh when agents table changes
+  useRealtimeMulti([
+    { table: 'agents', onChange: () => { loadAgents() } }
+  ])
 
   // Filter and search agents
   const filtered = agents.filter((agent) => {

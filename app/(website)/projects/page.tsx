@@ -40,6 +40,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
 import { supabase } from "@/lib/supabase-browser";
+import { useRealtimeMulti } from "@/lib/hooks/useRealtimeSubscription";
 // addDoc import removed (using Supabase now)
 
 // Types define karen
@@ -685,6 +686,11 @@ function ProjectsPageContent() {
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  // Real-time: auto-refresh when projects table changes
+  useRealtimeMulti([
+    { table: 'projects', onChange: () => { fetchProjects() } }
+  ]);
 
   const fetchProjects = async () => {
     try {

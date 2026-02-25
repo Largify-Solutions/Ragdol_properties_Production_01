@@ -8,7 +8,7 @@ import HeroSearch from "@/components/shared/HeroSearch";
 import HeroImageSlider from "@/components/shared/HeroImageSlider";
 import AgentSlider from "@/components/agent/AgentSlider";
 import { useTranslation } from "react-i18next";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   BuildingOffice2Icon,
   HomeIcon,
@@ -24,6 +24,7 @@ import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 
 // Supabase imports
 import { supabase } from "@/lib/supabase-browser";
+import { useRealtimeMulti } from "@/lib/hooks/useRealtimeSubscription";
 
 type Property = Database["public"]["Tables"]["properties"]["Row"];
 type AgentRow = Database["public"]["Tables"]["agents"]["Row"];
@@ -1150,69 +1151,81 @@ export default function HomePage() {
   // Video refs
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
 
+  // Reload all homepage data (used on mount and by realtime subscription)
+  const reloadAllData = useCallback(async () => {
+    console.log("🚀 Starting optimized data fetch from Supabase...");
+
+    try {
+      // Fetch all critical data in parallel (fast & efficient)
+      const [
+        featuredData,
+        rentalData,
+        projectData,
+        newProjectsData,
+        partnersData,
+        agentsData,
+        testimonialsData,
+        blogsData
+      ] = await Promise.all([
+        fetchFeaturedProperties(),
+        fetchRentalProperties(),
+        fetchProjectVideos(),
+        fetchNewProjects(),
+        fetchTrustedPartners(),
+        fetchTopAgents(),
+        fetchTestimonials(),
+        fetchBlogPosts()
+      ]).catch(error => {
+        console.error("Error in concurrent data fetch:", error);
+        return [[], [], [], [], [], [], [], []];
+      });
+
+      // Update all state at once
+      setFeaturedProperties(featuredData);
+      setRentalProperties(rentalData);
+      setNewProjects(newProjectsData);
+      setTrustedPartners(partnersData);
+      setTopAgents(agentsData);
+      setTestimonials(testimonialsData);
+      setBlogPosts(blogsData);
+
+      // Initialize video states for projects
+      if (projectData.length > 0) {
+        setProjectVideos(projectData);
+        const initialVideoStates: {
+          [key: string]: { isPlaying: boolean; isMuted: boolean };
+        } = {};
+        projectData.forEach((project) => {
+          initialVideoStates[project.id] = {
+            isPlaying: false,
+            isMuted: true,
+          };
+        });
+        setVideoStates(initialVideoStates);
+      }
+
+      setDataLoaded(true);
+      console.log("✓ All data loaded successfully!");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, []);
+
   // Fetch all data on component mount - OPTIMIZED CONCURRENT LOADING
   useEffect(() => {
-    const fetchAllData = async () => {
-      console.log("🚀 Starting optimized data fetch from Supabase...");
+    reloadAllData();
+  }, [reloadAllData]);
 
-      try {
-        // Fetch all critical data in parallel (fast & efficient)
-        const [
-          featuredData,
-          rentalData,
-          projectData,
-          newProjectsData,
-          partnersData,
-          agentsData,
-          testimonialsData,
-          blogsData
-        ] = await Promise.all([
-          fetchFeaturedProperties(),
-          fetchRentalProperties(),
-          fetchProjectVideos(),
-          fetchNewProjects(),
-          fetchTrustedPartners(),
-          fetchTopAgents(),
-          fetchTestimonials(),
-          fetchBlogPosts()
-        ]).catch(error => {
-          console.error("Error in concurrent data fetch:", error);
-          return [[], [], [], [], [], [], [], []];
-        });
-
-        // Update all state at once
-        setFeaturedProperties(featuredData);
-        setRentalProperties(rentalData);
-        setNewProjects(newProjectsData);
-        setTrustedPartners(partnersData);
-        setTopAgents(agentsData);
-        setTestimonials(testimonialsData);
-        setBlogPosts(blogsData);
-
-        // Initialize video states for projects
-        if (projectData.length > 0) {
-          setProjectVideos(projectData);
-          const initialVideoStates: {
-            [key: string]: { isPlaying: boolean; isMuted: boolean };
-          } = {};
-          projectData.forEach((project) => {
-            initialVideoStates[project.id] = {
-              isPlaying: false,
-              isMuted: true,
-            };
-          });
-          setVideoStates(initialVideoStates);
-        }
-
-        setDataLoaded(true);
-        console.log("✓ All data loaded successfully!");
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchAllData();
-  }, []);
+  // Real-time: auto-refresh homepage when any key table changes in DB
+  useRealtimeMulti([
+    { table: 'properties',       onChange: () => { dataCache.clear(); reloadAllData(); } },
+    { table: 'agent_properties', onChange: () => { dataCache.clear(); reloadAllData(); } },
+    { table: 'agents',           onChange: () => { dataCache.clear(); reloadAllData(); } },
+    { table: 'testimonials',     onChange: () => { dataCache.clear(); reloadAllData(); } },
+    { table: 'projects',         onChange: () => { dataCache.clear(); reloadAllData(); } },
+    { table: 'posts',            onChange: () => { dataCache.clear(); reloadAllData(); } },
+    { table: 'partners',         onChange: () => { dataCache.clear(); reloadAllData(); } },
+  ]);
 
   const togglePlayPause = (projectId: string) => {
     setVideoStates((prev) => ({

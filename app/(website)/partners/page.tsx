@@ -15,6 +15,8 @@ import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link'
 // Supabase import
 import { supabase } from '@/lib/supabase-browser'
+import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
+import { useCallback } from 'react'
 
 // Partner Interface
 interface Partner {
@@ -261,22 +263,27 @@ export default function PartnersPage() {
     setSelectedPartner(null)
   }
 
-  useEffect(() => {
-    const loadPartners = async () => {
-      try {
-        setLoading(true)
-        const partnersData = await fetchPartners()
-        setPartners(partnersData)
-      } catch (error) {
-        console.error('Error loading partners:', error)
-        setFirebaseError('Unable to load partners from database')
-      } finally {
-        setLoading(false)
-      }
+  const loadPartners = useCallback(async () => {
+    try {
+      setLoading(true)
+      const partnersData = await fetchPartners()
+      setPartners(partnersData)
+    } catch (error) {
+      console.error('Error loading partners:', error)
+      setFirebaseError('Unable to load partners from database')
+    } finally {
+      setLoading(false)
     }
-    
-    loadPartners()
   }, [])
+
+  useEffect(() => {
+    loadPartners()
+  }, [loadPartners])
+
+  // Real-time: auto-refresh when partners table changes
+  useRealtimeMulti([
+    { table: 'partners', onChange: () => { loadPartners() } }
+  ])
 
   return (
     <div className="min-h-screen bg-white">

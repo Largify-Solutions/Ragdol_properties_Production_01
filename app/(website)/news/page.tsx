@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
 import Link from 'next/link'
 import { 
   NewspaperIcon, 
@@ -132,17 +133,22 @@ export default function NewsPage() {
   const [savedBlogs, setSavedBlogs] = useState<string[]>([])
   const [imageLoaded, setImageLoaded] = useState<{[key: string]: boolean}>({})
 
+  // Reload function (used by mount effect and realtime)
+  const loadBlogs = useCallback(async () => {
+    const fetchedBlogs = await fetchBlogs()
+    setBlogs(fetchedBlogs)
+  }, [])
+
   // Fetch blogs on component mount
   useEffect(() => {
-    async function loadBlogs() {
-      setLoading(true)
-      const fetchedBlogs = await fetchBlogs()
-      setBlogs(fetchedBlogs)
-      setLoading(false)
-    }
-    
-    loadBlogs()
-  }, [])
+    setLoading(true)
+    loadBlogs().finally(() => setLoading(false))
+  }, [loadBlogs])
+
+  // Real-time: auto-refresh when posts table changes
+  useRealtimeMulti([
+    { table: 'posts', onChange: () => { loadBlogs() } }
+  ])
 
   // Filter blogs based on category and search
   const filteredBlogs = blogs.filter(blog => {
