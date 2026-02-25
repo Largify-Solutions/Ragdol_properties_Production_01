@@ -5,8 +5,7 @@ import { CheckIcon, PhotoIcon, DocumentTextIcon, CurrencyDollarIcon, XMarkIcon, 
 import toast from 'react-hot-toast'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { db, auth } from '@/lib/firebase'
-import { collection, addDoc, serverTimestamp, getDocs, query, where, orderBy } from 'firebase/firestore'
+import { supabase } from '@/lib/supabase-browser'
 
 // Dynamically import LocationPicker to avoid SSR issues with Leaflet
 const LocationPicker = dynamic(() => import('@/components/shared/LocationPicker'), {
@@ -135,108 +134,52 @@ export default function SellPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // ✅ FIXED: Fetch agents from Firebase with error handling for index
+  // ✅ FIXED: Fetch agents from Supabase with error handling
   // ✅ CORRECTED: Agents fetch with proper error handling
 useEffect(() => {
   const fetchAgents = async () => {
     try {
       setLoadingAgents(true)
       
-      // Try with orderBy first (requires index)
-      try {
-        const agentsRef = collection(db, 'agents')
-        const q = query(agentsRef, where('approved', '==', true), orderBy('title', 'asc'))
-        const querySnapshot = await getDocs(q)
-        
-        const agentsList: Agent[] = []
-        querySnapshot.forEach((doc) => {
-          const data = doc.data() as Agent
-          // ✅ FIXED: Don't spread data with id, use explicit assignment
-          agentsList.push({
-            id: doc.id,
-            title: data.title || '',
-            profile_image: data.profile_image,
-            office: data.office,
-            experience_years: data.experience_years,
-            total_sales: data.total_sales,
-            whatsapp: data.whatsapp,
-            verified: data.verified,
-            rating: data.rating,
-            review_count: data.review_count,
-            bio: data.bio,
-            license_no: data.license_no,
-            location: data.location,
-            commission_rate: data.commission_rate,
-            brokerage: data.brokerage,
-            telegram: data.telegram,
-            linkedin_url: data.linkedin_url,
-            website_url: data.website_url,
-            instagram_handle: data.instagram_handle,
-            specializations: data.specializations,
-            areas: data.areas,
-            languages: data.languages,
-            certifications: data.certifications,
-            approved: data.approved,
-            created_at: data.created_at,
-            updated_at: data.updated_at
-          })
-        })
-        
-        setAgents(agentsList)
-        console.log('✅ Agents fetched with index:', agentsList.length)
-        
-      } catch (indexError: any) {
-        // If index error, fall back to client-side sorting
-        console.warn('Index not found, using client-side sort:', indexError.message)
-        
-        toast.loading('Loading agents...', { id: 'agent-loading' })
-        
-        const agentsRef = collection(db, 'agents')
-        const q = query(agentsRef, where('approved', '==', true))
-        const querySnapshot = await getDocs(q)
-        
-        const agentsList: Agent[] = []
-        querySnapshot.forEach((doc) => {
-          const data = doc.data() as Agent
-          // ✅ FIXED: Same explicit assignment
-          agentsList.push({
-            id: doc.id,
-            title: data.title || '',
-            profile_image: data.profile_image,
-            office: data.office,
-            experience_years: data.experience_years,
-            total_sales: data.total_sales,
-            whatsapp: data.whatsapp,
-            verified: data.verified,
-            rating: data.rating,
-            review_count: data.review_count,
-            bio: data.bio,
-            license_no: data.license_no,
-            location: data.location,
-            commission_rate: data.commission_rate,
-            brokerage: data.brokerage,
-            telegram: data.telegram,
-            linkedin_url: data.linkedin_url,
-            website_url: data.website_url,
-            instagram_handle: data.instagram_handle,
-            specializations: data.specializations,
-            areas: data.areas,
-            languages: data.languages,
-            certifications: data.certifications,
-            approved: data.approved,
-            created_at: data.created_at,
-            updated_at: data.updated_at
-          })
-        })
-        
-        // Client-side sorting
-        agentsList.sort((a, b) => a.title.localeCompare(b.title))
-        
-        setAgents(agentsList)
-        console.log('✅ Agents fetched with client-side sort:', agentsList.length)
-        
-        toast.success(`${agentsList.length} agents loaded`, { id: 'agent-loading' })
-      }
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('approved', true)
+        .order('title', { ascending: true });
+      
+      if (error) throw error;
+      
+      const agentsList: Agent[] = (data || []).map((row: any) => ({
+        id: row.id,
+        title: row.title || '',
+        profile_image: row.profile_image,
+        office: row.office,
+        experience_years: row.experience_years,
+        total_sales: row.total_sales,
+        whatsapp: row.whatsapp,
+        verified: row.verified,
+        rating: row.rating,
+        review_count: row.review_count,
+        bio: row.bio,
+        license_no: row.license_no,
+        location: row.location,
+        commission_rate: row.commission_rate,
+        brokerage: row.brokerage,
+        telegram: row.telegram,
+        linkedin_url: row.linkedin_url,
+        website_url: row.website_url,
+        instagram_handle: row.instagram_handle,
+        specializations: row.specializations,
+        areas: row.areas,
+        languages: row.languages,
+        certifications: row.certifications,
+        approved: row.approved,
+        created_at: row.created_at,
+        updated_at: row.updated_at
+      }));
+      
+      setAgents(agentsList)
+      console.log('✅ Agents fetched:', agentsList.length)
       
     } catch (error) {
       console.error('Error fetching agents:', error)
@@ -361,7 +304,7 @@ useEffect(() => {
     }))
   }, [])
 
-  // Submit to Firebase
+  // Submit to Supabase
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true)
@@ -401,7 +344,7 @@ useEffect(() => {
         titleDeedBase64 = await fileToBase64(formData.titleDeed)
       }
 
-      // Prepare data for Firebase
+      // Prepare data for Supabase
       const propertyData = {
         // Basic Info
         title: formData.location ? `Property in ${formData.location}` : 'New Property',
@@ -459,8 +402,8 @@ useEffect(() => {
         agent_name: formData.selectedAgentName,
         
         // Timestamps
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
         submitted_at: new Date().toISOString(),
         
         // Contact Info (optional - for internal use)
@@ -472,13 +415,18 @@ useEffect(() => {
         user_role: formData.userRole,
       }
 
-      console.log('📤 Submitting to Firebase (PENDING STATUS):', propertyData)
+      console.log('📤 Submitting to Supabase (PENDING STATUS):', propertyData)
 
-      // Save to Firebase - agent_properties collection
-      const agentPropertiesRef = collection(db, 'agent_properties')
-      const docRef = await addDoc(agentPropertiesRef, propertyData)
+      // Save to Supabase - agent_properties table
+      const { data: insertedData, error } = await supabase
+        .from('agent_properties')
+        .insert(propertyData)
+        .select()
+        .single();
       
-      console.log('✅ Property saved to Firebase with ID:', docRef.id)
+      if (error) throw error;
+      
+      console.log('✅ Property saved to Supabase with ID:', insertedData?.id)
       
       toast.success('Listing submitted successfully! It is now pending review by admin.')
       

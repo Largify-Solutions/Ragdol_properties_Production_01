@@ -1,38 +1,66 @@
-'use server'
-
 import { NextRequest, NextResponse } from 'next/server'
-import { mockSavedProperties, mockProperties } from '@/lib/mock-data'
+import { createClient } from '@/lib/supabase-server'
 
 export async function GET(req: NextRequest) {
-  // Mock saved properties for the current user
-  const savedProperties = mockSavedProperties.map(saved => {
-    const property = mockProperties.find(p => p.id === saved.property_id)
-    return {
-      id: saved.id,
-      property_id: saved.property_id,
-      saved_at: saved.saved_at,
-      property: property ? {
-        id: property.id,
-        title: property.title,
-        slug: property.slug,
-        type: property.type,
-        status: property.status,
-        price: property.price,
-        currency: property.currency,
-        beds: property.beds,
-        baths: property.baths,
-        sqft: property.sqft,
-        image: property.image,
-        location: property.location,
-        area: property.area,
-        city: property.city,
-        featured: property.featured,
-      } : null
-    }
-  })
+  const supabase = await createClient()
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  return NextResponse.json({
-    savedProperties,
-    total: savedProperties.length
-  })
+    const { data, error } = await supabase
+      .from('saved_properties')
+      .select('*, properties(id, title, slug, type, status, price, currency, beds, baths, sqft, image, location, area, city, featured)')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    return NextResponse.json({
+      savedProperties: data || [],
+      total: data?.length || 0,
+    })
+  } catch (error: any) {
+    console.error('Error fetching saved properties:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const supabase = await createClient()
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const { property_id } = await req.json()
+    const { data, error } = await supabase
+      .from('saved_properties')
+      .insert({ user_id: user.id, property_id })
+      .select()
+      .single()
+
+    if (error) throw error
+    return NextResponse.json(data, { status: 201 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const supabase = await createClient()
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const { property_id } = await req.json()
+    const { error } = await supabase
+      .from('saved_properties')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('property_id', property_id)
+
+    if (error) throw error
+    return NextResponse.json({ message: 'Property unsaved' })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 }

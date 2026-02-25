@@ -4,26 +4,11 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
   ReactNode,
 } from 'react'
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from 'firebase/auth'
-import {
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-  query,
-  where,
-  collection,
-  getDocs,
-} from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
-import bcrypt from 'bcryptjs'
+import { supabase } from '@/lib/supabase-browser'
+import type { User, Session } from '@supabase/supabase-js'
 
 /* -------------------------------------------------------------------------- */
 /*                                   TYPES                                    */
@@ -87,139 +72,101 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileType | null>(null)
   const [loading, setLoading] = useState(true)
 
-  /* ------------------------------------------------------------------------ */
-  /*                    🔥 FIREBASE SESSION LISTENER 🔥                        */
-  /* --------- PERSISTENT LOGIN: SAVED TO LOCALSTORAGE --------- */
-  /* ------------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------------- */
+  /*                    FETCH PROFILE FROM SUPABASE                          */
+  /* ---------------------------------------------------------------------- */
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      try {
-        if (!firebaseUser) {
-          setUser(null)
-          setProfile(null)
-          // Clear localStorage when user logs out
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('userSession')
-          }
-          setLoading(false)
-          return
-        }
-
-        // First try to find user in Firestore by email (for manually added users)
-        const usersRef = collection(db, 'users')
-        const q = query(usersRef, where('email', '==', firebaseUser.email))
-        const querySnapshot = await getDocs(q)
-
-        if (!querySnapshot.empty) {
-          const userDoc = querySnapshot.docs[0]
-          const userData = userDoc.data()
-          
-          const userData_obj = {
-            id: firebaseUser.uid,
-            uid: firebaseUser.uid,
-            email: firebaseUser.email!,
-            displayName: firebaseUser.displayName,
-          }
-
-          const profileData_obj = {
-            id: firebaseUser.uid,
-            ...userData,
-          } as ProfileType
-
-          setUser(userData_obj)
-          setProfile(profileData_obj)
-
-          // Save to localStorage for persistence
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('userSession', JSON.stringify({
-              user: userData_obj,
-              profile: profileData_obj,
-              timestamp: new Date().toISOString()
-            }))
-          }
-        }
-
-        setLoading(false)
-      } catch (error) {
-        console.error('Error in onAuthStateChanged:', error)
-        setLoading(false)
-      }
-    })
-
-    return () => unsubscribe()
-  }, [])
-
-  // Restore session from localStorage on initial load
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedSession = localStorage.getItem('userSession')
-      if (savedSession) {
-        try {
-          const { user: savedUser, profile: savedProfile } = JSON.parse(savedSession)
-          setUser(savedUser)
-          setProfile(savedProfile)
-        } catch (error) {
-          console.error('Error restoring session:', error)
-          localStorage.removeItem('userSession')
-        }
-      }
-      setLoading(false)
-    }
-  }, [])
-
-  /* ------------------------------------------------------------------------ */
-  /*                           CHECK MANUALLY ADDED USER                      */
-  /* ------------------------------------------------------------------------ */
-
-  const checkManuallyAddedUser = async (email: string, password: string) => {
+  const fetchProfile = useCallback(async (supabaseUser: User) => {
     try {
-      // Find user in Firestore by email
-      const usersRef = collection(db, 'users')
-      const q = query(usersRef, where('email', '==', email))
-      const querySnapshot = await getDocs(q)
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', supabaseUser.id)
+        .single()
 
-      if (querySnapshot.empty) {
-        return null // User not found in Firestore
+      if (error) {
+        console.error('Error fetching profile:', error)
+        return null
       }
 
-      const userDoc = querySnapshot.docs[0]
-      const userData = userDoc.data()
-
-      // Check if user has password stored (manually added user)
-      if (!userData.password) {
-        return null // Not a manually added user
-      }
-
-      // IMPORTANT: In production, use proper password hashing!
-      // For now, using simple comparison (you should implement bcrypt)
-      if (userData.password !== password) {
-        return { error: { message: 'Invalid password' } }
-      }
-
-      // Check role
-      if (!userData.role) {
-        return { error: { message: 'User role not defined' } }
-      }
-
-      return {
-        user: {
-          id: userDoc.id,
-          email: userData.email,
-          role: userData.role,
-          ...userData
-        },
-        isManuallyAdded: true
-      }
+      return { ...data, email: supabaseUser.email || '' } as ProfileType
     } catch (error) {
-      console.error('Error checking manually added user:', error)
+      console.error('Error fetching profile:', error)
       return null
     }
-  }
+  }, [])
 
-  /* ------------------------------------------------------------------------ */
-  /*                               SIGN UP                                    */
-  /* ------------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------------- */
+  /*                    SUPABASE SESSION LISTENER                            */
+  /* ---------------------------------------------------------------------- */
+
+  useEffect(() => {
+    // Get initial session
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+
+        if (session?.user) {
+          const userData: UserType = {
+            id: session.user.id,
+            uid: session.user.id,
+            email: session.user.email!,
+            displayName: session.user.user_metadata?.full_name || null,
+          }
+          setUser(userData)
+
+          const profileData = await fetchProfile(session.user)
+          if (profileData) {
+            setProfile(profileData)
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    initializeAuth()
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          const userData: UserType = {
+            id: session.user.id,
+            uid: session.user.id,
+            email: session.user.email!,
+            displayName: session.user.user_metadata?.full_name || null,
+          }
+          setUser(userData)
+
+          const profileData = await fetchProfile(session.user)
+          if (profileData) {
+            setProfile(profileData)
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null)
+          setProfile(null)
+        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+          const profileData = await fetchProfile(session.user)
+          if (profileData) {
+            setProfile(profileData)
+          }
+        }
+
+        setLoading(false)
+      }
+    )
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [fetchProfile])
+
+  /* ---------------------------------------------------------------------- */
+  /*                               SIGN UP                                   */
+  /* ---------------------------------------------------------------------- */
 
   const signUp = async (
     email: string,
@@ -228,34 +175,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ) => {
     setLoading(true)
     try {
-      // First check if user already exists in Firestore (manually added)
-      const usersRef = collection(db, 'users')
-      const q = query(usersRef, where('email', '==', email))
-      const querySnapshot = await getDocs(q)
-
-      if (!querySnapshot.empty) {
-        const existingUser = querySnapshot.docs[0].data()
-        if (existingUser.password) {
-          return { error: { message: 'User already exists. Please login instead.' } }
-        }
-      }
-
-      // Create Firebase Auth user
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      const firebaseUser = userCredential.user
-
-      const profileData: ProfileType = {
-        id: firebaseUser.uid,
+      const { data, error } = await supabase.auth.signUp({
         email,
-        role: userData?.role || 'customer',
-        full_name: userData?.full_name || '',
-        phone: userData?.phone || '',
-        avatar_url: userData?.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
+        password,
+        options: {
+          data: {
+            full_name: userData?.full_name || '',
+            role: userData?.role || 'customer',
+            phone: userData?.phone || '',
+          },
+        },
+      })
+
+      if (error) {
+        return { error: { message: error.message } }
       }
 
-      await setDoc(doc(db, 'users', firebaseUser.uid), profileData)
+      // Profile is auto-created via database trigger
+      // Update additional fields if provided
+      if (data.user && userData) {
+        await supabase.from('profiles').update({
+          phone: userData.phone || null,
+          avatar_url: userData.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
+          location: userData.location || null,
+          bio: userData.bio || null,
+        }).eq('id', data.user.id)
+      }
 
       return { error: null }
     } catch (error: any) {
@@ -265,159 +210,106 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  /* ------------------------------------------------------------------------ */
-  /*                         SIGN IN (GENERIC)                                */
-  /* ------------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------------- */
+  /*                         SIGN IN (GENERIC)                               */
+  /* ---------------------------------------------------------------------- */
 
   const signIn = async (email: string, password: string, role?: string) => {
     setLoading(true)
     try {
-      // First check if it's a manually added user
-      const manualUser = await checkManuallyAddedUser(email, password)
-      
-      if (manualUser?.user) {
-        // Manually added user found and password matches
-        if (role && manualUser.user.role !== role) {
-          return { 
-            error: { 
-              message: `Access denied. ${role.charAt(0).toUpperCase() + role.slice(1)} only.` 
-            } 
-          }
-        }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-        // For manually added users, we need to create Firebase Auth user
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-          const firebaseUser = userCredential.user
-
-          // Update Firestore with Firebase UID
-          const usersRef = collection(db, 'users')
-          const q = query(usersRef, where('email', '==', email))
-          const querySnapshot = await getDocs(q)
-          
-          if (!querySnapshot.empty) {
-            const userDoc = querySnapshot.docs[0]
-            await setDoc(doc(db, 'users', firebaseUser.uid), {
-              ...manualUser.user,
-              id: firebaseUser.uid,
-              password: null, // Remove password after linking with Firebase Auth
-              updated_at: serverTimestamp(),
-            }, { merge: true })
-            
-            // Delete old document
-            await setDoc(userDoc.ref, { 
-              migrated: true 
-            }, { merge: true })
-          }
-
-          return { error: null }
-        } catch (firebaseError: any) {
-          // If Firebase Auth user already exists, just sign in
-          if (firebaseError.code === 'auth/email-already-in-use') {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password)
-            return { error: null }
-          }
-          throw firebaseError
+      if (error) {
+        return {
+          error: {
+            message: error.message === 'Invalid login credentials'
+              ? 'Invalid email or password'
+              : error.message,
+          },
         }
       }
 
-      // Regular Firebase Auth user
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      const firebaseUser = userCredential.user
+      // Check role if specified
+      if (role && data.user) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single()
 
-      // Check role in Firestore
-      const usersRef = collection(db, 'users')
-      const q = query(usersRef, where('email', '==', email))
-      const querySnapshot = await getDocs(q)
+        if (profileError || !profileData) {
+          await supabase.auth.signOut()
+          return { error: { message: 'Profile not found' } }
+        }
 
-      if (!querySnapshot.empty) {
-        const userData = querySnapshot.docs[0].data()
-        
-        if (role && userData.role !== role) {
-          await signOut(auth)
-          return { 
-            error: { 
-              message: `Access denied. ${role.charAt(0).toUpperCase() + role.slice(1)} only.` 
-            } 
+        if (profileData.role !== role) {
+          await supabase.auth.signOut()
+          return {
+            error: {
+              message: `Access denied. ${role.charAt(0).toUpperCase() + role.slice(1)} only.`,
+            },
           }
         }
       }
 
       return { error: null }
     } catch (error: any) {
-      console.error('Sign in error:', error)
-      return { 
-        error: { 
-          message: error.code === 'auth/invalid-credential' 
-            ? 'Invalid email or password' 
-            : error.message || 'Login failed' 
-        } 
-      }
+      return { error: { message: error.message || 'Login failed' } }
     } finally {
       setLoading(false)
     }
   }
 
-  /* ------------------------------------------------------------------------ */
-  /*                              SIGN IN (AGENT)                             */
-  /* ------------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------------- */
+  /*                              SIGN IN (AGENT)                            */
+  /* ---------------------------------------------------------------------- */
 
   const signInAsAgent = async (email: string, password: string) => {
     return await signIn(email, password, 'agent')
   }
 
-  /* ------------------------------------------------------------------------ */
-  /*                              SIGN IN (ADMIN)                             */
-  /* ------------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------------- */
+  /*                              SIGN IN (ADMIN)                            */
+  /* ---------------------------------------------------------------------- */
 
   const signInAsAdmin = async (email: string, password: string) => {
     return await signIn(email, password, 'admin')
   }
 
   /* ---------------------------------------------------------------------- */
-  /*                              REFRESH PROFILE                           */
+  /*                              REFRESH PROFILE                            */
   /* ---------------------------------------------------------------------- */
 
   const refreshProfile = async () => {
-    const currentUser = auth.currentUser
+    const { data: { user: currentUser } } = await supabase.auth.getUser()
     if (!currentUser) return
 
-    const profileRef = doc(db, 'users', currentUser.uid)
-    const snapshot = await getDoc(profileRef)
-
-    if (snapshot.exists()) {
-      const data = snapshot.data()
-
+    const profileData = await fetchProfile(currentUser)
+    if (profileData) {
       setUser({
-        id: currentUser.uid,
-        uid: currentUser.uid,
-        email: currentUser.email || data.email,
-        displayName: currentUser.displayName,
+        id: currentUser.id,
+        uid: currentUser.id,
+        email: currentUser.email!,
+        displayName: currentUser.user_metadata?.full_name || profileData.full_name || null,
       })
-
-      setProfile({
-        id: currentUser.uid,
-        ...data,
-      } as ProfileType)
+      setProfile(profileData)
     }
   }
 
-  /* ------------------------------------------------------------------------ */
-  /*                                  LOGOUT                                  */
-  /* --------- CLEARS AUTH SESSION AND LOCALSTORAGE --------- */
-  /* ------------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------------- */
+  /*                                  LOGOUT                                 */
+  /* ---------------------------------------------------------------------- */
 
   const logout = async () => {
-    await signOut(auth)
+    await supabase.auth.signOut()
     setUser(null)
     setProfile(null)
-    // Clear localStorage when user explicitly logs out
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('userSession')
-    }
   }
 
-  /* ------------------------------------------------------------------------ */
+  /* ---------------------------------------------------------------------- */
 
   return (
     <AuthContext.Provider

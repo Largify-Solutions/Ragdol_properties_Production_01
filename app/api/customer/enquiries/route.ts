@@ -1,54 +1,47 @@
-'use server'
-
 import { NextRequest, NextResponse } from 'next/server'
-import { mockCustomerEnquiries, mockProperties } from '@/lib/mock-data'
+import { createClient } from '@/lib/supabase-server'
 
 export async function GET(req: NextRequest) {
-  // Mock enquiries for the current user
-  const enquiries = mockCustomerEnquiries.map(enquiry => {
-    const property = mockProperties.find(p => p.id === enquiry.property_id)
-    return {
-      id: enquiry.id,
-      property_id: enquiry.property_id,
-      name: enquiry.name,
-      email: enquiry.email,
-      phone: enquiry.phone,
-      message: enquiry.message,
-      status: enquiry.status,
-      created_at: enquiry.created_at,
-      responded_at: enquiry.responded_at,
-      property: property ? {
-        id: property.id,
-        title: property.title,
-        slug: property.slug,
-        image: property.image,
-        location: property.location,
-        price: property.price,
-        currency: property.currency,
-      } : null
-    }
-  })
+  const supabase = await createClient()
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  return NextResponse.json({
-    enquiries,
-    total: enquiries.length
-  })
+    const { data, error } = await supabase
+      .from('enquiries')
+      .select('*, properties(id, title, slug, image, location, price, currency)')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    return NextResponse.json({
+      enquiries: data || [],
+      total: data?.length || 0,
+    })
+  } catch (error: any) {
+    console.error('Error fetching enquiries:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
+  const supabase = await createClient()
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    const body = await req.json()
 
-  // Mock create enquiry
-  const newEnquiry = {
-    id: `enq-${Date.now()}`,
-    user_id: 'user-001', // Mock user ID
-    ...body,
-    status: 'pending',
-    created_at: new Date().toISOString(),
+    const enquiryData = {
+      ...body,
+      user_id: user?.id || null,
+      status: 'pending' as const,
+    }
+
+    const { data, error } = await supabase.from('enquiries').insert(enquiryData).select().single()
+    if (error) throw error
+
+    return NextResponse.json({ enquiry: data, message: 'Enquiry submitted successfully' }, { status: 201 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
-
-  return NextResponse.json({
-    enquiry: newEnquiry,
-    message: 'Enquiry submitted successfully'
-  })
 }

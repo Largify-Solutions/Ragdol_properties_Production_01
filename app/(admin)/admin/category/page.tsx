@@ -12,8 +12,7 @@ import {
   ChartBarIcon
 } from '@heroicons/react/24/outline'
 import CategoryForm, { type CategoryFormData } from '@/components/forms/CategoryForm'
-import { db } from '@/lib/firebase'
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'
+import { supabase } from '@/lib/supabase-browser'
 
 interface Category {
   id: string
@@ -48,32 +47,28 @@ export default function Categories() {
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
 
-  // Fetch categories from Firebase
+  // Fetch categories from Supabase
   const fetchCategories = async () => {
     try {
       setLoading(true)
-      console.log('Fetching categories from Firebase...')
+      console.log('Fetching categories from Supabase...')
       
-      const categoriesRef = collection(db, 'categories')
-      const snapshot = await getDocs(categoriesRef)
+      const { data, error } = await supabase.from('categories').select('*')
+      if (error) throw error
       
-      const categoriesData: Category[] = []
-      snapshot.forEach((doc) => {
-        const data = doc.data()
-        categoriesData.push({
-          id: doc.id,
-          name: data.name || '',
-          description: data.description || '',
-          icon: data.icon || 'BuildingOfficeIcon',
-          color: data.color || 'blue',
-          isActive: data.isActive ?? true,
-          parentId: data.parentId,
-          order: data.order || 0,
-          slug: data.slug || '',
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
-        })
-      })
+      const categoriesData: Category[] = (data || []).map((item: any) => ({
+        id: item.id,
+        name: item.name || '',
+        description: item.description || '',
+        icon: item.icon || 'BuildingOfficeIcon',
+        color: item.color || 'blue',
+        isActive: item.isActive ?? true,
+        parentId: item.parentId,
+        order: item.order || 0,
+        slug: item.slug || '',
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+      }))
       
       // Sort by order, then by name
       categoriesData.sort((a, b) => {
@@ -133,14 +128,14 @@ export default function Categories() {
     }
   }
 
-  // Handle deleting category from Firebase
+  // Handle deleting category from Supabase
   const handleDeleteCategory = async (id: string) => {
     if (!confirm('Are you sure you want to delete this category? This action cannot be undone.')) return
     
     try {
       console.log('Deleting category:', id)
-      const categoryRef = doc(db, 'categories', id)
-      await deleteDoc(categoryRef)
+      const { error } = await supabase.from('categories').delete().eq('id', id)
+      if (error) throw error
       
       console.log('Category deleted successfully')
       setCategories(categories.filter(cat => cat.id !== id))
@@ -223,7 +218,7 @@ export default function Categories() {
       <div className="space-y-6 mt-10">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
+            <h1 className="text-xl font-bold">Categories</h1>
             <p className="text-sm text-gray-500 mt-1">Loading dashboard...</p>
           </div>
           <div className="animate-pulse h-10 w-32 bg-gray-200 rounded-lg"></div>

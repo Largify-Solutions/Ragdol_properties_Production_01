@@ -1,36 +1,70 @@
-'use server'
-
 import { NextRequest, NextResponse } from 'next/server'
-import { mockAgents } from '@/lib/mock-data'
+import { createClient } from '@/lib/supabase-server'
 
 export async function GET(req: NextRequest) {
-  return NextResponse.json({ agents: mockAgents })
+  const supabase = await createClient()
+  const { searchParams } = new URL(req.url)
+  const limit = parseInt(searchParams.get('limit') || '50')
+  const offset = parseInt(searchParams.get('offset') || '0')
+  const search = searchParams.get('search')
+
+  try {
+    let query = supabase.from('agents').select('*', { count: 'exact' })
+
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,office.ilike.%${search}%,brokerage.ilike.%${search}%`)
+    }
+
+    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
+
+    const { data, error, count } = await query
+    if (error) throw error
+
+    return NextResponse.json({ agents: data || [], total: count || 0, limit, offset })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  return NextResponse.json({
-    id: `agent-${Date.now()}`,
-    title: body.title,
-    office: body.office,
-    license_no: body.license_no,
-    brokerage: body.brokerage,
-    bio: body.bio,
-    whatsapp: body.whatsapp,
-    profile_image: body.profile_image,
-    approved: body.approved || false,
-    verified: body.verified || false,
-    rating: body.rating || 4.5,
-    review_count: body.review_count || 0,
-    experience_years: body.experience_years || 5,
-    created_at: new Date().toISOString()
-  })
+  const supabase = await createClient()
+  try {
+    const body = await req.json()
+    const { data, error } = await supabase.from('agents').insert(body).select().single()
+    if (error) throw error
+    return NextResponse.json(data, { status: 201 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 }
 
 export async function PUT(req: NextRequest) {
-  return NextResponse.json({ data: {}, message: 'Mock updated' })
+  const supabase = await createClient()
+  try {
+    const body = await req.json()
+    const { id, ...updates } = body
+    const { data, error } = await supabase
+      .from('agents')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+    return NextResponse.json(data)
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 }
 
 export async function DELETE(req: NextRequest) {
-  return NextResponse.json({ message: 'Mock deleted' })
+  const supabase = await createClient()
+  try {
+    const { id } = await req.json()
+    const { error } = await supabase.from('agents').delete().eq('id', id)
+    if (error) throw error
+    return NextResponse.json({ message: 'Agent deleted' })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 }

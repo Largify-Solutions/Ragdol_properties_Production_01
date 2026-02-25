@@ -6,7 +6,7 @@ import {
   Phone, Calendar, Shield, Trash2, Edit2, CheckCircle, XCircle, Eye, EyeOff,
   Loader2
 } from 'lucide-react'
-import { db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from '@/lib/firebase'
+import { supabase } from '@/lib/supabase-browser'
 
 interface User {
   id: string
@@ -39,33 +39,27 @@ export default function UsersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [passwordError, setPasswordError] = useState('')
 
-  // Load users from Firebase
+  // Load users from Supabase
   const fetchUsers = async () => {
     try {
       setLoading(true)
-      const usersCollection = collection(db, "users")
-      const userSnapshot = await getDocs(usersCollection)
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email, full_name, role, created_at, status')
+        .order('created_at', { ascending: false })
+        .limit(200)
+      if (error) throw error
       
-      const usersList: User[] = []
-      userSnapshot.forEach((doc) => {
-        const data = doc.data()
-        usersList.push({ 
-          id: doc.id, 
-          ...data,
-          status: data.status || 'active',
-          role: data.role || 'customer'
-        } as User)
-      })
-      
-      // Sort by creation date (newest first)
-      usersList.sort((a, b) => 
-        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      setUsers(
+        (data || []).map((item: any) => ({
+          ...item,
+          status: item.status || 'active',
+          role: item.role || 'customer',
+        })) as User[]
       )
-      
-      setUsers(usersList)
     } catch (error) {
       console.error('Error fetching users:', error)
-      alert('Failed to load users from Firebase.')
+      alert('Failed to load users.')
     } finally {
       setLoading(false)
     }
@@ -76,7 +70,7 @@ export default function UsersPage() {
     fetchUsers()
   }, [])
 
-  // CREATE USER IN FIRESTORE ONLY (Without Firebase Auth)
+  // CREATE or UPDATE USER
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -107,30 +101,16 @@ export default function UsersPage() {
         return
       }
 
-      // Prepare user data
-      const userData = {
-        email: formData.email.trim(),
-        full_name: formData.full_name.trim(),
-        role: formData.role,
-        status: formData.status,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        // Note: In production, never store passwords in plain text!
-        // This is for demonstration only
-        password: formData.password // TEMPORARY - REMOVE IN PRODUCTION
-      }
-
       if (editingUser) {
-        // UPDATE EXISTING USER
-        const userRef = doc(db, "users", editingUser.id)
+        // UPDATE EXISTING USER (profile only, no auth change needed)
         const updateData = {
-          full_name: userData.full_name,
-          role: userData.role,
-          status: userData.status,
-          updated_at: userData.updated_at
+          full_name: formData.full_name.trim(),
+          role: formData.role,
+          updated_at: new Date().toISOString()
         }
         
-        await updateDoc(userRef, updateData)
+        const { error } = await supabase.from('profiles').update(updateData).eq('id', editingUser.id)
+        if (error) throw error
         
         // Update local state
         const updatedUser = {
@@ -143,20 +123,40 @@ export default function UsersPage() {
         alert('User updated successfully!')
         
       } else {
-        // CREATE NEW USER
-        const docRef = await addDoc(collection(db, "users"), userData)
+        // CREATE NEW USER via Supabase Auth Admin API
+        // This creates auth.users row → trigger creates profiles row automatically
+        const response = await fetch('/api/admin/create-user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.email.trim(),
+            password: formData.password,
+            full_name: formData.full_name.trim(),
+            role: formData.role,
+          }),
+        })
+
+        const result = await response.json()
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to create user')
+        }
         
-        console.log('User created with ID:', docRef.id)
+        console.log('User created:', result.data)
 
         // Update local state
         const newUser = {
-          id: docRef.id,
-          ...userData
+          id: result.data.id,
+          email: result.data.email,
+          full_name: result.data.full_name,
+          role: result.data.role,
+          created_at: new Date().toISOString(),
+          status: 'active' as const,
         } as User
 
         setUsers([newUser, ...users])
         
-        alert('User created successfully! Please note: Password is stored in plain text (for demo only).')
+        alert(result.message || 'User created successfully!')
       }
       
       // Reset and close
@@ -170,9 +170,9 @@ export default function UsersPage() {
       let errorMessage = 'Error saving user. Please try again.'
       
       if (error.code === 'permission-denied') {
-        errorMessage = 'Permission denied. Please check Firebase rules.'
-      } else if (error.code === 'already-exists') {
-        errorMessage = 'User already exists.'
+        errorMessage = 'Permission denied. Admin access required.'
+      } else if (error.code === 'already-exists' || error.message?.includes('already')) {
+        errorMessage = 'A user with this email already exists.'
       } else if (error.message) {
         errorMessage = error.message
       }
@@ -183,16 +183,22 @@ export default function UsersPage() {
     }
   }
 
-  // DELETE USER FROM FIRESTORE
+  // DELETE USER FROM SUPABASE
   const handleDeleteUser = async (userId: string, userEmail: string) => {
     if (!confirm(`Are you sure you want to delete user: ${userEmail}? This action cannot be undone.`)) {
       return
     }
 
     try {
-      // Delete from Firestore
-      const userRef = doc(db, "users", userId)
-      await deleteDoc(userRef)
+      // Delete via API (removes from auth.users, cascade deletes profile)
+      const response = await fetch(`/api/admin/users?id=${userId}`, {
+        method: 'DELETE',
+      })
+      
+      if (!response.ok) {
+        const result = await response.json()
+        throw new Error(result.error || 'Failed to delete user')
+      }
       
       // Update local state
       setUsers(users.filter(u => u.id !== userId))
@@ -201,12 +207,7 @@ export default function UsersPage() {
       
     } catch (error: any) {
       console.error('Error deleting user:', error)
-      
-      if (error.code === 'permission-denied') {
-        alert('Delete permission denied. Please check Firebase rules.')
-      } else {
-        alert('Error deleting user. Please try again.')
-      }
+      alert('Error deleting user. Please try again.')
     }
   }
 
@@ -215,12 +216,12 @@ export default function UsersPage() {
     const newStatus: User['status'] = user.status === 'active' ? 'inactive' : 'active'
     
     try {
-      // Update in Firestore
-      const userRef = doc(db, "users", user.id)
-      await updateDoc(userRef, {
+      // Update in Supabase
+      const { error } = await supabase.from('profiles').update({
         status: newStatus,
         updated_at: new Date().toISOString()
-      })
+      }).eq('id', user.id)
+      if (error) throw error
       
       // Update local state
       const updatedUser: User = {
@@ -263,37 +264,33 @@ export default function UsersPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-          <p className="text-muted-foreground">Manage all registered users and their permissions.</p>
+          <h1 className="text-xl font-bold">Users</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">{users.length} registered users</p>
         </div>
         <button 
-          onClick={() => {
-            setEditingUser(null)
-            resetForm()
-            setShowAddModal(true)
-          }}
-          className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
+          onClick={() => { setEditingUser(null); resetForm(); setShowAddModal(true) }}
+          className="inline-flex items-center gap-2 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
         >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add New User
+          <UserPlus className="h-4 w-4" />
+          Add User
         </button>
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p className="text-2xl font-bold text-gray-900">{totalUsers}</p>
-          <p className="text-sm text-gray-500">Total Users</p>
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-card p-4 rounded-xl border shadow-sm">
+          <p className="text-2xl font-bold">{totalUsers}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Total Users</p>
         </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p className="text-2xl font-bold text-gray-900">{activeUsers}</p>
-          <p className="text-sm text-gray-500">Active Users</p>
+        <div className="bg-card p-4 rounded-xl border shadow-sm">
+          <p className="text-2xl font-bold text-emerald-600">{activeUsers}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Active</p>
         </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-          <p className="text-2xl font-bold text-gray-900">{adminUsers}</p>
-          <p className="text-sm text-gray-500">Admin Users</p>
+        <div className="bg-card p-4 rounded-xl border shadow-sm">
+          <p className="text-2xl font-bold text-violet-600">{adminUsers}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Admins</p>
         </div>
       </div>
 
@@ -345,14 +342,15 @@ export default function UsersPage() {
             </thead>
             <tbody className="divide-y">
               {loading ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center gap-2">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                      <p>Loading users from Firebase...</p>
-                    </div>
-                  </td>
-                </tr>
+                [...Array(6)].map((_, i) => (
+                  <tr key={i}>
+                    <td className="px-6 py-4"><div className="flex items-center gap-3"><div className="h-9 w-9 rounded-full bg-muted animate-pulse" /><div className="space-y-1.5"><div className="h-3 w-28 bg-muted animate-pulse rounded" /><div className="h-3 w-36 bg-muted animate-pulse rounded" /></div></div></td>
+                    <td className="px-6 py-4"><div className="h-5 w-16 bg-muted animate-pulse rounded-full" /></td>
+                    <td className="px-6 py-4"><div className="h-5 w-16 bg-muted animate-pulse rounded-full" /></td>
+                    <td className="px-6 py-4"><div className="h-3 w-24 bg-muted animate-pulse rounded" /></td>
+                    <td className="px-6 py-4 text-right"><div className="h-7 w-16 bg-muted animate-pulse rounded ml-auto" /></td>
+                  </tr>
+                ))
               ) : filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground">
@@ -438,143 +436,99 @@ export default function UsersPage() {
       {/* Add/Edit User Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full">
-            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center z-10">
-              <h2 className="text-xl font-bold text-gray-900">
-                {editingUser ? 'Edit User' : 'Add New User'}
-                <span className="text-sm text-gray-500 ml-2">(Firebase Firestore)</span>
-              </h2>
-              <button
-                onClick={() => {
-                  setShowAddModal(false)
-                  setEditingUser(null)
-                  resetForm()
-                  setShowPassword(false)
-                }}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <XCircle className="h-6 w-6" />
+          <div className="bg-card rounded-2xl shadow-xl max-w-md w-full border">
+            <div className="border-b px-6 py-4 flex justify-between items-center">
+              <h2 className="text-base font-semibold">{editingUser ? 'Edit User' : 'Add User'}</h2>
+              <button onClick={() => { setShowAddModal(false); setEditingUser(null); resetForm(); setShowPassword(false) }} className="text-muted-foreground hover:text-foreground">
+                <XCircle className="h-5 w-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateUser} className="p-6 space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Full Name *</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Full Name *</label>
                 <input
                   type="text"
                   value={formData.full_name}
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 text-sm border rounded-lg bg-background focus:ring-2 focus:ring-primary/20 outline-none"
                   required
                   disabled={isSubmitting}
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Email Address *</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Email Address *</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 text-sm border rounded-lg bg-background focus:ring-2 focus:ring-primary/20 outline-none"
                   required
                   disabled={isSubmitting || !!editingUser}
                 />
                 {editingUser && (
-                  <p className="text-xs text-gray-500">Email cannot be changed for existing users.</p>
+                  <p className="text-xs text-muted-foreground">Email cannot be changed for existing users.</p>
                 )}
               </div>
 
               {!editingUser && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Password *</label>
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium">Password *</label>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
                       value={formData.password}
-                      onChange={(e) => {
-                        setFormData({ ...formData, password: e.target.value })
-                        setPasswordError('')
-                      }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none pr-10"
+                      onChange={(e) => { setFormData({ ...formData, password: e.target.value }); setPasswordError('') }}
+                      className="w-full px-3 py-2 text-sm border rounded-lg bg-background focus:ring-2 focus:ring-primary/20 outline-none pr-10"
                       required
                       disabled={isSubmitting}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  {passwordError && (
-                    <p className="text-xs text-red-600">{passwordError}</p>
-                  )}
-                  <p className="text-xs text-gray-500">Minimum 6 characters required</p>
-                  <p className="text-xs text-red-500 font-medium">
-                    ⚠️ Warning: Password stored in plain text (for demo only)
-                  </p>
+                  {passwordError && <p className="text-xs text-red-600">{passwordError}</p>}
+                  <p className="text-xs text-muted-foreground">Minimum 6 characters</p>
                 </div>
               )}
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Role *</label>
-                <select
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  required
-                  disabled={isSubmitting}
-                >
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Role *</label>
+                <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border rounded-lg bg-background focus:ring-2 focus:ring-primary/20 outline-none"
+                  required disabled={isSubmitting}>
                   <option value="customer">Customer</option>
                   <option value="agent">Agent</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Status *</label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                  required
-                  disabled={isSubmitting}
-                >
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Status *</label>
+                <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                  className="w-full px-3 py-2 text-sm border rounded-lg bg-background focus:ring-2 focus:ring-primary/20 outline-none"
+                  required disabled={isSubmitting}>
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                   <option value="suspended">Suspended</option>
                 </select>
               </div>
 
-              <div className="flex gap-3 justify-end pt-4 border-t border-gray-100">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddModal(false)
-                    setEditingUser(null)
-                    resetForm()
-                    setShowPassword(false)
-                  }}
-                  className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
-                  disabled={isSubmitting}
-                >
+              <div className="flex gap-3 justify-end pt-4 border-t">
+                <button type="button"
+                  onClick={() => { setShowAddModal(false); setEditingUser(null); resetForm(); setShowPassword(false) }}
+                  className="px-4 py-2 text-sm border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                  disabled={isSubmitting}>
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={isSubmitting}
-                >
+                <button type="submit"
+                  className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  disabled={isSubmitting}>
                   {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      {editingUser ? 'Updating...' : 'Creating...'}
-                    </span>
-                  ) : (
-                    editingUser ? 'Update User' : 'Create User'
-                  )}
+                    <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />{editingUser ? 'Updating...' : 'Creating...'}</span>
+                  ) : (editingUser ? 'Update User' : 'Create User')}
                 </button>
               </div>
             </form>

@@ -13,13 +13,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link'
-// Firebase imports
-import { db } from '@/lib/firebase'
-import {
-  collection,
-  getDocs,
-  query
-} from 'firebase/firestore'
+// Supabase import
+import { supabase } from '@/lib/supabase-browser'
 
 // Partner Interface
 interface Partner {
@@ -48,19 +43,14 @@ const PartnerDetailModal = ({ partner, isOpen, onClose }: {
     if (!timestamp) return 'N/A'
     
     try {
-      // Firebase timestamp format
-      if (timestamp.seconds) {
-        const date = new Date(timestamp.seconds * 1000)
-        return date.toLocaleString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-      }
-      // Regular date string
-      return new Date(timestamp).toLocaleString()
+      // Regular date string / ISO string
+      return new Date(timestamp).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
     } catch (error) {
       return 'Invalid Date'
     }
@@ -167,7 +157,7 @@ const PartnerDetailModal = ({ partner, isOpen, onClose }: {
 
             {/* Right Column - Technical Details */}
             <div className="space-y-6">
-              {/* Firebase Document ID */}
+              {/* Document ID */}
               <div>
                 <h3 className="text-lg font-semibold text-slate-900 mb-3">Document ID</h3>
                 <div className="bg-slate-900 rounded-xl p-4">
@@ -212,36 +202,31 @@ const PartnerDetailModal = ({ partner, isOpen, onClose }: {
   )
 }
 
-// Fetch Partners from Firebase
+// Fetch Partners from Supabase
 async function fetchPartners(): Promise<Partner[]> {
   try {
-    console.log('Fetching partners from Firebase...')
-    const partnersRef = collection(db, 'partners')
+    console.log('Fetching partners from Supabase...')
     
-    const q = query(partnersRef)
-    const querySnapshot = await getDocs(q)
+    const { data, error } = await supabase
+      .from('partners')
+      .select('*')
+      .eq('is_active', true);
     
-    const partners: Partner[] = []
+    if (error) throw error;
     
-    querySnapshot.forEach((doc) => {
-      const data = doc.data()
-      
-      if (data.active === true) {
-        partners.push({
-          id: doc.id,
-          name: data.name || 'Partner',
-          category: data.category || 'Real Estate',
-          description: data.description || '',
-          logo: data.logo || 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop',
-          website: data.website || '',
-          featured: data.featured || false,
-          order: data.order || 0,
-          active: data.active || false,
-          createdAt: data.createdAt || '',
-          updatedAt: data.updatedAt || ''
-        })
-      }
-    })
+    const partners: Partner[] = (data || []).map((row: any) => ({
+      id: row.id,
+      name: row.name || 'Partner',
+      category: row.category || 'Real Estate',
+      description: row.description || '',
+      logo: row.logo_url || 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop',
+      website: row.website_url || '',
+      featured: row.featured || false,
+      order: row.sort_order || 0,
+      active: row.is_active || false,
+      createdAt: row.created_at || '',
+      updatedAt: row.updated_at || ''
+    }));
     
     partners.sort((a, b) => {
       if (a.order !== b.order) {
@@ -250,7 +235,7 @@ async function fetchPartners(): Promise<Partner[]> {
       return a.name.localeCompare(b.name)
     })
     
-    console.log(`Found ${partners.length} active partners from Firebase`)
+    console.log(`Found ${partners.length} active partners from Supabase`)
     return partners
     
   } catch (error) {
@@ -284,7 +269,7 @@ export default function PartnersPage() {
         setPartners(partnersData)
       } catch (error) {
         console.error('Error loading partners:', error)
-        setFirebaseError('Unable to load partners from Firebase')
+        setFirebaseError('Unable to load partners from database')
       } finally {
         setLoading(false)
       }
@@ -337,7 +322,7 @@ export default function PartnersPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">Firebase Error</h3>
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">Database Error</h3>
               <p className="text-slate-500 mb-4">{firebaseError}</p>
             </div>
           ) : partners.length > 0 ? (
@@ -465,7 +450,7 @@ export default function PartnersPage() {
             </div>
           )}
 
-          {/* Firebase Status */}
+          {/* Database Status */}
           <div className="mt-12 text-center">
            
             

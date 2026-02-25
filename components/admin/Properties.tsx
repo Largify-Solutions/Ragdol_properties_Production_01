@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { EyeIcon, PencilIcon, TrashIcon, PlusIcon, BuildingOfficeIcon, HomeModernIcon, MapIcon, BuildingStorefrontIcon, SparklesIcon, CubeIcon, WrenchScrewdriverIcon, TruckIcon, ShoppingBagIcon, Bars3Icon, LinkIcon, ChevronUpIcon, ChevronDownIcon, ChevronRightIcon, XMarkIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, CurrencyDollarIcon, PaperClipIcon, ArrowDownTrayIcon, EnvelopeIcon, EnvelopeOpenIcon, ClockIcon, BanknotesIcon } from '@heroicons/react/24/outline'
 import PropertyForm from '@/components/forms/PropertyForm'
-import { db, collection, getDocs, doc, deleteDoc } from '@/lib/firebase' // Add Firebase imports
+import { supabase } from '@/lib/supabase-browser'
 
 interface PropertiesProps {
   activeTab: string
@@ -33,33 +33,26 @@ export default function Properties({ activeTab, properties, setProperties, agent
   const [editingProperty, setEditingProperty] = useState<any>(null)
   const [loading, setLoading] = useState(false)
 
-  // Load properties from Firebase
-  const loadPropertiesFromFirebase = async () => {
+  // Load properties from Supabase
+  const loadPropertiesFromSupabase = async () => {
     try {
       setLoading(true)
-      const propertiesCollection = collection(db, "properties")
-      const propertySnapshot = await getDocs(propertiesCollection)
+      const { data: propertiesList, error } = await supabase
+        .from('properties')
+        .select('*')
+        .order('updated_at', { ascending: false })
       
-      const propertiesList: any[] = []
-      propertySnapshot.forEach((doc) => {
-        const data = doc.data()
-        propertiesList.push({ 
-          id: doc.id, 
-          ...data,
-          // Ensure agent_name is included
-          agent_name: data.agent_name || data.agent_id || null
-        })
-      })
+      if (error) throw error
       
-      // Sort by updated_at (newest first)
-      propertiesList.sort((a, b) => 
-        new Date(b.updated_at || b.created_at).getTime() - new Date(a.updated_at || a.created_at).getTime()
-      )
+      const mapped = (propertiesList || []).map((data: any) => ({
+        ...data,
+        agent_name: data.agent_name || data.agent_id || null
+      }))
       
-      setProperties(propertiesList)
+      setProperties(mapped)
     } catch (error) {
       console.error('Error loading properties:', error)
-      alert('Failed to load properties from Firebase.')
+      alert('Failed to load properties.')
     } finally {
       setLoading(false)
     }
@@ -67,7 +60,7 @@ export default function Properties({ activeTab, properties, setProperties, agent
 
   // Initial load
   useEffect(() => {
-    loadPropertiesFromFirebase()
+    loadPropertiesFromSupabase()
   }, [])
 
   // Update filtered properties when properties change
@@ -208,33 +201,37 @@ export default function Properties({ activeTab, properties, setProperties, agent
     }
   }
 
-  // DELETE PROPERTY FROM FIREBASE
+  // DELETE PROPERTY FROM SUPABASE
   const handleDeleteProperty = async (propertyId: string) => {
     if (!confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
       return
     }
 
     try {
-      // Delete from Firebase
-      const propertyRef = doc(db, "properties", propertyId)
-      await deleteDoc(propertyRef)
+      // Delete from Supabase
+      const { error } = await supabase
+        .from('properties')
+        .delete()
+        .eq('id', propertyId)
+      
+      if (error) throw error
       
       // Update local state
       setProperties((Array.isArray(properties) ? properties : []).filter(p => p.id !== propertyId))
       
-      alert('Property deleted successfully from Firebase!')
+      alert('Property deleted successfully!')
     } catch (error: any) {
       console.error('Error deleting property:', error)
       
       if (error.code === 'permission-denied') {
-        alert('Delete permission denied. Please check Firebase rules.')
+        alert('Delete permission denied. Please check Supabase RLS policies.')
       } else {
         alert('Error deleting property. Please try again.')
       }
     }
   }
 
-  // BULK DELETE PROPERTIES FROM FIREBASE
+  // BULK DELETE PROPERTIES FROM SUPABASE
   const handleBulkDelete = async () => {
     if (!selectedProperties.length) return
     
@@ -243,10 +240,13 @@ export default function Properties({ activeTab, properties, setProperties, agent
     }
 
     try {
-      // Delete each property from Firebase
+      // Delete each property from Supabase
       const deletePromises = selectedProperties.map(async (propertyId) => {
-        const propertyRef = doc(db, "properties", propertyId)
-        await deleteDoc(propertyRef)
+        const { error } = await supabase
+          .from('properties')
+          .delete()
+          .eq('id', propertyId)
+        if (error) throw error
       })
       
       await Promise.all(deletePromises)
@@ -255,7 +255,7 @@ export default function Properties({ activeTab, properties, setProperties, agent
       setProperties((Array.isArray(properties) ? properties : []).filter(p => !selectedProperties.includes(p.id)))
       setSelectedProperties([])
       
-      alert(`${selectedProperties.length} properties deleted successfully from Firebase!`)
+      alert(`${selectedProperties.length} properties deleted successfully!'`)
     } catch (error: any) {
       console.error('Error bulk deleting properties:', error)
       alert('Error deleting properties. Please try again.')
@@ -273,7 +273,7 @@ export default function Properties({ activeTab, properties, setProperties, agent
 
   const handlePropertyFormSuccess = () => {
     // Refresh properties after form submission
-    loadPropertiesFromFirebase()
+    loadPropertiesFromSupabase()
   }
 
   if (activeTab !== 'properties') return null

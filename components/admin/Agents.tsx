@@ -490,7 +490,7 @@
 
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from '@/lib/firebase'
+import { supabase } from '@/lib/supabase-browser'
 
 interface Agent {
   id: string
@@ -530,6 +530,8 @@ export default function Agents() {
 
   const [formData, setFormData] = useState({
     title: '',
+    email: '',
+    password: '',
     office: '',
     license_no: '',
     brokerage: 'Global Property Solutions',
@@ -552,39 +554,33 @@ export default function Agents() {
     specializations: ['Residential Properties']
   })
 
-  // Load agents from Firebase
+  // Load agents from Supabase
   const loadAgents = async () => {
     try {
       setLoading(true)
-      const agentsCollection = collection(db, "agents")
-      const agentSnapshot = await getDocs(agentsCollection)
+      const { data: agentsData, error } = await supabase
+        .from('agents')
+        .select('*')
+        .order('created_at', { ascending: false })
       
-      const agentsList: Agent[] = []
-      agentSnapshot.forEach((doc) => {
-        const data = doc.data()
-        agentsList.push({ 
-          id: doc.id, 
-          ...data,
-          rating: data.rating || 4.5,
-          review_count: data.review_count || 0,
-          experience_years: data.experience_years || 5,
-          approved: data.approved || false,
-          verified: data.verified || false,
-          languages: data.languages || ['English'],
-          certifications: data.certifications || [],
-          specializations: data.specializations || []
-        } as Agent)
-      })
+      if (error) throw error
       
-      // Sort by creation date (newest first)
-      agentsList.sort((a, b) => 
-        new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
-      )
+      const agentsList: Agent[] = (agentsData || []).map((data: any) => ({
+        ...data,
+        rating: data.rating || 4.5,
+        review_count: data.review_count || 0,
+        experience_years: data.experience_years || 5,
+        approved: data.approved || false,
+        verified: data.verified || false,
+        languages: data.languages || ['English'],
+        certifications: data.certifications || [],
+        specializations: data.specializations || []
+      }))
       
       setAgents(agentsList)
     } catch (error) {
       console.error('Error loading agents:', error)
-      alert('Failed to load agents from Firebase.')
+      alert('Failed to load agents.')
     } finally {
       setLoading(false)
     }
@@ -595,65 +591,103 @@ export default function Agents() {
     loadAgents()
   }, [])
 
-  // ADD AGENT TO FIREBASE
+  // ADD AGENT - creates auth user + profile + agents row
   const handleAddAgent = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     
     try {
-      // Prepare agent data
-      const agentData = {
-        title: formData.title.trim(),
-        office: formData.office.trim() || null,
-        license_no: formData.license_no.trim() || null,
-        brokerage: formData.brokerage.trim(),
-        bio: formData.bio.trim() || null,
-        whatsapp: formData.whatsapp.trim() || null,
-        telegram: formData.telegram.trim() || null,
-        linkedin_url: formData.linkedin_url.trim() || null,
-        instagram_handle: formData.instagram_handle.trim() || null,
-        website_url: formData.website_url.trim() || null,
-        profile_image: formData.profile_image.trim() || null,
-        approved: formData.approved,
-        verified: formData.verified,
-        rating: formData.rating,
-        review_count: formData.review_count,
-        total_sales: formData.total_sales || 0,
-        commission_rate: formData.commission_rate || 2.5,
-        experience_years: formData.experience_years,
-        languages: formData.languages || ['English'],
-        certifications: formData.certifications || [],
-        specializations: formData.specializations || [],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+      // Validate email and password for new agents
+      if (!formData.email.trim()) {
+        alert('Email is required to create an agent account')
+        setIsSubmitting(false)
+        return
+      }
+      if (formData.password.length < 6) {
+        alert('Password must be at least 6 characters')
+        setIsSubmitting(false)
+        return
       }
 
-      // Add to Firebase
-      const docRef = await addDoc(collection(db, "agents"), agentData)
-      
-      console.log('Agent created with ID:', docRef.id)
-      
-      // Update local state
-      const newAgent = {
-        id: docRef.id,
-        ...agentData
-      } as Agent
-      
-      setAgents([newAgent, ...agents])
+      // Step 1: Create auth user + profile via admin API
+      // This also creates an agents row with user_id linked
+      const response = await fetch('/api/admin/create-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email.trim(),
+          password: formData.password,
+          full_name: formData.title.trim(),
+          role: 'agent',
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create agent user account')
+      }
+
+      // Step 2: Update the agents row with additional details
+      // The API created a basic agents row; now update with full form data
+      const { data: agentRows } = await supabase
+        .from('agents')
+        .select('id')
+        .eq('user_id', result.data.id)
+        .single()
+
+      if (agentRows) {
+        await supabase
+          .from('agents')
+          .update({
+            title: formData.title.trim(),
+            office: formData.office.trim() || null,
+            license_no: formData.license_no.trim() || null,
+            brokerage: formData.brokerage.trim(),
+            bio: formData.bio.trim() || null,
+            whatsapp: formData.whatsapp.trim() || null,
+            telegram: formData.telegram.trim() || null,
+            linkedin_url: formData.linkedin_url.trim() || null,
+            instagram_handle: formData.instagram_handle.trim() || null,
+            website_url: formData.website_url.trim() || null,
+            profile_image: formData.profile_image.trim() || null,
+            approved: formData.approved,
+            verified: formData.verified,
+            rating: formData.rating,
+            review_count: formData.review_count,
+            total_sales: formData.total_sales || 0,
+            commission_rate: formData.commission_rate || 2.5,
+            experience_years: formData.experience_years,
+            languages: formData.languages || ['English'],
+            certifications: formData.certifications || [],
+            specializations: formData.specializations || [],
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', agentRows.id)
+
+        // Fetch the updated agent for local state
+        const { data: updatedAgent } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('id', agentRows.id)
+          .single()
+
+        if (updatedAgent) {
+          setAgents([updatedAgent as Agent, ...agents])
+        }
+      }
       
       // Close modal and reset
       setShowAddModal(false)
       resetForm()
       
-      alert('Agent created successfully in Firebase!')
+      alert('Agent created successfully with login credentials!')
       
     } catch (error: any) {
       console.error('Error adding agent:', error)
       
       let errorMessage = 'Error adding agent. Please try again.'
-      if (error.code === 'permission-denied') {
-        errorMessage = 'Permission denied. Please check Firebase rules.'
-      } else if (error.message) {
+      if (error.message) {
         errorMessage = error.message
       }
       
@@ -697,9 +731,13 @@ export default function Agents() {
         updated_at: new Date().toISOString()
       }
 
-      // Update in Firebase
-      const agentRef = doc(db, "agents", editingAgent.id)
-      await updateDoc(agentRef, updateData)
+      // Update in Supabase
+      const { error } = await supabase
+        .from('agents')
+        .update(updateData)
+        .eq('id', editingAgent.id)
+      
+      if (error) throw error
       
       console.log('Agent updated:', editingAgent.id)
       
@@ -716,14 +754,14 @@ export default function Agents() {
       setShowAddModal(false)
       resetForm()
       
-      alert('Agent updated successfully in Firebase!')
+      alert('Agent updated successfully!')
       
     } catch (error: any) {
       console.error('Error updating agent:', error)
       
       let errorMessage = 'Error updating agent. Please try again.'
       if (error.code === 'permission-denied') {
-        errorMessage = 'Permission denied. Please check Firebase rules.'
+        errorMessage = 'Permission denied. Please check Supabase RLS policies.'
       } else if (error.message) {
         errorMessage = error.message
       }
@@ -734,43 +772,51 @@ export default function Agents() {
     }
   }
 
-  // DELETE AGENT FROM FIREBASE
+  // DELETE AGENT FROM SUPABASE
   const handleDeleteAgent = async (agentId: string) => {
     if (!confirm('Are you sure you want to delete this agent?')) return
 
     try {
-      // Delete from Firebase
-      const agentRef = doc(db, "agents", agentId)
-      await deleteDoc(agentRef)
+      // Delete from Supabase
+      const { error } = await supabase
+        .from('agents')
+        .delete()
+        .eq('id', agentId)
+      
+      if (error) throw error
       
       // Update local state
       setAgents(agents.filter(a => a.id !== agentId))
       
-      alert('Agent deleted successfully from Firebase!')
+      alert('Agent deleted successfully!')
       
     } catch (error: any) {
       console.error('Error deleting agent:', error)
       
       if (error.code === 'permission-denied') {
-        alert('Delete permission denied. Please check Firebase rules.')
+        alert('Delete permission denied. Please check Supabase RLS policies.')
       } else {
         alert('Error deleting agent. Please try again.')
       }
     }
   }
 
-  // TOGGLE APPROVAL IN FIREBASE
+  // TOGGLE APPROVAL IN SUPABASE
   const handleToggleApproval = async (agent: Agent) => {
     try {
       // Toggle approval status
       const newApprovedStatus = !agent.approved
       
-      // Update in Firebase
-      const agentRef = doc(db, "agents", agent.id)
-      await updateDoc(agentRef, {
-        approved: newApprovedStatus,
-        updated_at: new Date().toISOString()
-      })
+      // Update in Supabase
+      const { error } = await supabase
+        .from('agents')
+        .update({
+          approved: newApprovedStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', agent.id)
+      
+      if (error) throw error
       
       // Update local state
       const updatedAgent = {
@@ -786,7 +832,7 @@ export default function Agents() {
       console.error('Error toggling approval:', error)
       
       if (error.code === 'permission-denied') {
-        alert('Permission denied. Please check Firebase rules.')
+        alert('Permission denied. Please check Supabase RLS policies.')
       } else {
         alert('Error updating approval status. Please try again.')
       }
@@ -796,6 +842,8 @@ export default function Agents() {
   const resetForm = () => {
     setFormData({
       title: '',
+      email: '',
+      password: '',
       office: '',
       license_no: '',
       brokerage: 'Global Property Solutions',
@@ -988,6 +1036,8 @@ export default function Agents() {
                             setEditingAgent(agent)
                             setFormData({
                               title: agent.title || '',
+                              email: '',
+                              password: '',
                               office: agent.office || '',
                               license_no: agent.license_no || '',
                               brokerage: agent.brokerage || 'Global Property Solutions',
@@ -1053,6 +1103,40 @@ export default function Agents() {
             </div>
 
             <form onSubmit={editingAgent ? handleUpdateAgent : handleAddAgent} className="p-6 space-y-6">
+              {/* Email & Password - only show when creating new agent */}
+              {!editingAgent && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-blue-800">Agent Email (Login) *</label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                      required
+                      disabled={isSubmitting}
+                      placeholder="agent@example.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-blue-800">Password *</label>
+                    <input
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      className="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                      required
+                      minLength={6}
+                      disabled={isSubmitting}
+                      placeholder="Min 6 characters"
+                    />
+                  </div>
+                  <p className="text-xs text-blue-600 md:col-span-2">
+                    These credentials will be used by the agent to log in to the Agent Portal.
+                  </p>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Agent Name/Title *</label>

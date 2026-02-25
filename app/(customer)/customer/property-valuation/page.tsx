@@ -15,14 +15,7 @@ import {
   
 } from '@heroicons/react/24/outline'
 import { MessageCircleIcon,AlertCircleIcon } from 'lucide-react'
-import { db } from '@/lib/firebase'
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  query, 
-  where 
-} from 'firebase/firestore'
+import { supabase } from '@/lib/supabase-browser'
 
 interface Valuation {
   id: string
@@ -91,17 +84,16 @@ export default function PropertyValuation() {
           return
         }
         
-        const valuationsRef = collection(db, 'valuations')
-        const q = query(
-          valuationsRef, 
-          where('userEmail', '==', user.email)
-        )
+        const { data: valuationsRows, error: valError } = await supabase
+          .from('property_valuations')
+          .select('*')
+          .eq('user_id', user.uid || '')
         
-        const querySnapshot = await getDocs(q)
-        const valuationsData = querySnapshot.docs.map(doc => {
-          const data = doc.data()
+        if (valError) throw valError
+        
+        const valuationsData = (valuationsRows || []).map((data: any) => {
           return {
-            id: doc.id,
+            id: data.id,
             user_name: data.user_name || '',
             userEmail: data.userEmail || '',
             phoneNumber: data.phoneNumber || '',
@@ -118,8 +110,8 @@ export default function PropertyValuation() {
             status: data.status || 'pending',
             estimated_value: data.estimated_value || '',
             currency: data.currency || 'AED',
-            created_at: data.created_at ? new Date(data.created_at).toISOString() : new Date().toISOString(),
-            completed_at: data.completed_at ? new Date(data.completed_at).toISOString() : undefined
+            created_at: data.created_at || new Date().toISOString(),
+            completed_at: data.completed_at || undefined
           }
         }) as Valuation[]
         
@@ -147,7 +139,7 @@ export default function PropertyValuation() {
     }
   }, [user])
 
-  // Fetch valuation responses from Firebase
+  // Fetch valuation responses (admin_notes from property_valuations)
   const fetchValuationResponses = async (valuationIds: string[]) => {
     if (valuationIds.length === 0) {
       setValuationResponses([])
@@ -156,30 +148,23 @@ export default function PropertyValuation() {
 
     try {
       setLoadingResponses(true)
-      const responsesRef = collection(db, 'valuation_responses')
       
-      // Fetch all responses and filter client-side
-      const q = query(responsesRef)
-      const querySnapshot = await getDocs(q)
+      const { data: responsesRows, error: respError } = await supabase
+        .from('property_valuations')
+        .select('id, admin_notes, reviewed_by, reviewed_at, updated_at')
+        .in('id', valuationIds)
+        .not('admin_notes', 'is', null)
       
-      const responsesData: ValuationResponse[] = []
+      if (respError) throw respError
       
-      querySnapshot.forEach((doc) => {
-        const data = doc.data()
-        const response = {
-          id: doc.id,
-          valuation_id: data.valuation_id || '',
-          admin_id: data.admin_id || '',
-          admin_name: data.admin_name || 'Admin',
-          message: data.message || '',
-          created_at: data.created_at ? new Date(data.created_at).toISOString() : new Date().toISOString()
-        }
-        
-        // Only include responses for this user's valuations
-        if (valuationIds.includes(response.valuation_id)) {
-          responsesData.push(response)
-        }
-      })
+      const responsesData: ValuationResponse[] = (responsesRows || []).map((data: any) => ({
+        id: `resp-${data.id}`,
+        valuation_id: data.id,
+        admin_id: data.reviewed_by || '',
+        admin_name: 'Admin',
+        message: data.admin_notes || '',
+        created_at: data.reviewed_at || data.updated_at || new Date().toISOString()
+      }))
       
       // Sort by date (newest first)
       responsesData.sort((a, b) => 
@@ -220,7 +205,6 @@ export default function PropertyValuation() {
     }
 
     try {
-      const valuationsRef = collection(db, 'valuations')
       const newValuation = {
         user_name: formData.name.trim(),
         userEmail: user.email,
@@ -242,7 +226,13 @@ export default function PropertyValuation() {
         completed_at: undefined
       }
 
-      const docRef = await addDoc(valuationsRef, newValuation)
+      const { data: docRef, error: insertError } = await supabase
+        .from('property_valuations')
+        .insert(newValuation as any)
+        .select()
+        .single()
+      
+      if (insertError) throw insertError
       
       setSuccess(true)
       setFormData({

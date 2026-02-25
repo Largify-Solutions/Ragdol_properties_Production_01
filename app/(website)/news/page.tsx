@@ -17,9 +17,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid'
 
-// Firebase imports
-import { db } from '@/lib/firebase'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+// Supabase import
+import { supabase } from '@/lib/supabase-browser'
 
 // Blog type definition
 type Blog = {
@@ -38,45 +37,47 @@ type Blog = {
   tags: string[]
 }
 
-// Function to fetch blogs from Firebase
+// Function to fetch blogs from Supabase
 async function fetchBlogs() {
   try {
-    console.log('📝 Fetching blogs from Firebase...')
-    const blogsRef = collection(db, 'blogs')
+    console.log('📝 Fetching blogs from Supabase...')
     
     // Fetch only published blogs
-    const q = query(
-      blogsRef,
-      where('published', '==', true)
-    )
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('status', 'published');
     
-    const querySnapshot = await getDocs(q)
-    console.log(`✅ Found ${querySnapshot.size} published blogs`)
+    if (error) throw error;
     
-    const blogs: Blog[] = []
-    querySnapshot.forEach((doc) => {
-      const data = doc.data()
-      blogs.push({
-        id: doc.id,
-        title: data.title || 'Untitled Blog',
-        excerpt: data.excerpt || '',
-        content: data.content || '',
-        author: data.author || 'Unknown Author',
-        category: data.category || 'Uncategorized',
-        readTime: data.readTime || '5 min read',
-        imageUrl: data.imageUrl || '/api/placeholder/800/450',
-        published: data.published || false,
-        createdAt: data.createdAt || new Date(),
-        updatedAt: data.updatedAt || new Date(),
-        slug: data.slug || doc.id,
-        tags: data.tags || []
-      })
-    })
+    console.log(`✅ Found ${data?.length || 0} published blogs`)
+    
+    const blogs: Blog[] = (data || []).map((row: any) => {
+      // Compute read time from content length (~200 words per minute)
+      const wordCount = (row.content || '').split(/\s+/).length;
+      const readMinutes = Math.max(1, Math.ceil(wordCount / 200));
+      
+      return {
+        id: row.id,
+        title: row.title || 'Untitled Blog',
+        excerpt: row.excerpt || '',
+        content: row.content || '',
+        author: 'RAGDOLL Properties',
+        category: row.category || 'Uncategorized',
+        readTime: `${readMinutes} min read`,
+        imageUrl: row.featured_image || '/api/placeholder/800/450',
+        published: row.status === 'published',
+        createdAt: row.created_at || new Date().toISOString(),
+        updatedAt: row.updated_at || new Date().toISOString(),
+        slug: row.slug || row.id,
+        tags: row.tags || []
+      };
+    });
     
     // Sort by creation date (newest first)
     blogs.sort((a, b) => {
-      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt)
-      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt)
+      const dateA = new Date(a.createdAt)
+      const dateB = new Date(b.createdAt)
       return dateB.getTime() - dateA.getTime()
     })
     
@@ -93,10 +94,7 @@ function formatDate(dateInput: any): string {
   try {
     let date: Date
     
-    if (dateInput?.toDate) {
-      // Firebase Timestamp
-      date = dateInput.toDate()
-    } else if (typeof dateInput === 'string') {
+    if (typeof dateInput === 'string') {
       // ISO string
       date = new Date(dateInput)
     } else if (dateInput instanceof Date) {

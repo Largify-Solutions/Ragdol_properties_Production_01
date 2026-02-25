@@ -1,19 +1,25 @@
-'use server'
-
 import { NextRequest, NextResponse } from 'next/server'
-
-export async function GET(req: NextRequest) {
-  return NextResponse.json({ data: [], message: 'Mock data' })
-}
+import { createClient } from '@/lib/supabase-server'
 
 export async function POST(req: NextRequest) {
-  return NextResponse.json({ data: {}, message: 'Mock created' })
-}
+  try {
+    const supabase = await createClient()
+    const body = await req.json()
 
-export async function PUT(req: NextRequest) {
-  return NextResponse.json({ data: {}, message: 'Mock updated' })
-}
+    if (!Array.isArray(body.agents) || body.agents.length === 0) {
+      return NextResponse.json({ error: 'agents array is required' }, { status: 400 })
+    }
 
-export async function DELETE(req: NextRequest) {
-  return NextResponse.json({ message: 'Mock deleted' })
+    const { data, error } = await supabase
+      .from('agents')
+      .upsert(body.agents, { onConflict: 'id' })
+      .select()
+
+    if (error) throw error
+
+    return NextResponse.json({ data, message: `${data.length} agents populated successfully` }, { status: 201 })
+  } catch (error: any) {
+    console.error('Error populating agents:', error)
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 })
+  }
 }

@@ -22,16 +22,8 @@ import {
 import { StarIcon as StarSolidIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 
-// Firebase imports
-import { db } from "@/lib/firebase";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-} from "firebase/firestore";
+// Supabase imports
+import { supabase } from "@/lib/supabase-browser";
 
 type Property = Database["public"]["Tables"]["properties"]["Row"];
 type AgentRow = Database["public"]["Tables"]["agents"]["Row"];
@@ -84,106 +76,65 @@ function setCachedData(key: string, data: any) {
   dataCache.set(key, { data, timestamp: Date.now() });
 }
 
-// Firebase data fetching functions
+// Supabase data fetching functions
 
 // 1. Properties for Buy/Sale - Status = "buy" OR "sale" - INCLUDES AGENT PROPERTIES TOO
 async function fetchFeaturedProperties(): Promise<UIProperty[]> {
   try {
-    // Check cache first
     const cached = getCachedData('featured_properties');
     if (cached) return cached;
 
-    console.log("Fetching ALL properties for sale from Firebase...");
+    const { data, error } = await supabase
+      .from('properties')
+      .select('*')
+      .in('status', ['buy', 'sale'])
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(4);
 
-    const allProperties: UIProperty[] = [];
+    if (error) throw error;
 
-    // Fetch from regular properties collection - CHANGED TO 100
-    const propertiesRef = collection(db, "properties");
-    const q = query(propertiesRef, limit(100));
-    const querySnapshot = await getDocs(q);
+    const allProperties: UIProperty[] = (data || []).map((p: any) => ({
+      id: p.id,
+      title: p.title || "Untitled Property",
+      price: p.price || 0,
+      priceLabel: "total",
+      image: p.images?.[0] || p.image_url || "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
+      location: p.address ? `${p.address}${p.area ? ", " + p.area : ""}${p.city ? ", " + p.city : ""}` : p.location || "Dubai, UAE",
+      beds: p.beds || 0,
+      baths: p.baths || 0,
+      sqft: p.sqft || p.built_up_area || 0,
+      type: p.type || "Property",
+      featured: p.featured || false,
+    }));
 
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
+    // Also fetch from agent_properties
+    const { data: agentProps } = await supabase
+      .from('agent_properties')
+      .select('*')
+      .in('status', ['buy', 'sale'])
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(4);
 
-      if (
-        (data.status === "buy" || data.status === "sale") &&
-        data.published !== false &&
-        data.published !== "false"
-      ) {
+    if (agentProps) {
+      agentProps.forEach((p: any) => {
         allProperties.push({
-          id: doc.id,
-          title: data.title || "Untitled Property",
-          price: data.price || 0,
+          id: `agent_${p.id}`,
+          title: p.title || "Agent Property",
+          price: p.price || 0,
           priceLabel: "total",
-          image:
-            data.images && Array.isArray(data.images) && data.images.length > 0
-              ? data.images[0]
-              : "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
-          location: data.address
-            ? `${data.address}${data.area ? ", " + data.area : ""}${
-                data.city ? ", " + data.city : ""
-              }`
-            : "Dubai, UAE",
-          beds: data.beds || 0,
-          baths: data.baths || 0,
-          sqft: data.sqft || data.built_up_area || 0,
-          type: data.type || "Property",
-          featured: data.featured || false,
+          image: p.images?.[0] || "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
+          location: p.address ? `${p.address}${p.area ? ", " + p.area : ""}${p.city ? ", " + p.city : ""}` : p.area || p.city || "Location not specified",
+          beds: p.beds || 0,
+          baths: p.bathrooms || 0,
+          sqft: p.sqft || 0,
+          type: p.type || "property",
+          featured: p.featured || false,
         });
-      }
-    });
-
-    console.log(
-      `Found ${allProperties.length} properties for sale from main collection`
-    );
-
-    // Also fetch from agent_properties collection for buy/sale
-    try {
-      const agentPropertiesRef = collection(db, "agent_properties");
-      const agentQ = query(agentPropertiesRef, limit(40));
-      const agentSnapshot = await getDocs(agentQ);
-
-      agentSnapshot.forEach((doc) => {
-        const data = doc.data();
-
-        if (
-          data.published !== false &&
-          (data.status === "buy" || data.status === "sale")
-        ) {
-          allProperties.push({
-            id: `agent_${doc.id}`,
-            title: data.title || "Agent Property",
-            price: data.price || 0,
-            priceLabel: "total",
-            image:
-              data.images &&
-              Array.isArray(data.images) &&
-              data.images.length > 0
-                ? data.images[0]
-                : "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
-            location: data.address
-              ? `${data.address}${data.area ? ", " + data.area : ""}${
-                  data.city ? ", " + data.city : ""
-                }`
-              : data.area || data.city || "Location not specified",
-            beds: data.beds || 0,
-            baths: data.bathrooms || 0,
-            sqft: data.sqft || 0,
-            type: data.type || "property",
-            featured: data.featured || false,
-          });
-        }
       });
-
-      console.log(`Added ${agentSnapshot.size} agent properties for sale`);
-    } catch (agentError) {
-      console.log("Could not fetch agent properties for sale:", agentError);
     }
 
-    // Sort by latest first
-    allProperties.sort((a, b) => b.id.localeCompare(a.id));
-
-    // CHANGED: MAXIMUM 4 ITEMS (previously 3)
     const result = allProperties.slice(0, 4);
     setCachedData('featured_properties', result);
     return result;
@@ -196,98 +147,60 @@ async function fetchFeaturedProperties(): Promise<UIProperty[]> {
 // 2. Rental Properties - Status = "rent" - INCLUDES AGENT PROPERTIES TOO
 async function fetchRentalProperties(): Promise<UIProperty[]> {
   try {
-    // Check cache first
     const cached = getCachedData('rental_properties');
     if (cached) return cached;
 
-    console.log("Fetching ALL rental properties from Firebase...");
+    const { data, error } = await supabase
+      .from('properties')
+      .select('*')
+      .eq('status', 'rent')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(4);
 
-    const allRentalProperties: UIProperty[] = [];
+    if (error) throw error;
 
-    // Fetch from regular properties collection - CHANGED TO 100
-    const propertiesRef = collection(db, "properties");
-    const q = query(propertiesRef, limit(100));
-    const querySnapshot = await getDocs(q);
+    const allRentalProperties: UIProperty[] = (data || []).map((p: any) => ({
+      id: p.id,
+      title: p.title || "Untitled Property",
+      price: p.price || 0,
+      priceLabel: "per_month",
+      image: p.images?.[0] || p.image || "https://images.pexels.com/photos/1396126/pexels-photo-1396126.jpeg?auto=compress&cs=tinysrgb&w=800",
+      location: p.address ? `${p.address}${p.area ? ", " + p.area : ""}${p.city ? ", " + p.city : ""}` : p.location || "Dubai, UAE",
+      beds: p.beds || 0,
+      baths: p.baths || 0,
+      sqft: p.sqft || p.built_up_area || 0,
+      type: p.type || "Property",
+      featured: p.featured || false,
+    }));
 
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
+    // Also fetch from agent_properties for rent
+    const { data: agentProps } = await supabase
+      .from('agent_properties')
+      .select('*')
+      .eq('status', 'rent')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(4);
 
-      if (
-        data.status === "rent" &&
-        data.published !== false &&
-        data.published !== "false"
-      ) {
+    if (agentProps) {
+      agentProps.forEach((p: any) => {
         allRentalProperties.push({
-          id: doc.id,
-          title: data.title || "Untitled Property",
-          price: data.price || 0,
+          id: `agent_${p.id}`,
+          title: p.title || "Agent Rental Property",
+          price: p.price || 0,
           priceLabel: "per_month",
-          image:
-            data.images && Array.isArray(data.images) && data.images.length > 0
-              ? data.images[0]
-              : "https://images.pexels.com/photos/1396126/pexels-photo-1396126.jpeg?auto=compress&cs=tinysrgb&w=800",
-          location: data.address
-            ? `${data.address}${data.area ? ", " + data.area : ""}${
-                data.city ? ", " + data.city : ""
-              }`
-            : "Dubai, UAE",
-          beds: data.beds || 0,
-          baths: data.baths || 0,
-          sqft: data.sqft || data.built_up_area || 0,
-          type: data.type || "Property",
-          featured: data.featured || false,
+          image: p.images?.[0] || "https://images.pexels.com/photos/1396126/pexels-photo-1396126.jpeg?auto=compress&cs=tinysrgb&w=800",
+          location: p.address ? `${p.address}${p.area ? ", " + p.area : ""}${p.city ? ", " + p.city : ""}` : p.area || p.city || "Location not specified",
+          beds: p.beds || 0,
+          baths: p.bathrooms || p.baths || 0,
+          sqft: p.sqft || 0,
+          type: p.type || "property",
+          featured: p.featured || false,
         });
-      }
-    });
-
-    console.log(
-      `Found ${allRentalProperties.length} rental properties from main collection`
-    );
-
-    // Also fetch from agent_properties collection for rent
-    try {
-      const agentPropertiesRef = collection(db, "agent_properties");
-      const agentQ = query(agentPropertiesRef, limit(40));
-      const agentSnapshot = await getDocs(agentQ);
-
-      agentSnapshot.forEach((doc) => {
-        const data = doc.data();
-
-        if (data.published !== false && data.status === "rent") {
-          allRentalProperties.push({
-            id: `agent_${doc.id}`,
-            title: data.title || "Agent Rental Property",
-            price: data.price || 0,
-            priceLabel: "per_month",
-            image:
-              data.images &&
-              Array.isArray(data.images) &&
-              data.images.length > 0
-                ? data.images[0]
-                : "https://images.pexels.com/photos/1396126/pexels-photo-1396126.jpeg?auto=compress&cs=tinysrgb&w=800",
-            location: data.address
-              ? `${data.address}${data.area ? ", " + data.area : ""}${
-                  data.city ? ", " + data.city : ""
-                }`
-              : data.area || data.city || "Location not specified",
-            beds: data.beds || 0,
-            baths: data.bathrooms || 0,
-            sqft: data.sqft || 0,
-            type: data.type || "property",
-            featured: data.featured || false,
-          });
-        }
       });
-
-      console.log(`Added ${agentSnapshot.size} agent rental properties`);
-    } catch (agentError) {
-      console.log("Could not fetch agent rental properties:", agentError);
     }
 
-    // Sort by latest first
-    allRentalProperties.sort((a, b) => b.id.localeCompare(a.id));
-
-    // CHANGED: MAXIMUM 4 ITEMS (previously 3)
     const result = allRentalProperties.slice(0, 4);
     setCachedData('rental_properties', result);
     return result;
@@ -297,129 +210,37 @@ async function fetchRentalProperties(): Promise<UIProperty[]> {
   }
 }
 
-// 3. REAL Project Videos - ONLY from Firebase - MAX 5
+// 3. REAL Project Videos - ONLY from Supabase - MAX 5
 async function fetchProjectVideos(): Promise<ProjectVideo[]> {
   try {
-    // Check cache first
     const cached = getCachedData('project_videos');
     if (cached) return cached;
-    console.log("Fetching REAL projects for video showcase from Firebase...");
-    const projectsRef = collection(db, "projects");
 
-    // Only fetch published projects - CHANGED TO 10
-    const q = query(projectsRef, where("published", "==", true), limit(10));
+    const { data, error } = await supabase
+      .from('projects')
+      .select('id, name, city, area, address, status, hero_image_url, images, video_url, starting_price, min_price')
+      .eq('published', true)
+      .order('featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(5);
 
-    const querySnapshot = await getDocs(q);
+    if (error) throw error;
 
-    const projectVideos: ProjectVideo[] = [];
+    const FALLBACK_IMAGE = "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800";
 
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
+    const projectVideos: ProjectVideo[] = (data || []).map((p: any) => ({
+      id: p.id,
+      title: p.name || "Untitled Project",
+      location: p.city || p.area || p.address || "Dubai",
+      videoUrl: p.video_url && isVideoUrl(p.video_url) ? p.video_url : "",
+      imageUrl: p.hero_image_url || (Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null) || FALLBACK_IMAGE,
+      status: p.status || "upcoming",
+      price: p.starting_price || p.min_price || 0,
+      isRealProject: true,
+    }));
 
-      // Check if project has video_url OR images for display
-      const hasVideoUrl =
-        data.video_url && data.video_url !== "" && isVideoUrl(data.video_url);
-      const hasImages =
-        data.images && Array.isArray(data.images) && data.images.length > 0;
-      const heroImage =
-        data.hero_image_url || (hasImages ? data.images[0] : "");
-
-      // Only include projects that have either video or image for display
-      if (data.published === true && (hasVideoUrl || hasImages)) {
-        projectVideos.push({
-          id: doc.id,
-          title: data.name || "Untitled Project",
-          location: data.city || data.area || data.address || "Dubai",
-          videoUrl: data.video_url || "",
-          imageUrl:
-            heroImage ||
-            "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
-          status: data.status || "in-progress",
-          price: data.starting_price || data.min_price || 0,
-          isRealProject: true,
-        });
-      }
-    });
-
-    console.log(
-      `Found ${projectVideos.length} REAL projects with videos/images`
-    );
-
-    // Add demo reels if less than 4 real projects
-    const demoReels: ProjectVideo[] = [
-      {
-        id: "demo_1",
-        title: "Luxury Marina Towers",
-        location: "Dubai Marina",
-        videoUrl:
-          "https://res.cloudinary.com/thenprogrammer/video/upload/v1/demo/luxury-marina.mp4",
-        imageUrl:
-          "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=500&h=700&fit=crop",
-        status: "Available",
-        price: 2500000,
-        isRealProject: false,
-      },
-      {
-        id: "demo_2",
-        title: "Palm Jumeirah Villas",
-        location: "Palm Jumeirah",
-        videoUrl:
-          "https://res.cloudinary.com/thenprogrammer/video/upload/v1/demo/palm-villas.mp4",
-        imageUrl:
-          "https://images.unsplash.com/photo-1566683377667-98a3bfe21f94?w=500&h=700&fit=crop",
-        status: "Available",
-        price: 5000000,
-        isRealProject: false,
-      },
-      {
-        id: "demo_3",
-        title: "Downtown Apartments",
-        location: "Downtown Dubai",
-        videoUrl:
-          "https://res.cloudinary.com/thenprogrammer/video/upload/v1/demo/downtown-apts.mp4",
-        imageUrl:
-          "https://images.unsplash.com/photo-1570129477492-45a003537e1f?w=500&h=700&fit=crop",
-        status: "Available",
-        price: 1800000,
-        isRealProject: false,
-      },
-      {
-        id: "demo_4",
-        title: "Emirates Hills Estate",
-        location: "Emirates Hills",
-        videoUrl:
-          "https://res.cloudinary.com/thenprogrammer/video/upload/v1/demo/emirates-hills.mp4",
-        imageUrl:
-          "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=500&h=700&fit=crop",
-        status: "Available",
-        price: 3500000,
-        isRealProject: false,
-      },
-      {
-        id: "demo_5",
-        title: "Jumeirah Beach Residences",
-        location: "Jumeirah Beach",
-        videoUrl:
-          "https://res.cloudinary.com/thenprogrammer/video/upload/v1/demo/jbr-luxury.mp4",
-        imageUrl:
-          "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=500&h=700&fit=crop",
-        status: "Available",
-        price: 3200000,
-        isRealProject: false,
-      },
-    ];
-
-    // If less than 5 real projects, add demo reels to reach 5 total
-    if (projectVideos.length < 5) {
-      const remaining = 5 - projectVideos.length;
-      projectVideos.push(...demoReels.slice(0, remaining));
-      console.log(`Added ${remaining} demo reels to reach 5 total`);
-    }
-
-    // CHANGED: MAXIMUM 5 ITEMS (previously 4)
-    const result = projectVideos.slice(0, 5);
-    setCachedData('project_videos', result);
-    return result;
+    setCachedData('project_videos', projectVideos);
+    return projectVideos;
   } catch (error) {
     console.error("Error fetching project videos:", error);
     return [];
@@ -429,49 +250,31 @@ async function fetchProjectVideos(): Promise<ProjectVideo[]> {
 // 4. New Projects (for projects section) - MAX 4
 async function fetchNewProjects() {
   try {
-    // Check cache first
     const cached = getCachedData('new_projects');
     if (cached) return cached;
-    console.log("Fetching projects from Firebase...");
-    const projectsRef = collection(db, "projects");
 
-    // CHANGED TO 15
-    const q = query(projectsRef, where("published", "==", true), limit(15));
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*, developers(name)')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(4);
 
-    const querySnapshot = await getDocs(q);
+    if (error) throw error;
 
-    const projects: any[] = [];
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-
-      if (data.published === true) {
-        projects.push({
-          id: doc.id,
-          name: data.name || "Untitled Project",
-          location: data.city || data.address || data.area || "Dubai",
-          starting_price: data.starting_price || data.min_price || 0,
-          hero_image_url:
-            data.hero_image_url ||
-            (data.images && Array.isArray(data.images) && data.images[0]) ||
-            "https://images.pexels.com/photos/1396134/pexels-photo-1396134.jpeg?auto=compress&cs=tinysrgb&w=800",
-          status: data.status || "In Progress",
-          developer:
-            data.developer_name || data.developer || "Unknown Developer",
-          video_url: data.video_url || null,
-          description: data.description || "",
-          available_units: data.available_units || 0,
-          total_units: data.total_units || 0,
-        });
-      }
-    });
-
-    console.log(`Found ${projects.length} projects`);
-
-    projects.sort((a, b) => b.id.localeCompare(a.id));
-
-    // CHANGED: MAXIMUM 4 ITEMS (previously 3)
-    return projects.slice(0, 4);
+    return (data || []).map((p: any) => ({
+      id: p.id,
+      name: p.name || "Untitled Project",
+      location: p.city || p.address || p.area || "Dubai",
+      starting_price: p.starting_price || p.min_price || 0,
+      hero_image_url: p.hero_image_url || p.images?.[0] || "https://images.pexels.com/photos/1396134/pexels-photo-1396134.jpeg?auto=compress&cs=tinysrgb&w=800",
+      status: p.status || "In Progress",
+      developer: p.developers?.name || "Unknown Developer",
+      video_url: p.video_url || null,
+      description: p.description || "",
+      available_units: p.available_units || 0,
+      total_units: p.total_units || 0,
+    }));
   } catch (error) {
     console.error("Error fetching projects:", error);
     return [];
@@ -903,170 +706,119 @@ const AutoPlayVideoPlayer = ({
     </div>
   );
 };
-// 5. Trusted Partners - MAX 4
+// 5. Trusted Partners - MAX 6
 async function fetchTrustedPartners() {
   try {
-    console.log("Fetching partners from Firebase...");
-    const partnersRef = collection(db, "partners");
+    const { data, error } = await supabase
+      .from('partners')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true })
+      .limit(6);
 
-    // CHANGED TO 15 (ya isse zyada agar 6 se zyada chahiye)
-    const q = query(partnersRef, limit(15));
-    const querySnapshot = await getDocs(q);
-
-    const partners: any[] = [];
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-
-      if (data.active !== false) {
-        partners.push({
-          id: doc.id,
-          name: data.name || "Partner",
-          logo:
-            data.logo ||
-            "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop",
-          category: data.category || "Real Estate",
-          order: data.order || 0,
-        });
-      }
-    });
-
-    console.log(`Found ${partners.length} partners`);
-
-    partners.sort((a, b) => (a.order || 0) - (b.order || 0));
-
-    if (partners.length === 0) {
-      // CHANGED: Return 6 default partners
+    if (error) {
+      console.error("Supabase error fetching partners:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      // Return default partners on error
       return [
-        {
-          id: "1",
-          name: "Emaar",
-          logo: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop",
-          category: "Real Estate",
-        },
-        {
-          id: "2",
-          name: "Sobha",
-          logo: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop",
-          category: "Real Estate",
-        },
-        {
-          id: "3",
-          name: "Damac",
-          logo: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop",
-          category: "Real Estate",
-        },
-        {
-          id: "4",
-          name: "Nakheel",
-          logo: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop",
-          category: "Real Estate",
-        },
-        {
-          id: "5",
-          name: "Dubai Properties",
-          logo: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop",
-          category: "Real Estate",
-        },
-        {
-          id: "6",
-          name: "Meraas",
-          logo: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop",
-          category: "Real Estate",
-        },
+        { id: "1", name: "Emaar", logo: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+        { id: "2", name: "Sobha", logo: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+        { id: "3", name: "Damac", logo: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+        { id: "4", name: "Nakheel", logo: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+        { id: "5", name: "Dubai Properties", logo: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+        { id: "6", name: "Meraas", logo: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
       ];
     }
 
-    // CHANGED: MAXIMUM 6 ITEMS (previously 4)
-    return partners.slice(0, 6);
-  } catch (error) {
-    console.error("Error fetching partners:", error);
-    return [];
+    if (data && data.length > 0) {
+      return data.map((p: any) => ({
+        id: p.id,
+        name: p.name || "Partner",
+        logo: p.logo_url || "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop",
+        category: p.category || "Real Estate",
+        order: p.sort_order || 0,
+      }));
+    }
+
+    // Default partners fallback
+    return [
+      { id: "1", name: "Emaar", logo: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "2", name: "Sobha", logo: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "3", name: "Damac", logo: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "4", name: "Nakheel", logo: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "5", name: "Dubai Properties", logo: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "6", name: "Meraas", logo: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+    ];
+  } catch (error: any) {
+    console.error("Error fetching partners:", error?.message || error);
+    return [
+      { id: "1", name: "Emaar", logo: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "2", name: "Sobha", logo: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "3", name: "Damac", logo: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "4", name: "Nakheel", logo: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "5", name: "Dubai Properties", logo: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+      { id: "6", name: "Meraas", logo: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop", category: "Real Estate" },
+    ];
   }
 }
 
 // 6. Top Agents - MAX 4
 async function fetchTopAgents(): Promise<AgentWithProfile[]> {
   try {
-    console.log("Fetching agents from Firebase...");
-    const agentsRef = collection(db, "agents");
+    const { data, error } = await supabase
+      .from('agents')
+      .select('*, profiles(*)')
+      .eq('approved', true)
+      .order('rating', { ascending: false })
+      .limit(4);
 
-    // CHANGED TO 20
-    const q = query(agentsRef, limit(20));
-    const querySnapshot = await getDocs(q);
+    if (error) throw error;
 
-    const agents: AgentWithProfile[] = [];
-
-    for (const doc of querySnapshot.docs) {
-      const data = doc.data();
-
-      if (data.approved !== false) {
-        let profileData: ProfileRow | null = null;
-        try {
-          if (data.user_id) {
-            const profilesRef = collection(db, "profiles");
-            const profileQuery = query(
-              profilesRef,
-              where("user_id", "==", data.user_id),
-              limit(1)
-            );
-            const profileSnapshot = await getDocs(profileQuery);
-
-            if (!profileSnapshot.empty) {
-              profileData = profileSnapshot.docs[0].data() as ProfileRow;
-            }
-          }
-        } catch (profileError) {
-          console.log("No profile found for agent:", doc.id);
-        }
-
-        agents.push({
-          id: doc.id,
-          title: data.title || "Real Estate Agent",
-          bio: data.bio || "Experienced real estate professional",
-          experience_years: data.experience_years || 0,
-          rating: data.rating || 0,
-          review_count: data.review_count || 0,
-          total_sales: data.total_sales || 0,
-          profile_image:
-            data.profile_image ||
-            profileData?.avatar_url ||
-            data.avatar ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(
-              data.title || "Agent"
-            )}&background=random`,
-          created_at: data.created_at || new Date().toISOString(),
-          updated_at: data.updated_at || new Date().toISOString(),
-          office: data.office || "Dubai",
-          license_no: data.license_no || "",
-          approved: data.approved || false,
-          social: data.social || { linkedin: "", instagram: "" },
-          brokerage: data.brokerage || "RAGDOL",
-          certifications: data.certifications || [],
-          commission_rate: data.commission_rate || 2.5,
-          languages: data.languages || ["English", "Arabic"],
-          areas: data.areas || ["Dubai"],
-          verified: data.verified || false,
-          user_id: data.user_id || doc.id,
-          whatsapp: data.whatsapp || null,
-          linkedin_url: data.linkedin_url || null,
-          instagram_handle: data.instagram_handle || null,
-          website_url: data.website_url || null,
-          location: data.location || "Dubai",
-          profile_images: data.profile_images || [],
-          specializations: data.specializations || ["Residential Properties"],
-          telegram: data.telegram || null,
-          profiles: profileData,
-        });
-      }
+    if (data && data.length > 0) {
+      return data.map((agent: any) => ({
+        id: agent.id,
+        title: agent.title || "Real Estate Agent",
+        bio: agent.bio || "Experienced real estate professional",
+        experience_years: agent.experience_years || 0,
+        rating: agent.rating || 0,
+        review_count: agent.review_count || 0,
+        total_sales: agent.total_sales || 0,
+        profile_image:
+          agent.profile_image ||
+          agent.profiles?.avatar_url ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            agent.title || "Agent"
+          )}&background=random`,
+        created_at: agent.created_at || new Date().toISOString(),
+        updated_at: agent.updated_at || new Date().toISOString(),
+        office: agent.office || "Dubai",
+        license_no: agent.license_no || "",
+        approved: agent.approved || false,
+        social: agent.social || { linkedin: "", instagram: "" },
+        brokerage: agent.brokerage || "RAGDOL",
+        certifications: agent.certifications || [],
+        commission_rate: agent.commission_rate || 2.5,
+        languages: agent.languages || ["English", "Arabic"],
+        areas: agent.areas || ["Dubai"],
+        verified: agent.verified || false,
+        user_id: agent.user_id || agent.id,
+        whatsapp: agent.whatsapp || null,
+        linkedin_url: agent.linkedin_url || null,
+        instagram_handle: agent.instagram_handle || null,
+        website_url: agent.website_url || null,
+        location: agent.location || "Dubai",
+        profile_images: agent.profile_images || [],
+        specializations: agent.specializations || ["Residential Properties"],
+        telegram: agent.telegram || null,
+        profiles: agent.profiles || null,
+      }));
     }
 
-    console.log(`Found ${agents.length} agents`);
-
-    agents.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-
-    // CHANGED: MAXIMUM 4 ITEMS (previously 3)
-    return agents.slice(0, 4);
+    return [];
   } catch (error) {
     console.error("Error fetching agents:", error);
     return [];
@@ -1076,46 +828,42 @@ async function fetchTopAgents(): Promise<AgentWithProfile[]> {
 // 7. Testimonials - MAX 3 (Client Requirement: "Use 3 only to have them landscape")
 async function fetchTestimonials() {
   try {
-    console.log("Fetching testimonials from Firebase...");
-    const testimonialsRef = collection(db, "testimonials");
+    const { data, error } = await supabase
+      .from('testimonials')
+      .select('*')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(3);
 
-    // SAME: 15
-    const q = query(testimonialsRef, limit(15));
-    const querySnapshot = await getDocs(q);
+    if (error) {
+      console.error("Supabase error fetching testimonials:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      return [];
+    }
 
-    const testimonials: any[] = [];
+    if (data && data.length > 0) {
+      return data.map((t: any) => ({
+        id: t.id,
+        name: t.name || "Anonymous",
+        role: t.role || t.company || "Client",
+        content: t.content || "Great service!",
+        avatar:
+          t.avatar_url ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            t.name || "Client"
+          )}&background=random`,
+        rating: t.rating || 5,
+        createdAt: t.created_at || new Date(),
+      }));
+    }
 
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-
-      if (data.approved !== false) {
-        testimonials.push({
-          id: doc.id,
-          name: data.name || "Anonymous",
-          role: data.position || data.company || "Client",
-          content: data.message || "Great service!",
-          avatar:
-            data.avatar ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(
-              data.name || "Client"
-            )}&background=random`,
-          createdAt: data.createdAt || new Date(),
-        });
-      }
-    });
-
-    console.log(`Found ${testimonials.length} testimonials`);
-
-    testimonials.sort(
-      (a, b) =>
-        new Date(b.createdAt || 0).getTime() -
-        new Date(a.createdAt || 0).getTime()
-    );
-
-    // CHANGED: MAXIMUM 3 ITEMS (was 4) - Client requirement
-    return testimonials.slice(0, 3);
-  } catch (error) {
-    console.error("Error fetching testimonials:", error);
+    return [];
+  } catch (error: any) {
+    console.error("Error fetching testimonials:", error?.message || error);
     return [];
   }
 }
@@ -1340,80 +1088,48 @@ const SimpleAutoPlayVideo = ({ url, poster, title }: { url: string; poster?: str
 // 8. Blog Posts - MAX 4
 async function fetchBlogPosts() {
   try {
-    console.log("Fetching blogs from Firebase...");
-    const blogsRef = collection(db, "blogs");
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(4);
 
-    // CHANGED TO 4
-    const q = query(blogsRef, where("published", "==", true), limit(4));
+    if (error) throw error;
 
-    const querySnapshot = await getDocs(q);
-    const blogs: any[] = [];
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-
-      blogs.push({
-        id: doc.id,
-        title: data.title || "Untitled Blog",
-        date: data.createdAt
-          ? new Date(data.createdAt.seconds * 1000).toLocaleDateString(
-              "en-US",
-              {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              }
-            )
+    if (data && data.length > 0) {
+      return data.map((post: any) => ({
+        id: post.id,
+        title: post.title || "Untitled Blog",
+        date: post.created_at
+          ? new Date(post.created_at).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
           : "Recent",
-        category: data.category || "General",
+        category: post.category || "General",
         image:
-          data.imageUrl ||
+          post.featured_image ||
           "https://images.pexels.com/photos/1396130/pexels-photo-1396130.jpeg?auto=compress&cs=tinysrgb&w=800",
-        excerpt: data.excerpt || "",
-        author: data.author || "Admin",
-        readTime: data.readTime || "1 min read",
-        slug: data.slug || doc.id,
-      });
-    });
+        excerpt: post.excerpt || "",
+        author: "RAGDOL",
+        readTime: "3 min read",
+        slug: post.slug || post.id,
+      }));
+    }
 
-    console.log(`Found ${blogs.length} blog posts`);
-
-    blogs.sort((a, b) => {
-      const dateA = a.date ? new Date(a.date) : new Date(0);
-      const dateB = b.date ? new Date(b.date) : new Date(0);
-      return dateB.getTime() - dateA.getTime();
-    });
-
-    // CHANGED: MAXIMUM 4 ITEMS (previously 3)
-    return blogs.slice(0, 4);
+    return [];
   } catch (error) {
     console.error("Error fetching blogs:", error);
     return [];
   }
 }
 
-// 11. Debug function to check Firebase connection
-async function checkFirebaseConnection() {
-  try {
-    console.log("Checking Firebase connection...");
-    const testRef = collection(db, "properties");
-    const testQuery = query(testRef, limit(1));
-    const testSnapshot = await getDocs(testQuery);
-    console.log(
-      "Firebase connection successful. Collections found:",
-      testSnapshot.size
-    );
-    return true;
-  } catch (error) {
-    console.error("Firebase connection failed:", error);
-    return false;
-  }
-}
-
 export default function HomePage() {
   const { t } = useTranslation();
 
-  // State for Firebase data
+  // State for Supabase data
   const [featuredProperties, setFeaturedProperties] = useState<UIProperty[]>(
     []
   );
@@ -1424,7 +1140,7 @@ export default function HomePage() {
   const [topAgents, setTopAgents] = useState<AgentWithProfile[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
-  const [firebaseConnected, setFirebaseConnected] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Video controls state
   const [videoStates, setVideoStates] = useState<{
@@ -1437,67 +1153,59 @@ export default function HomePage() {
   // Fetch all data on component mount - OPTIMIZED CONCURRENT LOADING
   useEffect(() => {
     const fetchAllData = async () => {
-      console.log("🚀 Starting optimized data fetch from Firebase...");
+      console.log("🚀 Starting optimized data fetch from Supabase...");
 
       try {
-        const isConnected = await checkFirebaseConnection();
-        setFirebaseConnected(isConnected);
+        // Fetch all critical data in parallel (fast & efficient)
+        const [
+          featuredData,
+          rentalData,
+          projectData,
+          newProjectsData,
+          partnersData,
+          agentsData,
+          testimonialsData,
+          blogsData
+        ] = await Promise.all([
+          fetchFeaturedProperties(),
+          fetchRentalProperties(),
+          fetchProjectVideos(),
+          fetchNewProjects(),
+          fetchTrustedPartners(),
+          fetchTopAgents(),
+          fetchTestimonials(),
+          fetchBlogPosts()
+        ]).catch(error => {
+          console.error("Error in concurrent data fetch:", error);
+          return [[], [], [], [], [], [], [], []];
+        });
 
-        if (isConnected) {
-          console.log("✓ Firebase connected, fetching all data concurrently...");
+        // Update all state at once
+        setFeaturedProperties(featuredData);
+        setRentalProperties(rentalData);
+        setNewProjects(newProjectsData);
+        setTrustedPartners(partnersData);
+        setTopAgents(agentsData);
+        setTestimonials(testimonialsData);
+        setBlogPosts(blogsData);
 
-          // Fetch all critical data in parallel (fast & efficient)
-          const [
-            featuredData,
-            rentalData,
-            projectData,
-            newProjectsData,
-            partnersData,
-            agentsData,
-            testimonialsData,
-            blogsData
-          ] = await Promise.all([
-            fetchFeaturedProperties(),
-            fetchRentalProperties(),
-            fetchProjectVideos(),
-            fetchNewProjects(),
-            fetchTrustedPartners(),
-            fetchTopAgents(),
-            fetchTestimonials(),
-            fetchBlogPosts()
-          ]).catch(error => {
-            console.error("Error in concurrent data fetch:", error);
-            return [[], [], [], [], [], [], [], []];
+        // Initialize video states for projects
+        if (projectData.length > 0) {
+          setProjectVideos(projectData);
+          const initialVideoStates: {
+            [key: string]: { isPlaying: boolean; isMuted: boolean };
+          } = {};
+          projectData.forEach((project) => {
+            initialVideoStates[project.id] = {
+              isPlaying: false,
+              isMuted: true,
+            };
           });
-
-          // Update all state at once
-          setFeaturedProperties(featuredData);
-          setRentalProperties(rentalData);
-          setNewProjects(newProjectsData);
-          setTrustedPartners(partnersData);
-          setTopAgents(agentsData);
-          setTestimonials(testimonialsData);
-          setBlogPosts(blogsData);
-
-          // Initialize video states for projects
-          if (projectData.length > 0) {
-            setProjectVideos(projectData);
-            const initialVideoStates: {
-              [key: string]: { isPlaying: boolean; isMuted: boolean };
-            } = {};
-            projectData.forEach((project) => {
-              initialVideoStates[project.id] = {
-                isPlaying: false,
-                isMuted: true,
-              };
-            });
-            setVideoStates(initialVideoStates);
-          }
-
-          console.log("✓ All data loaded successfully!");
-        } else {
-          console.log("Firebase not connected, using empty data");
+          setVideoStates(initialVideoStates);
         }
+
+        setDataLoaded(true);
+        console.log("✓ All data loaded successfully!");
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -1904,10 +1612,10 @@ export default function HomePage() {
             )}
           </div>
 
-          {!firebaseConnected && trustedPartners.length === 0 && (
+          {!dataLoaded && trustedPartners.length === 0 && (
             <div className="text-center mt-6">
               <p className="text-amber-600 text-sm">
-                Unable to load partners from Firebase. Using default partners.
+                Unable to load partners. Using default partners.
               </p>
             </div>
           )}
@@ -2110,7 +1818,7 @@ export default function HomePage() {
         <div className="col-span-4 text-center py-12">
           <p className="text-slate-500 mb-4">No projects found</p>
           <p className="text-sm text-slate-400">
-            Add projects with "published: true" in Firebase
+            Add projects with "published: true" in Supabase
           </p>
         </div>
       )}  
@@ -2204,7 +1912,7 @@ export default function HomePage() {
               <div className="col-span-4 text-center py-12">
                 <p className="text-slate-500 mb-4">No blog posts found</p>
                 <p className="text-sm text-slate-400">
-                  Add blog posts with "published: true" in Firebase
+                  Add blog posts with "published: true" in Supabase
                 </p>
               </div>
             )}
@@ -2352,7 +2060,7 @@ export default function HomePage() {
               <div className="col-span-3 text-center py-12">
                 <p className="text-slate-500 mb-4">No testimonials found</p>
                 <p className="text-sm text-slate-400">
-                  Add testimonials to "testimonials" collection in Firebase
+                  Add testimonials to "testimonials" table in Supabase
                 </p>
               </div>
             )}

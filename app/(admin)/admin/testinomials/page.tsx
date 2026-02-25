@@ -16,21 +16,21 @@ import {
   EyeSlashIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline'
-import { db } from '@/lib/firebase'
-import { collection, getDocs, deleteDoc, doc, addDoc, updateDoc, serverTimestamp, query, orderBy } from 'firebase/firestore'
+import { supabase } from '@/lib/supabase-browser'
+import { useRealtimeSubscription } from '@/lib/hooks/useRealtimeSubscription'
 
 interface Testimonial {
   id: string
   name: string
   email: string
   company?: string
-  position?: string
-  message: string
+  role?: string
+  content: string
   rating: number
-  approved: boolean
-  featured: boolean
-  createdAt: any
-  updatedAt: any
+  is_active: boolean
+  is_featured: boolean
+  created_at: any
+  updated_at: any
 }
 
 export default function Testimonials() {
@@ -43,40 +43,38 @@ export default function Testimonials() {
     name: '',
     email: '',
     company: '',
-    position: '',
-    message: '',
+    role: '',
+    content: '',
     rating: 5,
-    approved: true,
-    featured: false
+    is_active: true,
+    is_featured: false
   })
 
-  // Fetch testimonials from Firebase
+  // Fetch testimonials from Supabase
   const fetchTestimonials = async () => {
     try {
       setLoading(true)
-      console.log('Fetching testimonials from Firebase...')
+      console.log('Fetching testimonials from Supabase...')
 
-      const testimonialsRef = collection(db, 'testimonials')
-      const q = query(testimonialsRef, orderBy('createdAt', 'desc'))
-      const snapshot = await getDocs(q)
+      const { data, error } = await supabase
+        .from('testimonials')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (error) throw error
 
-      const testimonialsData: Testimonial[] = []
-      snapshot.forEach((doc) => {
-        const data = doc.data()
-        testimonialsData.push({
-          id: doc.id,
-          name: data.name || '',
-          email: data.email || '',
-          company: data.company || '',
-          position: data.position || '',
-          message: data.message || '',
-          rating: data.rating || 5,
-          approved: data.approved || false,
-          featured: data.featured || false,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt
-        })
-      })
+      const testimonialsData: Testimonial[] = (data || []).map((item: any) => ({
+        id: item.id,
+        name: item.name || '',
+        email: item.email || '',
+        company: item.company || '',
+        role: item.role || '',
+        content: item.content || '',
+        rating: item.rating || 5,
+        is_active: item.is_active || false,
+        is_featured: item.is_featured || false,
+        created_at: item.created_at,
+        updated_at: item.updated_at
+      }))
 
       console.log('Testimonials loaded:', testimonialsData.length)
       setTestimonials(testimonialsData)
@@ -91,6 +89,12 @@ export default function Testimonials() {
   useEffect(() => {
     fetchTestimonials()
   }, [])
+
+  // Realtime subscription for testimonials table
+  useRealtimeSubscription({
+    table: 'testimonials',
+    onChange: () => fetchTestimonials(),
+  })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -111,7 +115,7 @@ export default function Testimonials() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+    if (!formData.name.trim() || !formData.email.trim() || !formData.content.trim()) {
       alert('Name, email, and message are required')
       return
     }
@@ -128,31 +132,31 @@ export default function Testimonials() {
       
       const testimonialData = {
         name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
         company: formData.company.trim(),
-        position: formData.position.trim(),
-        message: formData.message.trim(),
+        role: formData.role.trim(),
+        content: formData.content.trim(),
         rating: formData.rating,
-        approved: formData.approved,
-        featured: formData.featured,
-        updatedAt: serverTimestamp()
+        is_active: formData.is_active,
+        is_featured: formData.is_featured,
+        updated_at: new Date().toISOString()
       }
 
       if (editingTestimonial) {
         // Update existing testimonial
-        const testimonialRef = doc(db, 'testimonials', editingTestimonial.id)
-        await updateDoc(testimonialRef, {
+        const { error } = await supabase.from('testimonials').update({
           ...testimonialData,
-          createdAt: editingTestimonial.createdAt || serverTimestamp()
-        })
+          created_at: editingTestimonial.created_at || new Date().toISOString()
+        }).eq('id', editingTestimonial.id)
+        if (error) throw error
         console.log('Testimonial updated:', editingTestimonial.id)
       } else {
         // Add new testimonial
-        const docRef = await addDoc(collection(db, 'testimonials'), {
+        const { data: newDoc, error } = await supabase.from('testimonials').insert({
           ...testimonialData,
-          createdAt: serverTimestamp()
-        })
-        console.log('Testimonial added with ID:', docRef.id)
+          created_at: new Date().toISOString()
+        }).select().single()
+        if (error) throw error
+        console.log('Testimonial added with ID:', newDoc.id)
       }
 
       // Reset form and refresh list
@@ -172,11 +176,11 @@ export default function Testimonials() {
       name: '',
       email: '',
       company: '',
-      position: '',
-      message: '',
+      role: '',
+      content: '',
       rating: 5,
-      approved: true,
-      featured: false
+      is_active: true,
+      is_featured: false
     })
     setShowAddTestimonial(false)
     setEditingTestimonial(null)
@@ -188,11 +192,11 @@ export default function Testimonials() {
       name: testimonial.name,
       email: testimonial.email,
       company: testimonial.company || '',
-      position: testimonial.position || '',
-      message: testimonial.message,
+      role: testimonial.role || '',
+      content: testimonial.content,
       rating: testimonial.rating,
-      approved: testimonial.approved,
-      featured: testimonial.featured
+      is_active: testimonial.is_active,
+      is_featured: testimonial.is_featured
     })
     setShowAddTestimonial(true)
   }
@@ -202,8 +206,8 @@ export default function Testimonials() {
 
     try {
       console.log('Deleting testimonial:', id)
-      const testimonialRef = doc(db, 'testimonials', id)
-      await deleteDoc(testimonialRef)
+      const { error } = await supabase.from('testimonials').delete().eq('id', id)
+      if (error) throw error
 
       console.log('Testimonial deleted successfully')
       setTestimonials(testimonials.filter(testimonial => testimonial.id !== id))
@@ -215,15 +219,15 @@ export default function Testimonials() {
 
   const toggleApproval = async (testimonial: Testimonial) => {
     try {
-      const testimonialRef = doc(db, 'testimonials', testimonial.id)
-      await updateDoc(testimonialRef, {
-        approved: !testimonial.approved,
-        updatedAt: serverTimestamp()
-      })
+      const { error } = await supabase.from('testimonials').update({
+        is_active: !testimonial.is_active,
+        updated_at: new Date().toISOString()
+      }).eq('id', testimonial.id)
+      if (error) throw error
 
       setTestimonials(testimonials.map(t =>
         t.id === testimonial.id
-          ? { ...t, approved: !t.approved }
+          ? { ...t, is_active: !t.is_active }
           : t
       ))
     } catch (error) {
@@ -234,15 +238,15 @@ export default function Testimonials() {
 
   const toggleFeatured = async (testimonial: Testimonial) => {
     try {
-      const testimonialRef = doc(db, 'testimonials', testimonial.id)
-      await updateDoc(testimonialRef, {
-        featured: !testimonial.featured,
-        updatedAt: serverTimestamp()
-      })
+      const { error } = await supabase.from('testimonials').update({
+        is_featured: !testimonial.is_featured,
+        updated_at: new Date().toISOString()
+      }).eq('id', testimonial.id)
+      if (error) throw error
 
       setTestimonials(testimonials.map(t =>
         t.id === testimonial.id
-          ? { ...t, featured: !t.featured }
+          ? { ...t, is_featured: !t.is_featured }
           : t
       ))
     } catch (error) {
@@ -275,8 +279,8 @@ export default function Testimonials() {
   }
 
   // Calculate statistics
-  const approvedCount = testimonials.filter(t => t.approved).length
-  const featuredCount = testimonials.filter(t => t.featured).length
+  const approvedCount = testimonials.filter(t => t.is_active).length
+  const featuredCount = testimonials.filter(t => t.is_featured).length
   const averageRating = testimonials.length > 0 
     ? (testimonials.reduce((sum, t) => sum + t.rating, 0) / testimonials.length).toFixed(1)
     : '0.0'
@@ -390,12 +394,12 @@ export default function Testimonials() {
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
-                    Position
+                    Position/Role
                   </label>
                   <input
                     type="text"
-                    name="position"
-                    value={formData.position}
+                    name="role"
+                    value={formData.role}
                     onChange={handleInputChange}
                     disabled={isSubmitting}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
@@ -428,8 +432,8 @@ export default function Testimonials() {
                   Message *
                 </label>
                 <textarea
-                  name="message"
-                  value={formData.message}
+                  name="content"
+                  value={formData.content}
                   onChange={handleInputChange}
                   required
                   rows={4}
@@ -443,19 +447,19 @@ export default function Testimonials() {
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    name="approved"
-                    checked={formData.approved}
+                    name="is_active"
+                    checked={formData.is_active}
                     onChange={handleCheckboxChange}
                     disabled={isSubmitting}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:bg-gray-100"
                   />
-                  <label className="ml-2 block text-sm text-gray-900">Approved</label>
+                  <label className="ml-2 block text-sm text-gray-900">Active</label>
                 </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    name="featured"
-                    checked={formData.featured}
+                    name="is_featured"
+                    checked={formData.is_featured}
                     onChange={handleCheckboxChange}
                     disabled={isSubmitting}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:bg-gray-100"
@@ -536,8 +540,8 @@ export default function Testimonials() {
                         {testimonial.company && (
                           <p className="text-sm text-blue-600">{testimonial.company}</p>
                         )}
-                        {testimonial.position && (
-                          <p className="text-xs text-gray-500">{testimonial.position}</p>
+                        {testimonial.role && (
+                          <p className="text-xs text-gray-500">{testimonial.role}</p>
                         )}
                       </div>
                       <div className="flex items-center">
@@ -549,24 +553,24 @@ export default function Testimonials() {
 
                     {/* Message */}
                     <div className="mb-4 flex-1">
-                      <p className="text-gray-600 italic">"{testimonial.message}"</p>
+                      <p className="text-gray-600 italic">"{testimonial.content}"</p>
                     </div>
 
                     {/* Footer with actions and status */}
                     <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                       <div className="flex items-center space-x-2">
-                        {testimonial.approved ? (
+                        {testimonial.is_active ? (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                             <CheckCircleIcon className="h-3 w-3 mr-1" />
-                            Approved
+                            Active
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
                             <EyeSlashIcon className="h-3 w-3 mr-1" />
-                            Pending
+                            Inactive
                           </span>
                         )}
-                        {testimonial.featured && (
+                        {testimonial.is_featured && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
                             <StarIcon className="h-3 w-3 mr-1" />
                             Featured
@@ -574,7 +578,7 @@ export default function Testimonials() {
                         )}
                         <span className="text-xs text-gray-500">
                           <CalendarIcon className="h-3 w-3 inline mr-1" />
-                          {formatDate(testimonial.createdAt)}
+                          {formatDate(testimonial.created_at)}
                         </span>
                       </div>
 
@@ -582,13 +586,13 @@ export default function Testimonials() {
                         <button
                           onClick={() => toggleApproval(testimonial)}
                           className={`p-1.5 rounded-md ${
-                            testimonial.approved
+                            testimonial.is_active
                               ? 'text-green-600 hover:text-green-800 hover:bg-green-50'
                               : 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50'
                           }`}
-                          title={testimonial.approved ? 'Unapprove' : 'Approve'}
+                          title={testimonial.is_active ? 'Deactivate' : 'Activate'}
                         >
-                          {testimonial.approved ? (
+                          {testimonial.is_active ? (
                             <CheckCircleIcon className="h-4 w-4" />
                           ) : (
                             <EyeSlashIcon className="h-4 w-4" />
@@ -597,11 +601,11 @@ export default function Testimonials() {
                         <button
                           onClick={() => toggleFeatured(testimonial)}
                           className={`p-1.5 rounded-md ${
-                            testimonial.featured
+                            testimonial.is_featured
                               ? 'text-purple-600 hover:text-purple-800 hover:bg-purple-50'
                               : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
                           }`}
-                          title={testimonial.featured ? 'Remove featured' : 'Mark as featured'}
+                          title={testimonial.is_featured ? 'Remove featured' : 'Mark as featured'}
                         >
                           <StarIcon className="h-4 w-4" />
                         </button>

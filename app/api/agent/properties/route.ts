@@ -1,65 +1,100 @@
-'use server'
-
 import { NextRequest, NextResponse } from 'next/server'
-import { mockProperties } from '@/lib/mock-data'
+import { createClient } from '@/lib/supabase-server'
 
 export async function GET(req: NextRequest) {
+  const supabase = await createClient()
   const { searchParams } = new URL(req.url)
   const limit = parseInt(searchParams.get('limit') || '20')
   const offset = parseInt(searchParams.get('offset') || '0')
   const status = searchParams.get('status')
 
-  // For demo purposes, return all properties as if they belong to the current agent
-  let agentProperties = mockProperties
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  if (status) {
-    agentProperties = agentProperties.filter(p =>
-      status === 'published' ? p.published : !p.published
-    )
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('user_id', user.id)
+      .single()
+
+    let query = supabase
+      .from('properties')
+      .select('*', { count: 'exact' })
+      .eq('agent_id', agent?.id || '')
+
+    if (status === 'published') query = query.eq('published', true)
+    else if (status) query = query.eq('status', status)
+
+    query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
+
+    const { data, error, count } = await query
+    if (error) throw error
+
+    return NextResponse.json({ properties: data || [], total: count || 0, limit, offset })
+  } catch (error: any) {
+    console.error('Error fetching agent properties:', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
-
-  const paginatedProperties = agentProperties.slice(offset, offset + limit)
-
-  return NextResponse.json({
-    properties: paginatedProperties,
-    total: agentProperties.length,
-    limit,
-    offset
-  })
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  
-  // Set default review status for new submissions
-  const propertyData = {
-    ...body,
-    review_status: body.review_status || 'pending_review',
-    published: body.published || false,
-    id: `prop-${Date.now()}`,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+  const supabase = await createClient()
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('id')
+      .eq('user_id', user.id)
+      .single()
+
+    const body = await req.json()
+    const propertyData = {
+      ...body,
+      agent_id: agent?.id || null,
+      review_status: body.review_status || 'pending_review',
+      published: body.published || false,
+    }
+
+    const { data, error } = await supabase.from('properties').insert(propertyData).select().single()
+    if (error) throw error
+
+    return NextResponse.json(data, { status: 201 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
-
-  // In a real app, this would be saved to the database
-  // For now, we'll just return the mock response
-  return NextResponse.json(propertyData)
-}
-
-export async function PUT(req: NextRequest) {
-  return NextResponse.json({ data: {}, message: 'Mock updated' })
 }
 
 export async function PATCH(req: NextRequest) {
-  const body = await req.json()
-  // In a real app, this would update the property in the database
-  return NextResponse.json({ 
-    success: true, 
-    message: 'Property updated successfully',
-    data: body 
-  })
+  const supabase = await createClient()
+  try {
+    const body = await req.json()
+    const { id, ...updates } = body
+
+    const { data, error } = await supabase
+      .from('properties')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+    return NextResponse.json({ success: true, data })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 }
 
 export async function DELETE(req: NextRequest) {
-  return NextResponse.json({ message: 'Mock deleted' })
+  const supabase = await createClient()
+  try {
+    const { id } = await req.json()
+    const { error } = await supabase.from('properties').delete().eq('id', id)
+    if (error) throw error
+    return NextResponse.json({ message: 'Property deleted' })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 }

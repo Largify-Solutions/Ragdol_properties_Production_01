@@ -13,14 +13,12 @@ export default function AgentLayout({
   const { user, profile, loading } = useAuth()
   const router = useRouter()
 
-  // Check if user is authenticated and has agent role
   useEffect(() => {
-    if (loading! && (user! || (profile?.role !== 'agent' && profile?.role !== 'admin'))) {
-      router.push('/auth/login')
+    if (!loading && (!user || (profile?.role !== 'agent' && profile?.role !== 'admin'))) {
+      router.push('/admin/login')
     }
   }, [user, profile, loading, router])
 
-  // Show loading state while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -29,17 +27,13 @@ export default function AgentLayout({
     )
   }
 
-  // Don't render if not authenticated
-  if (user! || (profile?.role !== 'agent' && profile?.role !== 'admin')) {
+  if (!user || (profile?.role !== 'agent' && profile?.role !== 'admin')) {
     return null
   }
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
       <AgentSidebar />
-
-      {/* Main Content */}
       <main className="flex-1 lg:ml-64">
         <div className="pt-20 lg:pt-0">
           {children}

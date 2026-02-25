@@ -15,8 +15,7 @@ import { GlobeAltIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { getTopAgents } from "@/lib/mock-data";
 import AgentListClient from "@/components/agent/AgentListClient";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { supabase } from '@/lib/supabase-browser';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -41,7 +40,7 @@ export default function ContactPage() {
     }));
   };
 
-  // ✅ Firebase form submission function
+  // ✅ Supabase form submission function
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -55,29 +54,34 @@ export default function ContactPage() {
     }
 
     try {
-      // ✅ Save to Firebase Firestore - request_information collection
-      const docRef = await addDoc(collection(db, "request_information"), {
-        // Basic contact info
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim() || "Not provided",
-        subject: formData.subject || "General Inquiry",
+      // ✅ Save to Supabase - inquiries table
+      const { data: insertedData, error } = await supabase
+        .from('inquiries')
+        .insert({
+          // Basic contact info
+          client_name: formData.name.trim(),
+          client_email: formData.email.trim(),
+          client_phone: formData.phone.trim() || "Not provided",
 
-        // Message content
-        message: formData.message.trim(),
+          // Message content
+          message: formData.message.trim(),
 
-        // Metadata
-        type: "private_inquiry",
-        status: "pending",
-        source: "contact_page",
+          // Metadata
+          inquiry_type: "private_inquiry",
+          status: "pending",
+          source: "contact_page",
+          notes: formData.subject || "General Inquiry",
 
-        // Timestamps
-        createdAt: serverTimestamp(),
-        submittedAt: new Date().toISOString(),
-        updatedAt: serverTimestamp(),
-      });
+          // Timestamps
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
 
-      console.log("✅ Inquiry saved with ID:", docRef.id);
+      if (error) throw error;
+
+      console.log("✅ Inquiry saved with ID:", insertedData?.id);
 
       // Reset form and show success
       setFormData({

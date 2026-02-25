@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { db,   Timestamp, collection, addDoc, updateDoc, deleteDoc, doc, getDocs,  } from '@/lib/firebase'
+import { supabase } from '@/lib/supabase-browser'
 
 
 interface Project {
@@ -109,29 +109,15 @@ export default function ProjectManagement() {
   try {
     setLoadingData(true);
     
-    const projectsCollection = collection(db, "projects");
-    const projectSnapshot = await getDocs(projectsCollection);
+    const { data, error } = await supabase.from('projects').select('*');
+    if (error) throw error;
     
-    const projectsList: Project[] = [];
-    projectSnapshot.forEach((doc) => {
-      const data = doc.data();
-      
-      projectsList.push({ 
-        id: doc.id, 
-        ...data,
-        // Convert Firestore Timestamp to string if needed
-        created_at: data.created_at ? 
-          (typeof data.created_at === 'string' ? data.created_at : 
-           data.created_at.toDate ? data.created_at.toDate().toISOString() : 
-           new Date().toISOString()) : 
-          new Date().toISOString(),
-        updated_at: data.updated_at ? 
-          (typeof data.updated_at === 'string' ? data.updated_at : 
-           data.updated_at.toDate ? data.updated_at.toDate().toISOString() : 
-           new Date().toISOString()) : 
-          new Date().toISOString()
-      } as Project);
-    });
+    const projectsList: Project[] = (data || []).map((item: any) => ({
+      id: item.id,
+      ...item,
+      created_at: item.created_at || new Date().toISOString(),
+      updated_at: item.updated_at || new Date().toISOString()
+    })) as Project[];
     
     // Optional: Sort by creation date (newest first)
     projectsList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -216,12 +202,11 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     if (editingProject) {
       // Update existing project
-      const projectRef = doc(db, "projects", editingProject.id);
-      
       // Keep existing created_at
       projectData.created_at = editingProject.created_at;
       
-      await updateDoc(projectRef, projectData);
+      const { error } = await supabase.from('projects').update(projectData).eq('id', editingProject.id);
+      if (error) throw error;
       console.log('Project updated:', editingProject.id);
       
       // Update local state
@@ -235,12 +220,13 @@ const handleSubmit = async (e: React.FormEvent) => {
       // Create new project
       projectData.created_at = new Date().toISOString();
       
-      const docRef = await addDoc(collection(db, "projects"), projectData);
-      console.log('Project created with ID:', docRef.id);
+      const { data: newDoc, error } = await supabase.from('projects').insert(projectData).select().single();
+      if (error) throw error;
+      console.log('Project created with ID:', newDoc.id);
       
       // Add to beginning of list
       const newProject = {
-        id: docRef.id,
+        id: newDoc.id,
         ...projectData
       } as Project;
       
@@ -276,8 +262,8 @@ const handleSubmit = async (e: React.FormEvent) => {
   if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
 
   try {
-    const projectRef = doc(db, "projects", projectId);
-    await deleteDoc(projectRef);
+    const { error } = await supabase.from('projects').delete().eq('id', projectId);
+    if (error) throw error;
     
     // Update local state
     setProjects(projects.filter(p => p.id !== projectId));
@@ -438,7 +424,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Project Management</h1>
+            <h1 className="text-xl font-bold">Projects</h1>
             <p className="text-gray-600 mt-2">
               Manage real estate development projects (Firebase Connected)
             </p>

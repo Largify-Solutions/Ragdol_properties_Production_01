@@ -13,33 +13,28 @@ import {
   XCircleIcon,
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
-import { db } from '@/lib/firebase'
-import { 
-  collection, 
-  getDocs, 
-  deleteDoc, 
-  doc, 
-  addDoc, 
-  updateDoc, 
-  serverTimestamp,
-  query,
-  orderBy
-} from 'firebase/firestore'
+import { supabase } from '@/lib/supabase-browser'
 
 interface Blog {
   id: string
   title: string
   content: string
   excerpt?: string
-  author: string
-  published: boolean
-  createdAt: any
-  updatedAt: any
+  author_id?: string
+  status: 'draft' | 'published' | 'archived'
+  created_at: string
+  updated_at: string
   tags?: string[]
   slug?: string
-  imageUrl?: string
-  readTime?: string
+  featured_image?: string
   category?: string
+  published_at?: string
+  likes_count?: number
+  comments_count?: number
+  views_count?: number
+  seo_title?: string
+  seo_description?: string
+  seo_keywords?: string[]
 }
 
 export default function Blogs() {
@@ -53,43 +48,46 @@ export default function Blogs() {
     title: '',
     content: '',
     excerpt: '',
-    author: '',
-    published: false,
+    status: 'draft' as 'draft' | 'published' | 'archived',
     tags: '',
     slug: '',
-    imageUrl: '',
-    readTime: '',
-    category: ''
+    featured_image: '',
+    category: '',
+    seo_title: '',
+    seo_description: ''
   })
 
-  // Fetch blogs from Firebase
+  // Fetch blogs from Supabase
   const fetchBlogs = async () => {
     try {
       setLoading(true)
-      const blogsRef = collection(db, 'blogs')
-      // Order by createdAt descending
-      const q = query(blogsRef, orderBy('createdAt', 'desc'))
-      const snapshot = await getDocs(q)
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (error) throw error
 
-      const blogsData: Blog[] = []
-      snapshot.forEach((doc) => {
-        const data = doc.data()
-        blogsData.push({
-          id: doc.id,
-          title: data.title || '',
-          content: data.content || '',
-          excerpt: data.excerpt || '',
-          author: data.author || '',
-          published: data.published || false,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
-          tags: data.tags || [],
-          slug: data.slug || '',
-          imageUrl: data.imageUrl || '',
-          readTime: data.readTime || '',
-          category: data.category || ''
-        })
-      })
+      const blogsData: Blog[] = (data || []).map((item: any) => ({
+        id: item.id,
+        title: item.title || '',
+        content: item.content || '',
+        excerpt: item.excerpt || '',
+        author_id: item.author_id || undefined,
+        status: item.status || 'draft',
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        tags: item.tags || [],
+        slug: item.slug || '',
+        featured_image: item.featured_image || '',
+        category: item.category || '',
+        published_at: item.published_at || undefined,
+        likes_count: item.likes_count || 0,
+        comments_count: item.comments_count || 0,
+        views_count: item.views_count || 0,
+        seo_title: item.seo_title || '',
+        seo_description: item.seo_description || '',
+        seo_keywords: item.seo_keywords || []
+      }))
 
       setBlogs(blogsData)
     } catch (error) {
@@ -107,7 +105,7 @@ export default function Blogs() {
   const filteredBlogs = blogs.filter(blog =>
     blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     blog.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    blog.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (blog.category || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     blog.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
@@ -119,13 +117,7 @@ export default function Blogs() {
     }))
   }
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: checked
-    }))
-  }
+  // handleCheckboxChange removed — status is now a select dropdown
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -136,35 +128,31 @@ export default function Blogs() {
     }
 
     try {
+      const generatedSlug = formData.slug.trim() || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
       const blogData = {
         title: formData.title.trim(),
         content: formData.content.trim(),
-        excerpt: formData.excerpt.trim(),
-        author: formData.author.trim(),
-        published: formData.published,
+        excerpt: formData.excerpt.trim() || null,
+        status: formData.status as any,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-        slug: formData.slug.trim() || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-        imageUrl: formData.imageUrl.trim(),
-        readTime: formData.readTime.trim(),
-        category: formData.category.trim(),
-        updatedAt: serverTimestamp()
+        slug: generatedSlug,
+        featured_image: formData.featured_image?.trim() || null,
+        category: formData.category.trim() || null,
+        seo_title: formData.seo_title?.trim() || null,
+        seo_description: formData.seo_description?.trim() || null,
+        updated_at: new Date().toISOString(),
+        published_at: formData.status === 'published' ? new Date().toISOString() : null
       }
 
       if (editingBlog) {
         // Update existing blog
-        const blogRef = doc(db, 'blogs', editingBlog.id)
-        await updateDoc(blogRef, {
-          ...blogData,
-          // Keep existing createdAt when updating
-          createdAt: editingBlog.createdAt || serverTimestamp()
-        })
+        const { error } = await supabase.from('posts').update(blogData).eq('id', editingBlog.id)
+        if (error) throw error
         alert('Blog updated successfully!')
       } else {
         // Add new blog
-        await addDoc(collection(db, 'blogs'), {
-          ...blogData,
-          createdAt: serverTimestamp()
-        })
+        const { error } = await supabase.from('posts').insert(blogData)
+        if (error) throw error
         alert('Blog added successfully!')
       }
 
@@ -182,13 +170,13 @@ export default function Blogs() {
       title: '',
       content: '',
       excerpt: '',
-      author: '',
-      published: false,
+      status: 'draft' as 'draft' | 'published' | 'archived',
       tags: '',
       slug: '',
-      imageUrl: '',
-      readTime: '',
-      category: ''
+      featured_image: '',
+      category: '',
+      seo_title: '',
+      seo_description: ''
     })
     setShowAddBlog(false)
     setEditingBlog(null)
@@ -200,13 +188,13 @@ export default function Blogs() {
       title: blog.title,
       content: blog.content,
       excerpt: blog.excerpt || '',
-      author: blog.author,
-      published: blog.published,
+      status: blog.status,
       tags: blog.tags?.join(', ') || '',
       slug: blog.slug || '',
-      imageUrl: blog.imageUrl || '',
-      readTime: blog.readTime || '',
-      category: blog.category || ''
+      featured_image: blog.featured_image || '',
+      category: blog.category || '',
+      seo_title: blog.seo_title || '',
+      seo_description: blog.seo_description || ''
     })
     setShowAddBlog(true)
   }
@@ -215,8 +203,8 @@ export default function Blogs() {
     if (!confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) return
 
     try {
-      const blogRef = doc(db, 'blogs', id)
-      await deleteDoc(blogRef)
+      const { error } = await supabase.from('posts').delete().eq('id', id)
+      if (error) throw error
 
       setBlogs(blogs.filter(blog => blog.id !== id))
       alert('Blog deleted successfully!')
@@ -229,15 +217,20 @@ export default function Blogs() {
   const togglePublishStatus = async (blog: Blog) => {
     try {
       setPublishLoading(blog.id)
-      const blogRef = doc(db, 'blogs', blog.id)
-      await updateDoc(blogRef, {
-        published: !blog.published,
-        updatedAt: serverTimestamp()
-      })
+      const newStatus = blog.status === 'published' ? 'draft' : 'published'
+      const updateData: Record<string, any> = {
+        status: newStatus,
+        updated_at: new Date().toISOString()
+      }
+      if (newStatus === 'published') {
+        updateData.published_at = new Date().toISOString()
+      }
+      const { error } = await supabase.from('posts').update(updateData).eq('id', blog.id)
+      if (error) throw error
       
       // Update local state
       setBlogs(blogs.map(b => 
-        b.id === blog.id ? { ...b, published: !b.published } : b
+        b.id === blog.id ? { ...b, status: newStatus } : b
       ))
     } catch (error) {
       console.error('Error updating publish status:', error)
@@ -263,21 +256,13 @@ export default function Blogs() {
     }
   }
 
-  // Calculate read time
+  // Calculate read time (display only, not stored in DB)
   const calculateReadTime = (content: string) => {
     const wordsPerMinute = 200
     const words = content.trim().split(/\s+/).length
     const minutes = Math.ceil(words / wordsPerMinute)
     return `${minutes} min read`
   }
-
-  // Auto-calculate read time when content changes
-  useEffect(() => {
-    if (formData.content.trim()) {
-      const readTime = calculateReadTime(formData.content)
-      setFormData(prev => ({ ...prev, readTime }))
-    }
-  }, [formData.content])
 
   // Auto-generate slug from title
   useEffect(() => {
@@ -294,7 +279,7 @@ export default function Blogs() {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Blog Management</h1>
+          <h1 className="text-xl font-bold">Blogs</h1>
           <p className="text-muted-foreground">Create and manage blog posts for your website.</p>
         </div>
         <button
@@ -320,7 +305,7 @@ export default function Blogs() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search blogs by title, content, author, or tags..."
+            placeholder="Search blogs by title, content, category, or tags..."
             className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
@@ -335,13 +320,13 @@ export default function Blogs() {
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Published</h3>
           <p className="text-2xl font-bold text-green-600">
-            {blogs.filter(blog => blog.published).length}
+            {blogs.filter(blog => blog.status === 'published').length}
           </p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Drafts</h3>
           <p className="text-2xl font-bold text-yellow-600">
-            {blogs.filter(blog => !blog.published).length}
+            {blogs.filter(blog => blog.status !== 'published').length}
           </p>
         </div>
       </div>
@@ -385,12 +370,11 @@ export default function Blogs() {
                   </label>
                   <input
                     type="text"
-                    name="author"
-                    value={formData.author}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Author name"
+                    value="RAGDOL"
+                    disabled
+                    className="mt-1 block w-full px-3 py-2 border border-gray-200 rounded-md shadow-sm bg-gray-50 text-gray-500 cursor-not-allowed"
                   />
+                  <p className="text-xs text-gray-500">Author is set automatically</p>
                 </div>
               </div>
 
@@ -439,8 +423,8 @@ export default function Blogs() {
                 </label>
                 <input
                   type="url"
-                  name="imageUrl"
-                  value={formData.imageUrl}
+                  name="featured_image"
+                  value={formData.featured_image}
                   onChange={handleInputChange}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="https://example.com/image.jpg"
@@ -475,7 +459,7 @@ export default function Blogs() {
                   placeholder="Write your blog content here..."
                 />
                 <div className="flex justify-between text-sm text-gray-500">
-                  <span>Read time: {formData.readTime || '0 min read'}</span>
+                  <span>Read time: {formData.content.trim() ? calculateReadTime(formData.content) : '0 min read'}</span>
                   <span>{formData.content.length} characters</span>
                 </div>
               </div>
@@ -502,18 +486,16 @@ export default function Blogs() {
                   <label className="block text-sm font-medium text-gray-700">
                     Status
                   </label>
-                  <div className="flex items-center mt-2">
-                    <input
-                      type="checkbox"
-                      name="published"
-                      checked={formData.published}
-                      onChange={handleCheckboxChange}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label className="ml-2 block text-sm text-gray-900">
-                      Publish this blog
-                    </label>
-                  </div>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="archived">Archived</option>
+                  </select>
                 </div>
               </div>
 
@@ -594,12 +576,14 @@ export default function Blogs() {
                         </h4>
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            blog.published
+                            blog.status === 'published'
                               ? 'bg-green-100 text-green-800'
+                              : blog.status === 'archived'
+                              ? 'bg-red-100 text-red-800'
                               : 'bg-gray-100 text-gray-800'
                           }`}
                         >
-                          {blog.published ? 'Published' : 'Draft'}
+                          {blog.status === 'published' ? 'Published' : blog.status === 'archived' ? 'Archived' : 'Draft'}
                         </span>
                         {blog.category && (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -615,10 +599,10 @@ export default function Blogs() {
                       <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                         <span className="flex items-center">
                           <CalendarIcon className="h-4 w-4 mr-1" />
-                          {formatDate(blog.createdAt)}
+                          {formatDate(blog.created_at)}
                         </span>
-                        <span>By {blog.author || 'Unknown'}</span>
-                        {blog.readTime && <span>• {blog.readTime}</span>}
+                        <span>By RAGDOL</span>
+                        {blog.content && <span>• {calculateReadTime(blog.content)}</span>}
                         {blog.tags && blog.tags.length > 0 && (
                           <div className="flex items-center gap-1">
                             <span>Tags:</span>
@@ -645,15 +629,15 @@ export default function Blogs() {
                         onClick={() => togglePublishStatus(blog)}
                         disabled={publishLoading === blog.id}
                         className={`p-2 rounded-md ${
-                          blog.published
+                          blog.status === 'published'
                             ? 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50'
                             : 'text-green-600 hover:text-green-800 hover:bg-green-50'
                         } transition-colors`}
-                        title={blog.published ? 'Unpublish' : 'Publish'}
+                        title={blog.status === 'published' ? 'Unpublish' : 'Publish'}
                       >
                         {publishLoading === blog.id ? (
                           <ArrowPathIcon className="h-5 w-5 animate-spin" />
-                        ) : blog.published ? (
+                        ) : blog.status === 'published' ? (
                           <XCircleIcon className="h-5 w-5" />
                         ) : (
                           <CheckCircleIcon className="h-5 w-5" />

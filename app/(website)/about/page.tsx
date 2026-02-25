@@ -4,8 +4,7 @@ import { BuildingOfficeIcon, UsersIcon, TrophyIcon, ShieldCheckIcon, HeartIcon, 
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { collection, getDocs, query, where, limit } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { supabase } from '@/lib/supabase-browser'
 
 interface AgentWithProfile {
   id: string;
@@ -42,33 +41,32 @@ interface Partner {
 
 async function fetchTopAgents(): Promise<AgentWithProfile[]> {
   try {
-    const agentsRef = collection(db, "agents");
-    const q = query(agentsRef, where("approved", "==", true), limit(6));
-    const querySnapshot = await getDocs(q);
+    const { data, error } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('approved', true)
+      .limit(6);
 
-    const agents: AgentWithProfile[] = [];
+    if (error) throw error;
 
-    for (const doc of querySnapshot.docs) {
-      const data = doc.data();
-      agents.push({
-        id: doc.id,
-        title: data.title || "Real Estate Agent",
-        bio: data.bio || null,
-        experience_years: data.experience_years || 0,
-        rating: data.rating || 0,
-        review_count: data.review_count || 0,
-        total_sales: data.total_sales || 0,
-        profile_image: data.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.title || "Agent")}&background=random`,
-        office: data.office || "Dubai",
-        license_no: data.license_no || "",
-        approved: data.approved || false,
-        brokerage: data.brokerage || "RAGDOLL Properties",
-        certifications: data.certifications || [],
-        commission_rate: data.commission_rate || 2.5,
-        verified: data.verified || false,
-        location: data.office || "Dubai",
-      });
-    }
+    const agents: AgentWithProfile[] = (data || []).map((row: any) => ({
+      id: row.id,
+      title: row.title || "Real Estate Agent",
+      bio: row.bio || null,
+      experience_years: row.experience_years || 0,
+      rating: row.rating || 0,
+      review_count: row.review_count || 0,
+      total_sales: row.total_sales || 0,
+      profile_image: row.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(row.title || "Agent")}&background=random`,
+      office: row.office || "Dubai",
+      license_no: row.license_no || "",
+      approved: row.approved || false,
+      brokerage: row.brokerage || "RAGDOLL Properties",
+      certifications: row.certifications || [],
+      commission_rate: row.commission_rate || 2.5,
+      verified: row.verified || false,
+      location: row.office || "Dubai",
+    }));
 
     agents.sort((a, b) => (b.rating || 0) - (a.rating || 0));
     return agents.slice(0, 4);
@@ -80,115 +78,45 @@ async function fetchTopAgents(): Promise<AgentWithProfile[]> {
 
 async function fetchFeaturedPartners(): Promise<Partner[]> {
   try {
-    console.log("🔍 Fetching partners from Firebase...");
+    console.log("🔍 Fetching partners from Supabase...");
     
-    const partnersRef = collection(db, "partners");
+    const { data, error } = await supabase
+      .from('partners')
+      .select('*')
+      .eq('is_active', true)
+      .limit(10);
     
-    // Method 1: Try to fetch with where clause (if index exists)
-    try {
-      const q = query(
-        partnersRef,
-        where("active", "==", true),
-        limit(10)
-      );
-      const querySnapshot = await getDocs(q);
+    if (error) throw error;
+    
+    console.log(`✅ Found ${data?.length || 0} partners with active=true`);
+    
+    if (data && data.length > 0) {
+      const partners: Partner[] = data.map((row: any) => ({
+        id: row.id,
+        name: row.name || "Partner",
+        description: row.description || "Trusted partner providing exceptional services",
+        logo: row.logo_url || "https://via.placeholder.com/150x100",
+        category: row.category || "Services",
+        website: row.website_url || "#",
+        featured: row.featured || false,
+        active: row.is_active || false,
+        order: row.sort_order || 999,
+        createdAt: row.created_at || new Date().toISOString(),
+        updatedAt: row.updated_at || new Date().toISOString(),
+      }));
       
-      console.log(`✅ Found ${querySnapshot.size} partners with active=true`);
-      
-      if (querySnapshot.size > 0) {
-        const partners: Partner[] = [];
-        
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          
-          // Handle timestamp conversion
-          const createdAt = data.createdAt?.toDate?.()?.toISOString() || 
-                           (typeof data.createdAt === 'string' ? data.createdAt : new Date().toISOString());
-          const updatedAt = data.updatedAt?.toDate?.()?.toISOString() || 
-                           (typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString());
-          
-          partners.push({
-            id: doc.id,
-            name: data.name || "Partner",
-            description: data.description || "Trusted partner providing exceptional services",
-            logo: data.logo || "https://via.placeholder.com/150x100",
-            category: data.category || "Services",
-            website: data.website || "#",
-            featured: data.featured || false,
-            active: data.active || false,
-            order: data.order || 999,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          });
-        });
-        
-        // Sort on client side
-        partners.sort((a, b) => {
-          if (a.featured && !b.featured) return -1;
-          if (!a.featured && b.featured) return 1;
-          return (a.order || 999) - (b.order || 999);
-        });
-        
-        console.log(`🎯 Returning ${partners.length} active partners`);
-        return partners.slice(0, 6);
-      }
-    } catch (indexError) {
-      console.log("⚠️ Index error, trying alternative method...");
-    }
-    
-    // Method 2: Fetch all and filter on client side
-    console.log("🔄 Trying alternative fetch method...");
-    const allPartnersSnapshot = await getDocs(partnersRef);
-    console.log(`📊 Total documents in partners collection: ${allPartnersSnapshot.size}`);
-    
-    if (allPartnersSnapshot.empty) {
-      console.log("❌ No documents found in partners collection");
-      return [];
-    }
-    
-    const allPartners: Partner[] = [];
-    
-    allPartnersSnapshot.forEach((doc) => {
-      const data = doc.data();
-      console.log(`📄 Document: ${doc.id}`, { 
-        name: data.name, 
-        active: data.active,
-        exists: !data! 
+      // Sort on client side
+      partners.sort((a, b) => {
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        return (a.order || 999) - (b.order || 999);
       });
       
-      // Convert timestamps
-      const createdAt = data.createdAt?.toDate?.()?.toISOString() || 
-                       (typeof data.createdAt === 'string' ? data.createdAt : new Date().toISOString());
-      const updatedAt = data.updatedAt?.toDate?.()?.toISOString() || 
-                       (typeof data.updatedAt === 'string' ? data.updatedAt : new Date().toISOString());
-      
-      allPartners.push({
-        id: doc.id,
-        name: data.name || "Partner",
-        description: data.description || "Trusted partner providing exceptional services",
-        logo: data.logo || "https://via.placeholder.com/150x100",
-        category: data.category || "Services",
-        website: data.website || "#",
-        featured: data.featured || false,
-        active: data.active === true, // Convert to boolean
-        order: data.order || 999,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      });
-    });
+      console.log(`🎯 Returning ${partners.length} active partners`);
+      return partners.slice(0, 6);
+    }
     
-    // Filter active partners
-    const activePartners = allPartners.filter(partner => partner.active === true);
-    console.log(`✅ Found ${activePartners.length} active partners after filtering`);
-    
-    // Sort
-    activePartners.sort((a, b) => {
-      if (a.featured && !b.featured) return -1;
-      if (!a.featured && b.featured) return 1;
-      return (a.order || 999) - (b.order || 999);
-    });
-    
-    return activePartners.slice(0, 6);
+    return [];
     
   } catch (error) {
     console.error("🔥 Error fetching partners:", error);
@@ -262,7 +190,7 @@ export default function AboutPage() {
         setFeaturedPartners(partners);
         
         if (partners.length === 0) {
-          setPartnersError("No active partners found. Please add partners to Firebase.");
+          setPartnersError("No active partners found. Please add partners to the database.");
         }
       } catch (error) {
         console.error("Error loading data:", error);
@@ -621,7 +549,7 @@ export default function AboutPage() {
               </div>
               <h3 className="text-xl font-bold text-white mb-2">No Partners Found</h3>
               <p className="text-slate-300 mb-4">
-                Add partners to Firebase "partners" collection with "active: true"
+                Add partners to the "partners" table with "active: true"
               </p>
               <div className="text-sm text-slate-400 space-y-1">
                 <p>Required fields: name, logo, category, website</p>

@@ -14,21 +14,21 @@ import {
   CheckCircleIcon,
   XCircleIcon
 } from '@heroicons/react/24/outline'
-import { db } from '@/lib/firebase'
-import { collection, getDocs, deleteDoc, doc, addDoc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { supabase } from '@/lib/supabase-browser'
+import { useRealtimeSubscription } from '@/lib/hooks/useRealtimeSubscription'
 
 interface Partner {
   id: string
   name: string
   description?: string
-  logo?: string
-  website?: string
+  logo_url?: string
+  website_url?: string
   category?: string
   featured: boolean
-  active: boolean
-  order: number
-  createdAt: any
-  updatedAt: any
+  is_active: boolean
+  sort_order: number
+  created_at: any
+  updated_at: any
 }
 
 export default function Partners() {
@@ -40,12 +40,12 @@ export default function Partners() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    logo: '',
-    website: '',
+    logo_url: '',
+    website_url: '',
     category: '',
     featured: false,
-    active: true,
-    order: 0
+    is_active: true,
+    sort_order: 0
   })
 
   // Predefined categories for dropdown
@@ -64,40 +64,36 @@ export default function Partners() {
     'Other'
   ]
 
-  // Fetch partners from Firebase
+  // Fetch partners from Supabase
   const fetchPartners = async () => {
     try {
       setLoading(true)
-      console.log('Fetching partners from Firebase...')
+      console.log('Fetching partners from Supabase...')
 
-      const partnersRef = collection(db, 'partners')
-      const snapshot = await getDocs(partnersRef)
+      const { data, error } = await supabase.from('partners').select('*')
+      if (error) throw error
 
-      const partnersData: Partner[] = []
-      snapshot.forEach((doc) => {
-        const data = doc.data()
-        partnersData.push({
-          id: doc.id,
-          name: data.name || '',
-          description: data.description || '',
-          logo: data.logo || '',
-          website: data.website || '',
-          category: data.category || '',
-          featured: data.featured || false,
-          active: data.active !== false, // Default to true
-          order: data.order || 0,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt
-        })
-      })
+      const partnersData: Partner[] = (data || []).map((item: any) => ({
+        id: item.id,
+        name: item.name || '',
+        description: item.description || '',
+        logo_url: item.logo_url || '',
+        website_url: item.website_url || '',
+        category: item.category || '',
+        featured: item.featured || false,
+        is_active: item.is_active !== false, // Default to true
+        sort_order: item.sort_order || 0,
+        created_at: item.created_at,
+        updated_at: item.updated_at
+      }))
 
       // Sort by order (ascending), then by creation date (newest first)
       partnersData.sort((a, b) => {
-        if (a.order !== b.order) {
-          return a.order - b.order
+        if (a.sort_order !== b.sort_order) {
+          return a.sort_order - b.sort_order
         }
-        const dateA = a.createdAt?.toDate?.() || new Date(0)
-        const dateB = b.createdAt?.toDate?.() || new Date(0)
+        const dateA = new Date(a.created_at || 0)
+        const dateB = new Date(b.created_at || 0)
         return dateB.getTime() - dateA.getTime()
       })
 
@@ -115,11 +111,17 @@ export default function Partners() {
     fetchPartners()
   }, [])
 
+  // Realtime subscription for partners table
+  useRealtimeSubscription({
+    table: 'partners',
+    onChange: () => fetchPartners(),
+  })
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'order' ? parseInt(value) || 0 : value
+      [name]: name === 'sort_order' ? parseInt(value) || 0 : value
     }))
   }
 
@@ -140,8 +142,8 @@ export default function Partners() {
     }
 
     // Validate website URL format
-    if (formData.website && !formData.website.startsWith('http://') && !formData.website.startsWith('https://')) {
-      formData.website = 'https://' + formData.website
+    if (formData.website_url && !formData.website_url.startsWith('http://') && !formData.website_url.startsWith('https://')) {
+      formData.website_url = 'https://' + formData.website_url
     }
 
     try {
@@ -150,30 +152,31 @@ export default function Partners() {
       const partnerData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        logo: formData.logo.trim(),
-        website: formData.website.trim(),
+        logo_url: formData.logo_url.trim(),
+        website_url: formData.website_url.trim(),
         category: formData.category.trim(),
         featured: formData.featured,
-        active: formData.active,
-        order: formData.order || 0,
-        updatedAt: serverTimestamp()
+        is_active: formData.is_active,
+        sort_order: formData.sort_order || 0,
+        updated_at: new Date().toISOString()
       }
 
       if (editingPartner) {
         // Update existing partner
-        const partnerRef = doc(db, 'partners', editingPartner.id)
-        await updateDoc(partnerRef, {
+        const { error } = await supabase.from('partners').update({
           ...partnerData,
-          createdAt: editingPartner.createdAt || serverTimestamp()
-        })
+          created_at: editingPartner.created_at || new Date().toISOString()
+        }).eq('id', editingPartner.id)
+        if (error) throw error
         console.log('Partner updated:', editingPartner.id)
       } else {
         // Add new partner
-        const docRef = await addDoc(collection(db, 'partners'), {
+        const { data: newDoc, error } = await supabase.from('partners').insert({
           ...partnerData,
-          createdAt: serverTimestamp()
-        })
-        console.log('Partner added with ID:', docRef.id)
+          created_at: new Date().toISOString()
+        }).select().single()
+        if (error) throw error
+        console.log('Partner added with ID:', newDoc.id)
       }
 
       // Reset form and refresh list
@@ -192,12 +195,12 @@ export default function Partners() {
     setFormData({
       name: '',
       description: '',
-      logo: '',
-      website: '',
+      logo_url: '',
+      website_url: '',
       category: '',
       featured: false,
-      active: true,
-      order: 0
+      is_active: true,
+      sort_order: 0
     })
     setShowAddPartner(false)
     setEditingPartner(null)
@@ -208,12 +211,12 @@ export default function Partners() {
     setFormData({
       name: partner.name,
       description: partner.description || '',
-      logo: partner.logo || '',
-      website: partner.website || '',
+      logo_url: partner.logo_url || '',
+      website_url: partner.website_url || '',
       category: partner.category || '',
       featured: partner.featured,
-      active: partner.active,
-      order: partner.order
+      is_active: partner.is_active,
+      sort_order: partner.sort_order
     })
     setShowAddPartner(true)
   }
@@ -223,8 +226,8 @@ export default function Partners() {
 
     try {
       console.log('Deleting partner:', id)
-      const partnerRef = doc(db, 'partners', id)
-      await deleteDoc(partnerRef)
+      const { error } = await supabase.from('partners').delete().eq('id', id)
+      if (error) throw error
 
       console.log('Partner deleted successfully')
       setPartners(partners.filter(partner => partner.id !== id))
@@ -236,15 +239,15 @@ export default function Partners() {
 
   const toggleActive = async (partner: Partner) => {
     try {
-      const partnerRef = doc(db, 'partners', partner.id)
-      await updateDoc(partnerRef, {
-        active: !partner.active,
-        updatedAt: serverTimestamp()
-      })
+      const { error } = await supabase.from('partners').update({
+        is_active: !partner.is_active,
+        updated_at: new Date().toISOString()
+      }).eq('id', partner.id)
+      if (error) throw error
 
       setPartners(partners.map(p =>
         p.id === partner.id
-          ? { ...p, active: !p.active }
+          ? { ...p, is_active: !p.is_active }
           : p
       ))
     } catch (error) {
@@ -255,11 +258,11 @@ export default function Partners() {
 
   const toggleFeatured = async (partner: Partner) => {
     try {
-      const partnerRef = doc(db, 'partners', partner.id)
-      await updateDoc(partnerRef, {
+      const { error } = await supabase.from('partners').update({
         featured: !partner.featured,
-        updatedAt: serverTimestamp()
-      })
+        updated_at: new Date().toISOString()
+      }).eq('id', partner.id)
+      if (error) throw error
 
       setPartners(partners.map(p =>
         p.id === partner.id
@@ -316,7 +319,7 @@ export default function Partners() {
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Active</h3>
           <p className="text-2xl font-bold text-green-600">
-            {partners.filter(p => p.active).length}
+            {partners.filter(p => p.is_active).length}
           </p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-sm border">
@@ -328,7 +331,7 @@ export default function Partners() {
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Inactive</h3>
           <p className="text-2xl font-bold text-gray-600">
-            {partners.filter(p => !p.active).length}
+            {partners.filter(p => !p.is_active).length}
           </p>
         </div>
       </div>
@@ -394,8 +397,8 @@ export default function Partners() {
                 </label>
                 <input
                   type="url"
-                  name="website"
-                  value={formData.website}
+                  name="website_url"
+                  value={formData.website_url}
                   onChange={handleInputChange}
                   disabled={isSubmitting}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
@@ -409,8 +412,8 @@ export default function Partners() {
                 </label>
                 <input
                   type="url"
-                  name="logo"
-                  value={formData.logo}
+                  name="logo_url"
+                  value={formData.logo_url}
                   onChange={handleInputChange}
                   disabled={isSubmitting}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
@@ -443,8 +446,8 @@ export default function Partners() {
                   </label>
                   <input
                     type="number"
-                    name="order"
-                    value={formData.order}
+                    name="sort_order"
+                    value={formData.sort_order}
                     onChange={handleInputChange}
                     min="0"
                     disabled={isSubmitting}
@@ -461,8 +464,8 @@ export default function Partners() {
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    name="active"
-                    checked={formData.active}
+                    name="is_active"
+                    checked={formData.is_active}
                     onChange={handleCheckboxChange}
                     disabled={isSubmitting}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:bg-gray-100"
@@ -549,10 +552,10 @@ export default function Partners() {
                   <div className="flex flex-col h-full">
                     {/* Logo and Name */}
                     <div className="flex items-start space-x-3 mb-3">
-                      {partner.logo ? (
+                      {partner.logo_url ? (
                         <div className="w-16 h-16 bg-gray-100 rounded-lg p-2 flex items-center justify-center shrink-0">
                           <img
-                            src={partner.logo}
+                            src={partner.logo_url}
                             alt={partner.name}
                             className="max-w-full max-h-full object-contain"
                             onError={(e) => {
@@ -578,7 +581,7 @@ export default function Partners() {
                           <p className="text-sm text-blue-600 truncate">{partner.category}</p>
                         )}
                         <div className="flex items-center space-x-2 mt-1">
-                          {partner.active ? (
+                          {partner.is_active ? (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                               <CheckCircleIcon className="h-3 w-3 mr-1" />
                               Active
@@ -590,7 +593,7 @@ export default function Partners() {
                             </span>
                           )}
                           <span className="text-xs text-gray-500">
-                            Order: {partner.order}
+                            Order: {partner.sort_order}
                           </span>
                         </div>
                       </div>
@@ -604,10 +607,10 @@ export default function Partners() {
                     )}
 
                     {/* Website */}
-                    {partner.website && (
+                    {partner.website_url && (
                       <div className="mb-3">
                         <a
-                          href={partner.website}
+                          href={partner.website_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
@@ -621,7 +624,7 @@ export default function Partners() {
                     {/* Actions */}
                     <div className="flex justify-between items-center pt-3 border-t border-gray-100 mt-auto">
                       <div className="text-xs text-gray-500">
-                        {formatDate(partner.createdAt)}
+                        {formatDate(partner.created_at)}
                       </div>
                       <div className="flex space-x-2">
                         <button
@@ -638,13 +641,13 @@ export default function Partners() {
                         <button
                           onClick={() => toggleActive(partner)}
                           className={`p-1.5 rounded-md ${
-                            partner.active
+                            partner.is_active
                               ? 'text-green-600 hover:text-green-800 hover:bg-green-50'
                               : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                           }`}
-                          title={partner.active ? 'Deactivate' : 'Activate'}
+                          title={partner.is_active ? 'Deactivate' : 'Activate'}
                         >
-                          {partner.active ? (
+                          {partner.is_active ? (
                             <CheckCircleIcon className="h-4 w-4" />
                           ) : (
                             <XCircleIcon className="h-4 w-4" />

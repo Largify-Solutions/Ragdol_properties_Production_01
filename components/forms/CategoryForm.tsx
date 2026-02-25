@@ -14,8 +14,7 @@ import {
   TruckIcon,
   ShoppingBagIcon,
 } from '@heroicons/react/24/outline'
-import { db } from '@/lib/firebase'
-import { collection, addDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import { supabase } from '@/lib/supabase-browser'
 
 export interface CategoryFormData {
   id?: string
@@ -149,42 +148,49 @@ export default function CategoryForm({
         throw new Error('Slug is required')
       }
 
-      // Prepare category data for Firebase
+      // Prepare category data for Supabase
       const categoryData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
         icon: formData.icon,
         color: formData.color,
-        isActive: Boolean(formData.isActive),
-        order: Number(formData.order) || 0,
+        is_active: Boolean(formData.isActive),
+        sort_order: Number(formData.order) || 0,
         slug: formData.slug.trim(),
-        parentId: formData.parentId || null,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        parent_id: formData.parentId || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       }
 
-      console.log('Saving category to Firebase:', categoryData)
+      console.log('Saving category to Supabase:', categoryData)
 
       if (mode === 'edit' && initialData?.id) {
-        // Update existing category in Firebase
-        const categoryRef = doc(db, 'categories', initialData.id)
-        await updateDoc(categoryRef, {
-          ...categoryData,
-          updatedAt: serverTimestamp(),
-        })
-        console.log('Category updated in Firebase')
+        // Update existing category in Supabase
+        const { error } = await supabase
+          .from('categories')
+          .update({
+            ...categoryData,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', initialData.id)
+        if (error) throw error
+        console.log('Category updated in Supabase')
       } else {
-        // Add new category to Firebase
-        const categoriesRef = collection(db, 'categories')
-        const docRef = await addDoc(categoriesRef, {
-          ...categoryData,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        })
-        console.log('Category added to Firebase with ID:', docRef.id)
+        // Add new category to Supabase
+        const { data: newCategory, error } = await supabase
+          .from('categories')
+          .insert({
+            ...categoryData,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .select()
+          .single()
+        if (error) throw error
+        console.log('Category added to Supabase with ID:', newCategory.id)
         
         // Add ID to form data for callback
-        formData.id = docRef.id
+        formData.id = newCategory.id
       }
 
       // Call parent's onSubmit callback

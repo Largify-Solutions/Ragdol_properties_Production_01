@@ -1581,19 +1581,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { XMarkIcon, PhotoIcon, MapPinIcon, PlusIcon, TrashIcon, CloudArrowUpIcon, ArrowsUpDownIcon, LinkIcon, DocumentIcon, FilmIcon } from '@heroicons/react/24/outline'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'react-i18next'
-import { 
-  db, 
-  storage, 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from '@/lib/firebase'
+import { supabase } from '@/lib/supabase-browser'
 
 
 // Dynamically import LocationPicker to avoid SSR issues with Leaflet
@@ -1950,18 +1938,15 @@ export default function PropertyForm({
     }
   }, [initialData])
 
-  // Fetch categories and agents from Firebase
+  // Fetch categories and agents from Supabase
   useEffect(() => {
     const fetchData = async () => {
       setIsLoadingCategories(true)
       try {
-        const categoriesRef = collection(db, "categories")
-        const categoriesSnapshot = await getDocs(categoriesRef)
-        const categoriesList = categoriesSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        setFirebaseCategories(categoriesList)
+        const { data: categoriesData } = await supabase
+          .from('categories')
+          .select('*')
+        setFirebaseCategories(categoriesData || [])
       } catch (error) {
         console.error("Error fetching categories:", error)
       } finally {
@@ -1970,13 +1955,10 @@ export default function PropertyForm({
 
       setIsLoadingAgents(true)
       try {
-        const agentsRef = collection(db, "agents")
-        const agentsSnapshot = await getDocs(agentsRef)
-        const agentsList = agentsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        setFirebaseAgents(agentsList)
+        const { data: agentsData } = await supabase
+          .from('agents')
+          .select('*')
+        setFirebaseAgents(agentsData || [])
       } catch (error) {
         console.error("Error fetching agents:", error)
       } finally {
@@ -2226,10 +2208,15 @@ export default function PropertyForm({
     }
 
     try {
-      // Upload to Firebase Storage
-      const storageRef = ref(storage, `properties/${type}/${Date.now()}_${file.name}`)
-      const snapshot = await uploadBytes(storageRef, file)
-      const downloadUrl = await getDownloadURL(snapshot.ref)
+      // Upload to Supabase Storage
+      const filePath = `properties/${type}/${Date.now()}_${file.name}`
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('property-images')
+        .upload(filePath, file)
+      if (uploadError) throw uploadError
+      const { data: { publicUrl: downloadUrl } } = supabase.storage
+        .from('property-images')
+        .getPublicUrl(filePath)
 
       // Update formData based on type
       switch (type) {
@@ -2393,15 +2380,23 @@ export default function PropertyForm({
       console.log('Submitting property data:', propertyData)
 
       if (mode === 'edit' && initialData?.id) {
-        const propertyRef = doc(db, "properties", initialData.id)
         propertyData.created_at = initialData.created_at || new Date().toISOString()
-        await updateDoc(propertyRef, propertyData)
-        console.log('Property updated in Firebase:', initialData.id)
+        const { error: updateError } = await supabase
+          .from('properties')
+          .update(propertyData)
+          .eq('id', initialData.id)
+        if (updateError) throw updateError
+        console.log('Property updated in Supabase:', initialData.id)
         alert('Property updated successfully!')
       } else {
         propertyData.created_at = new Date().toISOString()
-        const docRef = await addDoc(collection(db, "properties"), propertyData)
-        console.log('Property created in Firebase with ID:', docRef.id)
+        const { data: newProperty, error: insertError } = await supabase
+          .from('properties')
+          .insert(propertyData)
+          .select()
+          .single()
+        if (insertError) throw insertError
+        console.log('Property created in Supabase with ID:', newProperty.id)
         alert('Property created successfully!')
       }
 
@@ -2443,8 +2438,11 @@ export default function PropertyForm({
     }
 
     try {
-      const propertyRef = doc(db, "properties", initialData.id)
-      await deleteDoc(propertyRef)
+      const { error: deleteError } = await supabase
+        .from('properties')
+        .delete()
+        .eq('id', initialData.id)
+      if (deleteError) throw deleteError
       
       alert('Property deleted successfully!')
       

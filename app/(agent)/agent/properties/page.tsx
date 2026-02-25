@@ -32,22 +32,9 @@ import {
   ChartPieIcon
 } from '@heroicons/react/24/outline'
 
-// Firebase imports
-import { db, storage } from '@/lib/firebase'
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  orderBy,
-  onSnapshot,
-  Timestamp,
-  query,
-  where,
-  getDocs
-} from 'firebase/firestore'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+// Supabase imports
+import { supabase } from '@/lib/supabase-browser'
+import { useRealtimeSubscription } from '@/lib/hooks/useRealtimeSubscription'
 
 interface AgentProperty {
   id: string
@@ -1783,56 +1770,48 @@ export default function AgentProperties() {
     }
   }
 
-  // Firebase Real-time Listener
-  const setupRealTimeListener = () => {
+  // Supabase Data Fetcher
+  const setupRealTimeListener = async () => {
     try {
-      const propertiesRef = collection(db, 'agent_properties')
-      let q = query(propertiesRef, orderBy('created_at', 'desc'))
+      const { data: rows, error: fetchError } = await supabase
+        .from('agent_properties')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (fetchError) throw fetchError
+
+      const propertiesData: AgentProperty[] = (rows || []).map((data: any) => ({
+        id: data.id,
+        title: data.title || '',
+        price: data.price || 0,
+        currency: data.currency || 'AED',
+        images: data.images || [],
+        beds: data.beds || 0,
+        baths: data.baths || 0,
+        sqft: data.sqft || 0,
+        area: data.area || '',
+        city: data.city || 'Dubai',
+        type: data.type || 'apartment',
+        published: data.published || false,
+        review_status: data.review_status || 'draft',
+        submitted_at: data.submitted_at,
+        created_at: data.created_at || new Date().toISOString(),
+        address: data.address || '',
+        description: data.description || '',
+        features: data.features || [],
+        status: data.status || 'sale',
+        property_status: data.property_status || 'ready',
+        furnished: data.furnished || false,
+        parking: data.parking || 'not-specified'
+      }))
       
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const propertiesData: AgentProperty[] = []
-        
-        snapshot.forEach((doc) => {
-          const data = doc.data()
-          propertiesData.push({
-            id: doc.id,
-            title: data.title || '',
-            price: data.price || 0,
-            currency: data.currency || 'AED',
-            images: data.images || [],
-            beds: data.beds || 0,
-            baths: data.baths || 0,
-            sqft: data.sqft || 0,
-            area: data.area || '',
-            city: data.city || 'Dubai',
-            type: data.type || 'apartment',
-            published: data.published || false,
-            review_status: data.review_status || 'draft',
-            submitted_at: data.submitted_at,
-            created_at: data.created_at?.toDate ? data.created_at.toDate().toISOString() : data.created_at || new Date().toISOString(),
-            address: data.address || '',
-            description: data.description || '',
-            features: data.features || [],
-            status: data.status || 'sale',
-            property_status: data.property_status || 'ready',
-            furnished: data.furnished || false,
-            parking: data.parking || 'not-specified'
-          })
-        })
-        
-        setProperties(propertiesData)
-        const periodStats = calculateStats(propertiesData)
-        setTimePeriodStats(periodStats)
-        setStats(periodStats[selectedPeriod])
-        setLoading(false)
-      }, (error) => {
-        console.error('Real-time listener error:', error)
-        setLoading(false)
-      })
-      
-      return unsubscribe
+      setProperties(propertiesData)
+      const periodStats = calculateStats(propertiesData)
+      setTimePeriodStats(periodStats)
+      setStats(periodStats[selectedPeriod])
+      setLoading(false)
     } catch (error) {
-      console.error('Error setting up listener:', error)
+      console.error('Data fetch error:', error)
       setLoading(false)
     }
   }
@@ -1843,6 +1822,12 @@ export default function AgentProperties() {
       setStats(timePeriodStats[selectedPeriod])
     }
   }, [selectedPeriod, timePeriodStats, properties])
+
+  // Realtime subscription for agent_properties table
+  useRealtimeSubscription({
+    table: 'agent_properties',
+    onChange: () => setupRealTimeListener(),
+  })
 
   // EDIT PROPERTY FUNCTION
   const handleEditProperty = (property: AgentProperty) => {
@@ -1918,17 +1903,28 @@ export default function AgentProperties() {
       }
       
       if (isEditing && currentPropertyId) {
-        await updateDoc(doc(db, 'agent_properties', currentPropertyId), propertyData)
+        const { error: updateError } = await supabase
+          .from('agent_properties')
+          .update(propertyData)
+          .eq('id', currentPropertyId)
+        
+        if (updateError) throw updateError
         console.log('Property updated with ID:', currentPropertyId)
       } else {
         const completePropertyData = {
           ...propertyData,
           submitted_at: new Date().toISOString(),
-          created_at: Timestamp.now(),
+          created_at: new Date().toISOString(),
           review_status: 'pending_review' as const
         }
         
-        const docRef = await addDoc(collection(db, 'agent_properties'), completePropertyData)
+        const { data: docRef, error: insertError } = await supabase
+          .from('agent_properties')
+          .insert(completePropertyData)
+          .select()
+          .single()
+        
+        if (insertError) throw insertError
         console.log('Property created with ID:', docRef.id)
       }
       
@@ -2084,10 +2080,16 @@ export default function AgentProperties() {
           const timestamp = Date.now()
           const fileName = `property_${timestamp}_${file.name.replace(/\s+/g, '_')}`
           
-          const storageRef = ref(storage, `property-images/${fileName}`)
-          await uploadBytes(storageRef, file)
+          const storageRef = `property-images/${fileName}`
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('property-images')
+            .upload(storageRef, file)
           
-          const downloadURL = await getDownloadURL(storageRef)
+          if (uploadError) throw uploadError
+          
+          const { data: { publicUrl: downloadURL } } = supabase.storage
+            .from('property-images')
+            .getPublicUrl(storageRef)
           uploadedUrls.push(downloadURL)
           
           setUploadProgress(((i + 1) / files.length) * 100)
@@ -2119,7 +2121,12 @@ export default function AgentProperties() {
     if (!confirm('Are you sure you want to delete this property?')) return
     
     try {
-      await deleteDoc(doc(db, 'agent_properties', propertyId))
+      const { error: deleteError } = await supabase
+        .from('agent_properties')
+        .delete()
+        .eq('id', propertyId)
+      
+      if (deleteError) throw deleteError
       alert('Property deleted successfully!')
     } catch (error) {
       console.error('Error deleting property:', error)

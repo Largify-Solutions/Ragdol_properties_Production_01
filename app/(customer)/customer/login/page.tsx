@@ -7,8 +7,7 @@ import ValuationModal, { ValuationData } from '@/components/forms/ValuationModal
 import Link from 'next/link'
 import { EyeIcon, EyeSlashIcon, HomeIcon, SparklesIcon, BuildingOfficeIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 
-import { db } from '@/lib/firebase'
-import { collection, addDoc } from 'firebase/firestore'
+import { supabase } from '@/lib/supabase-browser'
 
 export default function CustomerLogin() {
   const [formData, setFormData] = useState({
@@ -87,21 +86,22 @@ export default function CustomerLogin() {
     setIsSubmittingValuation(true)
     
     try {
-      // Direct Firestore mein save karein
-      const docRef = await addDoc(collection(db, 'request_information'), {
-        // Basic information
-        fullName: valuationData.full_name,
-        email: valuationData.email,
-        phone: valuationData.phone,
-        
-        
-        // Metadata
-        submittedAt: new Date().toISOString(),
-        status: 'pending',
-        requestType: 'property_valuation',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })
+      // Save to Supabase
+      const { data: docRef, error: insertError } = await supabase
+        .from('request_information')
+        .insert({
+          name: valuationData.full_name,
+          email: valuationData.email,
+          phone: valuationData.phone,
+          source: 'property_valuation',
+          status: 'pending',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single()
+
+      if (insertError) throw insertError
 
       console.log('✅ Document saved with ID: ', docRef.id)
       

@@ -16,7 +16,7 @@ export default function AdminLayout({
   const isLoginPage = pathname === '/admin/login'
 
   useEffect(() => {
-    if (loading! && !isLoginPage && (user! || profile?.role !== 'admin')) {
+    if (!loading && !isLoginPage && (!user || profile?.role !== 'admin')) {
       router.push('/admin/login')
     }
   }, [user, profile, loading, router, isLoginPage])
@@ -36,16 +36,14 @@ export default function AdminLayout({
     return <>{children}</>
   }
 
-// ✅ New correct condition
-if (!user)
-if (profile?.role !== 'admin') { 
+  if (!user || profile?.role !== 'admin') {
     return null
-}
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
       <AdminSidebar />
-      <main className="flex-1 lg:ml-64">
+      <main className="flex-1 lg:ml-60">
         <div className="pt-16 lg:pt-0">
           {children}
         </div>

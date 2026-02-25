@@ -7,8 +7,7 @@ import {
   MoreVertical, Eye, Trash2, CheckCircle,
   MessageSquare, Send, ChevronDown, ChevronUp
 } from 'lucide-react'
-import { collection, query, getDocs, addDoc, doc, updateDoc, Timestamp } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { supabase } from '@/lib/supabase-browser'
 
 interface Valuation {
   id: string
@@ -58,40 +57,37 @@ export default function ValuationsPage() {
     fetchValuations()
   }, [])
 
-  // Firebase se valuations fetch karna
+  // Fetch valuations from Supabase
   const fetchValuations = async () => {
     try {
       setLoading(true)
-      const valuationsRef = collection(db, 'valuations')
-      const q = query(valuationsRef)
-      const querySnapshot = await getDocs(q)
+      const { data, error } = await supabase
+        .from('property_valuations')
+        .select('id, user_name, user_email, property_type, location, bedrooms, bathrooms, size, condition, year_built, urgency, contact_method, phoneNumber, additional_features, estimated_value, status, created_at, completed_at, currency')
+        .order('created_at', { ascending: false })
+      if (error) throw error
       
-      const valuationsData: Valuation[] = []
-      
-      querySnapshot.forEach((doc) => {
-        const data = doc.data()
-        valuationsData.push({
-          id: doc.id,
-          user_name: data.user_name || 'N/A',
-          user_email: data.user_email || '',
-          property_type: data.property_type || 'Not specified',
-          location: data.location || 'Not specified',
-          bedrooms: data.bedrooms || 'N/A',
-          bathrooms: data.bathrooms || 'N/A',
-          size: data.size || 'N/A',
-          condition: data.condition || 'N/A',
-          year_built: data.year_built || 'N/A',
-          urgency: data.urgency || 'low',
-          contact_method: data.contact_method || 'email',
-          phoneNumber: data.phoneNumber || 'N/A',
-          additional_features: data.additional_features || 'N/A',
-          estimated_value: data.estimated_value || '0',
-          status: data.status || 'pending',
-          created_at: data.created_at || new Date().toISOString(),
-          completed_at: data.completed_at || null,
-          currency: data.currency || 'AED'
-        })
-      })
+      const valuationsData: Valuation[] = (data || []).map((item: any) => ({
+        id: item.id,
+        user_name: item.user_name || 'N/A',
+        user_email: item.user_email || '',
+        property_type: item.property_type || 'Not specified',
+        location: item.location || 'Not specified',
+        bedrooms: item.bedrooms || 'N/A',
+        bathrooms: item.bathrooms || 'N/A',
+        size: item.size || 'N/A',
+        condition: item.condition || 'N/A',
+        year_built: item.year_built || 'N/A',
+        urgency: item.urgency || 'low',
+        contact_method: item.contact_method || 'email',
+        phoneNumber: item.phoneNumber || 'N/A',
+        additional_features: item.additional_features || 'N/A',
+        estimated_value: item.estimated_value || '0',
+        status: item.status || 'pending',
+        created_at: item.created_at || new Date().toISOString(),
+        completed_at: item.completed_at || null,
+        currency: item.currency || 'AED'
+      }))
       
       // Sort by date (newest first)
       valuationsData.sort((a, b) => 
@@ -100,53 +96,7 @@ export default function ValuationsPage() {
       
       setValuations(valuationsData)
     } catch (error) {
-      console.error('Error fetching valuations from Firebase:', error)
-      
-      // Fallback mock data
-      setValuations([
-        { 
-          id: '1', 
-          user_name: 'John Doe', 
-          user_email: 'john@example.com', 
-          property_type: 'Villa',
-          location: 'Palm Jumeirah',
-          bedrooms: '5',
-          bathrooms: '4',
-          size: '3500',
-          condition: 'excellent',
-          year_built: '2020',
-          urgency: 'medium',
-          contact_method: 'email',
-          phoneNumber: '0501234567',
-          additional_features: 'Swimming pool, garden, garage',
-          estimated_value: '12500000',
-          status: 'pending',
-          created_at: '2024-05-18T11:00:00Z',
-          completed_at: null,
-          currency: 'AED'
-        },
-        { 
-          id: '2', 
-          user_name: 'Jane Smith', 
-          user_email: 'jane@example.com', 
-          property_type: 'Apartment',
-          location: 'Dubai Marina',
-          bedrooms: '2',
-          bathrooms: '2',
-          size: '1200',
-          condition: 'good',
-          year_built: '2018',
-          urgency: 'low',
-          contact_method: 'phone',
-          phoneNumber: '0509876543',
-          additional_features: 'Sea view, balcony, gym access',
-          estimated_value: '2100000',
-          status: 'pending',
-          created_at: '2024-05-21T15:30:00Z',
-          completed_at: null,
-          currency: 'AED'
-        }
-      ])
+      console.error('Error fetching valuations:', error)
     } finally {
       setLoading(false)
     }
@@ -166,33 +116,23 @@ export default function ValuationsPage() {
     setSendingResponse(true)
     
     try {
-      // 1. Save reply to valuation_responses collection
-      const repliesRef = collection(db, 'valuation_responses')
-      const replyData: ValuationReply = {
-        valuation_id: selectedValuation.id,
-        admin_id: adminUser.id,
-        admin_name: adminUser.name,
-        message: responseMessage.trim(),
-        created_at: new Date().toISOString()
-      }
+      // Update the valuation with admin notes and mark as completed
+      const { error: updateError } = await supabase.from('property_valuations').update({
+        admin_notes: responseMessage.trim(),
+        status: 'completed' as any,
+        reviewed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }).eq('id', selectedValuation.id)
+      if (updateError) throw updateError
       
-      await addDoc(repliesRef, replyData)
-      
-      // 2. Update valuation status to 'completed'
-      const valuationRef = doc(db, 'valuations', selectedValuation.id)
-      await updateDoc(valuationRef, {
-        status: 'completed',
-        completed_at: new Date().toISOString()
-      })
-      
-      // 3. Update local state
+      // Update local state
       setValuations(prev => prev.map(v => 
         v.id === selectedValuation.id 
           ? { ...v, status: 'completed', completed_at: new Date().toISOString() }
           : v
       ))
       
-      // 4. Reset and close modal
+      // Reset and close modal
       setShowResponseModal(false)
       setResponseMessage('')
       setSelectedValuation(null)
@@ -227,8 +167,9 @@ export default function ValuationsPage() {
   const handleDeleteValuation = async (valuationId: string) => {
     if (window.confirm('Are you sure you want to delete this valuation?')) {
       try {
-        // Implement delete functionality here
-        // await deleteDoc(doc(db, 'valuations', valuationId))
+        // Delete from Supabase
+        const { error } = await supabase.from('property_valuations').delete().eq('id', valuationId)
+        if (error) throw error
         setValuations(prev => prev.filter(v => v.id !== valuationId))
         // Also remove from expanded list if it's expanded
         setExpandedValuations(prev => prev.filter(id => id !== valuationId))
@@ -265,15 +206,12 @@ export default function ValuationsPage() {
       {/* Response Modal */}
       {showResponseModal && selectedValuation && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-bold mb-4">Send Response</h3>
-            
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <p className="text-sm font-medium mb-1">To: {selectedValuation.user_name}</p>
-              <p className="text-sm text-gray-600">Email: {selectedValuation.user_email}</p>
-              <p className="text-sm text-gray-600 mt-1">
-                Property: {selectedValuation.property_type} in {selectedValuation.location}
-              </p>
+          <div className="bg-card border rounded-xl max-w-md w-full p-6">
+            <h3 className="text-base font-semibold mb-4">Send Response</h3>
+            <div className="mb-4 p-3 bg-muted/50 rounded-lg">
+              <p className="text-sm font-medium mb-1">{selectedValuation.user_name}</p>
+              <p className="text-xs text-muted-foreground">{selectedValuation.user_email}</p>
+              <p className="text-xs text-muted-foreground mt-1">{selectedValuation.property_type} &mdash; {selectedValuation.location}</p>
             </div>
             
             <div className="mb-4">
@@ -283,24 +221,20 @@ export default function ValuationsPage() {
                 onChange={(e) => setResponseMessage(e.target.value)}
                 placeholder="Write your response here..."
                 rows={4}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 bg-background"
               />
             </div>
             
             <div className="flex justify-end gap-3">
               <button
-                onClick={() => {
-                  setShowResponseModal(false)
-                  setSelectedValuation(null)
-                }}
-                className="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50"
-              >
+                onClick={() => { setShowResponseModal(false); setSelectedValuation(null) }}
+                className="px-4 py-2 text-sm border rounded-lg hover:bg-muted transition-colors">
                 Cancel
               </button>
               <button
                 onClick={handleSubmitResponse}
                 disabled={!responseMessage.trim() || sendingResponse}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {sendingResponse ? (
                   <>
@@ -322,8 +256,8 @@ export default function ValuationsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Property Valuations</h1>
-          <p className="text-muted-foreground">Review and manage property valuation requests from users.</p>
+          <h1 className="text-xl font-bold">Valuations</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">Property valuation requests from users</p>
         </div>
         <button 
           className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"

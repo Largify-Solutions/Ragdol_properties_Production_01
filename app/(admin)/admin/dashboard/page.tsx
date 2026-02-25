@@ -1,840 +1,397 @@
-// 'use client'
-
-// import { useEffect, useState } from 'react'
-// import { collection, getDocs, query, where } from 'firebase/firestore'
-// import { db } from '@/lib/firebase'
-
-// interface Category {
-//   id: string
-//   name: string
-//   color: string
-//   description: string
-//   icon: string
-//   isActive: boolean
-//   order: number
-//   parentId: string | null
-//   slug: string
-//   createdAt: string
-//   updatedAt: string
-// }
-
-// interface Stats {
-//   totalCategories: number
-//   totalProperties: number
-//   totalAgents: number
-//   totalValuations: number
-//   totalInquiries: number
-//   activeCategories: number
-//   activeProperties: number
-//   activeAgents: number
-//   pendingValuations: number
-//   pendingInquiries: number
-// }
-
-// export default function SinglePageDashboard() {
-//   const [categories, setCategories] = useState<Category[]>([])
-//   const [stats, setStats] = useState<Stats>({
-//     totalCategories: 0,
-//     totalProperties: 0,
-//     totalAgents: 0,
-//     totalValuations: 0,
-//     totalInquiries: 0,
-//     activeCategories: 0,
-//     activeProperties: 0,
-//     activeAgents: 0,
-//     pendingValuations: 0,
-//     pendingInquiries: 0
-//   })
-//   const [loading, setLoading] = useState(true)
-//   const [recentActivity, setRecentActivity] = useState<any[]>([])
-
-//   const fetchAllData = async () => {
-//     setLoading(true)
-//     try {
-//       // 1. Fetch Categories
-//       const categoriesSnapshot = await getDocs(collection(db, 'categories'))
-//       const categoriesData = categoriesSnapshot.docs.map(doc => ({
-//         id: doc.id,
-//         ...doc.data()
-//       })) as Category[]
-//       setCategories(categoriesData)
-
-//       // 2. Fetch Properties
-//       const propertiesSnapshot = await getDocs(collection(db, 'properties'))
-//       const propertiesData = propertiesSnapshot.docs.map(doc => doc.data())
-      
-//       // 3. Fetch Agents
-//       const agentsSnapshot = await getDocs(collection(db, 'agents'))
-//       const agentsData = agentsSnapshot.docs.map(doc => doc.data())
-      
-//       // 4. Fetch Valuations (or inquiries for valuations)
-//       const valuationsSnapshot = await getDocs(collection(db, 'valuations'))
-//       const valuationsData = valuationsSnapshot.docs.map(doc => doc.data())
-      
-//       // 5. Fetch Inquiries
-//       const inquiriesSnapshot = await getDocs(collection(db, 'inquiries'))
-//       const inquiriesData = inquiriesSnapshot.docs.map(doc => doc.data())
-
-//       // Calculate stats
-//       const newStats: Stats = {
-//         totalCategories: categoriesData.length,
-//         totalProperties: propertiesData.length,
-//         totalAgents: agentsData.length,
-//         totalValuations: valuationsData.length,
-//         totalInquiries: inquiriesData.length,
-//         activeCategories: categoriesData.filter(cat => cat.isActive).length,
-//         activeProperties: propertiesData.filter((prop: any) => prop.published === true).length,
-//         activeAgents: agentsData.filter((agent: any) => agent.approved === true).length,
-//         pendingValuations: valuationsData.filter((val: any) => val.status === 'pending').length,
-//         pendingInquiries: inquiriesData.filter((inq: any) => inq.status === 'pending').length
-//       }
-
-//       setStats(newStats)
-
-//       // Prepare recent activity
-//       const activities = [
-//         ...categoriesData.slice(0, 3).map(cat => ({
-//           type: 'category',
-//           name: cat.name,
-//           time: cat.createdAt,
-//           status: cat.isActive ? 'active' : 'inactive',
-//           color: cat.color
-//         })),
-//         ...propertiesData.slice(0, 2).map((prop: any) => ({
-//           type: 'property',
-//           name: prop.title || 'Unnamed Property',
-//           time: prop.created_at,
-//           status: prop.published ? 'published' : 'draft'
-//         })),
-//         ...agentsData.slice(0, 2).map((agent: any) => ({
-//           type: 'agent',
-//           name: agent.title || 'Unnamed Agent',
-//           time: agent.created_at,
-//           status: agent.approved ? 'approved' : 'pending'
-//         }))
-//       ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-      
-//       setRecentActivity(activities)
-
-//     } catch (error) {
-//       console.error('Error fetching data:', error)
-//     } finally {
-//       setLoading(false)
-//     }
-//   }
-
-//   useEffect(() => {
-//     fetchAllData()
-    
-//     // Auto-refresh every 30 seconds
-//     const interval = setInterval(fetchAllData, 30000)
-    
-//     return () => clearInterval(interval)
-//   }, [])
-
-//   // Function to get icon component
-//   const getIcon = (iconName: string) => {
-//     const iconMap: { [key: string]: string } = {
-//       'TruckIcon': '🚚',
-//       'HomeIcon': '🏠',
-//       'BuildingIcon': '🏢',
-//       'CarIcon': '🚗',
-//       'BriefcaseIcon': '💼',
-//       'ShoppingCartIcon': '🛒',
-//       'StarIcon': '⭐',
-//       'HeartIcon': '❤️',
-//       'TagIcon': '🏷️',
-//       'CalendarIcon': '📅',
-//       'UsersIcon': '👥',
-//       'DollarIcon': '💰'
-//     }
-    
-//     return iconMap[iconName] || '📂'
-//   }
-
-//   const getStatusColor = (status: string) => {
-//     const colors: { [key: string]: string } = {
-//       'active': 'bg-green-100 text-green-800',
-//       'published': 'bg-green-100 text-green-800',
-//       'approved': 'bg-green-100 text-green-800',
-//       'inactive': 'bg-gray-100 text-gray-800',
-//       'draft': 'bg-yellow-100 text-yellow-800',
-//       'pending': 'bg-orange-100 text-orange-800'
-//     }
-//     return colors[status] || 'bg-gray-100 text-gray-800'
-//   }
-
-//   if (loading) {
-//     return (
-//       <div className="min-h-screen bg-gray-50 p-8">
-//         <div className="flex items-center justify-center h-96">
-//           <div className="text-center">
-//             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-//             <p className="mt-4 text-gray-600">Loading dashboard data...</p>
-//           </div>
-//         </div>
-//       </div>
-//     )
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-//       {/* Header */}
-//       <div className="mb-8">
-//         <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-//         <p className="text-gray-600 mt-2">Real-time statistics and insights from your system</p>
-        
-//         <div className="mt-4 flex flex-wrap gap-2">
-//           <button
-//             onClick={fetchAllData}
-//             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-//           >
-//             🔄 Refresh Data
-//           </button>
-//           <span className="text-sm text-gray-500 self-center">
-//             Auto-refreshes every 30 seconds
-//           </span>
-//         </div>
-//       </div>
-
-//       {/* Stats Grid */}
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-//         {/* Categories Card */}
-//         <div className="bg-white rounded-xl shadow p-6">
-//           <div className="flex items-center justify-between">
-//             <div>
-//               <p className="text-sm font-medium text-gray-500">Total Categories</p>
-//               <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalCategories}</p>
-//               <div className="flex items-center mt-2">
-//                 <span className={`text-sm px-2 py-1 rounded-full ${stats.activeCategories > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-//                   {stats.activeCategories} active
-//                 </span>
-//               </div>
-//             </div>
-//             <div className="p-3 bg-purple-100 rounded-lg">
-//               <span className="text-2xl">📂</span>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Properties Card */}
-//         <div className="bg-white rounded-xl shadow p-6">
-//           <div className="flex items-center justify-between">
-//             <div>
-//               <p className="text-sm font-medium text-gray-500">Total Properties</p>
-//               <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalProperties}</p>
-//               <div className="flex items-center mt-2">
-//                 <span className={`text-sm px-2 py-1 rounded-full ${stats.activeProperties > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-//                   {stats.activeProperties} published
-//                 </span>
-//               </div>
-//             </div>
-//             <div className="p-3 bg-blue-100 rounded-lg">
-//               <span className="text-2xl">🏠</span>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Agents Card */}
-//         <div className="bg-white rounded-xl shadow p-6">
-//           <div className="flex items-center justify-between">
-//             <div>
-//               <p className="text-sm font-medium text-gray-500">Total Agents</p>
-//               <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalAgents}</p>
-//               <div className="flex items-center mt-2">
-//                 <span className={`text-sm px-2 py-1 rounded-full ${stats.activeAgents > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-//                   {stats.activeAgents} approved
-//                 </span>
-//               </div>
-//             </div>
-//             <div className="p-3 bg-green-100 rounded-lg">
-//               <span className="text-2xl">👥</span>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Inquiries & Valuations Card */}
-//         <div className="bg-white rounded-xl shadow p-6">
-//           <div className="flex items-center justify-between">
-//             <div>
-//               <p className="text-sm font-medium text-gray-500">Customer Interactions</p>
-//               <div className="grid grid-cols-2 gap-4 mt-2">
-//                 <div>
-//                   <p className="text-lg font-bold text-gray-900">{stats.totalValuations}</p>
-//                   <p className="text-sm text-gray-500">Valuations</p>
-//                   {stats.pendingValuations > 0 && (
-//                     <p className="text-xs text-orange-600 mt-1">{stats.pendingValuations} pending</p>
-//                   )}
-//                 </div>
-//                 <div>
-//                   <p className="text-lg font-bold text-gray-900">{stats.totalInquiries}</p>
-//                   <p className="text-sm text-gray-500">Inquiries</p>
-//                   {stats.pendingInquiries > 0 && (
-//                     <p className="text-xs text-orange-600 mt-1">{stats.pendingInquiries} pending</p>
-//                   )}
-//                 </div>
-//               </div>
-//             </div>
-//             <div className="p-3 bg-yellow-100 rounded-lg">
-//               <span className="text-2xl">📞</span>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Main Content Grid */}
-//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-//         {/* Left Column - Categories List */}
-//         <div className="lg:col-span-2">
-//           <div className="bg-white rounded-xl shadow">
-//             <div className="px-6 py-4 border-b">
-//               <h2 className="text-lg font-semibold text-gray-900">Categories ({categories.length})</h2>
-//               <p className="text-sm text-gray-500">All categories from your database</p>
-//             </div>
-            
-//             <div className="overflow-x-auto">
-//               <table className="min-w-full divide-y divide-gray-200">
-//                 <thead className="bg-gray-50">
-//                   <tr>
-//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
-//                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-//                   </tr>
-//                 </thead>
-//                 <tbody className="bg-white divide-y divide-gray-200">
-//                   {categories.map((category) => (
-//                     <tr key={category.id} className="hover:bg-gray-50">
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <div className="flex items-center">
-//                           <div 
-//                             className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
-//                             style={{ backgroundColor: `${category.color}20` }}
-//                           >
-//                             <span className="text-lg">{getIcon(category.icon)}</span>
-//                           </div>
-//                           <div>
-//                             <div className="text-sm font-medium text-gray-900">{category.name}</div>
-//                             <div className="text-sm text-gray-500">{category.slug}</div>
-//                           </div>
-//                         </div>
-//                       </td>
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${category.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-//                           {category.isActive ? 'Active' : 'Inactive'}
-//                         </span>
-//                       </td>
-//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-//                         {category.order}
-//                       </td>
-//                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-//                         {new Date(category.createdAt).toLocaleDateString()}
-//                       </td>
-//                     </tr>
-//                   ))}
-//                 </tbody>
-//               </table>
-//             </div>
-            
-//             {categories.length === 0 && (
-//               <div className="text-center py-12">
-//                 <div className="text-gray-400 text-4xl mb-4">📂</div>
-//                 <p className="text-gray-500">No categories found</p>
-//               </div>
-//             )}
-//           </div>
-//         </div>
-
-//         {/* Right Column - Stats & Activity */}
-//         <div className="space-y-8">
-//           {/* Summary Stats */}
-//           <div className="bg-white rounded-xl shadow p-6">
-//             <h2 className="text-lg font-semibold text-gray-900 mb-4">System Summary</h2>
-//             <div className="space-y-4">
-//               <div className="flex justify-between items-center pb-3 border-b">
-//                 <span className="text-sm text-gray-600">Active Categories</span>
-//                 <span className="font-medium">{stats.activeCategories}/{stats.totalCategories}</span>
-//               </div>
-//               <div className="flex justify-between items-center pb-3 border-b">
-//                 <span className="text-sm text-gray-600">Published Properties</span>
-//                 <span className="font-medium">{stats.activeProperties}/{stats.totalProperties}</span>
-//               </div>
-//               <div className="flex justify-between items-center pb-3 border-b">
-//                 <span className="text-sm text-gray-600">Approved Agents</span>
-//                 <span className="font-medium">{stats.activeAgents}/{stats.totalAgents}</span>
-//               </div>
-//               <div className="flex justify-between items-center">
-//                 <span className="text-sm text-gray-600">Pending Actions</span>
-//                 <span className="font-medium text-orange-600">{stats.pendingInquiries + stats.pendingValuations}</span>
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Recent Activity */}
-//           <div className="bg-white rounded-xl shadow">
-//             <div className="px-6 py-4 border-b">
-//               <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-//               <p className="text-sm text-gray-500">Latest updates in your system</p>
-//             </div>
-            
-//             <div className="p-4">
-//               <div className="space-y-4">
-//                 {recentActivity.length > 0 ? (
-//                   recentActivity.map((activity, index) => (
-//                     <div key={index} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
-//                       <div className={`p-2 rounded-lg ${
-//                         activity.type === 'category' ? 'bg-purple-100' :
-//                         activity.type === 'property' ? 'bg-blue-100' :
-//                         'bg-green-100'
-//                       }`}>
-//                         {activity.type === 'category' && '📂'}
-//                         {activity.type === 'property' && '🏠'}
-//                         {activity.type === 'agent' && '👥'}
-//                       </div>
-//                       <div className="flex-1 min-w-0">
-//                         <p className="text-sm font-medium text-gray-900 truncate">
-//                           {activity.name}
-//                         </p>
-//                         <div className="flex items-center justify-between mt-1">
-//                           <span className="text-xs text-gray-500 capitalize">
-//                             {activity.type}
-//                           </span>
-//                           <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(activity.status)}`}>
-//                             {activity.status}
-//                           </span>
-//                         </div>
-//                         <p className="text-xs text-gray-400 mt-1">
-//                           {new Date(activity.time).toLocaleString()}
-//                         </p>
-//                       </div>
-//                     </div>
-//                   ))
-//                 ) : (
-//                   <div className="text-center py-8">
-//                     <p className="text-gray-500">No recent activity</p>
-//                   </div>
-//                 )}
-//               </div>
-//             </div>
-//           </div>
-
-         
-         
-//         </div>
-//       </div>
-
-     
-//     </div>
-//   )
-// }
-
-// new code
 'use client'
 
 import { useEffect, useState } from 'react'
-import { collection, getDocs, query, where } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import Link from 'next/link'
+import { supabase } from '@/lib/supabase-browser'
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, PieChart, Pie, Cell,
+} from 'recharts'
+import {
+  Building2, Users, MessageSquare, Briefcase,
+  ArrowUpRight, Plus, RefreshCw, Star, CheckCircle2,
+} from 'lucide-react'
 
-interface Category {
-  id: string
-  name: string
-  color: string
-  description: string
-  icon: string
-  isActive: boolean
-  order: number
-  parentId: string | null
-  slug: string
-  createdAt: string
-  updatedAt: string
-}
+const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ef4444', '#8b5cf6']
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 interface Stats {
-  totalCategories: number
-  totalProperties: number
-  totalAgents: number
-  totalValuations: number
-  totalInquiries: number
-  activeCategories: number
-  activeProperties: number
-  activeAgents: number
-  pendingValuations: number
-  pendingInquiries: number
+  totalProperties: number; publishedProperties: number
+  totalAgents: number; approvedAgents: number
+  totalEnquiries: number; newEnquiries: number
+  totalProjects: number; totalValuations: number; pendingValuations: number
 }
 
-export default function SinglePageDashboard() {
-  const [categories, setCategories] = useState<Category[]>([])
+interface RecentEnquiry {
+  id: string; name: string; email: string; status: string
+  created_at: string; property_title: string | null
+}
+
+interface TopAgent {
+  id: string; full_name: string; rating: number
+  review_count: number; total_sales: number; approved: boolean
+}
+
+interface PropertyTypeStat { name: string; value: number }
+interface MonthlyEnquiry { month: string; enquiries: number }
+
+export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({
-    totalCategories: 0,
-    totalProperties: 0,
-    totalAgents: 0,
-    totalValuations: 0,
-    totalInquiries: 0,
-    activeCategories: 0,
-    activeProperties: 0,
-    activeAgents: 0,
-    pendingValuations: 0,
-    pendingInquiries: 0
+    totalProperties: 0, publishedProperties: 0,
+    totalAgents: 0, approvedAgents: 0,
+    totalEnquiries: 0, newEnquiries: 0,
+    totalProjects: 0, totalValuations: 0, pendingValuations: 0,
   })
-  const [recentActivity, setRecentActivity] = useState<any[]>([])
+  const [recentEnquiries, setRecentEnquiries] = useState<RecentEnquiry[]>([])
+  const [topAgents, setTopAgents] = useState<TopAgent[]>([])
+  const [propertyTypes, setPropertyTypes] = useState<PropertyTypeStat[]>([])
+  const [monthlyEnquiries, setMonthlyEnquiries] = useState<MonthlyEnquiry[]>([])
+  const [loading, setLoading] = useState(true)
+  const [lastRefresh, setLastRefresh] = useState(new Date())
 
-  const fetchAllData = async () => {
+  const fetchAll = async () => {
+    setLoading(true)
     try {
-      // 1. Fetch Categories
-      const categoriesSnapshot = await getDocs(collection(db, 'categories'))
-      const categoriesData = categoriesSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Category[]
-      setCategories(categoriesData)
+      const [propertiesRes, agentsRes, enquiriesRes, projectsRes, valuationsRes, enquiriesRecentRes, agentsTopRes] =
+        await Promise.all([
+          supabase.from('properties').select('id, type, published'),
+          supabase.from('agents').select('id, approved'),
+          supabase.from('enquiries').select('id, status, created_at'),
+          supabase.from('projects').select('id').eq('published', true),
+          supabase.from('property_valuations').select('id, status'),
+          supabase.from('enquiries')
+            .select('id, name, email, status, created_at, properties!enquiries_property_id_fkey(title)')
+            .order('created_at', { ascending: false }).limit(8),
+          supabase.from('agents')
+            .select('id, rating, review_count, total_sales, approved, profiles!agents_user_id_fkey(full_name)')
+            .order('total_sales', { ascending: false }).limit(5),
+        ])
 
-      // 2. Fetch Properties
-      const propertiesSnapshot = await getDocs(collection(db, 'properties'))
-      const propertiesData = propertiesSnapshot.docs.map(doc => doc.data())
-      
-      // 3. Fetch Agents
-      const agentsSnapshot = await getDocs(collection(db, 'agents'))
-      const agentsData = agentsSnapshot.docs.map(doc => doc.data())
-      
-      // 4. Fetch Valuations (or inquiries for valuations)
-      const valuationsSnapshot = await getDocs(collection(db, 'valuations'))
-      const valuationsData = valuationsSnapshot.docs.map(doc => doc.data())
-      
-      // 5. Fetch Inquiries
-      const inquiriesSnapshot = await getDocs(collection(db, 'inquiries'))
-      const inquiriesData = inquiriesSnapshot.docs.map(doc => doc.data())
+      const properties = propertiesRes.data || []
+      const agents = agentsRes.data || []
+      const enquiries = enquiriesRes.data || []
 
-      // Calculate stats
-      const newStats: Stats = {
-        totalCategories: categoriesData.length,
-        totalProperties: propertiesData.length,
-        totalAgents: agentsData.length,
-        totalValuations: valuationsData.length,
-        totalInquiries: inquiriesData.length,
-        activeCategories: categoriesData.filter(cat => cat.isActive).length,
-        activeProperties: propertiesData.filter((prop: any) => prop.published === true).length,
-        activeAgents: agentsData.filter((agent: any) => agent.approved === true).length,
-        pendingValuations: valuationsData.filter((val: any) => val.status === 'pending').length,
-        pendingInquiries: inquiriesData.filter((inq: any) => inq.status === 'pending').length
-      }
+      setStats({
+        totalProperties: properties.length,
+        publishedProperties: properties.filter((p: any) => p.published).length,
+        totalAgents: agents.length,
+        approvedAgents: agents.filter((a: any) => a.approved).length,
+        totalEnquiries: enquiries.length,
+        newEnquiries: enquiries.filter((e: any) => e.status === 'new').length,
+        totalProjects: projectsRes.data?.length || 0,
+        totalValuations: valuationsRes.data?.length || 0,
+        pendingValuations: (valuationsRes.data || []).filter((v: any) => v.status === 'pending').length,
+      })
 
-      setStats(newStats)
+      // Property type breakdown
+      const typeCounts: Record<string, number> = {}
+      properties.forEach((p: any) => {
+        const t = p.type || 'other'
+        typeCounts[t] = (typeCounts[t] || 0) + 1
+      })
+      setPropertyTypes(
+        Object.entries(typeCounts)
+          .map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }))
+          .sort((a, b) => b.value - a.value).slice(0, 6)
+      )
 
-      // Prepare recent activity
-      const activities = [
-        ...categoriesData.slice(0, 3).map(cat => ({
-          type: 'category',
-          name: cat.name,
-          time: cat.createdAt,
-          status: cat.isActive ? 'active' : 'inactive',
-          color: cat.color
-        })),
-        ...propertiesData.slice(0, 2).map((prop: any) => ({
-          type: 'property',
-          name: prop.title || 'Unnamed Property',
-          time: prop.created_at,
-          status: prop.published ? 'published' : 'draft'
-        })),
-        ...agentsData.slice(0, 2).map((agent: any) => ({
-          type: 'agent',
-          name: agent.title || 'Unnamed Agent',
-          time: agent.created_at,
-          status: agent.approved ? 'approved' : 'pending'
+      // Monthly enquiries (last 6 months)
+      const now = new Date()
+      const months: any[] = Array.from({ length: 6 }, (_, i) => {
+        const d = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1)
+        return { month: MONTHS[d.getMonth()], enquiries: 0, _y: d.getFullYear(), _m: d.getMonth() }
+      })
+      enquiries.forEach((e: any) => {
+        const d = new Date(e.created_at)
+        const idx = months.findIndex((m) => m._y === d.getFullYear() && m._m === d.getMonth())
+        if (idx !== -1) months[idx].enquiries++
+      })
+      setMonthlyEnquiries(months.map(({ month, enquiries }) => ({ month, enquiries })))
+
+      setRecentEnquiries(
+        (enquiriesRecentRes.data || []).map((e: any) => ({
+          id: e.id, name: e.name, email: e.email,
+          status: e.status, created_at: e.created_at,
+          property_title: (e.properties as any)?.title || null,
         }))
-      ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-      
-      setRecentActivity(activities)
+      )
 
-    } catch (error) {
-      console.error('Error fetching data:', error)
+      setTopAgents(
+        (agentsTopRes.data || []).map((a: any) => ({
+          id: a.id, full_name: (a.profiles as any)?.full_name || 'Agent',
+          rating: a.rating || 0, review_count: a.review_count || 0,
+          total_sales: a.total_sales || 0, approved: a.approved,
+        }))
+      )
+    } catch (err) {
+      console.error('Dashboard fetch error:', err)
+    } finally {
+      setLoading(false)
+      setLastRefresh(new Date())
     }
   }
 
-  useEffect(() => {
-    fetchAllData()
-    
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchAllData, 30000)
-    
-    return () => clearInterval(interval)
-  }, [])
+  useEffect(() => { fetchAll() }, [])
 
-  // Function to get icon component
-  const getIcon = (iconName: string) => {
-    const iconMap: { [key: string]: string } = {
-      'TruckIcon': '🚚',
-      'HomeIcon': '🏠',
-      'BuildingIcon': '🏢',
-      'CarIcon': '🚗',
-      'BriefcaseIcon': '💼',
-      'ShoppingCartIcon': '🛒',
-      'StarIcon': '⭐',
-      'HeartIcon': '❤️',
-      'TagIcon': '🏷️',
-      'CalendarIcon': '📅',
-      'UsersIcon': '👥',
-      'DollarIcon': '💰'
-    }
-    
-    return iconMap[iconName] || '📂'
+  const statusColor = (s: string) =>
+    ({ new: 'bg-blue-100 text-blue-700', contacted: 'bg-yellow-100 text-yellow-700',
+       qualified: 'bg-purple-100 text-purple-700', closed: 'bg-green-100 text-green-700',
+       lost: 'bg-red-100 text-red-700' } as Record<string, string>)[s] || 'bg-gray-100 text-gray-700'
+
+  if (loading && stats.totalProperties === 0) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="h-6 w-32 bg-muted animate-pulse rounded" />
+            <div className="h-4 w-48 bg-muted animate-pulse rounded" />
+          </div>
+          <div className="h-9 w-28 bg-muted animate-pulse rounded-md" />
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-card rounded-xl border p-5 space-y-3">
+              <div className="flex justify-between"><div className="h-9 w-9 bg-muted animate-pulse rounded-lg" /><div className="h-4 w-4 bg-muted animate-pulse rounded" /></div>
+              <div className="h-3 w-16 bg-muted animate-pulse rounded" />
+              <div className="h-7 w-12 bg-muted animate-pulse rounded" />
+              <div className="h-3 w-20 bg-muted animate-pulse rounded" />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-card rounded-xl border p-6">
+            <div className="h-4 w-40 bg-muted animate-pulse rounded mb-6" />
+            <div className="h-[240px] bg-muted/40 animate-pulse rounded-lg" />
+          </div>
+          <div className="bg-card rounded-xl border p-6">
+            <div className="h-4 w-28 bg-muted animate-pulse rounded mb-6" />
+            <div className="h-[200px] bg-muted/40 animate-pulse rounded-lg" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-3 bg-card rounded-xl border">
+            <div className="px-6 py-4 border-b"><div className="h-4 w-32 bg-muted animate-pulse rounded" /></div>
+            <div className="divide-y">{[...Array(5)].map((_, i) => <div key={i} className="px-6 py-3.5 flex gap-4"><div className="h-4 w-28 bg-muted animate-pulse rounded" /><div className="h-4 w-32 bg-muted animate-pulse rounded" /><div className="h-5 w-16 bg-muted animate-pulse rounded-full" /></div>)}</div>
+          </div>
+          <div className="lg:col-span-2 bg-card rounded-xl border p-6 space-y-4">
+            <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+            {[...Array(4)].map((_, i) => <div key={i} className="flex items-center gap-3"><div className="h-9 w-9 bg-muted animate-pulse rounded-full" /><div className="flex-1 space-y-1.5"><div className="h-3 w-24 bg-muted animate-pulse rounded" /><div className="h-3 w-16 bg-muted animate-pulse rounded" /></div><div className="h-4 w-16 bg-muted animate-pulse rounded" /></div>)}
+          </div>
+        </div>
+      </div>
+    )
   }
-
-  const getStatusColor = (status: string) => {
-    const colors: { [key: string]: string } = {
-      'active': 'bg-green-100 text-green-800',
-      'published': 'bg-green-100 text-green-800',
-      'approved': 'bg-green-100 text-green-800',
-      'inactive': 'bg-gray-100 text-gray-800',
-      'draft': 'bg-yellow-100 text-yellow-800',
-      'pending': 'bg-orange-100 text-orange-800'
-    }
-    return colors[status] || 'bg-gray-100 text-gray-800'
-  }
-
-  // ✅ LOADING STATE REMOVED - Directly show content
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="p-6 space-y-6 bg-background min-h-screen">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-        <p className="text-gray-600 mt-2">Real-time statistics and insights from your system</p>
-        
-        <div className="mt-4 flex flex-wrap gap-2">
-          <button
-            onClick={fetchAllData}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            🔄 Refresh Data
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">
+            Live data &middot; refreshed {lastRefresh.toLocaleTimeString()}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button onClick={fetchAll} disabled={loading}
+            className="inline-flex items-center gap-2 text-sm border border-input bg-background hover:bg-muted rounded-md px-3 py-2 transition-colors disabled:opacity-50">
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
           </button>
-          <span className="text-sm text-gray-500 self-center">
-            Auto-refreshes every 30 seconds
-          </span>
+          <Link href="/admin/properties"
+            className="inline-flex items-center gap-2 text-sm bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-2 transition-colors">
+            <Plus className="h-4 w-4" /> Add Property
+          </Link>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Categories Card */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Total Categories</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalCategories}</p>
-              <div className="flex items-center mt-2">
-                <span className={`text-sm px-2 py-1 rounded-full ${stats.activeCategories > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                  {stats.activeCategories} active
-                </span>
-              </div>
-            </div>
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <span className="text-2xl">📂</span>
-            </div>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Properties" value={stats.totalProperties} sub={`${stats.publishedProperties} published`}
+          icon={<Building2 className="h-5 w-5 text-blue-500" />} href="/admin/properties" accentClass="bg-blue-50 dark:bg-blue-500/10" />
+        <StatCard label="Agents" value={stats.totalAgents} sub={`${stats.approvedAgents} approved`}
+          icon={<Users className="h-5 w-5 text-emerald-500" />} href="/admin/agents" accentClass="bg-emerald-50 dark:bg-emerald-500/10" />
+        <StatCard label="Enquiries" value={stats.totalEnquiries} sub={`${stats.newEnquiries} new`}
+          icon={<MessageSquare className="h-5 w-5 text-violet-500" />} href="/admin/questions" accentClass="bg-violet-50 dark:bg-violet-500/10" />
+        <StatCard label="Projects" value={stats.totalProjects} sub="published"
+          icon={<Briefcase className="h-5 w-5 text-orange-500" />} href="/admin/projects" accentClass="bg-orange-50 dark:bg-orange-500/10" />
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-card rounded-xl border shadow-sm p-6">
+          <div className="mb-5">
+            <h3 className="font-semibold text-base">Enquiries — Last 6 Months</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">{stats.totalEnquiries} total</p>
           </div>
+          {loading ? (
+            <div className="h-[240px] bg-muted/30 animate-pulse rounded-lg" />
+          ) : (
+            <div className="h-[240px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={monthlyEnquiries}>
+                  <defs>
+                    <linearGradient id="eg" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} dy={8} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} allowDecimals={false} />
+                  <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+                    formatter={(v: number) => [v, 'Enquiries']} />
+                  <Area type="monotone" dataKey="enquiries" stroke="#3b82f6" strokeWidth={2} fill="url(#eg)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
 
-        {/* Properties Card */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Total Properties</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalProperties}</p>
-              <div className="flex items-center mt-2">
-                <span className={`text-sm px-2 py-1 rounded-full ${stats.activeProperties > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                  {stats.activeProperties} published
-                </span>
+        <div className="bg-card rounded-xl border shadow-sm p-6">
+          <h3 className="font-semibold text-base mb-1">Property Types</h3>
+          <p className="text-xs text-muted-foreground mb-4">{stats.totalProperties} total</p>
+          {loading ? (
+            <div className="h-[200px] bg-muted/30 animate-pulse rounded-lg" />
+          ) : propertyTypes.length === 0 ? (
+            <div className="h-[200px] flex items-center justify-center text-sm text-muted-foreground">No data yet</div>
+          ) : (
+            <>
+              <div className="h-[170px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={propertyTypes as any[]} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value">
+                      {propertyTypes.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip formatter={(v: number) => [v, 'Properties']} />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
-            </div>
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <span className="text-2xl">🏠</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Agents Card */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Total Agents</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalAgents}</p>
-              <div className="flex items-center mt-2">
-                <span className={`text-sm px-2 py-1 rounded-full ${stats.activeAgents > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                  {stats.activeAgents} approved
-                </span>
+              <div className="mt-3 space-y-1.5">
+                {propertyTypes.map((item, i) => (
+                  <div key={item.name} className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
+                      <span className="text-muted-foreground">{item.name}</span>
+                    </div>
+                    <span className="font-semibold">{item.value}</span>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div className="p-3 bg-green-100 rounded-lg">
-              <span className="text-2xl">👥</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Inquiries & Valuations Card */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Customer Interactions</p>
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div>
-                  <p className="text-lg font-bold text-gray-900">{stats.totalValuations}</p>
-                  <p className="text-sm text-gray-500">Valuations</p>
-                  {stats.pendingValuations > 0 && (
-                    <p className="text-xs text-orange-600 mt-1">{stats.pendingValuations} pending</p>
-                  )}
-                </div>
-                <div>
-                  <p className="text-lg font-bold text-gray-900">{stats.totalInquiries}</p>
-                  <p className="text-sm text-gray-500">Inquiries</p>
-                  {stats.pendingInquiries > 0 && (
-                    <p className="text-xs text-orange-600 mt-1">{stats.pendingInquiries} pending</p>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="p-3 bg-yellow-100 rounded-lg">
-              <span className="text-2xl">📞</span>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Categories List */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow">
-            <div className="px-6 py-4 border-b">
-              <h2 className="text-lg font-semibold text-gray-900">Categories ({categories.length})</h2>
-              <p className="text-sm text-gray-500">All categories from your database</p>
-            </div>
-            
+      {/* Bottom Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Recent Enquiries */}
+        <div className="lg:col-span-3 bg-card rounded-xl border shadow-sm overflow-hidden">
+          <div className="px-6 py-4 border-b flex items-center justify-between">
+            <h3 className="font-semibold text-base">Recent Enquiries</h3>
+            <Link href="/admin/questions" className="text-sm text-primary hover:underline flex items-center gap-1">
+              View all <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          {loading ? (
+            <div className="divide-y">{[...Array(5)].map((_, i) => <div key={i} className="px-5 py-3.5 flex gap-6"><div className="space-y-1.5"><div className="h-3 w-24 bg-muted animate-pulse rounded" /><div className="h-3 w-28 bg-muted animate-pulse rounded" /></div><div className="h-3 w-28 bg-muted animate-pulse rounded mt-1" /><div className="h-5 w-16 bg-muted animate-pulse rounded-full" /></div>)}</div>
+          ) : recentEnquiries.length === 0 ? (
+            <div className="p-8 text-center text-sm text-muted-foreground">No enquiries yet</div>
+          ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-muted/40 text-muted-foreground text-xs uppercase tracking-wide">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                    <th className="px-5 py-3">Client</th>
+                    <th className="px-5 py-3">Property</th>
+                    <th className="px-5 py-3">Status</th>
+                    <th className="px-5 py-3">Date</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {categories.map((category) => (
-                    <tr key={category.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div 
-                            className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
-                            style={{ backgroundColor: `${category.color}20` }}
-                          >
-                            <span className="text-lg">{getIcon(category.icon)}</span>
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{category.name}</div>
-                            <div className="text-sm text-gray-500">{category.slug}</div>
-                          </div>
-                        </div>
+                <tbody className="divide-y">
+                  {recentEnquiries.map((e) => (
+                    <tr key={e.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-5 py-3">
+                        <p className="font-medium truncate max-w-[130px]">{e.name}</p>
+                        <p className="text-xs text-muted-foreground truncate max-w-[130px]">{e.email}</p>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${category.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                          {category.isActive ? 'Active' : 'Inactive'}
+                      <td className="px-5 py-3 text-muted-foreground text-xs max-w-[140px] truncate">
+                        {e.property_title ?? <span className="italic">—</span>}
+                      </td>
+                      <td className="px-5 py-3">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${statusColor(e.status)}`}>
+                          {e.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {category.order}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(category.createdAt).toLocaleDateString()}
+                      <td className="px-5 py-3 text-muted-foreground text-xs whitespace-nowrap">
+                        {new Date(e.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            
-            {categories.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-gray-400 text-4xl mb-4">📂</div>
-                <p className="text-gray-500">No categories found</p>
-              </div>
-            )}
-          </div>
+          )}
         </div>
 
-        {/* Right Column - Stats & Activity */}
-        <div className="space-y-8">
-          {/* Summary Stats */}
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">System Summary</h2>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center pb-3 border-b">
-                <span className="text-sm text-gray-600">Active Categories</span>
-                <span className="font-medium">{stats.activeCategories}/{stats.totalCategories}</span>
-              </div>
-              <div className="flex justify-between items-center pb-3 border-b">
-                <span className="text-sm text-gray-600">Published Properties</span>
-                <span className="font-medium">{stats.activeProperties}/{stats.totalProperties}</span>
-              </div>
-              <div className="flex justify-between items-center pb-3 border-b">
-                <span className="text-sm text-gray-600">Approved Agents</span>
-                <span className="font-medium">{stats.activeAgents}/{stats.totalAgents}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Pending Actions</span>
-                <span className="font-medium text-orange-600">{stats.pendingInquiries + stats.pendingValuations}</span>
-              </div>
-            </div>
+        {/* Top Agents */}
+        <div className="lg:col-span-2 bg-card rounded-xl border shadow-sm p-6">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="font-semibold text-base">Top Agents</h3>
+            <Link href="/admin/agents" className="text-sm text-primary hover:underline flex items-center gap-1">
+              View all <ArrowUpRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
-
-          {/* Recent Activity */}
-          <div className="bg-white rounded-xl shadow">
-            <div className="px-6 py-4 border-b">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
-              <p className="text-sm text-gray-500">Latest updates in your system</p>
-            </div>
-            
-            <div className="p-4">
-              <div className="space-y-4">
-                {recentActivity.length > 0 ? (
-                  recentActivity.map((activity, index) => (
-                    <div key={index} className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
-                      <div className={`p-2 rounded-lg ${
-                        activity.type === 'category' ? 'bg-purple-100' :
-                        activity.type === 'property' ? 'bg-blue-100' :
-                        'bg-green-100'
-                      }`}>
-                        {activity.type === 'category' && '📂'}
-                        {activity.type === 'property' && '🏠'}
-                        {activity.type === 'agent' && '👥'}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {activity.name}
-                        </p>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="text-xs text-gray-500 capitalize">
-                            {activity.type}
-                          </span>
-                          <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(activity.status)}`}>
-                            {activity.status}
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {new Date(activity.time).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500">No recent activity</p>
+          {loading ? (
+            <div className="space-y-4">{[...Array(4)].map((_, i) => <div key={i} className="flex items-center gap-3"><div className="h-9 w-9 bg-muted animate-pulse rounded-full flex-shrink-0" /><div className="flex-1 space-y-1.5"><div className="h-3 w-24 bg-muted animate-pulse rounded" /><div className="h-3 w-16 bg-muted animate-pulse rounded" /></div><div className="h-4 w-16 bg-muted animate-pulse rounded" /></div>)}</div>
+          ) : topAgents.length === 0 ? (
+            <div className="py-8 text-center text-sm text-muted-foreground">No agents yet</div>
+          ) : (
+            <div className="space-y-5">
+              {topAgents.map((agent) => (
+                <div key={agent.id} className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-sm flex-shrink-0">
+                    {agent.full_name.charAt(0).toUpperCase()}
                   </div>
-                )}
-              </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-medium text-sm truncate">{agent.full_name}</p>
+                      {agent.approved && <CheckCircle2 className="h-3.5 w-3.5 text-green-500 flex-shrink-0" />}
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                      <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
+                      <span>{agent.rating > 0 ? agent.rating.toFixed(1) : '—'}</span>
+                      {agent.review_count > 0 && <span>({agent.review_count})</span>}
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-sm font-semibold text-primary">
+                      {agent.total_sales > 0 ? `AED ${(agent.total_sales / 1_000_000).toFixed(1)}M` : '—'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">sales</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
+  )
+}
+
+function StatCard({ label, value, sub, icon, href, accentClass }: {
+  label: string; value: number; sub: string; icon: React.ReactNode; href: string; accentClass?: string
+}) {
+  return (
+    <Link href={href} className="bg-card rounded-xl border shadow-sm p-5 hover:shadow-md transition-all duration-150 block group">
+      <div className="flex items-center justify-between mb-4">
+        <div className={`p-2.5 rounded-lg ${accentClass || 'bg-muted'}`}>{icon}</div>
+        <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+      </div>
+      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{label}</p>
+      <h4 className="text-2xl font-bold mt-1">{value.toLocaleString()}</h4>
+      <p className="text-xs text-muted-foreground mt-1">{sub}</p>
+    </Link>
   )
 }

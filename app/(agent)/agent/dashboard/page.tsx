@@ -24,8 +24,7 @@ import {
   PhotoIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline'
-import { collection, onSnapshot, query, orderBy, where, Timestamp } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { supabase } from '@/lib/supabase-browser'
 
 interface AgentProperty {
   id: string
@@ -205,60 +204,52 @@ export default function AgentDashboard() {
     last30DaysCount: 0
   })
 
-  // Fetch real-time data from Firebase
+  // Fetch data from Supabase
   useEffect(() => {
-    const fetchRealTimeData = () => {
+    const fetchData = async () => {
       try {
-        const propertiesRef = collection(db, 'agent_properties')
-        const q = query(propertiesRef, orderBy('created_at', 'desc'))
+        const { data: rows, error: fetchError } = await supabase
+          .from('agent_properties')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (fetchError) throw fetchError
+
+        const propertiesData: AgentProperty[] = (rows || []).map((data: any) => ({
+          id: data.id,
+          title: data.title || '',
+          price: data.price || 0,
+          currency: data.currency || 'AED',
+          images: data.images || [],
+          beds: data.beds || 0,
+          baths: data.baths || 0,
+          sqft: data.sqft || 0,
+          area: data.area || '',
+          city: data.city || 'Dubai',
+          type: data.type || 'apartment',
+          published: data.published || false,
+          review_status: data.review_status || 'draft',
+          submitted_at: data.submitted_at,
+          created_at: data.created_at || new Date().toISOString(),
+          address: data.address || '',
+          description: data.description || '',
+          features: data.features || [],
+          status: data.status || 'sale',
+          property_status: data.property_status || 'ready',
+          furnished: data.furnished || false,
+          parking: data.parking || 'not-specified'
+        }))
         
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-          const propertiesData: AgentProperty[] = []
-          
-          snapshot.forEach((doc) => {
-            const data = doc.data()
-            propertiesData.push({
-              id: doc.id,
-              title: data.title || '',
-              price: data.price || 0,
-              currency: data.currency || 'AED',
-              images: data.images || [],
-              beds: data.beds || 0,
-              baths: data.baths || 0,
-              sqft: data.sqft || 0,
-              area: data.area || '',
-              city: data.city || 'Dubai',
-              type: data.type || 'apartment',
-              published: data.published || false,
-              review_status: data.review_status || 'draft',
-              submitted_at: data.submitted_at,
-              created_at: data.created_at?.toDate ? data.created_at.toDate().toISOString() : data.created_at || new Date().toISOString(),
-              address: data.address || '',
-              description: data.description || '',
-              features: data.features || [],
-              status: data.status || 'sale',
-              property_status: data.property_status || 'ready',
-              furnished: data.furnished || false,
-              parking: data.parking || 'not-specified'
-            })
-          })
-          
-          setProperties(propertiesData)
-          calculateStats(propertiesData)
-          setLoading(false)
-        }, (error) => {
-          console.error('Error fetching real-time data:', error)
-          setLoading(false)
-        })
-        
-        return unsubscribe
+        setProperties(propertiesData)
+        calculateStats(propertiesData)
+        setLoading(false)
       } catch (error) {
-        console.error('Error setting up real-time listener:', error)
+        console.error('Error fetching data:', error)
         setLoading(false)
       }
     }
 
-    fetchRealTimeData()
+    fetchData()
   }, [])
 
   // Calculate dashboard statistics

@@ -23,16 +23,8 @@ import {
   LinkIcon,
   PaperClipIcon
 } from '@heroicons/react/24/outline'
-// Firebase imports
-import { db } from '@/lib/firebase'
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit
-} from 'firebase/firestore'
+// Supabase imports
+import { supabase } from '@/lib/supabase-browser'
 import Head from 'next/head'
 import Header from '../layouts/Header'
 import AgentProperties from '@/components/AgentProperties'
@@ -83,76 +75,76 @@ interface Agent {
   properties?: Property[] // Added properties field
 }
 
-// Firebase se agent ki properties fetch karne ka function
+// Supabase se agent ki properties fetch karne ka function
 async function fetchAgentProperties(agentId: string): Promise<Property[]> {
   try {
     console.log(`Fetching properties for agent: ${agentId}`)
     
     const allProperties: Property[] = []
     
-    // 1. Pehle "properties" collection se fetch karein
+    // 1. Pehle "properties" table se fetch karein
     try {
-      const propertiesRef = collection(db, 'properties')
-      const q1 = query(
-        propertiesRef,
-        where('agent_id', '==', agentId),
-        where('published', '==', true),
-        limit(5)
-      )
+      const { data: propertiesData, error: propertiesError } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('agent_id', agentId)
+        .eq('published', true)
+        .limit(5)
       
-      const propertiesSnapshot = await getDocs(q1)
+      if (propertiesError) throw propertiesError
       
-      propertiesSnapshot.forEach((doc) => {
-        const data = doc.data()
-        allProperties.push({
-          id: doc.id,
-          title: data.title || 'Property',
-          price: data.price || 0,
-          type: data.type || 'Residential',
-          status: data.status || 'sale',
-          location: data.address || data.city || 'Dubai',
-          agent_id: data.agent_id || agentId,
-          property_type: data.property_type || data.type
+      if (propertiesData) {
+        propertiesData.forEach((item) => {
+          allProperties.push({
+            id: item.id,
+            title: item.title || 'Property',
+            price: item.price || 0,
+            type: item.type || 'Residential',
+            status: item.status || 'sale',
+            location: item.address || item.city || 'Dubai',
+            agent_id: item.agent_id || agentId,
+            property_type: item.type || 'Residential'
+          })
         })
-      })
+      }
       
-      console.log(`Found ${propertiesSnapshot.size} properties from properties collection`)
+      console.log(`Found ${propertiesData?.length || 0} properties from properties table`)
     } catch (error) {
-      console.error('Error fetching from properties collection:', error)
+      console.error('Error fetching from properties table:', error)
     }
     
-    // 2. Phir "agent_properties" collection se fetch karein
+    // 2. Phir "agent_properties" table se fetch karein
     try {
-      const agentPropertiesRef = collection(db, 'agent_properties')
-      const q2 = query(
-        agentPropertiesRef,
-        where('agent_id', '==', agentId),
-        where('published', '==', true),
-        limit(5)
-      )
+      const { data: agentPropertiesData, error: agentPropertiesError } = await supabase
+        .from('agent_properties')
+        .select('*')
+        .eq('agent_id', agentId)
+        .eq('published', true)
+        .limit(5)
       
-      const agentPropertiesSnapshot = await getDocs(q2)
+      if (agentPropertiesError) throw agentPropertiesError
       
-      agentPropertiesSnapshot.forEach((doc) => {
-        const data = doc.data()
-        allProperties.push({
-          id: doc.id,
-          title: data.title || 'Property',
-          price: data.price || 0,
-          type: data.type || 'Residential',
-          status: data.status || 'rent',
-          location: data.address || data.city || 'Dubai',
-          agent_id: data.agent_id || agentId,
-          property_type: data.type
+      if (agentPropertiesData) {
+        agentPropertiesData.forEach((item) => {
+          allProperties.push({
+            id: item.id,
+            title: item.title || 'Property',
+            price: item.price || 0,
+            type: item.type || 'Residential',
+            status: item.status || 'rent',
+            location: item.address || item.city || 'Dubai',
+            agent_id: item.agent_id || agentId,
+            property_type: item.type || 'Residential'
+          })
         })
-      })
+      }
       
-      console.log(`Found ${agentPropertiesSnapshot.size} properties from agent_properties collection`)
+      console.log(`Found ${agentPropertiesData?.length || 0} properties from agent_properties table`)
     } catch (error) {
-      console.error('Error fetching from agent_properties collection:', error)
+      console.error('Error fetching from agent_properties table:', error)
     }
     
-    // Remove duplicates agar same property dono collections mein ho
+    // Remove duplicates agar same property dono tables mein ho
     const uniqueProperties = allProperties.filter(
       (property, index, self) =>
         index === self.findIndex(p => p.id === property.id)
@@ -167,33 +159,31 @@ async function fetchAgentProperties(agentId: string): Promise<Property[]> {
   }
 }
 
-// Firebase se agents fetch karne ka function
+// Supabase se agents fetch karne ka function
 async function fetchRealAgents(): Promise<Agent[]> {
   try {
     console.log('loading agents ...')
-    const agentsRef = collection(db, 'agents')
     
     // Sirf approved agents fetch karo
-    const q = query(
-      agentsRef,
-      where('approved', '==', true),
-      limit(20)
-    )
+    const { data: queryData, error } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('approved', true)
+      .limit(20)
     
-    const querySnapshot = await getDocs(q)
+    if (error) throw error
     
     const agents: Agent[] = []
     
     // Pehle sab agents fetch karein
-    for (const doc of querySnapshot.docs) {
-      const data = doc.data()
-      const agentTitle = data.title || 'Real Estate Agent'
+    for (const item of (queryData || [])) {
+      const agentTitle = item.title || 'Real Estate Agent'
       
-      let profileImage = data.profile_image
+      let profileImage = item.profile_image
       
       // If no direct profile_image, check profile_images array
-      if (!profileImage && data.profile_images && Array.isArray(data.profile_images) && data.profile_images.length > 0) {
-        profileImage = data.profile_images[0]
+      if (!profileImage && item.profile_images && Array.isArray(item.profile_images) && item.profile_images.length > 0) {
+        profileImage = item.profile_images[0]
       }
       
       // If still no image, use initials placeholder
@@ -202,41 +192,41 @@ async function fetchRealAgents(): Promise<Agent[]> {
       }
       
       const agent: Agent = {
-        id: doc.id,
+        id: item.id,
         title: agentTitle,
-        bio: data.bio || null,
-        experience_years: data.experience_years || 0,
-        rating: data.rating || 0,
-        review_count: data.review_count || 0,
-        total_sales: data.total_sales || 0,
+        bio: item.bio || null,
+        experience_years: item.experience_years || 0,
+        rating: item.rating || 0,
+        review_count: item.review_count || 0,
+        total_sales: item.total_sales || 0,
         profile_image: profileImage,
-        created_at: data.created_at || new Date().toISOString(),
-        updated_at: data.updated_at || new Date().toISOString(),
-        office: data.office || 'Dubai',
-        license_no: data.license_no || '',
-        approved: data.approved || false,
-        brokerage: data.brokerage || 'RAGDOL',
-        certifications: data.certifications || [],
-        commission_rate: data.commission_rate || 2.5,
-        languages: data.languages || ['English', 'Arabic'],
-        areas: data.areas || ['Dubai'],
-        verified: data.verified || false,
-        user_id: data.user_id || doc.id,
-        whatsapp: data.whatsapp || null,
-        linkedin_url: data.linkedin_url || null,
-        instagram_handle: data.instagram_handle || null,
-        website_url: data.website_url || null,
-        location: data.location || 'Dubai',
-        profile_images: data.profile_images || [],
-        specializations: data.specializations || ['Residential Properties'],
-        telegram: data.telegram || null,
+        created_at: item.created_at || new Date().toISOString(),
+        updated_at: item.updated_at || new Date().toISOString(),
+        office: item.office || 'Dubai',
+        license_no: item.license_no || '',
+        approved: item.approved || false,
+        brokerage: item.brokerage || 'RAGDOL',
+        certifications: item.certifications || [],
+        commission_rate: item.commission_rate || 2.5,
+        languages: item.languages || ['English', 'Arabic'],
+        areas: item.areas || ['Dubai'],
+        verified: item.verified || false,
+        user_id: item.user_id || item.id,
+        whatsapp: item.whatsapp || null,
+        linkedin_url: item.linkedin_url || null,
+        instagram_handle: item.instagram_handle || null,
+        website_url: item.website_url || null,
+        location: item.location || 'Dubai',
+        profile_images: item.profile_images || [],
+        specializations: item.specializations || ['Residential Properties'],
+        telegram: item.telegram || null,
         properties: [] // Initially empty array
       }
       
       agents.push(agent)
     }
     
-    console.log(`Found ${agents.length} REAL approved agents from Firebase`)
+    console.log(`Found ${agents.length} REAL approved agents from Supabase`)
     
     // Ab har agent ke liye properties fetch karein (parallel mein)
     const agentsWithProperties = await Promise.all(
@@ -260,7 +250,7 @@ async function fetchRealAgents(): Promise<Agent[]> {
     return agentsWithProperties
     
   } catch (error) {
-    console.error('Error fetching real agents from Firebase:', error)
+    console.error('Error fetching real agents from Supabase:', error)
     return []
   }
 }
@@ -275,7 +265,7 @@ export default function AgentListClient() {
   const [showPropertiesModal, setShowPropertiesModal] = useState(false)
   const [selectedAgentForProperties, setSelectedAgentForProperties] = useState<Agent | null>(null)
 
-  // Firebase se agents fetch karo
+  // Supabase se agents fetch karo
   useEffect(() => {
     const loadAgents = async () => {
       setLoading(true)
@@ -750,12 +740,12 @@ export default function AgentListClient() {
                 <h3 className="text-2xl font-serif text-secondary mb-2">No Experts Found</h3>
                 <p className="text-slate-500 max-w-md mx-auto">
                   {agents.length === 0
-                    ? 'No approved agents found in Firebase. Add agents with "approved: true" to your database.'
+                    ? 'No approved agents found in database. Add agents with "approved: true" to your database.'
                     : 'We couldn\'t find any agents matching your current search criteria. Try adjusting your filters or search term.'}
                 </p>
                 {agents.length === 0 && (
                   <div className="mt-4 text-sm text-slate-400 space-y-1">
-                    <p>• Ensure agents have "approved: true" in Firebase</p>
+                    <p>• Ensure agents have "approved: true" in the database</p>
                     <p>• Add "title", "experience_years", and "specializations" fields</p>
                     <p>• Include "profile_image" or "profile_images" for agent photos</p>
                   </div>
@@ -769,7 +759,7 @@ export default function AgentListClient() {
               </div>
             )}
 
-            {/* Firebase Stats */}
+            {/* Database Stats */}
             {agents.length > 0 && (
               <div className="mt-12 pt-8 border-t border-slate-200">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

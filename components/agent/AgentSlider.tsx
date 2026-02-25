@@ -22,9 +22,8 @@ import {
   ChartBarIcon
 } from '@heroicons/react/24/outline'
 
-// Firebase imports
-import { db } from '@/lib/firebase'
-import { doc, getDoc } from 'firebase/firestore'
+// Supabase imports
+import { supabase } from '@/lib/supabase-browser'
 
 interface Agent {
   id: string
@@ -386,21 +385,25 @@ export default function AgentSlider({ agents, showCount = 4 }: AgentSliderProps)
     setTimeout(() => setIsTransitioning(false), 300)
   }
 
-  // Function to fetch complete agent details from Firebase
+  // Function to fetch complete agent details from Supabase
   const fetchAgentDetails = async (agentId: string) => {
     try {
       setLoadingDetails(true)
       console.log(`Fetching details for agent: ${agentId}`)
       
-      const docRef = doc(db, 'agents', agentId)
-      const docSnap = await getDoc(docRef)
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('id', agentId)
+        .single()
       
-      if (docSnap.exists()) {
-        const data = docSnap.data()
+      if (error) throw error
+      
+      if (data) {
         console.log('Agent details fetched:', data)
         
         const detailedAgent: Agent = {
-          id: docSnap.id,
+          id: data.id,
           title: data.title || null,
           bio: data.bio || null,
           experience_years: data.experience_years || null,

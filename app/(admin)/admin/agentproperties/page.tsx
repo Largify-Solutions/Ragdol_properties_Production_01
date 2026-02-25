@@ -1,36 +1,32 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { collection, getDocs, query, orderBy, updateDoc, doc, where } from 'firebase/firestore'
-import { db } from '@/lib/firebase'
+import { supabase } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 
 interface AgentProperty {
   id: string
   title: string
-  description: string
-  price: number
-  currency: string
-  status: 'sale' | 'rent' | 'sold' | 'rented'
-  review_status: 'pending_review' | 'approved' | 'rejected' | 'published'
-  published: boolean
-  type: string
-  beds: number
-  baths: number
-  sqft: number
-  city: string
-  area: string
-  address: string
-  property_status: string
-  furnished: boolean
-  parking: string
-  features: string[]
-  images: string[]
+  description: string | null
+  price: number | null
+  status: string | null
+  published: boolean | null
+  featured: boolean | null
+  type: string | null
+  beds: number | null
+  bathrooms: number | null
+  sqft: number | null
+  city: string | null
+  area: string | null
+  address: string | null
+  features: string[] | null
+  amenities: string[] | null
+  images: string[] | null
   agent_id: string
-  agent_name: string
-  created_at: string
-  updated_at: string
-  submitted_at: string
+  views_count: number | null
+  created_at: string | null
+  updated_at: string | null
+  submitted_at: string | null
 }
 
 interface Agent {
@@ -55,24 +51,21 @@ export default function AdminAgentProperties() {
     setLoading(true)
     try {
       // Fetch agent properties
-      const propertiesRef = collection(db, 'agent_properties')
-      let propertiesQuery = query(propertiesRef, orderBy('submitted_at', 'desc'))
-      
-      const propertiesSnapshot = await getDocs(propertiesQuery)
-      const propertiesData = propertiesSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as AgentProperty[]
+      const { data: propertiesRaw, error: propError } = await supabase
+        .from('agent_properties')
+        .select('*')
+        .order('submitted_at', { ascending: false })
+      if (propError) throw propError
+      const propertiesData = (propertiesRaw || []) as AgentProperty[]
       
       setProperties(propertiesData)
 
       // Fetch agents list
-      const agentsRef = collection(db, 'agents')
-      const agentsSnapshot = await getDocs(agentsRef)
-      const agentsData = agentsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Agent[]
+      const { data: agentsRaw, error: agentError } = await supabase
+        .from('agents')
+        .select('*')
+      if (agentError) throw agentError
+      const agentsData = (agentsRaw || []) as Agent[]
       
       setAgents(agentsData)
 
@@ -92,63 +85,21 @@ export default function AdminAgentProperties() {
     return () => clearInterval(interval)
   }, [])
 
-  const updatePropertyStatus = async (propertyId: string, status: 'approved' | 'rejected' | 'published', publish: boolean = false) => {
-    if (!confirm(`Are you sure you want to ${status} this property?`)) return
-    
-    setUpdating(propertyId)
-    try {
-      const propertyRef = doc(db, 'agent_properties', propertyId)
-      
-      await updateDoc(propertyRef, {
-        review_status: status,
-        published: publish,
-        updated_at: new Date().toISOString()
-      })
-
-      // Update local state
-      setProperties(prev => prev.map(prop => 
-        prop.id === propertyId 
-          ? { 
-              ...prop, 
-              review_status: status, 
-              published: publish,
-              updated_at: new Date().toISOString()
-            }
-          : prop
-      ))
-      
-      alert(`Property ${status} successfully!`)
-    } catch (error) {
-      console.error('Error updating property:', error)
-      alert('Error updating property status')
-    } finally {
-      setUpdating(null)
-    }
-  }
-
-  const updatePublishStatus = async (propertyId: string, publish: boolean) => {
-    const action = publish ? 'publish' : 'unpublish'
+  const updatePropertyStatus = async (propertyId: string, published: boolean) => {
+    const action = published ? 'publish' : 'unpublish'
     if (!confirm(`Are you sure you want to ${action} this property?`)) return
     
     setUpdating(propertyId)
     try {
-      const propertyRef = doc(db, 'agent_properties', propertyId)
-      
-      await updateDoc(propertyRef, {
-        published: publish,
-        review_status: publish ? 'published' : 'approved',
+      const { error } = await supabase.from('agent_properties').update({
+        published,
         updated_at: new Date().toISOString()
-      })
+      }).eq('id', propertyId)
+      if (error) throw error
 
-      // Update local state
       setProperties(prev => prev.map(prop => 
         prop.id === propertyId 
-          ? { 
-              ...prop, 
-              published: publish, 
-              review_status: publish ? 'published' : 'approved',
-              updated_at: new Date().toISOString()
-            }
+          ? { ...prop, published, updated_at: new Date().toISOString() }
           : prop
       ))
       
@@ -161,17 +112,37 @@ export default function AdminAgentProperties() {
     }
   }
 
+  const toggleFeatured = async (propertyId: string, featured: boolean) => {
+    setUpdating(propertyId)
+    try {
+      const { error } = await supabase.from('agent_properties').update({
+        featured,
+        updated_at: new Date().toISOString()
+      }).eq('id', propertyId)
+      if (error) throw error
+
+      setProperties(prev => prev.map(prop => 
+        prop.id === propertyId 
+          ? { ...prop, featured, updated_at: new Date().toISOString() }
+          : prop
+      ))
+    } catch (error) {
+      console.error('Error updating property:', error)
+    } finally {
+      setUpdating(null)
+    }
+  }
+
   const updateSaleStatus = async (propertyId: string, status: 'sale' | 'rent' | 'sold' | 'rented') => {
     if (!confirm(`Change property status to ${status}?`)) return
     
     setUpdating(propertyId)
     try {
-      const propertyRef = doc(db, 'agent_properties', propertyId)
-      
-      await updateDoc(propertyRef, {
+      const { error } = await supabase.from('agent_properties').update({
         status: status,
         updated_at: new Date().toISOString()
-      })
+      }).eq('id', propertyId)
+      if (error) throw error
 
       // Update local state
       setProperties(prev => prev.map(prop => 
@@ -195,16 +166,17 @@ export default function AdminAgentProperties() {
 
   // Filter properties
   const filteredProperties = properties.filter(property => {
-    // Filter by agent
     if (selectedAgent !== 'all' && property.agent_id !== selectedAgent) return false
     
-    // Filter by review status
-    if (selectedStatus !== 'all' && property.review_status !== selectedStatus) return false
+    if (selectedStatus !== 'all') {
+      if (selectedStatus === 'published' && !property.published) return false
+      if (selectedStatus === 'unpublished' && property.published) return false
+      if (selectedStatus === 'featured' && !property.featured) return false
+    }
     
-    // Filter by search term
-    if (searchTerm && !property.title.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !property.agent_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !property.city.toLowerCase().includes(searchTerm.toLowerCase())) {
+    if (searchTerm && !property.title?.toLowerCase().includes(searchTerm.toLowerCase()) && 
+        !(property.city || '').toLowerCase().includes(searchTerm.toLowerCase()) &&
+        !(property.area || '').toLowerCase().includes(searchTerm.toLowerCase())) {
       return false
     }
     
@@ -214,20 +186,9 @@ export default function AdminAgentProperties() {
   // Stats
   const stats = {
     total: properties.length,
-    pending: properties.filter(p => p.review_status === 'pending_review').length,
-    approved: properties.filter(p => p.review_status === 'approved').length,
     published: properties.filter(p => p.published).length,
-    rejected: properties.filter(p => p.review_status === 'rejected').length
-  }
-
-  const getStatusColor = (status: string) => {
-    const colors: { [key: string]: string } = {
-      'pending_review': 'bg-yellow-100 text-yellow-800',
-      'approved': 'bg-blue-100 text-blue-800',
-      'published': 'bg-green-100 text-green-800',
-      'rejected': 'bg-red-100 text-red-800'
-    }
-    return colors[status] || 'bg-gray-100 text-gray-800'
+    unpublished: properties.filter(p => !p.published).length,
+    featured: properties.filter(p => p.featured).length,
   }
 
   const getSaleStatusColor = (status: string) => {
@@ -272,24 +233,10 @@ export default function AdminAgentProperties() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white rounded-lg shadow p-4">
           <p className="text-sm text-gray-500">Total Properties</p>
           <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex items-center">
-            <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-            <p className="text-sm text-gray-500">Pending Review</p>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-4">
-          <div className="flex items-center">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-            <p className="text-sm text-gray-500">Approved</p>
-          </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.approved}</p>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center">
@@ -300,10 +247,17 @@ export default function AdminAgentProperties() {
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center">
-            <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
-            <p className="text-sm text-gray-500">Rejected</p>
+            <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+            <p className="text-sm text-gray-500">Unpublished</p>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{stats.rejected}</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.unpublished}</p>
+        </div>
+        <div className="bg-white rounded-lg shadow p-4">
+          <div className="flex items-center">
+            <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+            <p className="text-sm text-gray-500">Featured</p>
+          </div>
+          <p className="text-2xl font-bold text-gray-900">{stats.featured}</p>
         </div>
       </div>
 
@@ -349,10 +303,9 @@ export default function AdminAgentProperties() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">All Status</option>
-                <option value="pending_review">Pending Review</option>
-                <option value="approved">Approved</option>
                 <option value="published">Published</option>
-                <option value="rejected">Rejected</option>
+                <option value="unpublished">Unpublished</option>
+                <option value="featured">Featured</option>
               </select>
             </div>
 
@@ -399,7 +352,7 @@ export default function AdminAgentProperties() {
                   Status
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Review Status
+                  Published
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -442,13 +395,13 @@ export default function AdminAgentProperties() {
                             {property.title}
                           </h3>
                           <p className="text-sm text-gray-500 truncate">
-                            {property.type} • {property.beds} Beds • {property.baths} Baths
+                            {property.type || 'Property'} • {property.beds || 0} Beds • {property.bathrooms || 0} Baths
                           </p>
                           <p className="text-xs text-gray-400 truncate mt-1">
-                            {property.address || `${property.area}, ${property.city}`}
+                            {property.address || `${property.area || ''}, ${property.city || ''}`}
                           </p>
                           <p className="text-xs text-gray-400 mt-1">
-                            Submitted: {new Date(property.submitted_at).toLocaleDateString()}
+                            Submitted: {property.submitted_at ? new Date(property.submitted_at).toLocaleDateString() : 'N/A'}
                           </p>
                         </div>
                       </div>
@@ -457,7 +410,9 @@ export default function AdminAgentProperties() {
                     {/* Agent Info */}
                     <td className="px-6 py-4">
                       <div className="text-sm">
-                        <p className="font-medium text-gray-900">{property.agent_name}</p>
+                        <p className="font-medium text-gray-900">
+                          {agents.find(a => a.id === property.agent_id)?.title || 'Unknown Agent'}
+                        </p>
                         <p className="text-gray-500 text-xs">ID: {property.agent_id.substring(0, 8)}...</p>
                         <p className="text-gray-400 text-xs mt-1">
                           {agents.find(a => a.id === property.agent_id)?.brokerage || 'Unknown Brokerage'}
@@ -469,10 +424,10 @@ export default function AdminAgentProperties() {
                     <td className="px-6 py-4">
                       <div className="text-sm">
                         <p className="font-bold text-gray-900">
-                          {property.price.toLocaleString()} {property.currency}
+                          AED {(property.price || 0).toLocaleString()}
                         </p>
-                        <span className={`inline-flex text-xs px-2 py-1 rounded-full mt-1 ${getSaleStatusColor(property.status)}`}>
-                          {property.status.toUpperCase()}
+                        <span className={`inline-flex text-xs px-2 py-1 rounded-full mt-1 ${getSaleStatusColor(property.status || '')}`}>
+                          {(property.status || 'N/A').toUpperCase()}
                         </span>
                       </div>
                     </td>
@@ -480,7 +435,7 @@ export default function AdminAgentProperties() {
                     {/* Sale Status */}
                     <td className="px-6 py-4">
                       <select
-                        value={property.status}
+                        value={property.status || 'sale'}
                         onChange={(e) => updateSaleStatus(property.id, e.target.value as any)}
                         disabled={updating === property.id}
                         className={`text-sm border rounded-md px-2 py-1 ${updating === property.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
@@ -495,66 +450,45 @@ export default function AdminAgentProperties() {
                       )}
                     </td>
 
-                    {/* Review Status */}
+                    {/* Published Status */}
                     <td className="px-6 py-4">
-                      <span className={`inline-flex text-xs font-medium px-2 py-1 rounded-full ${getStatusColor(property.review_status)}`}>
-                        {property.review_status.replace('_', ' ').toUpperCase()}
+                      <span className={`inline-flex text-xs font-medium px-2 py-1 rounded-full ${property.published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        {property.published ? 'PUBLISHED' : 'DRAFT'}
                       </span>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {property.property_status || 'Not specified'}
-                      </p>
+                      {property.featured && (
+                        <span className="inline-flex text-xs font-medium px-2 py-1 rounded-full bg-purple-100 text-purple-800 ml-1">
+                          FEATURED
+                        </span>
+                      )}
                     </td>
 
                     {/* Actions */}
                     <td className="px-6 py-4">
                       <div className="flex flex-col space-y-2">
-                        {property.review_status === 'pending_review' && (
-                          <>
-                            <button
-                              onClick={() => updatePropertyStatus(property.id, 'approved')}
-                              disabled={updating === property.id}
-                              className="text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-                            >
-                              {updating === property.id ? 'Processing...' : 'Approve'}
-                            </button>
-                            <button
-                              onClick={() => updatePropertyStatus(property.id, 'rejected')}
-                              disabled={updating === property.id}
-                              className="text-sm px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
-                            >
-                              {updating === property.id ? 'Processing...' : 'Reject'}
-                            </button>
-                          </>
-                        )}
-
-                        {property.review_status === 'approved' && !property.published && (
+                        {!property.published ? (
                           <button
-                            onClick={() => updatePublishStatus(property.id, true)}
+                            onClick={() => updatePropertyStatus(property.id, true)}
                             disabled={updating === property.id}
                             className="text-sm px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
                           >
                             {updating === property.id ? 'Processing...' : 'Publish'}
                           </button>
-                        )}
-
-                        {property.published && (
+                        ) : (
                           <button
-                            onClick={() => updatePublishStatus(property.id, false)}
+                            onClick={() => updatePropertyStatus(property.id, false)}
                             disabled={updating === property.id}
                             className="text-sm px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50"
                           >
                             {updating === property.id ? 'Processing...' : 'Unpublish'}
                           </button>
                         )}
-
-                        {(property.review_status === 'rejected' || property.review_status === 'approved') && (
-                          <button
-                            onClick={() => router.push(`/admin/agent-properties/${property.id}`)}
-                            className="text-sm px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-                          >
-                            View Details
-                          </button>
-                        )}
+                        <button
+                          onClick={() => toggleFeatured(property.id, !property.featured)}
+                          disabled={updating === property.id}
+                          className="text-sm px-3 py-1 bg-purple-100 text-purple-700 rounded hover:bg-purple-200 disabled:opacity-50"
+                        >
+                          {property.featured ? 'Unfeature' : 'Feature'}
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -575,57 +509,51 @@ export default function AdminAgentProperties() {
         </div>
       </div>
 
-      {/* Bulk Actions (Optional) */}
+      {/* Bulk Actions */}
       <div className="mt-8 bg-white rounded-xl shadow p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Bulk Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button
-            onClick={() => {
-              const pendingProperties = properties.filter(p => p.review_status === 'pending_review')
-              if (pendingProperties.length === 0) {
-                alert('No pending properties to approve')
+            onClick={async () => {
+              const unpublished = properties.filter(p => !p.published)
+              if (unpublished.length === 0) {
+                alert('No unpublished properties')
                 return
               }
-              if (confirm(`Approve all ${pendingProperties.length} pending properties?`)) {
-                // Implement bulk approval logic
-                alert('Bulk approval feature would be implemented here')
-              }
-            }}
-            className="px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100"
-          >
-            Approve All Pending ({stats.pending})
-          </button>
-          <button
-            onClick={() => {
-              const approvedProperties = properties.filter(p => p.review_status === 'approved' && !p.published)
-              if (approvedProperties.length === 0) {
-                alert('No approved properties to publish')
-                return
-              }
-              if (confirm(`Publish all ${approvedProperties.length} approved properties?`)) {
-                // Implement bulk publish logic
-                alert('Bulk publish feature would be implemented here')
+              if (confirm(`Publish all ${unpublished.length} unpublished properties?`)) {
+                for (const prop of unpublished) {
+                  await supabase.from('agent_properties').update({ published: true }).eq('id', prop.id)
+                }
+                fetchAgentProperties()
               }
             }}
             className="px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100"
           >
-            Publish All Approved ({properties.filter(p => p.review_status === 'approved' && !p.published).length})
+            Publish All Unpublished ({stats.unpublished})
           </button>
           <button
-            onClick={() => {
-              const allProperties = properties.filter(p => p.published)
-              if (allProperties.length === 0) {
+            onClick={async () => {
+              const published = properties.filter(p => p.published)
+              if (published.length === 0) {
                 alert('No published properties to unpublish')
                 return
               }
-              if (confirm(`Unpublish all ${allProperties.length} published properties?`)) {
-                // Implement bulk unpublish logic
-                alert('Bulk unpublish feature would be implemented here')
+              if (confirm(`Unpublish all ${published.length} published properties?`)) {
+                for (const prop of published) {
+                  await supabase.from('agent_properties').update({ published: false }).eq('id', prop.id)
+                }
+                fetchAgentProperties()
               }
             }}
             className="px-4 py-3 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100"
           >
             Unpublish All ({stats.published})
+          </button>
+          <button
+            onClick={() => fetchAgentProperties()}
+            className="px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100"
+          >
+            🔄 Refresh All
           </button>
         </div>
       </div>
@@ -635,20 +563,16 @@ export default function AdminAgentProperties() {
         <h4 className="text-sm font-medium text-gray-900 mb-3">Status Legend:</h4>
         <div className="flex flex-wrap gap-3">
           <div className="flex items-center">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-            <span className="text-sm text-gray-600">Pending Review</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-            <span className="text-sm text-gray-600">Approved (Not Published)</span>
-          </div>
-          <div className="flex items-center">
             <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-            <span className="text-sm text-gray-600">Published on Site</span>
+            <span className="text-sm text-gray-600">Published</span>
           </div>
           <div className="flex items-center">
-            <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-            <span className="text-sm text-gray-600">Rejected</span>
+            <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+            <span className="text-sm text-gray-600">Draft (Unpublished)</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
+            <span className="text-sm text-gray-600">Featured</span>
           </div>
         </div>
       </div>

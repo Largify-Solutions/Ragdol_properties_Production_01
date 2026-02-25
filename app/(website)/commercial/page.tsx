@@ -61,19 +61,8 @@ import { BathIcon, BedIcon, CarIcon } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-// Firebase imports
-import { db } from '@/lib/firebase'
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  doc,
-  getDoc,
-  addDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
+// Supabase imports
+import { supabase } from '@/lib/supabase-browser'
 
 // Import jsPDF for PDF generation
 import jsPDF from 'jspdf';
@@ -584,11 +573,14 @@ function FloorPlanForm({
         const agentId = property.agent_id;
 
         if (agentId) {
-          const agentDocRef = doc(db, "agents", agentId);
-          const agentDoc = await getDoc(agentDocRef);
+          const { data: agentDoc, error } = await supabase
+            .from('agents')
+            .select('*')
+            .eq('id', agentId)
+            .single();
 
-          if (agentDoc.exists()) {
-            const data = agentDoc.data() as AgentData;
+          if (agentDoc && !error) {
+            const data = agentDoc as AgentData;
             setAgentData(data);
             setAgentLoading(false);
             return;
@@ -597,13 +589,13 @@ function FloorPlanForm({
 
         const agentName = property.agent_name;
         if (agentName) {
-          const agentsRef = collection(db, "agents");
-          const q = query(agentsRef, where("title", "==", agentName));
-          const querySnapshot = await getDocs(q);
+          const { data: agents, error } = await supabase
+            .from('agents')
+            .select('*')
+            .eq('title', agentName);
 
-          if (!querySnapshot.empty) {
-            const doc = querySnapshot.docs[0];
-            const data = doc.data() as AgentData;
+          if (agents && agents.length > 0) {
+            const data = agents[0] as AgentData;
             setAgentData(data);
           } else {
             setAgentData({
@@ -682,18 +674,20 @@ function FloorPlanForm({
 
     try {
       const floorplanData = {
-        ...formData,
+        name: (formData as any).fullName || (formData as any).name || 'Unknown',
+        email: formData.email || '',
+        phone: (formData as any).phoneNumber || (formData as any).phone || null,
         property_id: property.id,
         property_title: property.title,
-        property_price: property.price,
-        property_location: property.location,
-        submitted_at: serverTimestamp(),
-        download_requested: true,
-        status: "pending",
+        source: 'floorplan_request',
+        status: 'pending',
+        message: `Floor plan request for ${property.title} at ${property.location}`,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
-      await addDoc(collection(db, "floorplans"), floorplanData);
-      console.log("✅ Floor plan request saved to Firebase");
+      await supabase.from('request_information').insert(floorplanData as any);
+      console.log("✅ Floor plan request saved to Supabase");
       generatePDF();
       setSubmitted(true);
       setTimeout(() => {
@@ -1594,11 +1588,14 @@ useEffect(() => {
 
       if (agentId) {
         // Direct agent_id se fetch karen
-        const agentDocRef = doc(db, "agents", agentId);
-        const agentDoc = await getDoc(agentDocRef);
+        const { data: agentDoc, error } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('id', agentId)
+          .single();
 
-        if (agentDoc.exists()) {
-          const data = agentDoc.data() as AgentData;
+        if (agentDoc && !error) {
+          const data = agentDoc as AgentData;
           console.log("Agent data found by ID:", data);
           setAgentData(data);
           setAgentLoading(false);
@@ -1610,13 +1607,13 @@ useEffect(() => {
       const agentName = property?.agent_name;
       if (agentName) {
         console.log("Searching agent by name:", agentName);
-        const agentsRef = collection(db, "agents");
-        const q = query(agentsRef, where("title", "==", agentName));
-        const querySnapshot = await getDocs(q);
+        const { data: agents, error } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('title', agentName);
 
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          const data = doc.data() as AgentData;
+        if (agents && agents.length > 0) {
+          const data = agents[0] as AgentData;
           console.log("Agent found by name:", data);
           setAgentData(data);
         } else {
@@ -1683,11 +1680,14 @@ useEffect(() => {
       
       // Agar agent_id hai to direct fetch karein
       if (property.agent_id) {
-        const agentDocRef = doc(db, "agents", property.agent_id);
-        const agentDoc = await getDoc(agentDocRef);
+        const { data: agentDoc, error } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('id', property.agent_id)
+          .single();
         
-        if (agentDoc.exists()) {
-          const data = agentDoc.data() as AgentData;
+        if (agentDoc && !error) {
+          const data = agentDoc as AgentData;
           setAgentPopupData({
             id: agentDoc.id,
             ...data
@@ -1701,15 +1701,15 @@ useEffect(() => {
       
       // Agar agent_id nahi hai to agent_name se search karein
       if (property.agent_name) {
-        const agentsRef = collection(db, "agents");
-        const q = query(agentsRef, where("title", "==", property.agent_name));
-        const querySnapshot = await getDocs(q);
+        const { data: agents, error } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('title', property.agent_name);
         
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          const data = doc.data() as AgentData;
+        if (agents && agents.length > 0) {
+          const data = agents[0] as AgentData;
           setAgentPopupData({
-            id: doc.id,
+            id: agents[0].id,
             ...data
           });
           setShowAgentPopup(true);
@@ -2465,15 +2465,18 @@ async function fetchPropertyDetails(
   collectionName: string
 ): Promise<Record<string, any> | null> {
   try {
-    const docRef = doc(db, collectionName, propertyId);
-    const docSnap = await getDoc(docRef);
+    const { data: docSnap, error } = await supabase
+      .from(collectionName as any)
+      .select('*')
+      .eq('id', propertyId)
+      .single();
 
-    if (docSnap.exists()) {
-      const data = docSnap.data();
+    if (docSnap && !error) {
+      const doc = docSnap as any
       return {
-        id: docSnap.id,
+        id: doc.id,
         collection: collectionName,
-        ...data,
+        ...doc,
       };
     } else {
       return null;
@@ -2487,22 +2490,17 @@ async function fetchPropertyDetails(
 // Function to fetch ALL properties from 'properties' collection (NO FILTERS)
 async function fetchAllPropertiesFromMainCollection() {
   try {
-    const propertiesRef = collection(db, 'properties');
+    const { data: propertiesData, error } = await supabase
+      .from('properties')
+      .select('*');
     
-    // NO WHERE CLAUSE - fetch ALL properties
-    const q = query(propertiesRef);
+    if (error) throw error;
     
-    const querySnapshot = await getDocs(q);
-    
-    const properties: any[] = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      properties.push({
-        id: doc.id,
-        collection: 'properties',
-        ...data
-      });
-    });
+    const properties = (propertiesData || []).map((item: any) => ({
+      id: item.id,
+      collection: 'properties',
+      ...item
+    }));
     
     return properties;
     
@@ -2515,22 +2513,17 @@ async function fetchAllPropertiesFromMainCollection() {
 // Function to fetch ALL properties from 'agent_properties' collection
 async function fetchAllPropertiesFromAgentCollection() {
   try {
-    const agentPropertiesRef = collection(db, 'agent_properties');
+    const { data: propertiesData, error } = await supabase
+      .from('agent_properties')
+      .select('*');
     
-    // NO WHERE CLAUSE - fetch ALL published properties
-    const q = query(agentPropertiesRef);
+    if (error) throw error;
     
-    const querySnapshot = await getDocs(q);
-    
-    const properties: any[] = [];
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      properties.push({
-        id: doc.id,
-        collection: 'agent_properties',
-        ...data
-      });
-    });
+    const properties = (propertiesData || []).map((item: any) => ({
+      id: item.id,
+      collection: 'agent_properties',
+      ...item
+    }));
     
     return properties;
     

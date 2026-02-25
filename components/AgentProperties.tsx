@@ -2,13 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { db } from '@/lib/firebase'
-import { 
-  collection, 
-  getDocs, 
-  query, 
-  where 
-} from 'firebase/firestore'
+import { supabase } from '@/lib/supabase-browser'
 
 interface Property {
   id: string
@@ -48,80 +42,80 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
       setLoading(true)
       const allProperties: Property[] = []
       
-      // 1. Fetch from "properties" collection
+      // 1. Fetch from "properties" table
       try {
-        const propertiesRef = collection(db, 'properties')
-        const q1 = query(
-          propertiesRef,
-          where('agent_id', '==', agentId),
-          where('published', '==', true)
-        )
+        const { data: propertiesData, error: propertiesError } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('agent_id', agentId)
+          .eq('published', true)
         
-        const propertiesSnapshot = await getDocs(q1)
+        if (propertiesError) throw propertiesError
         
-        propertiesSnapshot.forEach((doc) => {
-          const data = doc.data()
-          allProperties.push({
-            id: doc.id,
-            title: data.title || 'Property',
-            price: data.price || 0,
-            type: data.type || 'Residential',
-            status: data.status || 'sale',
-            location: data.address || data.city || 'Dubai',
-            agent_id: data.agent_id || agentId,
-            property_type: data.property_type || data.type,
-            beds: data.beds || data.bedrooms || 0,
-            baths: data.baths || data.bathrooms || 0,
-            area: data.area || data.sqft || 0,
-            main_image: data.main_image || (data.images && data.images[0]) || '',
-            images: data.images || [],
-            address: data.address,
-            city: data.city,
-            description: data.description
+        if (propertiesData) {
+          propertiesData.forEach((data) => {
+            allProperties.push({
+              id: data.id,
+              title: data.title || 'Property',
+              price: data.price || 0,
+              type: data.type || 'Residential',
+              status: data.status || 'sale',
+              location: data.address || data.city || 'Dubai',
+              agent_id: data.agent_id || agentId,
+              property_type: data.type || 'Residential',
+              beds: data.beds || 0,
+              baths: data.baths || 0,
+              area: Number(data.area) || 0,
+              main_image: data.image_url || (data.images && data.images[0]) || '',
+              images: data.images || [],
+              address: data.address || undefined,
+              city: data.city || undefined,
+              description: data.description || undefined
+            })
           })
-        })
+        }
         
-        console.log(`Found ${propertiesSnapshot.size} properties from properties collection`)
+        console.log(`Found ${propertiesData?.length || 0} properties from properties table`)
       } catch (error) {
-        console.error('Error fetching from properties collection:', error)
+        console.error('Error fetching from properties table:', error)
       }
       
-      // 2. Fetch from "agent_properties" collection
+      // 2. Fetch from "agent_properties" table
       try {
-        const agentPropertiesRef = collection(db, 'agent_properties')
-        const q2 = query(
-          agentPropertiesRef,
-          where('agent_id', '==', agentId),
-          where('published', '==', true)
-        )
+        const { data: agentPropertiesData, error: agentPropertiesError } = await supabase
+          .from('agent_properties')
+          .select('*')
+          .eq('agent_id', agentId)
+          .eq('published', true)
         
-        const agentPropertiesSnapshot = await getDocs(q2)
+        if (agentPropertiesError) throw agentPropertiesError
         
-        agentPropertiesSnapshot.forEach((doc) => {
-          const data = doc.data()
-          allProperties.push({
-            id: doc.id,
-            title: data.title || 'Property',
-            price: data.price || 0,
-            type: data.type || 'Residential',
-            status: data.status || 'rent',
-            location: data.address || data.city || 'Dubai',
-            agent_id: data.agent_id || agentId,
-            property_type: data.type,
-            beds: data.beds || 0,
-            baths: data.baths || 0,
-            area: data.area || data.sqft || 0,
-            main_image: (data.images && data.images[0]) || '',
-            images: data.images || [],
-            address: data.address,
-            city: data.city,
-            description: data.description
+        if (agentPropertiesData) {
+          agentPropertiesData.forEach((data) => {
+            allProperties.push({
+              id: data.id,
+              title: data.title || 'Property',
+              price: data.price || 0,
+              type: data.type || 'Residential',
+              status: data.status || 'rent',
+              location: data.address || data.city || 'Dubai',
+              agent_id: data.agent_id || agentId,
+              property_type: data.type || undefined,
+              beds: data.beds || 0,
+              baths: data.bathrooms || 0,
+              area: Number(data.sqft) || 0,
+              main_image: (data.images && data.images[0]) || '',
+              images: data.images || [],
+              address: data.address || undefined,
+              city: data.city || undefined,
+              description: data.description || undefined
+            })
           })
-        })
+        }
         
-        console.log(`Found ${agentPropertiesSnapshot.size} properties from agent_properties collection`)
+        console.log(`Found ${agentPropertiesData?.length || 0} properties from agent_properties table`)
       } catch (error) {
-        console.error('Error fetching from agent_properties collection:', error)
+        console.error('Error fetching from agent_properties table:', error)
       }
       
       // Remove duplicates

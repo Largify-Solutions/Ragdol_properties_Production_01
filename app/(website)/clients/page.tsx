@@ -6,17 +6,8 @@ import { StarIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
 
-// Firebase imports
-import { db } from '@/lib/firebase'
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  addDoc,
-  serverTimestamp,
-  limit
-} from 'firebase/firestore'
+// Supabase import
+import { supabase } from '@/lib/supabase-browser'
 
 // Testimonial Interface
 interface Testimonial {
@@ -72,38 +63,39 @@ function ReviewSubmissionModal({ isOpen, onClose }: { isOpen: boolean; onClose: 
     setError('')
 
     try {
-      // Submit to Firebase request_information collection
-      await addDoc(collection(db, 'request_information'), {
-        type: 'testimonial_submission',
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim() || '',
-        company: formData.company.trim() || '',
-        position: formData.position.trim() || '',
-        message: formData.message.trim(),
-        rating: formData.rating,
-        status: 'pending',
-        approved: false,
-        featured: false,
-        source: 'testimonials_page',
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      })
+      // Submit to Supabase inquiries table
+      const { error: inquiryError } = await supabase
+        .from('inquiries')
+        .insert({
+          inquiry_type: 'testimonial_submission',
+          client_name: formData.name.trim(),
+          client_email: formData.email.trim(),
+          client_phone: formData.phone.trim() || '',
+          message: formData.message.trim(),
+          status: 'pending',
+          source: 'testimonials_page',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
 
-      // Also submit to testimonials collection for admin review
-      await addDoc(collection(db, 'testimonials'), {
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        company: formData.company.trim() || '',
-        position: formData.position.trim() || '',
-        message: formData.message.trim(),
-        rating: formData.rating,
-        approved: false, // Admin needs to approve
-        featured: false,
-        source: 'user_submission',
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      })
+      if (inquiryError) throw inquiryError;
+
+      // Also submit to testimonials table for admin review
+      const { error: testimonialError } = await supabase
+        .from('testimonials')
+        .insert({
+          name: formData.name.trim(),
+          company: formData.company.trim() || '',
+          role: formData.position.trim() || '',
+          content: formData.message.trim(),
+          rating: formData.rating,
+          is_active: false, // Admin needs to approve
+          is_featured: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+
+      if (testimonialError) throw testimonialError;
 
       setSuccess(true)
       
@@ -309,112 +301,54 @@ function ReviewSubmissionModal({ isOpen, onClose }: { isOpen: boolean; onClose: 
   )
 }
 
-// Fetch Testimonials from Firebase
+// Fetch Testimonials from Supabase
 async function fetchTestimonials(): Promise<Testimonial[]> {
   try {
-    console.log('Fetching testimonials from Firebase...')
-    const testimonialsRef = collection(db, 'testimonials')
+    console.log('Fetching testimonials from Supabase...')
     
-    // Method 1: Try simple query first (no orderBy to avoid index requirement)
-    try {
-      const q = query(
-        testimonialsRef,
-        where('approved', '==', true),
-        limit(20)
-      )
+    const { data, error } = await supabase
+      .from('testimonials')
+      .select('*')
+      .eq('is_active', true)
+      .limit(20);
+    
+    if (error) throw error;
+    
+    const testimonials: Testimonial[] = (data || []).map((row: any) => {
+      const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(row.name || 'Client')}&background=random&color=fff&bold=true`
       
-      const querySnapshot = await getDocs(q)
+      return {
+        id: row.id,
+        name: row.name || 'Anonymous Client',
+        position: row.role || '',
+        company: row.company || '',
+        email: '',
+        message: row.content || '',
+        rating: row.rating || 5,
+        featured: row.is_featured || false,
+        approved: row.is_active || false,
+        createdAt: row.created_at || '',
+        updatedAt: row.updated_at || '',
+        avatar: row.avatar_url || avatarUrl
+      }
+    });
+    
+    console.log(`Found ${testimonials.length} testimonials`)
+    
+    const sortedTestimonials = testimonials.sort((a, b) => {
+      if (a.featured && !b.featured) return -1
+      if (!a.featured && b.featured) return 1
       
-      const testimonials: Testimonial[] = []
-      
-      querySnapshot.forEach((doc) => {
-        const data = doc.data()
-        
-        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'Client')}&background=random&color=fff&bold=true`
-        
-        testimonials.push({
-          id: doc.id,
-          name: data.name || 'Anonymous Client',
-          position: data.position || '',
-          company: data.company || '',
-          email: data.email || '',
-          message: data.message || '',
-          rating: data.rating || 5,
-          featured: data.featured || false,
-          approved: data.approved || false,
-          createdAt: data.createdAt || '',
-          updatedAt: data.updatedAt || '',
-          avatar: avatarUrl
-        })
-      })
-      
-      console.log(`Found ${testimonials.length} testimonials`)
-      
-      const approvedTestimonials = testimonials.filter(t => t.approved === true)
-      console.log(`Approved testimonials: ${approvedTestimonials.length}`)
-      
-      const sortedTestimonials = approvedTestimonials.sort((a, b) => {
-        if (a.featured && !b.featured) return -1
-        if (!a.featured && b.featured) return 1
-        
-        try {
-          const dateA = a.createdAt?.seconds || (a.createdAt ? new Date(a.createdAt).getTime() / 1000 : 0)
-          const dateB = b.createdAt?.seconds || (b.createdAt ? new Date(b.createdAt).getTime() / 1000 : 0)
-          return dateB - dateA
-        } catch {
-          return 0
-        }
-      })
-      
-      return sortedTestimonials
-      
-    } catch (error) {
-      console.log('Simple query failed, trying without where clause...', error)
-      
-      const allDocs = await getDocs(testimonialsRef)
-      console.log(`Total documents: ${allDocs.size}`)
-      
-      const allTestimonials: Testimonial[] = []
-      
-      allDocs.forEach((doc) => {
-        const data = doc.data()
-        
-        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || 'Client')}&background=random&color=fff&bold=true`
-        
-        allTestimonials.push({
-          id: doc.id,
-          name: data.name || 'Anonymous Client',
-          position: data.position || '',
-          company: data.company || '',
-          email: data.email || '',
-          message: data.message || '',
-          rating: data.rating || 5,
-          featured: data.featured || false,
-          approved: data.approved === true,
-          createdAt: data.createdAt || '',
-          updatedAt: data.updatedAt || '',
-          avatar: avatarUrl
-        })
-      })
-      
-      const approvedTestimonials = allTestimonials.filter(t => t.approved === true)
-      
-      const sortedTestimonials = approvedTestimonials.sort((a, b) => {
-        if (a.featured && !b.featured) return -1
-        if (!a.featured && b.featured) return 1
-        
-        try {
-          const dateA = a.createdAt?.seconds || (a.createdAt ? new Date(a.createdAt).getTime() / 1000 : 0)
-          const dateB = b.createdAt?.seconds || (b.createdAt ? new Date(b.createdAt).getTime() / 1000 : 0)
-          return dateB - dateA
-        } catch {
-          return 0
-        }
-      })
-      
-      console.log(`Client-side filtered: ${sortedTestimonials.length} approved testimonials`)
-      return sortedTestimonials
-    }
+      try {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() / 1000 : 0
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() / 1000 : 0
+        return dateB - dateA
+      } catch {
+        return 0
+      }
+    })
+    
+    return sortedTestimonials
     
   } catch (error) {
     console.error('Error fetching testimonials:', error)
@@ -507,7 +441,7 @@ export default function TestimonialsPage() {
         
       } catch (error) {
         console.error('Error loading testimonials:', error)
-        setFirebaseError('Unable to load testimonials from Firebase. Showing demo data.')
+        setFirebaseError('Unable to load testimonials from database. Showing demo data.')
         const demoData = getDemoTestimonials()
         setTestimonials(demoData)
         
@@ -659,7 +593,7 @@ export default function TestimonialsPage() {
           {loading ? (
             <div className="text-center py-20">
               <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent mb-6"></div>
-              <p className="text-lg text-slate-600">Loading testimonials from Firebase...</p>
+              <p className="text-lg text-slate-600">Loading testimonials...</p>
               <p className="text-sm text-slate-400 mt-2">Fetching real-time client feedback</p>
             </div>
           ) : firebaseError ? (
@@ -669,7 +603,7 @@ export default function TestimonialsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-slate-700 mb-2">Firebase Connection Issue</h3>
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">Database Connection Issue</h3>
               <p className="text-slate-600 mb-4">{firebaseError}</p>
               <p className="text-sm text-slate-500">Showing demo testimonials</p>
             </div>
