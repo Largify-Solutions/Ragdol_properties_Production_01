@@ -6,8 +6,9 @@
 
 -- ---------------------
 -- Helper function: check if current user is an admin
+-- Must live in public schema (auth schema is restricted in Supabase)
 -- ---------------------
-CREATE OR REPLACE FUNCTION auth.is_admin()
+CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS boolean AS $$
   SELECT EXISTS (
     SELECT 1 FROM public.profiles
@@ -21,8 +22,8 @@ $$ LANGUAGE sql SECURITY DEFINER STABLE;
 DROP POLICY IF EXISTS "admin_full_access_properties" ON public.properties;
 CREATE POLICY "admin_full_access_properties" ON public.properties
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "public_read_published_properties" ON public.properties;
 CREATE POLICY "public_read_published_properties" ON public.properties
@@ -35,8 +36,8 @@ CREATE POLICY "public_read_published_properties" ON public.properties
 DROP POLICY IF EXISTS "admin_full_access_profiles" ON public.profiles;
 CREATE POLICY "admin_full_access_profiles" ON public.profiles
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "users_read_own_profile" ON public.profiles;
 CREATE POLICY "users_read_own_profile" ON public.profiles
@@ -55,8 +56,8 @@ CREATE POLICY "users_update_own_profile" ON public.profiles
 DROP POLICY IF EXISTS "admin_full_access_agents" ON public.agents;
 CREATE POLICY "admin_full_access_agents" ON public.agents
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "public_read_approved_agents" ON public.agents;
 CREATE POLICY "public_read_approved_agents" ON public.agents
@@ -75,8 +76,8 @@ CREATE POLICY "agents_manage_own" ON public.agents
 DROP POLICY IF EXISTS "admin_full_access_enquiries" ON public.enquiries;
 CREATE POLICY "admin_full_access_enquiries" ON public.enquiries
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "anyone_can_create_enquiry" ON public.enquiries;
 CREATE POLICY "anyone_can_create_enquiry" ON public.enquiries
@@ -94,8 +95,8 @@ CREATE POLICY "users_read_own_enquiries" ON public.enquiries
 DROP POLICY IF EXISTS "admin_full_access_projects" ON public.projects;
 CREATE POLICY "admin_full_access_projects" ON public.projects
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "public_read_published_projects" ON public.projects;
 CREATE POLICY "public_read_published_projects" ON public.projects
@@ -108,8 +109,8 @@ CREATE POLICY "public_read_published_projects" ON public.projects
 DROP POLICY IF EXISTS "admin_full_access_valuations" ON public.property_valuations;
 CREATE POLICY "admin_full_access_valuations" ON public.property_valuations
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "anyone_can_submit_valuation" ON public.property_valuations;
 CREATE POLICY "anyone_can_submit_valuation" ON public.property_valuations
@@ -127,8 +128,8 @@ CREATE POLICY "users_read_own_valuations" ON public.property_valuations
 DROP POLICY IF EXISTS "admin_full_access_questions" ON public.customer_questions;
 CREATE POLICY "admin_full_access_questions" ON public.customer_questions
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "anyone_can_ask_question" ON public.customer_questions;
 CREATE POLICY "anyone_can_ask_question" ON public.customer_questions
@@ -141,8 +142,8 @@ CREATE POLICY "anyone_can_ask_question" ON public.customer_questions
 DROP POLICY IF EXISTS "admin_full_access_posts" ON public.posts;
 CREATE POLICY "admin_full_access_posts" ON public.posts
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "public_read_published_posts" ON public.posts;
 CREATE POLICY "public_read_published_posts" ON public.posts
@@ -155,8 +156,8 @@ CREATE POLICY "public_read_published_posts" ON public.posts
 DROP POLICY IF EXISTS "admin_full_access_categories" ON public.categories;
 CREATE POLICY "admin_full_access_categories" ON public.categories
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "public_read_categories" ON public.categories;
 CREATE POLICY "public_read_categories" ON public.categories
@@ -169,8 +170,8 @@ CREATE POLICY "public_read_categories" ON public.categories
 DROP POLICY IF EXISTS "admin_full_access_download_interests" ON public.download_interests;
 CREATE POLICY "admin_full_access_download_interests" ON public.download_interests
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "anyone_can_submit_interest" ON public.download_interests;
 CREATE POLICY "anyone_can_submit_interest" ON public.download_interests
@@ -183,8 +184,8 @@ CREATE POLICY "anyone_can_submit_interest" ON public.download_interests
 DROP POLICY IF EXISTS "admin_full_access_saved_properties" ON public.saved_properties;
 CREATE POLICY "admin_full_access_saved_properties" ON public.saved_properties
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "users_manage_own_saved" ON public.saved_properties;
 CREATE POLICY "users_manage_own_saved" ON public.saved_properties
@@ -198,8 +199,8 @@ CREATE POLICY "users_manage_own_saved" ON public.saved_properties
 DROP POLICY IF EXISTS "admin_full_access_notifications" ON public.notifications;
 CREATE POLICY "admin_full_access_notifications" ON public.notifications
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "users_read_own_notifications" ON public.notifications;
 CREATE POLICY "users_read_own_notifications" ON public.notifications
@@ -212,8 +213,8 @@ CREATE POLICY "users_read_own_notifications" ON public.notifications
 DROP POLICY IF EXISTS "admin_full_access_analytics" ON public.analytics_events;
 CREATE POLICY "admin_full_access_analytics" ON public.analytics_events
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "anyone_can_log_event" ON public.analytics_events;
 CREATE POLICY "anyone_can_log_event" ON public.analytics_events
@@ -226,8 +227,8 @@ CREATE POLICY "anyone_can_log_event" ON public.analytics_events
 DROP POLICY IF EXISTS "admin_full_access_audit" ON public.admin_audit;
 CREATE POLICY "admin_full_access_audit" ON public.admin_audit
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 -- ---------------------
 -- SYSTEM_SETTINGS
@@ -235,8 +236,8 @@ CREATE POLICY "admin_full_access_audit" ON public.admin_audit
 DROP POLICY IF EXISTS "admin_full_access_system_settings" ON public.system_settings;
 CREATE POLICY "admin_full_access_system_settings" ON public.system_settings
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 -- Allow public to read certain settings (e.g. site config)
 DROP POLICY IF EXISTS "public_read_public_settings" ON public.system_settings;
@@ -250,8 +251,8 @@ CREATE POLICY "public_read_public_settings" ON public.system_settings
 DROP POLICY IF EXISTS "admin_full_access_hero_settings" ON public.hero_settings;
 CREATE POLICY "admin_full_access_hero_settings" ON public.hero_settings
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "public_read_hero_settings" ON public.hero_settings;
 CREATE POLICY "public_read_hero_settings" ON public.hero_settings
@@ -264,8 +265,8 @@ CREATE POLICY "public_read_hero_settings" ON public.hero_settings
 DROP POLICY IF EXISTS "admin_full_access_hero_slides" ON public.hero_slides;
 CREATE POLICY "admin_full_access_hero_slides" ON public.hero_slides
   FOR ALL TO authenticated
-  USING (auth.is_admin())
-  WITH CHECK (auth.is_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
 DROP POLICY IF EXISTS "public_read_active_hero_slides" ON public.hero_slides;
 CREATE POLICY "public_read_active_hero_slides" ON public.hero_slides
@@ -280,12 +281,12 @@ ON CONFLICT (id) DO UPDATE SET public = true, file_size_limit = 104857600;
 DROP POLICY IF EXISTS "admin_upload_hero_media" ON storage.objects;
 CREATE POLICY "admin_upload_hero_media" ON storage.objects
   FOR INSERT TO authenticated
-  WITH CHECK (bucket_id = 'hero-media' AND auth.is_admin());
+  WITH CHECK (bucket_id = 'hero-media' AND public.is_admin());
 
 DROP POLICY IF EXISTS "admin_delete_hero_media" ON storage.objects;
 CREATE POLICY "admin_delete_hero_media" ON storage.objects
   FOR DELETE TO authenticated
-  USING (bucket_id = 'hero-media' AND auth.is_admin());
+  USING (bucket_id = 'hero-media' AND public.is_admin());
 
 DROP POLICY IF EXISTS "public_read_hero_media" ON storage.objects;
 CREATE POLICY "public_read_hero_media" ON storage.objects
