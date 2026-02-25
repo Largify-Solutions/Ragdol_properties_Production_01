@@ -2811,19 +2811,19 @@ function PropertiesPageContent() {
   const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('sortBy', value);
-    router.replace(`/luxe?${params.toString()}`, { scroll: false });
+    router.replace(`/properties?${params.toString()}`, { scroll: false });
   };
 
   const handleViewChange = (view: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('view', view);
-    router.replace(`/luxe?${params.toString()}`, { scroll: false });
+    router.replace(`/properties?${params.toString()}`, { scroll: false });
   };
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('page', newPage.toString());
-    router.replace(`/luxe?${params.toString()}`, { scroll: false });
+    router.replace(`/properties?${params.toString()}`, { scroll: false });
   };
 
   const getPageTitle = () => {
@@ -3465,7 +3465,7 @@ function PropertiesPageContent() {
   );
 }
 
-export default function LuxuryPropertiesPage() {
+export default function PropertiesPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-slate-50/50 flex items-center justify-center">
