@@ -129,6 +129,7 @@ export default function Testimonials() {
       
       const testimonialData = {
         name: formData.name.trim(),
+        email: formData.email.trim(),
         company: formData.company.trim(),
         role: formData.role.trim(),
         content: formData.content.trim(),
