@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Building2, FolderOpen, Tag,
   UserCog, FileText, Handshake, Star,
   Users, MessageSquare, Calculator, Home,
-  Settings, LogOut, Menu, X, ChevronRight,
+  Settings, LogOut, Menu, X, ChevronRight, Layout,
 } from 'lucide-react'
 
 interface NavItem { name: string; href: string; icon: React.ReactNode }
@@ -41,6 +41,7 @@ const sections: NavSection[] = [
   {
     label: 'Content',
     items: [
+      { name: 'Website CMS', href: '/admin/cms', icon: <Layout className="h-4 w-4" /> },
       { name: 'Blogs', href: '/admin/blogs', icon: <FileText className="h-4 w-4" /> },
       { name: 'Testimonials', href: '/admin/testinomials', icon: <Star className="h-4 w-4" /> },
     ],
