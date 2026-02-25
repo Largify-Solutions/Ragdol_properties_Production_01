@@ -870,6 +870,83 @@ export type Database = {
           },
         ]
       }
+      hero_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          mode: string
+          overlay_opacity: number | null
+          subtitle: string | null
+          title: string | null
+          updated_at: string | null
+          video_poster_url: string | null
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          mode?: string
+          overlay_opacity?: number | null
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string | null
+          video_poster_url?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          mode?: string
+          overlay_opacity?: number | null
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string | null
+          video_poster_url?: string | null
+          video_url?: string | null
+        }
+        Relationships: []
+      }
+      hero_slides: {
+        Row: {
+          alt_text: string | null
+          created_at: string | null
+          hero_setting_id: string | null
+          id: string
+          image_url: string
+          is_active: boolean | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string | null
+          hero_setting_id?: string | null
+          id?: string
+          image_url: string
+          is_active?: boolean | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string | null
+          hero_setting_id?: string | null
+          id?: string
+          image_url?: string
+          is_active?: boolean | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hero_slides_hero_setting_id_fkey"
+            columns: ["hero_setting_id"]
+            isOneToOne: false
+            referencedRelation: "hero_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inquiries: {
         Row: {
           agent_id: string | null

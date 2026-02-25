@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase-browser'
 import {
   ImageIcon, Video, Sliders, Layout, Save, Upload, Trash2,
   Plus, GripVertical, Eye, EyeOff, ChevronUp, ChevronDown,
@@ -39,12 +39,8 @@ interface HeroSettings {
   secondary_cta_url: string | null
 }
 
-// ─── Supabase client (browser) ───────────────────────────────────────────────
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+// ─── Supabase client — uses authenticated session (required for Storage RLS) ─
+// imported from @/lib/supabase-browser which holds the user's auth session
 
 // ─── Toast helper ────────────────────────────────────────────────────────────
 
@@ -169,14 +165,16 @@ export default function CMSPage() {
     try {
       const res = await fetch('/api/admin/hero')
       const json = await res.json()
-      if (json.settings) setSettings(json.settings)
-      else {
-        // default settings
+      if (json.error) throw new Error(json.error)
+      if (json.settings) {
+        setSettings(json.settings)
+      } else {
+        // No settings in DB yet — use defaults in state (will be created on first save)
         setSettings({
           id: '',
           mode: 'slider',
           heading: 'Find Your Dream Home in Dubai',
-          subheading: 'Discover luxury properties, premium apartments and exclusive villas across Dubai\'s most prestigious communities.',
+          subheading: "Discover luxury properties, premium apartments and exclusive villas across Dubai's most prestigious communities.",
           overlay_opacity: 0.55,
           auto_play: true,
           slide_duration: 5000,
@@ -192,7 +190,8 @@ export default function CMSPage() {
         })
       }
       setSlides(json.slides || [])
-    } catch {
+    } catch (err) {
+      console.error('[CMS fetchData]', err)
       addToast('Failed to load hero settings', 'error')
     } finally {
       setLoading(false)
@@ -212,11 +211,18 @@ export default function CMSPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings),
       })
-      if (!res.ok) throw new Error('Save failed')
+      const json = await res.json()
+      if (!res.ok || json.error) throw new Error(json.error || 'Save failed')
 
-      // Save slide changes
+      // Update local settings id in case this was the first save (insert)
+      if (json.settings?.id) {
+        setSettings((prev) => prev ? { ...prev, id: json.settings.id } : prev)
+      }
+
+      // Save per-slide changes (only for slides that already have an id)
+      const savedSlides = slides.filter((s) => s.id)
       await Promise.all(
-        slides.map((slide) =>
+        savedSlides.map((slide) =>
           fetch(`/api/admin/hero/slides/${slide.id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -230,17 +236,20 @@ export default function CMSPage() {
       )
 
       // Save sort order
-      await fetch('/api/admin/hero/slides/reorder', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderedIds: slides.map((s) => s.id) }),
-      })
+      if (savedSlides.length > 0) {
+        await fetch('/api/admin/hero/slides/reorder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderedIds: slides.map((s) => s.id).filter(Boolean) }),
+        })
+      }
 
       removeToast(tid)
       addToast('Hero section saved!', 'success')
-    } catch {
+    } catch (err) {
+      console.error('[CMS save]', err)
       removeToast(tid)
-      addToast('Failed to save changes', 'error')
+      addToast(err instanceof Error ? err.message : 'Failed to save changes', 'error')
     } finally {
       setSaving(false)
     }
@@ -261,7 +270,10 @@ export default function CMSPage() {
           .from('hero-media')
           .upload(path, file, { upsert: false })
 
-        if (uploadErr) throw uploadErr
+        if (uploadErr) {
+          console.error('[storage upload]', uploadErr)
+          throw new Error(uploadErr.message)
+        }
 
         const { data: { publicUrl } } = supabase.storage
           .from('hero-media')
@@ -273,6 +285,7 @@ export default function CMSPage() {
           body: JSON.stringify({ image_url: publicUrl, title: '', subtitle: '' }),
         })
         const json = await res.json()
+        if (!res.ok || json.error) throw new Error(json.error || 'Failed to save slide')
         if (json.slide) {
           setSlides((prev) => [...prev, json.slide])
         }
@@ -280,6 +293,7 @@ export default function CMSPage() {
       removeToast(tid)
       addToast('Images uploaded!', 'success')
     } catch (err: unknown) {
+      console.error('[slide upload error]', err)
       removeToast(tid)
       addToast(err instanceof Error ? err.message : 'Upload failed', 'error')
     } finally {
@@ -304,7 +318,10 @@ export default function CMSPage() {
         .from('hero-media')
         .upload(path, file, { upsert: false })
 
-      if (uploadErr) throw uploadErr
+      if (uploadErr) {
+        console.error('[video/poster upload]', uploadErr)
+        throw new Error(uploadErr.message)
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('hero-media')
@@ -318,6 +335,7 @@ export default function CMSPage() {
       removeToast(tid)
       addToast(`${type === 'video' ? 'Video' : 'Poster'} uploaded!`, 'success')
     } catch (err: unknown) {
+      console.error('[upload error]', err)
       removeToast(tid)
       addToast(err instanceof Error ? err.message : 'Upload failed', 'error')
     } finally {
