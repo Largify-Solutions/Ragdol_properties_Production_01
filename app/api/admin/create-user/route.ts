@@ -14,7 +14,7 @@ import { createClient, createServiceClient } from '@/lib/supabase-server'
 export async function POST(req: NextRequest) {
   try {
     // 1. Verify the caller is an admin
-    const supabase = await createClient()
+    const supabase = createServiceClient()
     const { data: { user: currentUser } } = await supabase.auth.getUser()
 
     if (!currentUser) {

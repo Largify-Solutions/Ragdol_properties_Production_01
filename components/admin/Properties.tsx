@@ -33,26 +33,20 @@ export default function Properties({ activeTab, properties, setProperties, agent
   const [editingProperty, setEditingProperty] = useState<any>(null)
   const [loading, setLoading] = useState(false)
 
-  // Load properties from Supabase
+  // Load properties via admin API (service role — bypasses RLS)
   const loadPropertiesFromSupabase = async () => {
     try {
       setLoading(true)
-      const { data: propertiesList, error } = await supabase
-        .from('properties')
-        .select('*')
-        .order('updated_at', { ascending: false })
-      
-      if (error) throw error
-      
-      const mapped = (propertiesList || []).map((data: any) => ({
+      const res = await fetch('/api/admin/properties?limit=500')
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to load properties')
+      const mapped = (json.properties || []).map((data: any) => ({
         ...data,
-        agent_name: data.agent_name || data.agent_id || null
+        agent_name: data.agent_name || data.agent_id || null,
       }))
-      
       setProperties(mapped)
     } catch (error) {
       console.error('Error loading properties:', error)
-      alert('Failed to load properties.')
     } finally {
       setLoading(false)
     }

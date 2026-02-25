@@ -61,13 +61,10 @@ export default function Blogs() {
   const fetchBlogs = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('posts')
-        .select('*')
-        .order('created_at', { ascending: false })
-      if (error) throw error
-
-      const blogsData: Blog[] = (data || []).map((item: any) => ({
+      const res = await fetch('/api/admin/blogs?limit=200')
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to load blogs')
+      const blogsData: Blog[] = (json.blogs || []).map((item: any) => ({
         id: item.id,
         title: item.title || '',
         content: item.content || '',
@@ -88,7 +85,6 @@ export default function Blogs() {
         seo_description: item.seo_description || '',
         seo_keywords: item.seo_keywords || []
       }))
-
       setBlogs(blogsData)
     } catch (error) {
       console.error('Error fetching blogs:', error)

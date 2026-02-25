@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
+import { createServiceClient } from '@/lib/supabase-server'
 
 export async function GET(req: NextRequest) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   try {
     const { data, error } = await supabase
       .from('categories')
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   try {
     const body = await req.json()
     const { data, error } = await supabase
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   try {
     const body = await req.json()
     const { id, ...updates } = body
@@ -59,7 +59,7 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   try {
     const { id } = await req.json()
     const { error } = await supabase.from('categories').delete().eq('id', id)

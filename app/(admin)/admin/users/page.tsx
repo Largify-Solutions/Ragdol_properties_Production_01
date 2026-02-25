@@ -43,15 +43,11 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, email, full_name, role, created_at, status')
-        .order('created_at', { ascending: false })
-        .limit(200)
-      if (error) throw error
-      
+      const res = await fetch('/api/admin/users?limit=200')
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to load users')
       setUsers(
-        (data || []).map((item: any) => ({
+        (json.data || []).map((item: any) => ({
           ...item,
           status: item.status || 'active',
           role: item.role || 'customer',
@@ -59,7 +55,6 @@ export default function UsersPage() {
       )
     } catch (error) {
       console.error('Error fetching users:', error)
-      alert('Failed to load users.')
     } finally {
       setLoading(false)
     }

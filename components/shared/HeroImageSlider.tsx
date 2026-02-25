@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase-browser'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -66,7 +67,7 @@ export default function HeroImageSlider() {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   // ── Fetch CMS settings from API ──
-  useEffect(() => {
+  const fetchHeroData = useCallback(() => {
     fetch('/api/admin/hero')
       .then((r) => r.json())
       .then(({ settings: s, slides: sl }) => {
@@ -78,6 +79,29 @@ export default function HeroImageSlider() {
         setSlides([])
       })
   }, [])
+
+  useEffect(() => {
+    fetchHeroData()
+
+    // ── Real-time: refresh when admin updates hero settings or slides ──
+    const channel = supabase
+      .channel('hero-cms-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'hero_settings' },
+        () => fetchHeroData()
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'hero_slides' },
+        () => fetchHeroData()
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [fetchHeroData])
 
   // ── Slider auto-advance ──
   const advance = useCallback((dir: 'next' | 'prev') => {

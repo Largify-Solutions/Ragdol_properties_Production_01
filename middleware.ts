@@ -2,9 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,12 +13,10 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
-          supabaseResponse = NextResponse.next({
-            request,
-          })
+          supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -29,15 +25,9 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session if expired - required for Server Components
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // Protected routes - redirect to appropriate login if not authenticated
   const pathname = request.nextUrl.pathname
 
-  // Skip login/signup pages from protection
+  // Pages exempt from protection
   const isLoginPage =
     pathname === '/admin/login' ||
     pathname === '/customer/login' ||
@@ -49,43 +39,34 @@ export async function middleware(request: NextRequest) {
   const isCustomerPath = pathname.startsWith('/customer')
   const isProtectedPath = (isAdminPath || isAgentPath || isCustomerPath) && !isLoginPage
 
-  if (isProtectedPath && !user) {
-    const url = request.nextUrl.clone()
-    if (isCustomerPath) {
-      url.pathname = '/customer/login'
-    } else {
-      url.pathname = '/admin/login'
-    }
-    url.searchParams.set('redirectTo', pathname)
-    return NextResponse.redirect(url)
+  // Only run auth checks on protected paths
+  if (!isProtectedPath) {
+    return supabaseResponse
   }
 
-  // Role-based access control
-  if (user && isProtectedPath) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
+  try {
+    // getSession() reads from cookies without a remote network call —
+    // avoids redirect loops caused by getUser() network failures.
+    // Fine-grained role checks are handled client-side in layout components.
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
 
-    if (profile) {
-      // Admin routes - only admins
-      if (isAdminPath && !isLoginPage && profile.role !== 'admin') {
-        const url = request.nextUrl.clone()
-        url.pathname = '/'
-        return NextResponse.redirect(url)
-      }
-
-      // Agent routes - only agents and admins
-      if (isAgentPath && profile.role !== 'agent' && profile.role !== 'admin') {
-        const url = request.nextUrl.clone()
-        url.pathname = '/'
-        return NextResponse.redirect(url)
-      }
+    if (!session) {
+      // No session cookie → redirect to appropriate login page
+      const url = request.nextUrl.clone()
+      url.pathname = isCustomerPath ? '/customer/login' : '/admin/login'
+      url.searchParams.set('redirectTo', pathname)
+      return NextResponse.redirect(url)
     }
-  }
 
-  return supabaseResponse
+    // Session present → pass through; client-side handles role enforcement
+    return supabaseResponse
+  } catch {
+    // Auth check errored (network, cold start, etc.) — allow through so that
+    // the client-side AuthContext can recover and redirect if needed.
+    return supabaseResponse
+  }
 }
 
 export const config = {

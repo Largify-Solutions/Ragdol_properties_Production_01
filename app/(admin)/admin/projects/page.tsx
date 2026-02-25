@@ -108,24 +108,19 @@ export default function ProjectManagement() {
   const loadProjects = async () => {
   try {
     setLoadingData(true);
-    
-    const { data, error } = await supabase.from('projects').select('*');
-    if (error) throw error;
-    
-    const projectsList: Project[] = (data || []).map((item: any) => ({
+    const res = await fetch('/api/admin/projects?limit=200');
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to load projects');
+    const projectsList: Project[] = (json.projects || []).map((item: any) => ({
       id: item.id,
       ...item,
       created_at: item.created_at || new Date().toISOString(),
       updated_at: item.updated_at || new Date().toISOString()
     })) as Project[];
-    
-    // Optional: Sort by creation date (newest first)
     projectsList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    
     setProjects(projectsList);
   } catch (error) {
     console.error('Error loading projects:', error);
-    alert('Failed to load projects. Please check console.');
   } finally {
     setLoadingData(false);
   }

@@ -554,18 +554,14 @@ export default function Agents() {
     specializations: ['Residential Properties']
   })
 
-  // Load agents from Supabase
+  // Load agents via admin API (service role — bypasses RLS)
   const loadAgents = async () => {
     try {
       setLoading(true)
-      const { data: agentsData, error } = await supabase
-        .from('agents')
-        .select('*')
-        .order('created_at', { ascending: false })
-      
-      if (error) throw error
-      
-      const agentsList: Agent[] = (agentsData || []).map((data: any) => ({
+      const res = await fetch('/api/admin/agents?limit=200')
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to load agents')
+      const agentsList: Agent[] = (json.agents || []).map((data: any) => ({
         ...data,
         rating: data.rating || 4.5,
         review_count: data.review_count || 0,
@@ -574,13 +570,11 @@ export default function Agents() {
         verified: data.verified || false,
         languages: data.languages || ['English'],
         certifications: data.certifications || [],
-        specializations: data.specializations || []
+        specializations: data.specializations || [],
       }))
-      
       setAgents(agentsList)
     } catch (error) {
       console.error('Error loading agents:', error)
-      alert('Failed to load agents.')
     } finally {
       setLoading(false)
     }

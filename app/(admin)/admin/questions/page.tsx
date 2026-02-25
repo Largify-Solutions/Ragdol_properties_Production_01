@@ -39,14 +39,10 @@ export default function AdminQuestionsPage() {
     const fetchQuestions = async () => {
       setLoading(true)
       try {
-        const { data, error } = await supabase
-          .from('customer_questions')
-          .select('*, profiles:user_id(email, full_name)')
-          .order('created_at', { ascending: false })
-        
-        if (error) throw error
-        
-        const questionsData: CustomerQuestion[] = (data || []).map((item: any) => ({
+        const res = await fetch('/api/admin/questions?limit=500')
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to load questions')
+        const questionsData: CustomerQuestion[] = (json.data || []).map((item: any) => ({
           id: item.id,
           user_id: item.user_id,
           admin_id: item.admin_id,
@@ -61,7 +57,6 @@ export default function AdminQuestionsPage() {
           user_email: item.profiles?.email || 'Unknown',
           user_name: item.profiles?.full_name || 'Customer',
         }))
-        
         setQuestions(questionsData)
       } catch (err) {
         console.error('Error fetching questions:', err)

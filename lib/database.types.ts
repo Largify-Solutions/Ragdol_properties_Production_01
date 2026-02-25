@@ -872,35 +872,65 @@ export type Database = {
       }
       hero_settings: {
         Row: {
-          created_at: string | null
+          auto_play: boolean
+          created_at: string
+          heading: string
           id: string
+          is_active: boolean
           mode: string
-          overlay_opacity: number | null
-          subtitle: string | null
-          title: string | null
-          updated_at: string | null
+          overlay_opacity: number
+          primary_cta_text: string
+          primary_cta_url: string
+          search_enabled: boolean
+          secondary_cta_text: string | null
+          secondary_cta_url: string | null
+          slide_duration: number
+          subheading: string
+          updated_at: string
+          video_loop: boolean
+          video_muted: boolean
           video_poster_url: string | null
           video_url: string | null
         }
         Insert: {
-          created_at?: string | null
+          auto_play?: boolean
+          created_at?: string
+          heading?: string
           id?: string
+          is_active?: boolean
           mode?: string
-          overlay_opacity?: number | null
-          subtitle?: string | null
-          title?: string | null
-          updated_at?: string | null
+          overlay_opacity?: number
+          primary_cta_text?: string
+          primary_cta_url?: string
+          search_enabled?: boolean
+          secondary_cta_text?: string | null
+          secondary_cta_url?: string | null
+          slide_duration?: number
+          subheading?: string
+          updated_at?: string
+          video_loop?: boolean
+          video_muted?: boolean
           video_poster_url?: string | null
           video_url?: string | null
         }
         Update: {
-          created_at?: string | null
+          auto_play?: boolean
+          created_at?: string
+          heading?: string
           id?: string
+          is_active?: boolean
           mode?: string
-          overlay_opacity?: number | null
-          subtitle?: string | null
-          title?: string | null
-          updated_at?: string | null
+          overlay_opacity?: number
+          primary_cta_text?: string
+          primary_cta_url?: string
+          search_enabled?: boolean
+          secondary_cta_text?: string | null
+          secondary_cta_url?: string | null
+          slide_duration?: number
+          subheading?: string
+          updated_at?: string
+          video_loop?: boolean
+          video_muted?: boolean
           video_poster_url?: string | null
           video_url?: string | null
         }

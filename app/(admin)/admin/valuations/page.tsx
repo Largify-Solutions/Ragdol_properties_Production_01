@@ -61,13 +61,10 @@ export default function ValuationsPage() {
   const fetchValuations = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('property_valuations')
-        .select('id, user_name, user_email, property_type, location, bedrooms, bathrooms, size, condition, year_built, urgency, contact_method, phoneNumber, additional_features, estimated_value, status, created_at, completed_at, currency')
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      
-      const valuationsData: Valuation[] = (data || []).map((item: any) => ({
+      const res = await fetch('/api/admin/valuations?limit=500')
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to load valuations')
+      const valuationsData: Valuation[] = (json.data || []).map((item: any) => ({
         id: item.id,
         user_name: item.user_name || 'N/A',
         user_email: item.user_email || '',
@@ -88,12 +85,9 @@ export default function ValuationsPage() {
         completed_at: item.completed_at || null,
         currency: item.currency || 'AED'
       }))
-      
-      // Sort by date (newest first)
-      valuationsData.sort((a, b) => 
+      valuationsData.sort((a, b) =>
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       )
-      
       setValuations(valuationsData)
     } catch (error) {
       console.error('Error fetching valuations:', error)

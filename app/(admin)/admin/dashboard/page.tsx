@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase-browser'
 import {
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [lastRefresh, setLastRefresh] = useState(new Date())
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true)
     try {
       const [propertiesRes, agentsRes, enquiriesRes, projectsRes, valuationsRes, enquiriesRecentRes, agentsTopRes] =
@@ -129,9 +129,22 @@ export default function AdminDashboard() {
       setLoading(false)
       setLastRefresh(new Date())
     }
-  }
+  }, [])
 
-  useEffect(() => { fetchAll() }, [])
+  useEffect(() => {
+    fetchAll()
+
+    // ── Real-time: auto-refresh dashboard when key tables change ──
+    const channel = supabase
+      .channel('admin-dashboard-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'properties' }, fetchAll)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'enquiries' }, fetchAll)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'agents' }, fetchAll)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'property_valuations' }, fetchAll)
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
+  }, [fetchAll])
 
   const statusColor = (s: string) =>
     ({ new: 'bg-blue-100 text-blue-700', contacted: 'bg-yellow-100 text-yellow-700',
