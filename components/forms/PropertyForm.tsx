@@ -1644,6 +1644,10 @@ interface PropertyFormData {
   updated_at?: string
   views_count?: number
   inquiries_count?: number
+  // Document fields
+  brochure_url?: string
+  fact_sheet_url?: string
+  material_board_url?: string
 }
 
 interface PropertyFormProps {
@@ -1867,6 +1871,9 @@ export default function PropertyForm({
     parking: initialData?.parking,
     property_age: initialData?.property_age,
     completion: initialData?.completion,
+    brochure_url: initialData?.brochure_url || '',
+    fact_sheet_url: initialData?.fact_sheet_url || '',
+    material_board_url: initialData?.material_board_url || '',
   })
 
   // Input states
@@ -1934,6 +1941,9 @@ export default function PropertyForm({
         parking: initialData.parking,
         property_age: initialData.property_age,
         completion: initialData.completion,
+        brochure_url: initialData.brochure_url || '',
+        fact_sheet_url: initialData.fact_sheet_url || '',
+        material_board_url: initialData.material_board_url || '',
       })
     }
   }, [initialData])
