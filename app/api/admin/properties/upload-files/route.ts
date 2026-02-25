@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
 
+// Use nodejs runtime for larger file handling  
+// Body size limit is configured in next.config.ts (50MB)
+export const runtime = 'nodejs'
+export const maxDuration = 60 // Allow up to 60 seconds for large uploads
+
 /**
  * POST /api/admin/properties/upload-files
  * Uploads property files (images, videos, floorplans, brochures, documents) to Supabase Storage.
@@ -40,14 +45,22 @@ export async function POST(req: NextRequest) {
       bucket = 'hero-media'
     }
 
+    // Convert File to Buffer for upload
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+
     const { data, error } = await supabase.storage
       .from(bucket)
-      .upload(filePath, file, {
+      .upload(filePath, buffer, {
+        contentType: file.type,
         cacheControl: '3600',
         upsert: false,
       })
 
-    if (error) throw error
+    if (error) {
+      console.error('Supabase storage error:', { bucket, filePath, mimeType: file.type, error })
+      throw error
+    }
 
     const { data: { publicUrl } } = supabase.storage
       .from(bucket)
@@ -57,7 +70,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Error uploading property file:', error)
     return NextResponse.json(
-      { error: error.message || 'Upload failed' },
+      { error: error.message || 'Upload failed', details: error.statusCode || error.code },
       { status: 500 }
     )
   }

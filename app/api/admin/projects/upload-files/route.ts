@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
 
+// Use nodejs runtime for larger file handling
+// Body size limit is configured globally in next.config.ts (50MB)
+export const runtime = 'nodejs'
+export const maxDuration = 60 // Allow up to 60 seconds for large uploads
+
 /**
  * POST /api/admin/projects/upload-files
  * Uploads a project document/image/video to the appropriate Supabase Storage bucket.
