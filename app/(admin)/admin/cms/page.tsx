@@ -81,7 +81,7 @@ function SlideRow({
       </div>
 
       {/* Thumbnail */}
-      <div className="w-20 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-muted border border-border">
+      <div className="w-20 h-14 rounded-lg overflow-hidden shrink-0 bg-muted border border-border">
         {slide.image_url ? (
           <img src={slide.image_url} alt={slide.title || ''} className="w-full h-full object-cover" />
         ) : (
@@ -110,7 +110,7 @@ function SlideRow({
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col gap-1 flex-shrink-0">
+      <div className="flex flex-col gap-1 shrink-0">
         <button onClick={onMoveUp} disabled={index === 0} className="p-1.5 rounded hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed text-muted-foreground hover:text-foreground transition-colors">
           <ChevronUp className="w-3.5 h-3.5" />
         </button>
@@ -134,7 +134,10 @@ export default function CMSPage() {
   const [activeTab, setActiveTab] = useState<'hero'>('hero')
   const [settings, setSettings] = useState<HeroSettings | null>(null)
   const [slides, setSlides] = useState<HeroSlide[]>([])
+  // `loading` = first-time fetch only (shows skeleton)
+  // `refreshing` = background re-fetch (shows spinner in header, NOT skeleton)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [toasts, setToasts] = useState<Toast[]>([])
   const [uploadingSlide, setUploadingSlide] = useState(false)
@@ -144,6 +147,7 @@ export default function CMSPage() {
   const slideInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
   const posterInputRef = useRef<HTMLInputElement>(null)
+  const isFirstLoad = useRef(true)
 
   // ── Toast helpers ──
   const addToast = useCallback((message: string, type: ToastType) => {
@@ -160,8 +164,15 @@ export default function CMSPage() {
   }, [])
 
   // ── Fetch data ──
-  const fetchData = useCallback(async () => {
-    setLoading(true)
+  const fetchData = useCallback(async (silent = false) => {
+    // Only show full-page skeleton on the very first load.
+    // Subsequent refreshes use the `refreshing` spinner so the page doesn't blank out.
+    if (isFirstLoad.current) {
+      setLoading(true)
+    } else if (!silent) {
+      setRefreshing(true)
+    }
+
     try {
       const res = await fetch('/api/admin/hero')
       const json = await res.json()
@@ -169,7 +180,7 @@ export default function CMSPage() {
       if (json.settings) {
         setSettings(json.settings)
       } else {
-        // No settings in DB yet — use defaults in state (will be created on first save)
+        // No settings in DB yet — use defaults (created on first save)
         setSettings({
           id: '',
           mode: 'slider',
@@ -192,13 +203,30 @@ export default function CMSPage() {
       setSlides(json.slides || [])
     } catch (err) {
       console.error('[CMS fetchData]', err)
-      addToast('Failed to load hero settings', 'error')
+      if (!silent) addToast('Failed to load hero settings', 'error')
     } finally {
-      setLoading(false)
+      if (isFirstLoad.current) {
+        isFirstLoad.current = false
+        setLoading(false)
+      } else {
+        setRefreshing(false)
+      }
     }
   }, [addToast])
 
-  useEffect(() => { fetchData() }, [fetchData])
+  useEffect(() => {
+    fetchData()
+
+    // Real-time: silently refresh CMS when the underlying DB changes
+    // (e.g. another admin tab saves, or web portal triggers change)
+    const channel = supabase
+      .channel('cms-admin-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'hero_settings' }, () => fetchData(true))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'hero_slides' },   () => fetchData(true))
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
+  }, [fetchData])
 
   // ── Save settings ──
   const handleSaveSettings = async () => {
@@ -206,6 +234,7 @@ export default function CMSPage() {
     setSaving(true)
     const tid = addToast('Saving changes…', 'loading')
     try {
+      // 1. Save hero_settings
       const res = await fetch('/api/admin/hero', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -219,9 +248,9 @@ export default function CMSPage() {
         setSettings((prev) => prev ? { ...prev, id: json.settings.id } : prev)
       }
 
-      // Save per-slide changes (only for slides that already have an id)
+      // 2. Save per-slide metadata (title, subtitle, is_active)
       const savedSlides = slides.filter((s) => s.id)
-      await Promise.all(
+      const slideResults = await Promise.allSettled(
         savedSlides.map((slide) =>
           fetch(`/api/admin/hero/slides/${slide.id}`, {
             method: 'PATCH',
@@ -234,13 +263,17 @@ export default function CMSPage() {
           })
         )
       )
+      const slideErrors = slideResults.filter((r) => r.status === 'rejected')
+      if (slideErrors.length) {
+        console.warn('[CMS save] some slides failed:', slideErrors)
+      }
 
-      // Save sort order
+      // 3. Save sort order
       if (savedSlides.length > 0) {
         await fetch('/api/admin/hero/slides/reorder', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderedIds: slides.map((s) => s.id).filter(Boolean) }),
+          body: JSON.stringify({ orderedIds: savedSlides.map((s) => s.id) }),
         })
       }
 
@@ -413,6 +446,12 @@ export default function CMSPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {refreshing && (
+            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Syncing…
+            </span>
+          )}
           <button
             onClick={() => setPreviewMode((p) => !p)}
             className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg border border-border bg-card hover:bg-muted text-foreground transition-colors"
@@ -422,7 +461,7 @@ export default function CMSPage() {
           </button>
           <button
             onClick={handleSaveSettings}
-            disabled={saving}
+            disabled={saving || refreshing}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 transition-colors"
           >
             {saving ? (
@@ -484,7 +523,7 @@ export default function CMSPage() {
                   />
                 </>
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+                <div className="w-full h-full bg-linear-to-br from-slate-800 to-slate-900 flex items-center justify-center">
                   <span className="text-muted-foreground text-sm">Preview (no media)</span>
                 </div>
               )}
@@ -802,7 +841,7 @@ export default function CMSPage() {
                 </label>
                 {settings.video_url ? (
                   <div className="flex items-center gap-3 p-3 bg-background rounded-xl border border-border">
-                    <PlayCircle className="w-8 h-8 text-primary flex-shrink-0" />
+                    <PlayCircle className="w-8 h-8 text-primary shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-muted-foreground truncate">
                         {settings.video_url.split('/').pop()}
@@ -927,10 +966,11 @@ export default function CMSPage() {
           {/* ── Refresh ── */}
           <div className="flex justify-end">
             <button
-              onClick={fetchData}
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => fetchData(false)}
+              disabled={refreshing}
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
+              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
               Reload from database
             </button>
           </div>
@@ -950,9 +990,9 @@ export default function CMSPage() {
                 : 'bg-card border-border text-foreground'
             }`}
           >
-            {toast.type === 'success' && <CheckCircle2 className="w-4 h-4 flex-shrink-0" />}
-            {toast.type === 'error' && <AlertCircle className="w-4 h-4 flex-shrink-0" />}
-            {toast.type === 'loading' && <Loader2 className="w-4 h-4 flex-shrink-0 animate-spin" />}
+            {toast.type === 'success' && <CheckCircle2 className="w-4 h-4 shrink-0" />}
+            {toast.type === 'error' && <AlertCircle className="w-4 h-4 shrink-0" />}
+            {toast.type === 'loading' && <Loader2 className="w-4 h-4 shrink-0 animate-spin" />}
             {toast.message}
             <button onClick={() => removeToast(toast.id)} className="ml-1 opacity-60 hover:opacity-100">
               <X className="w-3.5 h-3.5" />
