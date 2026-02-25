@@ -7,7 +7,6 @@ import {
   MoreVertical, Eye, Trash2, CheckCircle,
   MessageSquare, Send, ChevronDown, ChevronUp
 } from 'lucide-react'
-import { supabase } from '@/lib/supabase-browser'
 
 interface Valuation {
   id: string
@@ -66,18 +65,18 @@ export default function ValuationsPage() {
       if (!res.ok) throw new Error(json.error || 'Failed to load valuations')
       const valuationsData: Valuation[] = (json.data || []).map((item: any) => ({
         id: item.id,
-        user_name: item.user_name || 'N/A',
-        user_email: item.user_email || '',
+        user_name: item.profiles?.full_name || 'N/A',
+        user_email: item.profiles?.email || '',
         property_type: item.property_type || 'Not specified',
         location: item.location || 'Not specified',
         bedrooms: item.bedrooms || 'N/A',
         bathrooms: item.bathrooms || 'N/A',
-        size: item.size || 'N/A',
+        size: item.size_sqm ? `${item.size_sqm} sqm` : 'N/A',
         condition: item.condition || 'N/A',
         year_built: item.year_built || 'N/A',
         urgency: item.urgency || 'low',
         contact_method: item.contact_method || 'email',
-        phoneNumber: item.phoneNumber || 'N/A',
+        phoneNumber: item.profiles?.phone || 'N/A',
         additional_features: item.additional_features || 'N/A',
         estimated_value: item.estimated_value || '0',
         status: item.status || 'pending',
@@ -110,14 +109,19 @@ export default function ValuationsPage() {
     setSendingResponse(true)
     
     try {
-      // Update the valuation with admin notes and mark as completed
-      const { error: updateError } = await supabase.from('property_valuations').update({
-        admin_notes: responseMessage.trim(),
-        status: 'completed' as any,
-        reviewed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }).eq('id', selectedValuation.id)
-      if (updateError) throw updateError
+      // Update the valuation with admin notes via service-role API
+      const res = await fetch('/api/admin/valuations', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: selectedValuation.id,
+          admin_notes: responseMessage.trim(),
+          status: 'completed',
+          reviewed_at: new Date().toISOString(),
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update valuation')
       
       // Update local state
       setValuations(prev => prev.map(v => 
@@ -161,9 +165,10 @@ export default function ValuationsPage() {
   const handleDeleteValuation = async (valuationId: string) => {
     if (window.confirm('Are you sure you want to delete this valuation?')) {
       try {
-        // Delete from Supabase
-        const { error } = await supabase.from('property_valuations').delete().eq('id', valuationId)
-        if (error) throw error
+        // Delete via service-role API
+        const res = await fetch(`/api/admin/valuations?id=${valuationId}`, { method: 'DELETE' })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to delete valuation')
         setValuations(prev => prev.filter(v => v.id !== valuationId))
         // Also remove from expanded list if it's expanded
         setExpandedValuations(prev => prev.filter(id => id !== valuationId))

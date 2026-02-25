@@ -94,3 +94,23 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const supabase = createServiceClient()
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Question ID is required' }, { status: 400 })
+    }
+
+    const { error } = await supabase.from('customer_questions').delete().eq('id', id)
+    if (error) throw error
+
+    return NextResponse.json({ message: 'Question deleted successfully' })
+  } catch (error: any) {
+    console.error('Error deleting question:', error)
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 })
+  }
+}

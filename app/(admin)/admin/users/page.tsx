@@ -97,20 +97,26 @@ export default function UsersPage() {
       }
 
       if (editingUser) {
-        // UPDATE EXISTING USER (profile only, no auth change needed)
+        // UPDATE EXISTING USER (profile only) via API route
         const updateData = {
+          id: editingUser.id,
           full_name: formData.full_name.trim(),
           role: formData.role,
-          updated_at: new Date().toISOString()
         }
         
-        const { error } = await supabase.from('profiles').update(updateData).eq('id', editingUser.id)
-        if (error) throw error
+        const res = await fetch('/api/admin/users', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updateData),
+        })
+        const result = await res.json()
+        if (!res.ok) throw new Error(result.error || 'Failed to update user')
         
         // Update local state
         const updatedUser = {
           ...editingUser,
-          ...updateData
+          full_name: formData.full_name.trim(),
+          role: formData.role,
         }
         
         setUsers(users.map(u => u.id === editingUser.id ? updatedUser : u))
@@ -211,12 +217,14 @@ export default function UsersPage() {
     const newStatus: User['status'] = user.status === 'active' ? 'inactive' : 'active'
     
     try {
-      // Update in Supabase
-      const { error } = await supabase.from('profiles').update({
-        status: newStatus,
-        updated_at: new Date().toISOString()
-      }).eq('id', user.id)
-      if (error) throw error
+      // Update in Supabase via API route
+      const res = await fetch('/api/admin/users', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: user.id, status: newStatus }),
+      })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Failed to update status')
       
       // Update local state
       const updatedUser: User = {

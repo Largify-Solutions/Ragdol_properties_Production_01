@@ -6,7 +6,6 @@ import {
   Clock, AlertCircle, Reply, Trash2,
   Send, X
 } from 'lucide-react'
-import { supabase } from '@/lib/supabase-browser'
 
 interface CustomerQuestion {
   id: string
@@ -92,17 +91,19 @@ export default function AdminQuestionsPage() {
     setSendingReply(true)
     
     try {
-      // Update the customer_question with the admin response
-      const { error } = await supabase
-        .from('customer_questions')
-        .update({
+      // Update the customer_question with the admin response via service-role API
+      const res = await fetch('/api/admin/questions', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: questionId,
           admin_response: replyMessage,
           admin_response_at: new Date().toISOString(),
-          status: 'answered' as any,
-        })
-        .eq('id', questionId)
-
-      if (error) throw error
+          status: 'answered',
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to send reply')
 
       // Update local state
       setQuestions(prev => prev.map(q => 
@@ -125,11 +126,9 @@ export default function AdminQuestionsPage() {
   const handleDelete = async (questionId: string) => {
     if (!window.confirm('Are you sure you want to delete this question?')) return
     try {
-      const { error } = await supabase
-        .from('customer_questions')
-        .delete()
-        .eq('id', questionId)
-      if (error) throw error
+      const res = await fetch(`/api/admin/questions?id=${questionId}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to delete question')
       setQuestions(prev => prev.filter(q => q.id !== questionId))
     } catch (err) {
       console.error('Error deleting question:', err)
@@ -139,11 +138,13 @@ export default function AdminQuestionsPage() {
 
   const handleClose = async (questionId: string) => {
     try {
-      const { error } = await supabase
-        .from('customer_questions')
-        .update({ status: 'closed' as any })
-        .eq('id', questionId)
-      if (error) throw error
+      const res = await fetch('/api/admin/questions', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: questionId, status: 'closed' }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to close question')
       setQuestions(prev => prev.map(q => 
         q.id === questionId ? { ...q, status: 'closed' as const } : q
       ))

@@ -120,7 +120,7 @@ CREATE POLICY "anyone_can_submit_valuation" ON public.property_valuations
 DROP POLICY IF EXISTS "users_read_own_valuations" ON public.property_valuations;
 CREATE POLICY "users_read_own_valuations" ON public.property_valuations
   FOR SELECT TO authenticated
-  USING (user_email = (SELECT email FROM public.profiles WHERE id = auth.uid()));
+  USING (user_id = auth.uid());
 
 -- ---------------------
 -- CUSTOMER_QUESTIONS
@@ -239,11 +239,8 @@ CREATE POLICY "admin_full_access_system_settings" ON public.system_settings
   USING (public.is_admin())
   WITH CHECK (public.is_admin());
 
--- Allow public to read certain settings (e.g. site config)
+-- system_settings is admin-only (no is_public column in schema)
 DROP POLICY IF EXISTS "public_read_public_settings" ON public.system_settings;
-CREATE POLICY "public_read_public_settings" ON public.system_settings
-  FOR SELECT TO anon, authenticated
-  USING (is_public = true);
 
 -- ---------------------
 -- HERO_SETTINGS (already in hero_cms migration, but ensure admin access)

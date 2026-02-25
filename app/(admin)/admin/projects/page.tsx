@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { supabase } from '@/lib/supabase-browser'
 
 
 interface Project {
@@ -196,12 +195,16 @@ const handleSubmit = async (e: React.FormEvent) => {
     console.log('Submitting project:', projectData);
 
     if (editingProject) {
-      // Update existing project
-      // Keep existing created_at
+      // Update existing project via service-role API
       projectData.created_at = editingProject.created_at;
       
-      const { error } = await supabase.from('projects').update(projectData).eq('id', editingProject.id);
-      if (error) throw error;
+      const res = await fetch('/api/admin/projects', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: editingProject.id, ...projectData }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to update project');
       console.log('Project updated:', editingProject.id);
       
       // Update local state
@@ -212,16 +215,22 @@ const handleSubmit = async (e: React.FormEvent) => {
       
       setProjects(projects.map(p => p.id === editingProject.id ? updatedProject : p));
     } else {
-      // Create new project
+      // Create new project via service-role API
       projectData.created_at = new Date().toISOString();
       
-      const { data: newDoc, error } = await supabase.from('projects').insert(projectData).select().single();
-      if (error) throw error;
-      console.log('Project created with ID:', newDoc.id);
+      const res = await fetch('/api/admin/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(projectData),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to create project');
+      const newDoc = json.project;
+      console.log('Project created with ID:', newDoc?.id);
       
       // Add to beginning of list
       const newProject = {
-        id: newDoc.id,
+        id: newDoc?.id,
         ...projectData
       } as Project;
       
@@ -257,8 +266,9 @@ const handleSubmit = async (e: React.FormEvent) => {
   if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
 
   try {
-    const { error } = await supabase.from('projects').delete().eq('id', projectId);
-    if (error) throw error;
+    const res = await fetch(`/api/admin/projects?id=${projectId}`, { method: 'DELETE' });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to delete project');
     
     // Update local state
     setProjects(projects.filter(p => p.id !== projectId));

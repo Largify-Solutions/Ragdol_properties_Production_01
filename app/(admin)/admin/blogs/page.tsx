@@ -13,7 +13,6 @@ import {
   XCircleIcon,
   MagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
-import { supabase } from '@/lib/supabase-browser'
 
 interface Blog {
   id: string
@@ -141,14 +140,24 @@ export default function Blogs() {
       }
 
       if (editingBlog) {
-        // Update existing blog
-        const { error } = await supabase.from('posts').update(blogData).eq('id', editingBlog.id)
-        if (error) throw error
+        // Update existing blog via service-role API route
+        const res = await fetch('/api/admin/blogs', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingBlog.id, ...blogData }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to update blog')
         alert('Blog updated successfully!')
       } else {
-        // Add new blog
-        const { error } = await supabase.from('posts').insert(blogData)
-        if (error) throw error
+        // Add new blog via service-role API route
+        const res = await fetch('/api/admin/blogs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(blogData),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to add blog')
         alert('Blog added successfully!')
       }
 
@@ -199,8 +208,9 @@ export default function Blogs() {
     if (!confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) return
 
     try {
-      const { error } = await supabase.from('posts').delete().eq('id', id)
-      if (error) throw error
+      const res = await fetch(`/api/admin/blogs?id=${id}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to delete blog')
 
       setBlogs(blogs.filter(blog => blog.id !== id))
       alert('Blog deleted successfully!')
@@ -221,8 +231,13 @@ export default function Blogs() {
       if (newStatus === 'published') {
         updateData.published_at = new Date().toISOString()
       }
-      const { error } = await supabase.from('posts').update(updateData).eq('id', blog.id)
-      if (error) throw error
+      const res = await fetch('/api/admin/blogs', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: blog.id, ...updateData }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update status')
       
       // Update local state
       setBlogs(blogs.map(b => 

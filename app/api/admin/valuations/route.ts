@@ -64,3 +64,49 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function PUT(req: NextRequest) {
+  try {
+    const supabase = createServiceClient()
+    const body = await req.json()
+    const { id, ...updateData } = body
+
+    if (!id) {
+      return NextResponse.json({ error: 'Valuation ID is required' }, { status: 400 })
+    }
+
+    const { data, error } = await supabase
+      .from('property_valuations')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    return NextResponse.json({ data, message: 'Valuation updated successfully' })
+  } catch (error: any) {
+    console.error('Error updating valuation:', error)
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 })
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const supabase = createServiceClient()
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Valuation ID is required' }, { status: 400 })
+    }
+
+    const { error } = await supabase.from('property_valuations').delete().eq('id', id)
+    if (error) throw error
+
+    return NextResponse.json({ message: 'Valuation deleted successfully' })
+  } catch (error: any) {
+    console.error('Error deleting valuation:', error)
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 })
+  }
+}

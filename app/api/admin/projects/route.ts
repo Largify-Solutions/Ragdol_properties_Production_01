@@ -77,3 +77,49 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
   }
 }
+
+export async function PUT(request: NextRequest) {
+  const supabase = createServiceClient()
+  try {
+    const body = await request.json()
+    const { id, ...updateData } = body
+
+    if (!id) {
+      return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
+    }
+
+    const { data, error } = await supabase
+      .from('projects')
+      .update({ ...updateData, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) throw error
+
+    return NextResponse.json({ project: data, message: 'Project updated successfully' })
+  } catch (error: any) {
+    console.error('Error updating project:', error)
+    return NextResponse.json({ error: 'Failed to update project' }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  const supabase = createServiceClient()
+  try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
+    }
+
+    const { error } = await supabase.from('projects').delete().eq('id', id)
+    if (error) throw error
+
+    return NextResponse.json({ message: 'Project deleted successfully' })
+  } catch (error: any) {
+    console.error('Error deleting project:', error)
+    return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 })
+  }
+}

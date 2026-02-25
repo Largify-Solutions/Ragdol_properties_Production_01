@@ -2381,22 +2381,25 @@ export default function PropertyForm({
 
       if (mode === 'edit' && initialData?.id) {
         propertyData.created_at = initialData.created_at || new Date().toISOString()
-        const { error: updateError } = await supabase
-          .from('properties')
-          .update(propertyData)
-          .eq('id', initialData.id)
-        if (updateError) throw updateError
-        console.log('Property updated in Supabase:', initialData.id)
+        const res = await fetch('/api/admin/properties', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: initialData.id, ...propertyData }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to update property')
+        console.log('Property updated via API:', initialData.id)
         alert('Property updated successfully!')
       } else {
         propertyData.created_at = new Date().toISOString()
-        const { data: newProperty, error: insertError } = await supabase
-          .from('properties')
-          .insert(propertyData)
-          .select()
-          .single()
-        if (insertError) throw insertError
-        console.log('Property created in Supabase with ID:', newProperty.id)
+        const res = await fetch('/api/admin/properties', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(propertyData),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to create property')
+        console.log('Property created via API with ID:', json.id)
         alert('Property created successfully!')
       }
 
@@ -2438,11 +2441,13 @@ export default function PropertyForm({
     }
 
     try {
-      const { error: deleteError } = await supabase
-        .from('properties')
-        .delete()
-        .eq('id', initialData.id)
-      if (deleteError) throw deleteError
+      const res = await fetch('/api/admin/properties', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: initialData.id }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to delete property')
       
       alert('Property deleted successfully!')
       

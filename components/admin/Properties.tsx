@@ -202,13 +202,14 @@ export default function Properties({ activeTab, properties, setProperties, agent
     }
 
     try {
-      // Delete from Supabase
-      const { error } = await supabase
-        .from('properties')
-        .delete()
-        .eq('id', propertyId)
-      
-      if (error) throw error
+      // Delete via service-role API route
+      const res = await fetch('/api/admin/properties', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: propertyId }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to delete property')
       
       // Update local state
       setProperties((Array.isArray(properties) ? properties : []).filter(p => p.id !== propertyId))
@@ -216,12 +217,7 @@ export default function Properties({ activeTab, properties, setProperties, agent
       alert('Property deleted successfully!')
     } catch (error: any) {
       console.error('Error deleting property:', error)
-      
-      if (error.code === 'permission-denied') {
-        alert('Delete permission denied. Please check Supabase RLS policies.')
-      } else {
-        alert('Error deleting property. Please try again.')
-      }
+      alert(error.message || 'Error deleting property. Please try again.')
     }
   }
 
@@ -234,13 +230,15 @@ export default function Properties({ activeTab, properties, setProperties, agent
     }
 
     try {
-      // Delete each property from Supabase
+      // Delete each property via service-role API route
       const deletePromises = selectedProperties.map(async (propertyId) => {
-        const { error } = await supabase
-          .from('properties')
-          .delete()
-          .eq('id', propertyId)
-        if (error) throw error
+        const res = await fetch('/api/admin/properties', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: propertyId }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || `Failed to delete property ${propertyId}`)
       })
       
       await Promise.all(deletePromises)
@@ -249,7 +247,7 @@ export default function Properties({ activeTab, properties, setProperties, agent
       setProperties((Array.isArray(properties) ? properties : []).filter(p => !selectedProperties.includes(p.id)))
       setSelectedProperties([])
       
-      alert(`${selectedProperties.length} properties deleted successfully!'`)
+      alert(`${selectedProperties.length} properties deleted successfully!`)
     } catch (error: any) {
       console.error('Error bulk deleting properties:', error)
       alert('Error deleting properties. Please try again.')
