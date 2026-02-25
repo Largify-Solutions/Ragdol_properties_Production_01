@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, PencilIcon, TrashIcon, FolderIcon, DocumentArrowUpIcon, PhotoIcon, VideoCameraIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 
 interface Project {
@@ -36,6 +36,16 @@ interface Project {
   brochure_url?: string
   video_url?: string
   images?: string[]
+  // Extended document fields
+  brochure_en_url?: string
+  brochure_ar_url?: string
+  fact_sheet_url?: string
+  floor_plans_url?: string
+  masterplan_url?: string
+  material_board_url?: string
+  one_pager_url?: string
+  payment_plan_url?: string
+  videos?: string[]
   seo_title?: string
   seo_description?: string
   seo_keywords?: string[]
@@ -54,6 +64,7 @@ export default function ProjectManagement() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'planned' | 'in-progress' | 'completed'>('all')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [docUploading, setDocUploading] = useState<Record<string, boolean>>({})
   const [tempInput, setTempInput] = useState({
     amenity: '',
     facility: '',
@@ -92,6 +103,15 @@ export default function ProjectManagement() {
     brochure_url: '',
     video_url: '',
     images: [] as string[],
+    brochure_en_url: '',
+    brochure_ar_url: '',
+    fact_sheet_url: '',
+    floor_plans_url: '',
+    masterplan_url: '',
+    material_board_url: '',
+    one_pager_url: '',
+    payment_plan_url: '',
+    videos: [] as string[],
     seo_title: '',
     seo_description: '',
     seo_keywords: [] as string[],
@@ -156,6 +176,16 @@ const handleSubmit = async (e: React.FormEvent) => {
       brochure_url: formData.brochure_url.trim() || null,
       video_url: formData.video_url.trim() || null,
       images: formData.images.length > 0 ? formData.images : [],
+      // Extended document fields
+      brochure_en_url: formData.brochure_en_url.trim() || null,
+      brochure_ar_url: formData.brochure_ar_url.trim() || null,
+      fact_sheet_url: formData.fact_sheet_url.trim() || null,
+      floor_plans_url: formData.floor_plans_url.trim() || null,
+      masterplan_url: formData.masterplan_url.trim() || null,
+      material_board_url: formData.material_board_url.trim() || null,
+      one_pager_url: formData.one_pager_url.trim() || null,
+      payment_plan_url: formData.payment_plan_url.trim() || null,
+      videos: formData.videos.length > 0 ? formData.videos : [],
       seo_title: formData.seo_title.trim() || null,
       seo_description: formData.seo_description.trim() || null,
       seo_keywords: formData.seo_keywords.length > 0 ? formData.seo_keywords : [],
@@ -318,6 +348,15 @@ const handleSubmit = async (e: React.FormEvent) => {
       brochure_url: project.brochure_url || '',
       video_url: project.video_url || '',
       images: project.images || [],
+      brochure_en_url: project.brochure_en_url || '',
+      brochure_ar_url: project.brochure_ar_url || '',
+      fact_sheet_url: project.fact_sheet_url || '',
+      floor_plans_url: project.floor_plans_url || '',
+      masterplan_url: project.masterplan_url || '',
+      material_board_url: project.material_board_url || '',
+      one_pager_url: project.one_pager_url || '',
+      payment_plan_url: project.payment_plan_url || '',
+      videos: project.videos || [],
       seo_title: project.seo_title || '',
       seo_description: project.seo_description || '',
       seo_keywords: project.seo_keywords || [],
@@ -377,6 +416,15 @@ const handleSubmit = async (e: React.FormEvent) => {
       brochure_url: '',
       video_url: '',
       images: [],
+      brochure_en_url: '',
+      brochure_ar_url: '',
+      fact_sheet_url: '',
+      floor_plans_url: '',
+      masterplan_url: '',
+      material_board_url: '',
+      one_pager_url: '',
+      payment_plan_url: '',
+      videos: [],
       seo_title: '',
       seo_description: '',
       seo_keywords: [],
@@ -420,6 +468,66 @@ const handleSubmit = async (e: React.FormEvent) => {
     if (e.key === 'Enter') {
       e.preventDefault()
       handleArrayInput(field, arrayField)
+    }
+  }
+
+  // ── File upload helper ────────────────────────────────────────────────────
+  const uploadProjectFile = async (file: File, type: string): Promise<string> => {
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('type', type)
+    fd.append('project_name', formData.name.trim() || 'project')
+    const res = await fetch('/api/admin/projects/upload-files', { method: 'POST', body: fd })
+    const json = await res.json()
+    if (!res.ok) throw new Error(json.error || 'Upload failed')
+    return json.url as string
+  }
+
+  // Upload a single-file document field (brochure_en, fact_sheet, etc.)
+  const handleDocFileChange = async (e: React.ChangeEvent<HTMLInputElement>, type: string, field: keyof typeof formData) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setDocUploading(p => ({ ...p, [type]: true }))
+    try {
+      const url = await uploadProjectFile(file, type)
+      setFormData(f => ({ ...f, [field]: url }))
+    } catch (err: any) {
+      alert(`Upload failed: ${err.message}`)
+    } finally {
+      setDocUploading(p => ({ ...p, [type]: false }))
+      e.target.value = ''
+    }
+  }
+
+  // Upload multiple render images
+  const handleRenderImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+    setDocUploading(p => ({ ...p, render_images: true }))
+    try {
+      const urls = await Promise.all(files.map(f => uploadProjectFile(f, 'image')))
+      setFormData(f => ({ ...f, images: [...f.images, ...urls] }))
+    } catch (err: any) {
+      alert(`Image upload failed: ${err.message}`)
+    } finally {
+      setDocUploading(p => ({ ...p, render_images: false }))
+      e.target.value = ''
+    }
+  }
+
+  // Upload multiple project videos
+  const handleVideoFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+    setDocUploading(p => ({ ...p, videos: true }))
+    try {
+      const urls = await Promise.all(files.map(f => uploadProjectFile(f, 'video')))
+      setFormData(f => ({ ...f, videos: [...f.videos, ...urls] }))
+    } catch (err: any) {
+      alert(`Video upload failed: ${err.message}`)
+    } finally {
+      setDocUploading(p => ({ ...p, videos: false }))
+      e.target.value = ''
     }
   }
 
@@ -783,7 +891,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 </div>
 
                 {/* Media URLs */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Hero Image URL</label>
                     <input
@@ -796,18 +904,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Brochure URL</label>
-                    <input
-                      type="url"
-                      value={formData.brochure_url}
-                      onChange={(e) => setFormData({...formData, brochure_url: e.target.value})}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Video URL</label>
+                    <label className="block text-sm font-medium text-gray-700">Video URL (YouTube / external)</label>
                     <input
                       type="url"
                       value={formData.video_url}
@@ -818,43 +915,208 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </div>
                 </div>
 
-                {/* Additional Images */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Additional Image URLs</label>
-                  <div className="flex gap-2 mb-2">
+                {/* ── RENDER IMAGES ─────────────────────────────────────────── */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <PhotoIcon className="h-4 w-4 text-blue-500" />
+                    Render Images
+                  </h4>
+
+                  {/* File picker */}
+                  <label className={`flex items-center justify-center gap-2 w-full border-2 border-dashed rounded-lg p-4 cursor-pointer transition-colors ${docUploading.render_images ? 'border-blue-300 bg-blue-50' : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'}`}>
+                    {docUploading.render_images ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
+                        <span className="text-sm text-blue-600">Uploading…</span>
+                      </>
+                    ) : (
+                      <>
+                        <DocumentArrowUpIcon className="h-5 w-5 text-gray-400" />
+                        <span className="text-sm text-gray-500">Click to upload render images (JPG, PNG — multiple allowed)</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      disabled={isSubmitting || docUploading.render_images}
+                      onChange={handleRenderImagesChange}
+                    />
+                  </label>
+
+                  {/* Also allow adding by URL */}
+                  <div className="flex gap-2 mt-3">
                     <input
                       type="url"
-                      placeholder="Add image URL"
+                      placeholder="Or paste image URL and click Add"
                       value={tempInput.image_url}
                       onChange={(e) => setTempInput({...tempInput, image_url: e.target.value})}
                       onKeyPress={(e) => handleKeyPress(e, 'image_url', 'images')}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       disabled={isSubmitting}
                     />
                     <button
                       type="button"
                       onClick={() => handleArrayInput('image_url', 'images')}
-                      className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                      className="px-3 py-2 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200 disabled:opacity-50"
                       disabled={isSubmitting}
                     >
-                      Add
+                      Add URL
                     </button>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.images.map((image, index) => (
-                      <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">
-                        Image {index + 1}
-                        <button
-                          type="button"
-                          onClick={() => removeFromArray('images', image)}
-                          className="ml-1 text-gray-600 hover:text-gray-800"
-                          disabled={isSubmitting}
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
+
+                  {/* Uploaded tiles */}
+                  {formData.images.length > 0 && (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mt-3">
+                      {formData.images.map((img, i) => (
+                        <div key={i} className="relative group">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={img} alt={`Render ${i + 1}`} className="w-full h-16 object-cover rounded border border-gray-200" />
+                          <button
+                            type="button"
+                            onClick={() => removeFromArray('images', img)}
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                            disabled={isSubmitting}
+                          >
+                            <XMarkIcon className="h-3 w-3" />
+                          </button>
+                          <p className="text-xs text-center text-gray-500 mt-0.5">#{i + 1}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* ── PROJECT DOCUMENTS ─────────────────────────────────────── */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <FolderIcon className="h-4 w-4 text-amber-500" />
+                    Project Documents
+                  </h4>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Helper sub-component rendered inline */}
+                    {(
+                      [
+                        { label: 'Brochure (English)',  type: 'brochure_en',    field: 'brochure_en_url'    },
+                        { label: 'Brochure (Arabic)',   type: 'brochure_ar',    field: 'brochure_ar_url'    },
+                        { label: 'Fact Sheet',          type: 'fact_sheet',     field: 'fact_sheet_url'     },
+                        { label: 'Floor Plans',         type: 'floor_plans',    field: 'floor_plans_url'    },
+                        { label: 'Masterplan',          type: 'masterplan',     field: 'masterplan_url'     },
+                        { label: 'Material Board',      type: 'material_board', field: 'material_board_url' },
+                        { label: 'One Pager',           type: 'one_pager',      field: 'one_pager_url'      },
+                        { label: 'Payment Plan (PDF)',  type: 'payment_plan',   field: 'payment_plan_url'   },
+                      ] as { label: string; type: string; field: keyof typeof formData }[]
+                    ).map(({ label, type, field }) => {
+                      const url = formData[field] as string
+                      const uploading = docUploading[type]
+                      return (
+                        <div key={type} className="flex flex-col gap-1">
+                          <label className="block text-xs font-medium text-gray-600">{label}</label>
+                          {url ? (
+                            <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-md">
+                              <CheckCircleIcon className="h-4 w-4 text-green-600 shrink-0" />
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-green-700 underline truncate flex-1"
+                              >
+                                {url.split('/').pop()}
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => setFormData(f => ({ ...f, [field]: '' }))}
+                                className="text-red-400 hover:text-red-600"
+                                disabled={isSubmitting}
+                                title="Remove"
+                              >
+                                <XMarkIcon className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <label className={`flex items-center gap-2 px-3 py-2 border border-dashed rounded-md cursor-pointer transition-colors ${uploading ? 'border-blue-300 bg-blue-50' : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'}`}>
+                              {uploading ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-blue-600" />
+                                  <span className="text-xs text-blue-600">Uploading…</span>
+                                </>
+                              ) : (
+                                <>
+                                  <DocumentArrowUpIcon className="h-3.5 w-3.5 text-gray-400" />
+                                  <span className="text-xs text-gray-500">Upload PDF</span>
+                                </>
+                              )}
+                              <input
+                                type="file"
+                                accept=".pdf,application/pdf"
+                                className="hidden"
+                                disabled={isSubmitting || uploading}
+                                onChange={(e) => handleDocFileChange(e, type, field)}
+                              />
+                            </label>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
+                </div>
+
+                {/* ── PROJECT VIDEOS (uploaded files) ───────────────────────── */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <VideoCameraIcon className="h-4 w-4 text-purple-500" />
+                    Project Videos
+                  </h4>
+
+                  <label className={`flex items-center justify-center gap-2 w-full border-2 border-dashed rounded-lg p-4 cursor-pointer transition-colors ${docUploading.videos ? 'border-purple-300 bg-purple-50' : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50'}`}>
+                    {docUploading.videos ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600" />
+                        <span className="text-sm text-purple-600">Uploading…</span>
+                      </>
+                    ) : (
+                      <>
+                        <DocumentArrowUpIcon className="h-5 w-5 text-gray-400" />
+                        <span className="text-sm text-gray-500">Click to upload video files (MP4, MOV — multiple allowed)</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="video/*"
+                      multiple
+                      className="hidden"
+                      disabled={isSubmitting || docUploading.videos}
+                      onChange={handleVideoFilesChange}
+                    />
+                  </label>
+
+                  {formData.videos.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {formData.videos.map((vid, i) => (
+                        <div key={i} className="flex items-center gap-2 px-3 py-2 bg-purple-50 border border-purple-200 rounded-md">
+                          <VideoCameraIcon className="h-4 w-4 text-purple-500 shrink-0" />
+                          <a
+                            href={vid}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-purple-700 underline truncate flex-1"
+                          >
+                            {vid.split('/').pop()}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => setFormData(f => ({ ...f, videos: f.videos.filter((_, idx) => idx !== i) }))}
+                            className="text-red-400 hover:text-red-600 shrink-0"
+                            disabled={isSubmitting}
+                          >
+                            <XMarkIcon className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Arrays */}
