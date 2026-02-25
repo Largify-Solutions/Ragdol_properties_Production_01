@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase-browser'
 import { useRouter } from 'next/navigation'
 
 interface AgentProperty {
@@ -50,23 +49,18 @@ export default function AdminAgentProperties() {
   const fetchAgentProperties = async () => {
     setLoading(true)
     try {
-      // Fetch agent properties
-      const { data: propertiesRaw, error: propError } = await supabase
-        .from('agent_properties')
-        .select('*')
-        .order('submitted_at', { ascending: false })
-      if (propError) throw propError
-      const propertiesData = (propertiesRaw || []) as AgentProperty[]
-      
+      // Fetch agent properties via admin API
+      const propRes = await fetch('/api/admin/agent-properties?limit=500')
+      const propJson = await propRes.json()
+      if (!propRes.ok) throw new Error(propJson.error || 'Failed to load properties')
+      const propertiesData = (propJson.agent_properties || []) as AgentProperty[]
       setProperties(propertiesData)
 
-      // Fetch agents list
-      const { data: agentsRaw, error: agentError } = await supabase
-        .from('agents')
-        .select('*')
-      if (agentError) throw agentError
-      const agentsData = (agentsRaw || []) as Agent[]
-      
+      // Fetch agents list via admin API
+      const agentRes = await fetch('/api/admin/agents?limit=500')
+      const agentJson = await agentRes.json()
+      if (!agentRes.ok) throw new Error(agentJson.error || 'Failed to load agents')
+      const agentsData = (agentJson.agents || []) as Agent[]
       setAgents(agentsData)
 
     } catch (error) {
@@ -91,11 +85,17 @@ export default function AdminAgentProperties() {
     
     setUpdating(propertyId)
     try {
-      const { error } = await supabase.from('agent_properties').update({
-        published,
-        updated_at: new Date().toISOString()
-      }).eq('id', propertyId)
-      if (error) throw error
+      const res = await fetch('/api/admin/agent-properties', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: propertyId,
+          published,
+          updated_at: new Date().toISOString()
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update property')
 
       setProperties(prev => prev.map(prop => 
         prop.id === propertyId 
@@ -115,11 +115,17 @@ export default function AdminAgentProperties() {
   const toggleFeatured = async (propertyId: string, featured: boolean) => {
     setUpdating(propertyId)
     try {
-      const { error } = await supabase.from('agent_properties').update({
-        featured,
-        updated_at: new Date().toISOString()
-      }).eq('id', propertyId)
-      if (error) throw error
+      const res = await fetch('/api/admin/agent-properties', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: propertyId,
+          featured,
+          updated_at: new Date().toISOString()
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update property')
 
       setProperties(prev => prev.map(prop => 
         prop.id === propertyId 
@@ -138,11 +144,17 @@ export default function AdminAgentProperties() {
     
     setUpdating(propertyId)
     try {
-      const { error } = await supabase.from('agent_properties').update({
-        status: status,
-        updated_at: new Date().toISOString()
-      }).eq('id', propertyId)
-      if (error) throw error
+      const res = await fetch('/api/admin/agent-properties', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: propertyId,
+          status: status,
+          updated_at: new Date().toISOString()
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update property')
 
       // Update local state
       setProperties(prev => prev.map(prop => 
@@ -522,7 +534,11 @@ export default function AdminAgentProperties() {
               }
               if (confirm(`Publish all ${unpublished.length} unpublished properties?`)) {
                 for (const prop of unpublished) {
-                  await supabase.from('agent_properties').update({ published: true }).eq('id', prop.id)
+                  await fetch('/api/admin/agent-properties', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: prop.id, published: true, updated_at: new Date().toISOString() }),
+                  })
                 }
                 fetchAgentProperties()
               }
@@ -540,7 +556,11 @@ export default function AdminAgentProperties() {
               }
               if (confirm(`Unpublish all ${published.length} published properties?`)) {
                 for (const prop of published) {
-                  await supabase.from('agent_properties').update({ published: false }).eq('id', prop.id)
+                  await fetch('/api/admin/agent-properties', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: prop.id, published: false, updated_at: new Date().toISOString() }),
+                  })
                 }
                 fetchAgentProperties()
               }

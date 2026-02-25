@@ -12,7 +12,6 @@ import {
   ChartBarIcon
 } from '@heroicons/react/24/outline'
 import CategoryForm, { type CategoryFormData } from '@/components/forms/CategoryForm'
-import { supabase } from '@/lib/supabase-browser'
 
 interface Category {
   id: string
@@ -20,12 +19,12 @@ interface Category {
   description: string
   icon?: string
   color?: string
-  isActive?: boolean
-  parentId?: string
-  order?: number
+  is_active?: boolean
+  parent_id?: string
+  sort_order?: number
   slug?: string
-  createdAt?: any
-  updatedAt?: any
+  created_at?: any
+  updated_at?: any
 }
 
 type StatsCard = {
@@ -47,33 +46,34 @@ export default function Categories() {
   const [showAddCategory, setShowAddCategory] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
 
-  // Fetch categories from Supabase
+  // Fetch categories via admin API (service role — bypasses RLS)
   const fetchCategories = async () => {
     try {
       setLoading(true)
-      console.log('Fetching categories from Supabase...')
+      console.log('Fetching categories via API...')
       
-      const { data, error } = await supabase.from('categories').select('*')
-      if (error) throw error
+      const res = await fetch('/api/admin/categories')
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to load categories')
       
-      const categoriesData: Category[] = (data || []).map((item: any) => ({
+      const categoriesData: Category[] = (Array.isArray(data) ? data : []).map((item: any) => ({
         id: item.id,
         name: item.name || '',
         description: item.description || '',
         icon: item.icon || 'BuildingOfficeIcon',
         color: item.color || 'blue',
-        isActive: item.isActive ?? true,
-        parentId: item.parentId,
-        order: item.order || 0,
+        is_active: item.is_active ?? true,
+        parent_id: item.parent_id,
+        sort_order: item.sort_order || 0,
         slug: item.slug || '',
-        createdAt: item.createdAt,
-        updatedAt: item.updatedAt,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
       }))
       
-      // Sort by order, then by name
+      // Sort by sort_order, then by name
       categoriesData.sort((a, b) => {
-        const orderA = a.order || 0
-        const orderB = b.order || 0
+        const orderA = a.sort_order || 0
+        const orderB = b.sort_order || 0
         if (orderA !== orderB) return orderA - orderB
         return a.name.localeCompare(b.name)
       })
@@ -94,14 +94,14 @@ export default function Categories() {
 
   // Calculate stats
   const totalCategories = categories.length
-  const activeCategories = categories.filter(c => c.isActive).length
-  const inactiveCategories = categories.filter(c => !c.isActive).length
+  const activeCategories = categories.filter(c => c.is_active).length
+  const inactiveCategories = categories.filter(c => !c.is_active).length
   const activePercentage = totalCategories ? Math.round((activeCategories / totalCategories) * 100) : 0
   const inactivePercentage = totalCategories ? Math.round((inactiveCategories / totalCategories) * 100) : 0
-  const latestCategories = categories
+  const latestCategories = [...categories]
     .sort((a, b) => {
-      const dateA = a.createdAt?.toDate?.() || new Date(0)
-      const dateB = b.createdAt?.toDate?.() || new Date(0)
+      const dateA = a.created_at ? new Date(a.created_at) : new Date(0)
+      const dateB = b.created_at ? new Date(b.created_at) : new Date(0)
       return dateB.getTime() - dateA.getTime()
     })
     .slice(0, 5)
@@ -128,14 +128,19 @@ export default function Categories() {
     }
   }
 
-  // Handle deleting category from Supabase
+  // Handle deleting category via admin API
   const handleDeleteCategory = async (id: string) => {
     if (!confirm('Are you sure you want to delete this category? This action cannot be undone.')) return
     
     try {
       console.log('Deleting category:', id)
-      const { error } = await supabase.from('categories').delete().eq('id', id)
-      if (error) throw error
+      const res = await fetch('/api/admin/categories', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to delete category')
       
       console.log('Category deleted successfully')
       setCategories(categories.filter(cat => cat.id !== id))
@@ -424,20 +429,20 @@ export default function Categories() {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <span className={`inline-flex px-2.5 py-0.5 text-xs font-semibold rounded-full ${
-                              category.isActive
+                              category.is_active
                                 ? 'bg-emerald-100 text-emerald-800'
                                 : 'bg-rose-100 text-rose-800'
                             }`}>
-                              {category.isActive ? 'Active' : 'Inactive'}
+                              {category.is_active ? 'Active' : 'Inactive'}
                             </span>
-                            {category.order !== undefined && (
+                            {category.sort_order !== undefined && (
                               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
-                                Order: {category.order}
+                                Order: {category.sort_order}
                               </span>
                             )}
                           </div>
                           <div className="text-xs text-gray-500">
-                            Created: {formatDate(category.createdAt)}
+                            Created: {formatDate(category.created_at)}
                           </div>
                         </div>
                       </td>
@@ -484,7 +489,17 @@ export default function Categories() {
           isOpen={!!editingCategory}
           onClose={() => setEditingCategory(null)}
           onSubmit={handleEditCategory}
-          initialData={editingCategory}
+          initialData={{
+            id: editingCategory.id,
+            name: editingCategory.name,
+            description: editingCategory.description,
+            icon: editingCategory.icon,
+            color: editingCategory.color,
+            isActive: editingCategory.is_active,
+            parentId: editingCategory.parent_id,
+            order: editingCategory.sort_order,
+            slug: editingCategory.slug,
+          }}
           mode="edit"
         />
       )}

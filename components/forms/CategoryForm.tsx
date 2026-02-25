@@ -14,7 +14,6 @@ import {
   TruckIcon,
   ShoppingBagIcon,
 } from '@heroicons/react/24/outline'
-import { supabase } from '@/lib/supabase-browser'
 
 export interface CategoryFormData {
   id?: string
@@ -148,7 +147,7 @@ export default function CategoryForm({
         throw new Error('Slug is required')
       }
 
-      // Prepare category data for Supabase
+      // Prepare category data for API
       const categoryData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
@@ -158,39 +157,34 @@ export default function CategoryForm({
         sort_order: Number(formData.order) || 0,
         slug: formData.slug.trim(),
         parent_id: formData.parentId || null,
-        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
 
-      console.log('Saving category to Supabase:', categoryData)
+      console.log('Saving category via API:', categoryData)
 
       if (mode === 'edit' && initialData?.id) {
-        // Update existing category in Supabase
-        const { error } = await supabase
-          .from('categories')
-          .update({
-            ...categoryData,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', initialData.id)
-        if (error) throw error
-        console.log('Category updated in Supabase')
+        // Update existing category via admin API
+        const res = await fetch('/api/admin/categories', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: initialData.id, ...categoryData }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to update category')
+        console.log('Category updated via API')
       } else {
-        // Add new category to Supabase
-        const { data: newCategory, error } = await supabase
-          .from('categories')
-          .insert({
-            ...categoryData,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .select()
-          .single()
-        if (error) throw error
-        console.log('Category added to Supabase with ID:', newCategory.id)
+        // Add new category via admin API
+        const res = await fetch('/api/admin/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...categoryData, created_at: new Date().toISOString() }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to create category')
+        console.log('Category added via API with ID:', json.id)
         
         // Add ID to form data for callback
-        formData.id = newCategory.id
+        formData.id = json.id
       }
 
       // Call parent's onSubmit callback

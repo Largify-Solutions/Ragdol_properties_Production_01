@@ -490,7 +490,6 @@
 
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { supabase } from '@/lib/supabase-browser'
 
 interface Agent {
   id: string
@@ -622,18 +621,18 @@ export default function Agents() {
         throw new Error(result.error || 'Failed to create agent user account')
       }
 
-      // Step 2: Update the agents row with additional details
-      // The API created a basic agents row; now update with full form data
-      const { data: agentRows } = await supabase
-        .from('agents')
-        .select('id')
-        .eq('user_id', result.data.id)
-        .single()
+      // Step 2: Update the agents row with additional details via API
+      // The create-user API created a basic agents row; now update with full form data
+      const agentLookupRes = await fetch(`/api/admin/agents?limit=200`)
+      const agentLookupJson = await agentLookupRes.json()
+      const agentRow = (agentLookupJson.agents || []).find((a: any) => a.user_id === result.data.id)
 
-      if (agentRows) {
-        await supabase
-          .from('agents')
-          .update({
+      if (agentRow) {
+        const updateRes = await fetch('/api/admin/agents', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: agentRow.id,
             title: formData.title.trim(),
             office: formData.office.trim() || null,
             license_no: formData.license_no.trim() || null,
@@ -656,18 +655,11 @@ export default function Agents() {
             certifications: formData.certifications || [],
             specializations: formData.specializations || [],
             updated_at: new Date().toISOString()
-          })
-          .eq('id', agentRows.id)
-
-        // Fetch the updated agent for local state
-        const { data: updatedAgent } = await supabase
-          .from('agents')
-          .select('*')
-          .eq('id', agentRows.id)
-          .single()
-
-        if (updatedAgent) {
-          setAgents([updatedAgent as Agent, ...agents])
+          }),
+        })
+        const updateJson = await updateRes.json()
+        if (updateRes.ok && updateJson.agent) {
+          setAgents([updateJson.agent as Agent, ...agents])
         }
       }
       
@@ -691,7 +683,7 @@ export default function Agents() {
     }
   }
 
-  // UPDATE AGENT IN FIREBASE
+  // UPDATE AGENT VIA API
   const handleUpdateAgent = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!editingAgent) return
@@ -701,6 +693,7 @@ export default function Agents() {
     try {
       // Prepare update data
       const updateData = {
+        id: editingAgent.id,
         title: formData.title.trim(),
         office: formData.office.trim() || null,
         license_no: formData.license_no.trim() || null,
@@ -725,21 +718,19 @@ export default function Agents() {
         updated_at: new Date().toISOString()
       }
 
-      // Update in Supabase
-      const { error } = await supabase
-        .from('agents')
-        .update(updateData)
-        .eq('id', editingAgent.id)
-      
-      if (error) throw error
+      // Update via admin API
+      const res = await fetch('/api/admin/agents', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update agent')
       
       console.log('Agent updated:', editingAgent.id)
       
       // Update local state
-      const updatedAgent = {
-        ...editingAgent,
-        ...updateData
-      }
+      const updatedAgent = json.agent || { ...editingAgent, ...updateData }
       
       setAgents(agents.map(a => a.id === editingAgent.id ? updatedAgent : a))
       
@@ -752,32 +743,20 @@ export default function Agents() {
       
     } catch (error: any) {
       console.error('Error updating agent:', error)
-      
-      let errorMessage = 'Error updating agent. Please try again.'
-      if (error.code === 'permission-denied') {
-        errorMessage = 'Permission denied. Please check Supabase RLS policies.'
-      } else if (error.message) {
-        errorMessage = error.message
-      }
-      
-      alert(errorMessage)
+      alert(error.message || 'Error updating agent. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  // DELETE AGENT FROM SUPABASE
+  // DELETE AGENT VIA API
   const handleDeleteAgent = async (agentId: string) => {
     if (!confirm('Are you sure you want to delete this agent?')) return
 
     try {
-      // Delete from Supabase
-      const { error } = await supabase
-        .from('agents')
-        .delete()
-        .eq('id', agentId)
-      
-      if (error) throw error
+      const res = await fetch(`/api/admin/agents/${agentId}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to delete agent')
       
       // Update local state
       setAgents(agents.filter(a => a.id !== agentId))
@@ -786,50 +765,36 @@ export default function Agents() {
       
     } catch (error: any) {
       console.error('Error deleting agent:', error)
-      
-      if (error.code === 'permission-denied') {
-        alert('Delete permission denied. Please check Supabase RLS policies.')
-      } else {
-        alert('Error deleting agent. Please try again.')
-      }
+      alert(error.message || 'Error deleting agent. Please try again.')
     }
   }
 
-  // TOGGLE APPROVAL IN SUPABASE
+  // TOGGLE APPROVAL VIA API
   const handleToggleApproval = async (agent: Agent) => {
     try {
-      // Toggle approval status
       const newApprovedStatus = !agent.approved
       
-      // Update in Supabase
-      const { error } = await supabase
-        .from('agents')
-        .update({
+      const res = await fetch('/api/admin/agents', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: agent.id,
           approved: newApprovedStatus,
           updated_at: new Date().toISOString()
-        })
-        .eq('id', agent.id)
-      
-      if (error) throw error
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update approval')
       
       // Update local state
-      const updatedAgent = {
-        ...agent,
-        approved: newApprovedStatus
-      }
-      
+      const updatedAgent = { ...agent, approved: newApprovedStatus }
       setAgents(agents.map(a => a.id === agent.id ? updatedAgent : a))
       
       alert(`Agent ${newApprovedStatus ? 'approved' : 'unapproved'} successfully!`)
       
     } catch (error: any) {
       console.error('Error toggling approval:', error)
-      
-      if (error.code === 'permission-denied') {
-        alert('Permission denied. Please check Supabase RLS policies.')
-      } else {
-        alert('Error updating approval status. Please try again.')
-      }
+      alert(error.message || 'Error updating approval status. Please try again.')
     }
   }
 

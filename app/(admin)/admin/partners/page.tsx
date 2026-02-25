@@ -14,7 +14,6 @@ import {
   CheckCircleIcon,
   XCircleIcon
 } from '@heroicons/react/24/outline'
-import { supabase } from '@/lib/supabase-browser'
 import { useRealtimeSubscription } from '@/lib/hooks/useRealtimeSubscription'
 
 interface Partner {
@@ -64,16 +63,17 @@ export default function Partners() {
     'Other'
   ]
 
-  // Fetch partners from Supabase
+  // Fetch partners via admin API (service role — bypasses RLS)
   const fetchPartners = async () => {
     try {
       setLoading(true)
-      console.log('Fetching partners from Supabase...')
+      console.log('Fetching partners via API...')
 
-      const { data, error } = await supabase.from('partners').select('*')
-      if (error) throw error
+      const res = await fetch('/api/admin/partners')
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to load partners')
 
-      const partnersData: Partner[] = (data || []).map((item: any) => ({
+      const partnersData: Partner[] = (json.partners || []).map((item: any) => ({
         id: item.id,
         name: item.name || '',
         description: item.description || '',
@@ -81,7 +81,7 @@ export default function Partners() {
         website_url: item.website_url || '',
         category: item.category || '',
         featured: item.featured || false,
-        is_active: item.is_active !== false, // Default to true
+        is_active: item.is_active !== false,
         sort_order: item.sort_order || 0,
         created_at: item.created_at,
         updated_at: item.updated_at
@@ -162,21 +162,25 @@ export default function Partners() {
       }
 
       if (editingPartner) {
-        // Update existing partner
-        const { error } = await supabase.from('partners').update({
-          ...partnerData,
-          created_at: editingPartner.created_at || new Date().toISOString()
-        }).eq('id', editingPartner.id)
-        if (error) throw error
+        // Update existing partner via API
+        const res = await fetch('/api/admin/partners', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingPartner.id, ...partnerData }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to update partner')
         console.log('Partner updated:', editingPartner.id)
       } else {
-        // Add new partner
-        const { data: newDoc, error } = await supabase.from('partners').insert({
-          ...partnerData,
-          created_at: new Date().toISOString()
-        }).select().single()
-        if (error) throw error
-        console.log('Partner added with ID:', newDoc.id)
+        // Add new partner via API
+        const res = await fetch('/api/admin/partners', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(partnerData),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to add partner')
+        console.log('Partner added with ID:', json.partner?.id)
       }
 
       // Reset form and refresh list
@@ -226,8 +230,9 @@ export default function Partners() {
 
     try {
       console.log('Deleting partner:', id)
-      const { error } = await supabase.from('partners').delete().eq('id', id)
-      if (error) throw error
+      const res = await fetch(`/api/admin/partners?id=${id}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to delete partner')
 
       console.log('Partner deleted successfully')
       setPartners(partners.filter(partner => partner.id !== id))
@@ -239,11 +244,17 @@ export default function Partners() {
 
   const toggleActive = async (partner: Partner) => {
     try {
-      const { error } = await supabase.from('partners').update({
-        is_active: !partner.is_active,
-        updated_at: new Date().toISOString()
-      }).eq('id', partner.id)
-      if (error) throw error
+      const res = await fetch('/api/admin/partners', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: partner.id,
+          is_active: !partner.is_active,
+          updated_at: new Date().toISOString()
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update partner')
 
       setPartners(partners.map(p =>
         p.id === partner.id
@@ -258,11 +269,17 @@ export default function Partners() {
 
   const toggleFeatured = async (partner: Partner) => {
     try {
-      const { error } = await supabase.from('partners').update({
-        featured: !partner.featured,
-        updated_at: new Date().toISOString()
-      }).eq('id', partner.id)
-      if (error) throw error
+      const res = await fetch('/api/admin/partners', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: partner.id,
+          featured: !partner.featured,
+          updated_at: new Date().toISOString()
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update partner')
 
       setPartners(partners.map(p =>
         p.id === partner.id

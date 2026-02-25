@@ -16,7 +16,6 @@ import {
   EyeSlashIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline'
-import { supabase } from '@/lib/supabase-browser'
 import { useRealtimeSubscription } from '@/lib/hooks/useRealtimeSubscription'
 
 interface Testimonial {
@@ -50,19 +49,17 @@ export default function Testimonials() {
     is_featured: false
   })
 
-  // Fetch testimonials from Supabase
+  // Fetch testimonials via admin API (service role — bypasses RLS)
   const fetchTestimonials = async () => {
     try {
       setLoading(true)
-      console.log('Fetching testimonials from Supabase...')
+      console.log('Fetching testimonials via API...')
 
-      const { data, error } = await supabase
-        .from('testimonials')
-        .select('*')
-        .order('created_at', { ascending: false })
-      if (error) throw error
+      const res = await fetch('/api/admin/testimonials')
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to load testimonials')
 
-      const testimonialsData: Testimonial[] = (data || []).map((item: any) => ({
+      const testimonialsData: Testimonial[] = (json.testimonials || []).map((item: any) => ({
         id: item.id,
         name: item.name || '',
         email: item.email || '',
@@ -142,21 +139,25 @@ export default function Testimonials() {
       }
 
       if (editingTestimonial) {
-        // Update existing testimonial
-        const { error } = await supabase.from('testimonials').update({
-          ...testimonialData,
-          created_at: editingTestimonial.created_at || new Date().toISOString()
-        }).eq('id', editingTestimonial.id)
-        if (error) throw error
+        // Update existing testimonial via API
+        const res = await fetch('/api/admin/testimonials', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: editingTestimonial.id, ...testimonialData }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to update testimonial')
         console.log('Testimonial updated:', editingTestimonial.id)
       } else {
-        // Add new testimonial
-        const { data: newDoc, error } = await supabase.from('testimonials').insert({
-          ...testimonialData,
-          created_at: new Date().toISOString()
-        }).select().single()
-        if (error) throw error
-        console.log('Testimonial added with ID:', newDoc.id)
+        // Add new testimonial via API
+        const res = await fetch('/api/admin/testimonials', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(testimonialData),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Failed to create testimonial')
+        console.log('Testimonial added with ID:', json.testimonial?.id)
       }
 
       // Reset form and refresh list
@@ -206,8 +207,9 @@ export default function Testimonials() {
 
     try {
       console.log('Deleting testimonial:', id)
-      const { error } = await supabase.from('testimonials').delete().eq('id', id)
-      if (error) throw error
+      const res = await fetch(`/api/admin/testimonials?id=${id}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to delete testimonial')
 
       console.log('Testimonial deleted successfully')
       setTestimonials(testimonials.filter(testimonial => testimonial.id !== id))
@@ -219,11 +221,17 @@ export default function Testimonials() {
 
   const toggleApproval = async (testimonial: Testimonial) => {
     try {
-      const { error } = await supabase.from('testimonials').update({
-        is_active: !testimonial.is_active,
-        updated_at: new Date().toISOString()
-      }).eq('id', testimonial.id)
-      if (error) throw error
+      const res = await fetch('/api/admin/testimonials', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: testimonial.id,
+          is_active: !testimonial.is_active,
+          updated_at: new Date().toISOString()
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update testimonial')
 
       setTestimonials(testimonials.map(t =>
         t.id === testimonial.id
@@ -238,11 +246,17 @@ export default function Testimonials() {
 
   const toggleFeatured = async (testimonial: Testimonial) => {
     try {
-      const { error } = await supabase.from('testimonials').update({
-        is_featured: !testimonial.is_featured,
-        updated_at: new Date().toISOString()
-      }).eq('id', testimonial.id)
-      if (error) throw error
+      const res = await fetch('/api/admin/testimonials', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: testimonial.id,
+          is_featured: !testimonial.is_featured,
+          updated_at: new Date().toISOString()
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to update testimonial')
 
       setTestimonials(testimonials.map(t =>
         t.id === testimonial.id
