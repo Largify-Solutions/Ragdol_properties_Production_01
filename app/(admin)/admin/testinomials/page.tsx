@@ -137,6 +137,7 @@ export default function Testimonials() {
         is_active: formData.is_active,
         is_featured: formData.is_featured,
         updated_at: new Date().toISOString()
+        
       }
 
       if (editingTestimonial) {

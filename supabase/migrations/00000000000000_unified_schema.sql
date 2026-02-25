@@ -1460,7 +1460,8 @@ INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
   ('property-images','property-images',true,10485760,ARRAY['image/jpeg','image/png','image/webp','image/gif']),
   ('agent-images','agent-images',true,5242880,ARRAY['image/jpeg','image/png','image/webp']),
   ('project-images','project-images',true,10485760,ARRAY['image/jpeg','image/png','image/webp','image/gif']),
-  ('documents','documents',false,20971520,ARRAY['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document']),
+  ('documents','documents',true,20971520,ARRAY['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','image/jpeg','image/png','image/webp']),
+  ('logos','logos',true,5242880,ARRAY['image/jpeg','image/jpg','image/png','image/webp','image/svg+xml','image/gif']),
   ('avatars','avatars',true,2097152,ARRAY['image/jpeg','image/png','image/webp']),
   ('hero-media','hero-media',true,104857600,ARRAY['image/jpeg','image/jpg','image/png','image/webp','image/gif','video/mp4','video/webm','video/ogg','video/quicktime'])
 ON CONFLICT (id) DO NOTHING;
@@ -1476,18 +1477,30 @@ CREATE POLICY "propimg_delete"  ON storage.objects FOR DELETE USING  (bucket_id 
 -- agent-images
 CREATE POLICY "agentimg_select" ON storage.objects FOR SELECT USING (bucket_id = 'agent-images');
 CREATE POLICY "agentimg_insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'agent-images' AND auth.uid() IS NOT NULL);
+CREATE POLICY "agentimg_update" ON storage.objects FOR UPDATE USING  (bucket_id = 'agent-images' AND auth.uid() IS NOT NULL);
+CREATE POLICY "agentimg_delete" ON storage.objects FOR DELETE USING  (bucket_id = 'agent-images' AND auth.uid() IS NOT NULL);
 
 -- project-images
 CREATE POLICY "projimg_select"  ON storage.objects FOR SELECT USING (bucket_id = 'project-images');
 CREATE POLICY "projimg_insert"  ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'project-images' AND auth.uid() IS NOT NULL);
+CREATE POLICY "projimg_update"  ON storage.objects FOR UPDATE USING  (bucket_id = 'project-images' AND auth.uid() IS NOT NULL);
+CREATE POLICY "projimg_delete"  ON storage.objects FOR DELETE USING  (bucket_id = 'project-images' AND auth.uid() IS NOT NULL);
+
+-- logos (public — partner & developer logos)
+CREATE POLICY "logos_select"    ON storage.objects FOR SELECT USING (bucket_id = 'logos');
+CREATE POLICY "logos_insert"    ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'logos' AND auth.uid() IS NOT NULL);
+CREATE POLICY "logos_update"    ON storage.objects FOR UPDATE USING  (bucket_id = 'logos' AND auth.uid() IS NOT NULL);
+CREATE POLICY "logos_delete"    ON storage.objects FOR DELETE USING  (bucket_id = 'logos' AND auth.uid() IS NOT NULL);
 
 -- avatars
 CREATE POLICY "avatar_select"   ON storage.objects FOR SELECT USING (bucket_id = 'avatars');
 CREATE POLICY "avatar_insert"   ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'avatars' AND auth.uid() IS NOT NULL);
 
--- documents (private)
-CREATE POLICY "doc_select"      ON storage.objects FOR SELECT USING (bucket_id = 'documents' AND auth.uid() IS NOT NULL);
+-- documents (public select so download links work without auth)
+CREATE POLICY "doc_select"      ON storage.objects FOR SELECT USING (bucket_id = 'documents');
 CREATE POLICY "doc_insert"      ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'documents' AND auth.uid() IS NOT NULL);
+CREATE POLICY "doc_update"      ON storage.objects FOR UPDATE USING  (bucket_id = 'documents' AND auth.uid() IS NOT NULL);
+CREATE POLICY "doc_delete"      ON storage.objects FOR DELETE USING  (bucket_id = 'documents' AND auth.uid() IS NOT NULL);
 
 -- hero-media
 CREATE POLICY "heromedia_select" ON storage.objects FOR SELECT USING (bucket_id = 'hero-media');

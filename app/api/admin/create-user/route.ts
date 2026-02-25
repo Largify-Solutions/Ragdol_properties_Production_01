@@ -13,15 +13,16 @@ import { createClient, createServiceClient } from '@/lib/supabase-server'
  */
 export async function POST(req: NextRequest) {
   try {
-    // 1. Verify the caller is an admin
-    const supabase = createServiceClient()
-    const { data: { user: currentUser } } = await supabase.auth.getUser()
+    // 1. Verify the caller is an admin using cookie-based session client
+    const userClient = await createClient()
+    const { data: { user: currentUser } } = await userClient.auth.getUser()
 
     if (!currentUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data: callerProfile } = await supabase
+    const serviceClient = createServiceClient()
+    const { data: callerProfile } = await serviceClient
       .from('profiles')
       .select('role')
       .eq('id', currentUser.id)
@@ -50,8 +51,6 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Create user via Supabase Auth Admin API (requires service role key)
-    const serviceClient = createServiceClient()
-
     const { data: newUser, error: createError } = await serviceClient.auth.admin.createUser({
       email,
       password,

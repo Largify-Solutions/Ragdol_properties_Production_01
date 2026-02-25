@@ -104,24 +104,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Get initial session
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        // Use getUser() to validate the token server-side — getSession() reads
+        // stale cookies without verification, which causes TOKEN_REFRESH errors.
+        const { data: { user: currentUser }, error } = await supabase.auth.getUser()
 
-        if (session?.user) {
-          const userData: UserType = {
-            id: session.user.id,
-            uid: session.user.id,
-            email: session.user.email!,
-            displayName: session.user.user_metadata?.full_name || null,
-          }
-          setUser(userData)
+        if (error || !currentUser) {
+          // Stale / invalid token — sign out cleanly so cookies are cleared
+          await supabase.auth.signOut()
+          setUser(null)
+          setProfile(null)
+          return
+        }
 
-          const profileData = await fetchProfile(session.user)
-          if (profileData) {
-            setProfile(profileData)
-          }
+        const userData: UserType = {
+          id: currentUser.id,
+          uid: currentUser.id,
+          email: currentUser.email!,
+          displayName: currentUser.user_metadata?.full_name || null,
+        }
+        setUser(userData)
+
+        const profileData = await fetchProfile(currentUser)
+        if (profileData) {
+          setProfile(profileData)
         }
       } catch (error) {
         console.error('Error initializing auth:', error)
+        // Clear any corrupted state
+        setUser(null)
+        setProfile(null)
       } finally {
         setLoading(false)
       }
@@ -153,6 +164,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (profileData) {
             setProfile(profileData)
           }
+        } else if (event === 'USER_UPDATED' && session?.user) {
+          const profileData = await fetchProfile(session.user)
+          if (profileData) setProfile(profileData)
+        } else if ((event as string) === 'TOKEN_REFRESH_FAILED' || (event as string) === 'TOKEN_REFRESH_FAILURE') {
+          // Refresh token rejected by Supabase — clear everything and let the
+          // middleware redirect the user back to the login page on next navigation.
+          console.warn('Auth: token refresh failed — signing out')
+          await supabase.auth.signOut()
+          setUser(null)
+          setProfile(null)
         }
 
         setLoading(false)

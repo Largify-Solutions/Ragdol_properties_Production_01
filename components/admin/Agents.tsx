@@ -526,6 +526,8 @@ export default function Agents() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterApproved, setFilterApproved] = useState<'all' | 'approved' | 'pending'>('all')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null)
+  const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -584,6 +586,23 @@ export default function Agents() {
     loadAgents()
   }, [])
 
+  // Upload profile image to storage and return public URL
+  const uploadProfileImage = async (agentName: string): Promise<string | null> => {
+    if (!profileImageFile) return null
+    try {
+      const uploadData = new FormData()
+      uploadData.append('file', profileImageFile)
+      uploadData.append('agent_name', agentName)
+      const res = await fetch('/api/admin/agents/upload-image', { method: 'POST', body: uploadData })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Image upload failed')
+      return json.url as string
+    } catch (err) {
+      console.error('Image upload error:', err)
+      return null
+    }
+  }
+
   // ADD AGENT - creates auth user + profile + agents row
   const handleAddAgent = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -601,6 +620,13 @@ export default function Agents() {
         setIsSubmitting(false)
         return
       }
+
+      // Upload profile image first if a file was selected
+      const uploadedImageUrl = await uploadProfileImage(formData.title.trim())
+      if (uploadedImageUrl) {
+        setFormData(prev => ({ ...prev, profile_image: uploadedImageUrl }))
+      }
+      const finalProfileImage = uploadedImageUrl || formData.profile_image.trim() || null
 
       // Step 1: Create auth user + profile via admin API
       // This also creates an agents row with user_id linked
@@ -643,7 +669,7 @@ export default function Agents() {
             linkedin_url: formData.linkedin_url.trim() || null,
             instagram_handle: formData.instagram_handle.trim() || null,
             website_url: formData.website_url.trim() || null,
-            profile_image: formData.profile_image.trim() || null,
+            profile_image: finalProfileImage,
             approved: formData.approved,
             verified: formData.verified,
             rating: formData.rating,
@@ -691,6 +717,10 @@ export default function Agents() {
     setIsSubmitting(true)
     
     try {
+      // Upload profile image if a new file was selected
+      const uploadedImageUrl = await uploadProfileImage(formData.title.trim())
+      const finalProfileImage = uploadedImageUrl || formData.profile_image.trim() || null
+
       // Prepare update data
       const updateData = {
         id: editingAgent.id,
@@ -704,7 +734,7 @@ export default function Agents() {
         linkedin_url: formData.linkedin_url.trim() || null,
         instagram_handle: formData.instagram_handle.trim() || null,
         website_url: formData.website_url.trim() || null,
-        profile_image: formData.profile_image.trim() || null,
+        profile_image: finalProfileImage,
         approved: formData.approved,
         verified: formData.verified,
         rating: formData.rating,
@@ -799,6 +829,8 @@ export default function Agents() {
   }
 
   const resetForm = () => {
+    setProfileImageFile(null)
+    setProfileImagePreview(null)
     setFormData({
       title: '',
       email: '',
@@ -818,6 +850,7 @@ export default function Agents() {
       review_count: 0,
       total_sales: 0,
       commission_rate: 2.5,
+
       experience_years: 5,
       languages: ['English', 'Arabic'],
       certifications: ['RERA Certified'],
@@ -993,6 +1026,8 @@ export default function Agents() {
                         <button
                           onClick={() => {
                             setEditingAgent(agent)
+                            setProfileImageFile(null)
+                            setProfileImagePreview(agent.profile_image || null)
                             setFormData({
                               title: agent.title || '',
                               email: '',
@@ -1149,15 +1184,62 @@ export default function Agents() {
                     disabled={isSubmitting}
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Profile Image URL</label>
-                  <input
-                    type="url"
-                    value={formData.profile_image}
-                    onChange={(e) => setFormData({ ...formData, profile_image: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                    disabled={isSubmitting}
-                  />
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700">Profile Image</label>
+                  <div className="flex items-start gap-4">
+                    {/* Preview */}
+                    <div className="shrink-0">
+                      {(profileImagePreview || formData.profile_image) ? (
+                        <img
+                          src={profileImagePreview || formData.profile_image}
+                          alt="Preview"
+                          className="h-20 w-20 rounded-full object-cover border-2 border-gray-200"
+                        />
+                      ) : (
+                        <div className="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-300">
+                          <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Upload Image File</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={isSubmitting}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0] || null
+                            setProfileImageFile(file)
+                            if (file) {
+                              const reader = new FileReader()
+                              reader.onloadend = () => setProfileImagePreview(reader.result as string)
+                              reader.readAsDataURL(file)
+                            } else {
+                              setProfileImagePreview(null)
+                            }
+                          }}
+                          className="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        />
+                        <p className="text-xs text-gray-400 mt-1">JPG, PNG, WEBP — will be uploaded to storage</p>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Or paste image URL</label>
+                        <input
+                          type="url"
+                          value={formData.profile_image}
+                          onChange={(e) => {
+                            setFormData({ ...formData, profile_image: e.target.value })
+                            setProfileImageFile(null)
+                            setProfileImagePreview(null)
+                          }}
+                          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                          disabled={isSubmitting}
+                          placeholder="https://..."
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Telegram</label>

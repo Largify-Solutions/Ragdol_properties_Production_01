@@ -36,6 +36,8 @@ export default function Partners() {
   const [showAddPartner, setShowAddPartner] = useState(false)
   const [editingPartner, setEditingPartner] = useState<Partner | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -133,6 +135,24 @@ export default function Partners() {
     }))
   }
 
+  // Upload logo to storage and return public URL
+  const uploadLogo = async (partnerName: string): Promise<string | null> => {
+    if (!logoFile) return null
+    try {
+      const uploadData = new FormData()
+      uploadData.append('file', logoFile)
+      uploadData.append('partner_name', partnerName)
+      const res = await fetch('/api/admin/partners/upload-logo', { method: 'POST', body: uploadData })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Logo upload failed')
+      return json.url as string
+    } catch (err: any) {
+      console.error('Logo upload error:', err)
+      alert('Logo upload failed: ' + err.message)
+      return null
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -148,11 +168,15 @@ export default function Partners() {
 
     try {
       setIsSubmitting(true)
-      
+
+      // Upload logo if a file was selected
+      const uploadedLogoUrl = await uploadLogo(formData.name.trim())
+      const finalLogoUrl = uploadedLogoUrl || formData.logo_url.trim()
+
       const partnerData = {
         name: formData.name.trim(),
         description: formData.description.trim(),
-        logo_url: formData.logo_url.trim(),
+        logo_url: finalLogoUrl,
         website_url: formData.website_url.trim(),
         category: formData.category.trim(),
         featured: formData.featured,
@@ -196,6 +220,8 @@ export default function Partners() {
   }
 
   const resetForm = () => {
+    setLogoFile(null)
+    setLogoPreview(null)
     setFormData({
       name: '',
       description: '',
@@ -212,6 +238,8 @@ export default function Partners() {
 
   const handleEdit = (partner: Partner) => {
     setEditingPartner(partner)
+    setLogoFile(null)
+    setLogoPreview(partner.logo_url || null)
     setFormData({
       name: partner.name,
       description: partner.description || '',
@@ -424,21 +452,65 @@ export default function Partners() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  Logo URL
-                </label>
-                <input
-                  type="url"
-                  name="logo_url"
-                  value={formData.logo_url}
-                  onChange={handleInputChange}
-                  disabled={isSubmitting}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
-                  placeholder="https://example.com/logo.png"
-                />
-                <p className="text-xs text-gray-500">
-                  Recommended size: 200x100px PNG or JPG
-                </p>
+                <label className="block text-sm font-medium text-gray-700">Partner Logo</label>
+                <div className="flex items-start gap-4 p-3 border border-gray-200 rounded-lg bg-gray-50">
+                  {/* Preview */}
+                  <div className="shrink-0">
+                    {(logoPreview || formData.logo_url) ? (
+                      <div className="w-16 h-16 bg-white rounded-lg border border-gray-200 p-1 flex items-center justify-center">
+                        <img
+                          src={logoPreview || formData.logo_url}
+                          alt="Logo preview"
+                          className="max-w-full max-h-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 bg-white rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+                        <PhotoIcon className="h-7 w-7 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Upload Logo File</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={isSubmitting}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null
+                          setLogoFile(file)
+                          if (file) {
+                            const reader = new FileReader()
+                            reader.onloadend = () => setLogoPreview(reader.result as string)
+                            reader.readAsDataURL(file)
+                          } else {
+                            setLogoPreview(null)
+                          }
+                        }}
+                        className="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                      />
+                      <p className="text-xs text-gray-400 mt-1">PNG, JPG, SVG, WEBP — uploaded to storage</p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Or paste logo URL</label>
+                      <input
+                        type="url"
+                        name="logo_url"
+                        value={formData.logo_url}
+                        onChange={(e) => {
+                          handleInputChange(e)
+                          setLogoFile(null)
+                          setLogoPreview(e.target.value || null)
+                        }}
+                        disabled={isSubmitting}
+                        className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+                        placeholder="https://example.com/logo.png"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500">Recommended size: 200x100px PNG or SVG</p>
               </div>
 
               <div className="space-y-2">

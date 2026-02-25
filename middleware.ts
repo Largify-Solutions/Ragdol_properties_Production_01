@@ -45,22 +45,31 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // getSession() reads from cookies without a remote network call —
-    // avoids redirect loops caused by getUser() network failures.
-    // Fine-grained role checks are handled client-side in layout components.
+    // IMPORTANT: Use getUser() not getSession().
+    // getUser() validates the JWT with Supabase's servers and automatically
+    // refreshes the access token using the refresh token when expired.
+    // This keeps the cookies in sync and prevents stale/invalid token errors.
     const {
-      data: { session },
-    } = await supabase.auth.getSession()
+      data: { user },
+      error,
+    } = await supabase.auth.getUser()
 
-    if (!session) {
-      // No session cookie → redirect to appropriate login page
+    if (error || !user) {
+      // Invalid/expired session → clear cookies and redirect to login
       const url = request.nextUrl.clone()
       url.pathname = isCustomerPath ? '/customer/login' : '/admin/login'
       url.searchParams.set('redirectTo', pathname)
-      return NextResponse.redirect(url)
+      const redirectResponse = NextResponse.redirect(url)
+      // Clear stale auth cookies so the client starts fresh
+      request.cookies.getAll().forEach(({ name }) => {
+        if (name.startsWith('sb-')) {
+          redirectResponse.cookies.delete(name)
+        }
+      })
+      return redirectResponse
     }
 
-    // Session present → pass through; client-side handles role enforcement
+    // Valid user — return response with refreshed cookies
     return supabaseResponse
   } catch {
     // Auth check errored (network, cold start, etc.) — allow through so that
