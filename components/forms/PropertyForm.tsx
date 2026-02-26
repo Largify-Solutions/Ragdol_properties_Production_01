@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { XMarkIcon, PhotoIcon, MapPinIcon, PlusIcon, TrashIcon, CloudArrowUpIcon, ArrowsUpDownIcon, LinkIcon, DocumentIcon, FilmIcon } from '@heroicons/react/24/outline'
+import { directUpload } from '@/lib/direct-upload'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase-browser'
@@ -638,28 +639,11 @@ export default function PropertyForm({
     }
 
     try {
-      // Upload via server API route (bypasses RLS using service role)
-      const uploadData = new FormData()
-      uploadData.append('file', file)
-      uploadData.append('type', type)
-      const res = await fetch('/api/admin/properties/upload-files', {
-        method: 'POST',
-        body: uploadData,
-      })
-
-      // Check content type before parsing JSON
-      const contentType = res.headers.get('content-type') || ''
-      let json: any
-      
-      if (contentType.includes('application/json')) {
-        json = await res.json()
-      } else {
-        const text = await res.text()
-        throw new Error(`Invalid response format. Status: ${res.status} ${res.statusText}. Response: ${text.substring(0, 100)}`)
-      }
-
-      if (!res.ok) throw new Error(json.error || 'Upload failed')
-      const downloadUrl = json.url as string
+      // Upload directly from browser to Supabase – bypasses Vercel 4.5MB limit
+      const bucket = (type === 'documents' || type === 'brochures') ? 'documents' : type === 'videos' ? 'hero-media' : 'property-images'
+      const safeName = file.name.replace(/[^a-z0-9._-]/gi, '-').replace(/-+/g, '-')
+      const filePath = `properties/${type}/${Date.now()}_${safeName}`
+      const downloadUrl = await directUpload(file, bucket, filePath)
 
       // Update formData based on type
       switch (type) {

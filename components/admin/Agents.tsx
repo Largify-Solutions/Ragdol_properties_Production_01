@@ -490,6 +490,7 @@
 
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon, CheckIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
+import { directUpload } from '@/lib/direct-upload'
 
 interface Agent {
   id: string
@@ -590,24 +591,10 @@ export default function Agents() {
   const uploadProfileImage = async (agentName: string): Promise<string | null> => {
     if (!profileImageFile) return null
     try {
-      const uploadData = new FormData()
-      uploadData.append('file', profileImageFile)
-      uploadData.append('agent_name', agentName)
-      const res = await fetch('/api/admin/agents/upload-image', { method: 'POST', body: uploadData })
-      
-      // Check content type before parsing JSON
-      const contentType = res.headers.get('content-type') || ''
-      let json: any
-      
-      if (contentType.includes('application/json')) {
-        json = await res.json()
-      } else {
-        const text = await res.text()
-        throw new Error(`Invalid response format. Status: ${res.status} ${res.statusText}. Response: ${text.substring(0, 100)}`)
-      }
-      
-      if (!res.ok) throw new Error(json.error || 'Image upload failed')
-      return json.url as string
+      const fileExt = profileImageFile.name.split('.').pop()
+      const safeName = agentName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')
+      const filePath = `${safeName}-${Date.now()}.${fileExt}`
+      return await directUpload(profileImageFile, 'agent-images', filePath)
     } catch (err) {
       console.error('Image upload error:', err)
       return null

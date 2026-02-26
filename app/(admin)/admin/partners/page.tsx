@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react'
+import { directUpload } from '@/lib/direct-upload'
 import {
   PencilIcon,
   TrashIcon,
@@ -135,28 +136,14 @@ export default function Partners() {
     }))
   }
 
-  // Upload logo to storage and return public URL
+  // Upload logo directly from browser to Supabase (bypasses Vercel size limit)
   const uploadLogo = async (partnerName: string): Promise<string | null> => {
     if (!logoFile) return null
     try {
-      const uploadData = new FormData()
-      uploadData.append('file', logoFile)
-      uploadData.append('partner_name', partnerName)
-      const res = await fetch('/api/admin/partners/upload-logo', { method: 'POST', body: uploadData })
-      
-      // Check content type before parsing JSON
-      const contentType = res.headers.get('content-type') || ''
-      let json: any
-      
-      if (contentType.includes('application/json')) {
-        json = await res.json()
-      } else {
-        const text = await res.text()
-        throw new Error(`Invalid response format. Status: ${res.status} ${res.statusText}. Response: ${text.substring(0, 100)}`)
-      }
-      
-      if (!res.ok) throw new Error(json.error || 'Logo upload failed')
-      return json.url as string
+      const fileExt = logoFile.name.split('.').pop()
+      const safeName = partnerName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')
+      const filePath = `${safeName}-${Date.now()}.${fileExt}`
+      return await directUpload(logoFile, 'logos', filePath)
     } catch (err: any) {
       console.error('Logo upload error:', err)
       alert('Logo upload failed: ' + err.message)

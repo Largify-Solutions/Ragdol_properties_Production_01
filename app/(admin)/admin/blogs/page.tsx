@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react'
+import { directUpload } from '@/lib/direct-upload'
 import {
   PencilIcon,
   TrashIcon,
@@ -451,23 +452,10 @@ export default function Blogs() {
                         const file = e.target.files?.[0]
                         if (!file) return
                         try {
-                          const fd = new FormData()
-                          fd.append('file', file)
-                          const res = await fetch('/api/admin/blogs/upload-image', { method: 'POST', body: fd })
-                          
-                          // Check content type before parsing JSON
-                          const contentType = res.headers.get('content-type') || ''
-                          let json: any
-                          
-                          if (contentType.includes('application/json')) {
-                            json = await res.json()
-                          } else {
-                            const text = await res.text()
-                            throw new Error(`Invalid response format. Status: ${res.status}. Response: ${text.substring(0, 100)}`)
-                          }
-                          
-                          if (!res.ok) throw new Error(json.error)
-                          setFormData(prev => ({ ...prev, featured_image: json.url }))
+                          const ext = file.name.split('.').pop() || 'jpg'
+                          const filePath = `blog/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+                          const url = await directUpload(file, 'documents', filePath)
+                          setFormData(prev => ({ ...prev, featured_image: url }))
                         } catch (err: any) {
                           alert('Upload failed: ' + err.message)
                         }

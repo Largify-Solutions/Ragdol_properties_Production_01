@@ -1112,63 +1112,102 @@ export default function HomePage() {
 
   // Reload all homepage data (used on mount and by realtime subscription)
   const reloadAllData = useCallback(async () => {
-    console.log("🚀 Starting optimized data fetch from Supabase...");
-
     try {
-      // Fetch all critical data in parallel (fast & efficient)
-      const [
-        featuredData,
-        rentalData,
-        projectData,
-        newProjectsData,
-        partnersData,
-        agentsData,
-        testimonialsData,
-        blogsData
-      ] = await Promise.all([
-        fetchFeaturedProperties(),
-        fetchRentalProperties(),
-        fetchProjectVideos(),
-        fetchNewProjects(),
-        fetchTrustedPartners(),
-        fetchTopAgents(),
-        fetchTestimonials(),
-        fetchBlogPosts()
-      ]).catch(error => {
-        console.error("Error in concurrent data fetch:", error);
-        return [[], [], [], [], [], [], [], []];
-      });
+      const res = await fetch('/api/homepage-data', { cache: 'no-store' })
+      if (!res.ok) throw new Error(`homepage-data fetch failed: ${res.status}`)
+      const d = await res.json()
 
-      // Update all state at once
-      setFeaturedProperties(featuredData);
-      setRentalProperties(rentalData);
-      setNewProjects(newProjectsData);
-      setTrustedPartners(partnersData);
-      setTopAgents(agentsData);
-      setTestimonials(testimonialsData);
-      setBlogPosts(blogsData);
+      const FALLBACK_IMG = "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800"
 
-      // Initialize video states for projects
-      if (projectData.length > 0) {
-        setProjectVideos(projectData);
-        const initialVideoStates: {
-          [key: string]: { isPlaying: boolean; isMuted: boolean };
-        } = {};
-        projectData.forEach((project) => {
-          initialVideoStates[project.id] = {
-            isPlaying: false,
-            isMuted: true,
-          };
-        });
-        setVideoStates(initialVideoStates);
+      const mapUIProperty = (p: any, priceLabel: string): UIProperty => ({
+        id: p.id,
+        title: p.title || "Untitled Property",
+        price: p.price || 0,
+        priceLabel,
+        image: p.images?.[0] || p.image_url || FALLBACK_IMG,
+        location: p.address ? `${p.address}${p.area ? ", " + p.area : ""}${p.city ? ", " + p.city : ""}` : p.location || "Dubai, UAE",
+        beds: p.beds || 0,
+        baths: p.baths || 0,
+        sqft: p.sqft || p.built_up_area || 0,
+        type: p.type || "Property",
+        featured: p.featured || false,
+      })
+
+      setFeaturedProperties((d.featuredProperties || []).map((p: any) => mapUIProperty(p, 'total')))
+      setRentalProperties((d.rentalProperties || []).map((p: any) => mapUIProperty(p, 'per_month')))
+
+      const projectVideos: ProjectVideo[] = (d.projectVideos || []).map((p: any) => ({
+        id: p.id,
+        title: p.name || "Untitled Project",
+        location: p.city || p.area || p.address || "Dubai",
+        videoUrl: p.video_url && isVideoUrl(p.video_url) ? p.video_url : "",
+        imageUrl: p.hero_image_url || (Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null) || FALLBACK_IMG,
+        status: p.status || "upcoming",
+        price: p.starting_price || p.min_price || 0,
+        isRealProject: true,
+      }))
+      setProjectVideos(projectVideos)
+      if (projectVideos.length > 0) {
+        const initialVideoStates: { [key: string]: { isPlaying: boolean; isMuted: boolean } } = {}
+        projectVideos.forEach(proj => { initialVideoStates[proj.id] = { isPlaying: false, isMuted: true } })
+        setVideoStates(initialVideoStates)
       }
 
-      setDataLoaded(true);
-      console.log("✓ All data loaded successfully!");
+      setNewProjects((d.newProjects || []).map((p: any) => ({
+        id: p.id,
+        name: p.name || "Untitled Project",
+        location: p.city || p.address || p.area || "Dubai",
+        starting_price: p.starting_price || p.min_price || 0,
+        hero_image_url: p.hero_image_url || p.images?.[0] || FALLBACK_IMG,
+        status: p.status || "In Progress",
+        developer: p.developers?.name || "Unknown Developer",
+        video_url: p.video_url || null,
+        description: p.description || "",
+        available_units: p.available_units || 0,
+        total_units: p.total_units || 0,
+      })))
+
+      setTrustedPartners((d.partners || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        logo: p.logo_url || FALLBACK_IMG,
+        category: p.category || "Real Estate",
+      })))
+
+      setTopAgents((d.agents || []).map((agent: any) => ({
+        ...agent,
+        profile_image: agent.profile_image || agent.profiles?.avatar_url ||
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(agent.title || "Agent")}&background=random`,
+      })))
+
+      setTestimonials((d.testimonials || []).map((t: any) => ({
+        id: t.id,
+        name: t.name || "Anonymous",
+        role: t.role || t.company || "Client",
+        content: t.content || "Great service!",
+        avatar: t.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || "Client")}&background=random`,
+        rating: t.rating || 5,
+        createdAt: t.created_at || new Date(),
+      })))
+
+      setBlogPosts((d.blogPosts || []).map((post: any) => ({
+        id: post.id,
+        title: post.title || "Untitled Blog",
+        date: post.created_at ? new Date(post.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Recent",
+        category: post.category || "General",
+        image: post.featured_image || FALLBACK_IMG,
+        excerpt: post.excerpt || "",
+        author: "RAGDOL",
+        readTime: "3 min read",
+        slug: post.slug || post.id,
+      })))
+
+      setDataLoaded(true)
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching homepage data:", error)
+      setDataLoaded(true)
     }
-  }, []);
+  }, [])
 
   // Fetch all data on component mount - OPTIMIZED CONCURRENT LOADING
   useEffect(() => {
@@ -1177,13 +1216,13 @@ export default function HomePage() {
 
   // Real-time: auto-refresh homepage when any key table changes in DB
   useRealtimeMulti([
-    { table: 'properties',       onChange: () => { dataCache.clear(); reloadAllData(); } },
-    { table: 'agent_properties', onChange: () => { dataCache.clear(); reloadAllData(); } },
-    { table: 'agents',           onChange: () => { dataCache.clear(); reloadAllData(); } },
-    { table: 'testimonials',     onChange: () => { dataCache.clear(); reloadAllData(); } },
-    { table: 'projects',         onChange: () => { dataCache.clear(); reloadAllData(); } },
-    { table: 'posts',            onChange: () => { dataCache.clear(); reloadAllData(); } },
-    { table: 'partners',         onChange: () => { dataCache.clear(); reloadAllData(); } },
+    { table: 'properties',       onChange: () => reloadAllData() },
+    { table: 'agent_properties', onChange: () => reloadAllData() },
+    { table: 'agents',           onChange: () => reloadAllData() },
+    { table: 'testimonials',     onChange: () => reloadAllData() },
+    { table: 'projects',         onChange: () => reloadAllData() },
+    { table: 'posts',            onChange: () => reloadAllData() },
+    { table: 'partners',         onChange: () => reloadAllData() },
   ]);
 
   const togglePlayPause = (projectId: string) => {

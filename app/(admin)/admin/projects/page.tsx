@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon, FolderIcon, DocumentArrowUpIcon, DocumentTextIcon, PhotoIcon, VideoCameraIcon, CheckCircleIcon, XMarkIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
+import { directUpload } from '@/lib/direct-upload'
 
 
 interface Project {
@@ -554,27 +555,27 @@ const handleSubmit = async (e: React.FormEvent) => {
     }
   }
 
-  // ── File upload helper ────────────────────────────────────────────────────
+  // ── File upload helper (direct browser → Supabase, no Vercel size limit) ──
+  const PROJ_BUCKET_MAP: Record<string, { bucket: string; folder: string }> = {
+    brochure_en:    { bucket: 'documents',      folder: 'projects/brochures' },
+    brochure_ar:    { bucket: 'documents',      folder: 'projects/brochures' },
+    fact_sheet:     { bucket: 'documents',      folder: 'projects/fact-sheets' },
+    floor_plans:    { bucket: 'documents',      folder: 'projects/floor-plans' },
+    masterplan:     { bucket: 'documents',      folder: 'projects/masteplans' },
+    material_board: { bucket: 'documents',      folder: 'projects/material-boards' },
+    one_pager:      { bucket: 'documents',      folder: 'projects/one-pagers' },
+    payment_plan:   { bucket: 'documents',      folder: 'projects/payment-plans' },
+    image:          { bucket: 'project-images', folder: 'renders' },
+    video:          { bucket: 'hero-media',     folder: 'project-videos' },
+  }
+
   const uploadProjectFile = async (file: File, type: string): Promise<string> => {
-    const fd = new FormData()
-    fd.append('file', file)
-    fd.append('type', type)
-    fd.append('project_name', formData.name.trim() || 'project')
-    const res = await fetch('/api/admin/projects/upload-files', { method: 'POST', body: fd })
-    
-    // Check content type before parsing JSON
-    const contentType = res.headers.get('content-type') || ''
-    let json: any
-    
-    if (contentType.includes('application/json')) {
-      json = await res.json()
-    } else {
-      const text = await res.text()
-      throw new Error(`Invalid response format. Status: ${res.status} ${res.statusText}. Response: ${text.substring(0, 100)}`)
-    }
-    
-    if (!res.ok) throw new Error(json.error || 'Upload failed')
-    return json.url as string
+    const config = PROJ_BUCKET_MAP[type] ?? PROJ_BUCKET_MAP['image']
+    const fileExt = file.name.split('.').pop()
+    const safeName = (formData.name.trim() || 'project').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-')
+    const typeSuffix = type === 'brochure_en' ? 'EN' : type === 'brochure_ar' ? 'AR' : type
+    const filePath = `${config.folder}/${safeName}/${typeSuffix}-${Date.now()}.${fileExt}`
+    return directUpload(file, config.bucket, filePath)
   }
 
   // Upload a single-file document field (brochure_en, fact_sheet, etc.)
