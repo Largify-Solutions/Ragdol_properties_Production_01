@@ -2348,7 +2348,13 @@ async function fetchAllProperties() {
       fetchAllPropertiesFromAgentCollection()
     ]);
     
-    const allProperties = [...mainProperties, ...agentProperties];
+    // Deduplicate by id — if the same property exists in both tables, keep the main collection entry
+    const seen = new Set<string>()
+    const allProperties = [...mainProperties, ...agentProperties].filter(p => {
+      if (seen.has(p.id)) return false
+      seen.add(p.id)
+      return true
+    })
     setCachedProperties(allProperties)
     
     return allProperties;
