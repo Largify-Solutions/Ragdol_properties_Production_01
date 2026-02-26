@@ -21,6 +21,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolidIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { PropertySliderSkeleton, ProjectCardSkeleton, BlogCardSkeleton, TestimonialCardSkeleton } from "@/components/shared/SkeletonLoaders";
 
 // Supabase imports
 import { supabase } from "@/lib/supabase-browser";
@@ -617,45 +618,40 @@ const AutoPlayVideoPlayer = ({
     }
   };
 
-  // Video ko automatically play karne ke liye
+  // Auto-play video on mount
   useEffect(() => {
     const videoElement = videoRef.current;
     if (!videoElement) return;
     
     const playVideo = async () => {
       try {
-        // Video ko load hone do
+        // Load video first
         videoElement.load();
         
-        // Thoda wait karo phir play karo
+        // Short delay then play
         setTimeout(async () => {
           try {
             await videoElement.play();
             setIsPlaying(true);
-            console.log("Video auto-played successfully:", title);
           } catch (playError) {
-            console.log("Auto-play failed, trying muted play:", title);
-            
-            // Muted try karo
+            // Try muted autoplay
             videoElement.muted = true;
             try {
               await videoElement.play();
               setIsPlaying(true);
-              console.log("Video auto-played with muted:", title);
             } catch (mutedError) {
-              console.log("Auto-play completely failed:", title);
+              // Autoplay blocked by browser
             }
           }
         }, 300);
       } catch (error) {
-        console.error("Video loading error:", error);
         setHasError(true);
       }
     };
     
     playVideo();
     
-    // Video end hone par restart karo
+    // Restart video on end
     const handleEnded = () => {
       videoElement.currentTime = 0;
       videoElement.play().catch(() => {});
@@ -991,12 +987,12 @@ const AutoPlayProjectVideo = ({
       }
     };
     
-    // Video ready hone par play karo
+    // Play video when ready
     const handleCanPlay = () => {
       playVideo();
     };
     
-    // Video end hone par restart
+    // Restart video on end
     const handleEnded = () => {
       video.currentTime = 0;
       video.play().catch(() => {});
@@ -1073,13 +1069,13 @@ const SimpleAutoPlayVideo = ({ url, poster, title }: { url: string; poster?: str
       // Ye sab se important hai - video automatically chalegi
       onLoadedData={(e) => {
         e.currentTarget.play().catch(() => {
-          // Muted play try karo agar error aaye
+          // Try muted play on error
           e.currentTarget.muted = true;
           e.currentTarget.play().catch(() => {});
         });
       }}
       onEnded={(e) => {
-        // Video end hone par restart
+        // Restart video on end
         e.currentTarget.currentTime = 0;
         e.currentTarget.play().catch(() => {});
       }}
@@ -1484,14 +1480,12 @@ export default function HomePage() {
           </svg>
         </div>
         <h3 className="text-lg font-semibold text-slate-700 mb-2">
-          No Projects Found
+          No Projects Available
         </h3>
 
-        <div className="text-sm text-slate-400 space-y-1">
-          <p>• Ensure projects have "published: true"</p>
-          <p>• Add "video_url" or "images" field</p>
-          <p>• Include "hero_image_url" for fallback</p>
-        </div>
+        <p className="text-sm text-slate-500">
+          Featured projects will appear here soon
+        </p>
       </div>
     )}
 
@@ -1643,10 +1637,8 @@ export default function HomePage() {
           </div>
 
           {!dataLoaded && trustedPartners.length === 0 && (
-            <div className="text-center mt-6">
-              <p className="text-amber-600 text-sm">
-                Unable to load partners. Using default partners.
-              </p>
+            <div className="hidden">
+              {/* Partners loading silently */}
             </div>
           )}
 
@@ -1684,10 +1676,10 @@ export default function HomePage() {
               <span className="text-primary">{t("homepage.buyText")}</span>
             </h3>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto mt-6">
-              Includes properties from our main listings and verified agents
+              Discover premium properties handpicked for discerning buyers
             </p>
-            <Link href="/properties" className="btn-outline mt-5">
-              View All properties for buy
+            <Link href="/properties?action=buy" className="btn-outline mt-5">
+              View All Properties
             </Link>
           </div>
 
@@ -1698,9 +1690,7 @@ export default function HomePage() {
               showCount={4} 
             />
           ) : (
-            <div className="text-center py-12">
-              <p className="text-slate-500 font-medium">Loading premium properties...</p>
-            </div>
+            <PropertySliderSkeleton count={4} />
           )}
         </div>
       </section>
@@ -1717,10 +1707,10 @@ export default function HomePage() {
               <span className="text-primary">{t("homepage.rentText")}</span>
             </h3>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto mt-6">
-              Includes properties from our main listings and verified agents
+              Explore exceptional rental properties across Dubai's finest locations
             </p>
-            <Link href="/rent" className="btn-outline mt-5">
-              View All properties for rent
+            <Link href="/properties?action=rent" className="btn-outline mt-5">
+              View All Rentals
             </Link>
           </div>
 
@@ -1731,9 +1721,7 @@ export default function HomePage() {
               showCount={4}
             />
           ) : (
-            <div className="text-center py-12">
-              <p className="text-slate-500 font-medium">Loading rental properties...</p>
-            </div>
+            <PropertySliderSkeleton count={4} />
           )}
         </div>
       </section>
@@ -1798,7 +1786,7 @@ export default function HomePage() {
                     />
                   ))}
                   
-                  {/* Video controls overlay - Sirf videos ke liye */}
+                  {/* Video controls overlay */}
                   {(isYouTubeUrl(project.video_url) || isVideoUrl(project.video_url)) && (
                     <div className="absolute bottom-4 right-4 rounded-full p-2">
                       <div className="flex items-center gap-1 text-white">
@@ -1846,10 +1834,7 @@ export default function HomePage() {
         ))
       ) : (
         <div className="col-span-4 text-center py-12">
-          <p className="text-slate-500 mb-4">No projects found</p>
-          <p className="text-sm text-slate-400">
-            Add projects with "published: true" in Supabase
-          </p>
+          <p className="text-slate-400">No projects available at the moment</p>
         </div>
       )}  
     </div>
@@ -1940,10 +1925,7 @@ export default function HomePage() {
               ))
             ) : (
               <div className="col-span-4 text-center py-12">
-                <p className="text-slate-500 mb-4">No blog posts found</p>
-                <p className="text-sm text-slate-400">
-                  Add blog posts with "published: true" in Supabase
-                </p>
+                <p className="text-slate-400">No articles available at the moment</p>
               </div>
             )}
           </div>
@@ -1978,18 +1960,16 @@ export default function HomePage() {
             </>
           ) : (
             <div className="text-center py-12">
-              <p className="text-slate-500 mb-4">No agents found</p>
+              <p className="text-slate-400 mb-8">Our expert agents will be available soon</p>
 
               {/* View All Agents Button (even when no agents) */}
-              <div className="text-center mt-12 pt-8 border-t border-slate-200">
-                <Link
-                  href="/agents"
-                  className="inline-flex items-center justify-center gap-3 bg-primary text-white font-bold py-4 px-8 rounded-xl hover:bg-primary/90 transition-colors duration-300 shadow-lg hover:shadow-xl"
-                >
-                  <span>View All Agents</span>
-                  <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
+              <Link
+                href="/agents"
+                className="inline-flex items-center justify-center gap-3 bg-primary text-white font-bold py-4 px-8 rounded-xl hover:bg-primary/90 transition-colors duration-300 shadow-lg hover:shadow-xl"
+              >
+                <span>View All Agents</span>
+                <ArrowRightIcon className="h-5 w-5" />
+              </Link>
             </div>
           )}
         </div>
@@ -2088,10 +2068,7 @@ export default function HomePage() {
               ))
             ) : (
               <div className="col-span-3 text-center py-12">
-                <p className="text-slate-500 mb-4">No testimonials found</p>
-                <p className="text-sm text-slate-400">
-                  Add testimonials to "testimonials" table in Supabase
-                </p>
+                <p className="text-slate-400">No testimonials available at the moment</p>
               </div>
             )}
           </div>

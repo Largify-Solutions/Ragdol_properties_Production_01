@@ -176,43 +176,43 @@ export default function Header() {
   items: [
     {
       label: "Property Types",
-      href: "/sale",
+      href: "/properties?action=buy",
       subItems: [
-        { label: "All Properties", href: "/sale?action=buy" },
+        { label: "All Properties", href: "/properties?action=buy" },
         {
           label: "Apartments",
-          href: "/sale?action=buy&type=apartment",
+          href: "/properties?action=buy&type=apartment",
         },
-        { label: "Villas", href: "/sale?action=buy&type=villa" },
+        { label: "Villas", href: "/properties?action=buy&type=villa" },
         {
           label: "Townhouses",
-          href: "/sale?action=buy&type=townhouse",
+          href: "/properties?action=buy&type=townhouse",
         },
-        { label: "plot", href: "/sale?action=buy&type=plot" },
+        { label: "Plot", href: "/properties?action=buy&type=plot" },
         {
           label: "Studios",
-          href: "/sale?action=buy&type=furnished-studio",
+          href: "/properties?action=buy&type=furnished-studio",
         },
         {
-          label: "residential plot",
-          href: "/sale?action=buy&type=residential-plot",
+          label: "Residential Plot",
+          href: "/properties?action=buy&type=residential-plot",
         },
         {
-          label: "industrial plot",
-          href: "/sale?action=buy&type=industrial-plot",
+          label: "Industrial Plot",
+          href: "/properties?action=buy&type=industrial-plot",
         },
         {
-          label: "commercial",
-          href: "/sale?action=buy&type=commercial",
+          label: "Penthouse",
+          href: "/properties?action=buy&type=penthouse",
         },
       ],
     },
     {
       label: "Popular Areas",
-      href: "/sale",
+      href: "/properties?action=buy",
       subItems: dubaiAreas.map((area) => ({
         label: area.name,
-        href: `/sale?action=buy&area=${area.name
+        href: `/properties?action=buy&area=${area.name
           .toLowerCase()
           .replace(/\s+/g, "-")}`,
       })),
@@ -229,46 +229,42 @@ export default function Header() {
       items: [
         {
           label: "Property Types",
-          href: "/rent",
+          href: "/properties?action=rent",
           subItems: [
-            { label: "All Properties", href: "/rent?action=rent" },
+            { label: "All Properties", href: "/properties?action=rent" },
             {
               label: "Apartments",
-              href: "/rent?action=rent&type=apartment",
+              href: "/properties?action=rent&type=apartment",
             },
-            { label: "Villas", href: "/rent?action=rent&type=villa" },
+            { label: "Villas", href: "/properties?action=rent&type=villa" },
             {
               label: "Townhouses",
-              href: "/rent?action=rent&type=townhouse",
+              href: "/properties?action=rent&type=townhouse",
             },
             {
               label: "Plot",
-              href: "/rent?action=rent&type=plot",
+              href: "/properties?action=rent&type=plot",
             },
             {
-              label: "commercial",
-              href: "/rent?action=rent&type=commercial",
+              label: "Residential Plot",
+              href: "/properties?action=rent&type=residential-plot",
             },
             {
-              label: "residential plot",
-              href: "/rent?action=rent&type=residential-plot",
-            },
-            {
-              label: "industrial plot",
-              href: "/rent?action=rent&type=industrial-plot",
+              label: "Industrial Plot",
+              href: "/properties?action=rent&type=industrial-plot",
             },
             {
               label: "Studios",
-              href: "/rent?action=rent&type=furnished-studio",
+              href: "/properties?action=rent&type=furnished-studio",
             },
           ],
         },
         {
           label: "Popular Areas",
-          href: "/rent",
+          href: "/properties?action=rent",
           subItems: dubaiAreas.map((area) => ({
             label: area.name,
-            href: `/rent?action=rent&area=${area.name
+            href: `/properties?action=rent&area=${area.name
               .toLowerCase()
               .replace(/\s+/g, "-")}`,
           })),
@@ -282,43 +278,42 @@ export default function Header() {
   items: [
     {
       label: "All Properties",
-      href: "/luxe",
+      href: "/properties?category=luxe",
       subItems: [
-        { label: "All Properties", href: "/luxe" },
-        { label: "For Rent", href: "/luxe?action=rent" },
-        { label: "For Sale", href: "/luxe?action=buy" },
+        { label: "All Luxe Properties", href: "/properties?category=luxe" },
+        { label: "For Rent", href: "/properties?category=luxe&action=rent" },
+        { label: "For Sale", href: "/properties?category=luxe&action=buy" },
       ],
     },
     {
       label: "Property Types",
-      href: "/luxe",
+      href: "/properties?category=luxe",
       subItems: [
-        { label: "All Types", href: "/luxe" },
-        { label: "Apartments", href: "/luxe?type=apartment" },
-        { label: "Villas", href: "/luxe?type=villa" },
-        { label: "Townhouses", href: "/luxe?type=townhouse" },
-        { label: "Penthouses", href: "/luxe?type=penthouse" },
-        { label: "Studios", href: "/luxe?type=studio" },
-        { label: "Plots", href: "/luxe?type=plot" },
-        { label: "Commercial", href: "/luxe?type=commercial" },
-        { label: "Furnished Studios", href: "/luxe?type=furnished-studio" },
+        { label: "All Types", href: "/properties?category=luxe" },
+        { label: "Apartments", href: "/properties?category=luxe&type=apartment" },
+        { label: "Villas", href: "/properties?category=luxe&type=villa" },
+        { label: "Townhouses", href: "/properties?category=luxe&type=townhouse" },
+        { label: "Penthouses", href: "/properties?category=luxe&type=penthouse" },
+        { label: "Studios", href: "/properties?category=luxe&type=studio" },
+        { label: "Plots", href: "/properties?category=luxe&type=plot" },
+        { label: "Furnished Studios", href: "/properties?category=luxe&type=furnished-studio" },
       ],
     },
     
     {
       label: "Popular Areas",
-      href: "/luxe",
+      href: "/properties?category=luxe",
       subItems: [
-        { label: "Dubai Marina", href: "/luxe?area=dubai-marina" },
-        { label: "Palm Jumeirah", href: "/luxe?area=palm-jumeirah" },
-        { label: "Downtown Dubai", href: "/luxe?area=downtown-dubai" },
-        { label: "Emirates Hills", href: "/luxe?area=emirates-hills" },
-        { label: "Arabian Ranches", href: "/luxe?area=arabian-ranches" },
-        { label: "Dubai Hills Estate", href: "/luxe?area=dubai-hills-estate" },
-        { label: "Business Bay", href: "/luxe?area=business-bay" },
-        { label: "Jumeirah", href: "/luxe?area=jumeirah" },
-        { label: "Dubai Creek Harbour", href: "/luxe?area=dubai-creek-harbour" },
-        { label: "Al Barsha", href: "/luxe?area=al-barsha" },
+        { label: "Dubai Marina", href: "/properties?category=luxe&area=dubai-marina" },
+        { label: "Palm Jumeirah", href: "/properties?category=luxe&area=palm-jumeirah" },
+        { label: "Downtown Dubai", href: "/properties?category=luxe&area=downtown-dubai" },
+        { label: "Emirates Hills", href: "/properties?category=luxe&area=emirates-hills" },
+        { label: "Arabian Ranches", href: "/properties?category=luxe&area=arabian-ranches" },
+        { label: "Dubai Hills Estate", href: "/properties?category=luxe&area=dubai-hills-estate" },
+        { label: "Business Bay", href: "/properties?category=luxe&area=business-bay" },
+        { label: "Jumeirah", href: "/properties?category=luxe&area=jumeirah" },
+        { label: "Dubai Creek Harbour", href: "/properties?category=luxe&area=dubai-creek-harbour" },
+        { label: "Al Barsha", href: "/properties?category=luxe&area=al-barsha" },
       ],
     },
     
@@ -330,40 +325,40 @@ export default function Header() {
   items: [
     {
       label: "All Commercial",
-      href: "/commercial",
+      href: "/properties?category=commercial",
       subItems: [
-        { label: "All Commercial Properties", href: "/commercial" },
-        { label: "For Rent", href: "/commercial?action=rent" },
-        { label: "For Sale", href: "/commercial?action=buy" },
+        { label: "All Commercial Properties", href: "/properties?category=commercial" },
+        { label: "For Rent", href: "/properties?category=commercial&action=rent" },
+        { label: "For Sale", href: "/properties?category=commercial&action=buy" },
       ],
     },
     {
       label: "Commercial Types",
-      href: "/commercial",
+      href: "/properties?category=commercial",
       subItems: [
-        { label: "All Types", href: "/commercial" },
-        { label: "Offices", href: "/commercial?type=office" },
-        { label: "Retail / Shops", href: "/commercial?type=shop" },
-        { label: "Warehouses", href: "/commercial?type=warehouse" },
-        { label: "Industrial", href: "/commercial?type=industrial" },
-        { label: "Commercial Buildings", href: "/commercial?type=building" },
-        { label: "Commercial Plots", href: "/commercial?type=plot" },
+        { label: "All Types", href: "/properties?category=commercial" },
+        { label: "Offices", href: "/properties?category=commercial&type=office" },
+        { label: "Retail / Shops", href: "/properties?category=commercial&type=shop" },
+        { label: "Warehouses", href: "/properties?category=commercial&type=warehouse" },
+        { label: "Industrial", href: "/properties?category=commercial&type=industrial" },
+        { label: "Commercial Buildings", href: "/properties?category=commercial&type=building" },
+        { label: "Commercial Plots", href: "/properties?category=commercial&type=plot" },
       ],
     },
     {
       label: "Business Districts",
-      href: "/commercial",
+      href: "/properties?category=commercial",
       subItems: [
-        { label: "Business Bay", href: "/commercial?area=business-bay" },
-        { label: "DIFC", href: "/commercial?area=difc" },
-        { label: "Dubai Silicon Oasis", href: "/commercial?area=dubai-silicon-oasis" },
-        { label: "Deira", href: "/commercial?area=deira" },
-        { label: "Dubai South", href: "/commercial?area=dubai-south" },
-        { label: "Dubai Marina", href: "/commercial?area=dubai-marina" },
-        { label: "Downtown Dubai", href: "/commercial?area=downtown-dubai" },
-        { label: "Jumeirah", href: "/commercial?area=jumeirah" },
-        { label: "Al Barsha", href: "/commercial?area=al-barsha" },
-        { label: "Dubai Creek Harbour", href: "/commercial?area=dubai-creek-harbour" },
+        { label: "Business Bay", href: "/properties?category=commercial&area=business-bay" },
+        { label: "DIFC", href: "/properties?category=commercial&area=difc" },
+        { label: "Dubai Silicon Oasis", href: "/properties?category=commercial&area=dubai-silicon-oasis" },
+        { label: "Deira", href: "/properties?category=commercial&area=deira" },
+        { label: "Dubai South", href: "/properties?category=commercial&area=dubai-south" },
+        { label: "Dubai Marina", href: "/properties?category=commercial&area=dubai-marina" },
+        { label: "Downtown Dubai", href: "/properties?category=commercial&area=downtown-dubai" },
+        { label: "Jumeirah", href: "/properties?category=commercial&area=jumeirah" },
+        { label: "Al Barsha", href: "/properties?category=commercial&area=al-barsha" },
+        { label: "Dubai Creek Harbour", href: "/properties?category=commercial&area=dubai-creek-harbour" },
       ],
     },
    

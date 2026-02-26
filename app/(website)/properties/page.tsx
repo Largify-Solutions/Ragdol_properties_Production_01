@@ -2612,10 +2612,30 @@ function PropertiesPageContent() {
     }
     // 'all' shows everything - no filter
 
-    // Filter by category (but category filter is OPTIONAL)
+    // Filter by category (luxe, commercial, or custom category)
     if (formState.category) {
-      filtered = filtered.filter(p => p.category === formState.category);
-      console.log('🔍 After category filter:', filtered.length);
+      if (formState.category === 'luxe') {
+        // Luxe properties: either have category='luxe' or price >= 5,000,000 or featured
+        filtered = filtered.filter(p => 
+          p.category === 'luxe' || 
+          p.category === 'luxury' || 
+          p.price >= 5000000 ||
+          p.featured === true
+        );
+        console.log('🔍 After luxe filter:', filtered.length);
+      } else if (formState.category === 'commercial') {
+        // Commercial properties: check category or type
+        const commercialTypes = ['office', 'shop', 'retail', 'warehouse', 'industrial', 'building', 'commercial'];
+        filtered = filtered.filter(p => 
+          p.category === 'commercial' ||
+          commercialTypes.some(ct => p.type?.toLowerCase().includes(ct))
+        );
+        console.log('🔍 After commercial filter:', filtered.length);
+      } else {
+        // Generic category filter
+        filtered = filtered.filter(p => p.category === formState.category);
+        console.log('🔍 After category filter:', filtered.length);
+      }
     }
 
     // Filter by property type
@@ -2972,17 +2992,32 @@ function PropertiesPageContent() {
               )}
               {formState.area && (
                 <span className="px-6 py-2 bg-white/10 backdrop-blur-md text-white rounded-full border border-white/10 text-sm font-bold">
-                  📍 {formState.area}
+                  📍 {formState.area.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </span>
               )}
               {formState.action === 'rent' && (
-                <span className="px-6 py-2 bg-green-500/20 backdrop-blur-md text-green-500 rounded-full border border-green-500/30 text-sm font-bold">
+                <span className="px-6 py-2 bg-green-500/20 backdrop-blur-md text-green-400 rounded-full border border-green-500/30 text-sm font-bold">
                   🏠 For Rent
                 </span>
               )}
               {formState.action === 'buy' && (
-                <span className="px-6 py-2 bg-blue-500/20 backdrop-blur-md text-blue-500 rounded-full border border-blue-500/30 text-sm font-bold">
+                <span className="px-6 py-2 bg-blue-500/20 backdrop-blur-md text-blue-400 rounded-full border border-blue-500/30 text-sm font-bold">
                   🏠 For Sale
+                </span>
+              )}
+              {formState.type && (
+                <span className="px-6 py-2 bg-purple-500/20 backdrop-blur-md text-purple-400 rounded-full border border-purple-500/30 text-sm font-bold">
+                  🏢 {formState.type.charAt(0).toUpperCase() + formState.type.slice(1)}
+                </span>
+              )}
+              {formState.category && (
+                <span className="px-6 py-2 bg-amber-500/20 backdrop-blur-md text-amber-400 rounded-full border border-amber-500/30 text-sm font-bold">
+                  ✨ {formState.category.charAt(0).toUpperCase() + formState.category.slice(1)}
+                </span>
+              )}
+              {formState.beds && (
+                <span className="px-6 py-2 bg-cyan-500/20 backdrop-blur-md text-cyan-400 rounded-full border border-cyan-500/30 text-sm font-bold">
+                  🛏️ {formState.beds}+ Beds
                 </span>
               )}
             </div>

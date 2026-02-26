@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { EyeIcon, PencilIcon, TrashIcon, PlusIcon, BuildingOfficeIcon, HomeModernIcon, MapIcon, BuildingStorefrontIcon, SparklesIcon, CubeIcon, WrenchScrewdriverIcon, TruckIcon, ShoppingBagIcon, Bars3Icon, LinkIcon, ChevronUpIcon, ChevronDownIcon, ChevronRightIcon, XMarkIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, CurrencyDollarIcon, PaperClipIcon, ArrowDownTrayIcon, EnvelopeIcon, EnvelopeOpenIcon, ClockIcon, BanknotesIcon } from '@heroicons/react/24/outline'
+import { EyeIcon, PencilIcon, TrashIcon, PlusIcon, BuildingOfficeIcon, HomeModernIcon, MapIcon, BuildingStorefrontIcon, SparklesIcon, CubeIcon, WrenchScrewdriverIcon, TruckIcon, ShoppingBagIcon, Bars3Icon, LinkIcon, ChevronUpIcon, ChevronDownIcon, ChevronRightIcon, XMarkIcon, ChatBubbleLeftRightIcon, BriefcaseIcon, CurrencyDollarIcon, PaperClipIcon, ArrowDownTrayIcon, EnvelopeIcon, EnvelopeOpenIcon, ClockIcon, BanknotesIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
 import PropertyForm from '@/components/forms/PropertyForm'
 import { supabase } from '@/lib/supabase-browser'
 
@@ -260,6 +260,42 @@ export default function Properties({ activeTab, properties, setProperties, agent
     } else {
       // Handle other bulk actions if needed
       alert(`Bulk action "${action}" would be implemented here`)
+    }
+  }
+
+  // DUPLICATE PROPERTY
+  const handleDuplicateProperty = async (property: any) => {
+    if (!confirm('Duplicate this property? The copy will be published and active.')) return
+
+    try {
+      // Create new property data without id, with new title
+      const duplicateData = {
+        ...property,
+        title: `${property.title} (Copy)`,
+        slug: `${property.slug || 'property'}-copy-${Date.now()}`,
+        published: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        views_count: 0,
+        inquiries_count: 0
+      }
+      // Remove id so a new one is created
+      delete duplicateData.id
+
+      const res = await fetch('/api/admin/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(duplicateData)
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to duplicate property')
+
+      // Refresh the list
+      loadPropertiesFromSupabase()
+      alert('Property duplicated successfully! The copy is now active.')
+    } catch (error: any) {
+      console.error('Error duplicating property:', error)
+      alert(error.message || 'Error duplicating property. Please try again.')
     }
   }
 
@@ -571,6 +607,13 @@ export default function Properties({ activeTab, properties, setProperties, agent
                           title="Edit"
                         >
                           <PencilIcon className="h-4 w-4 text-muted-foreground" />
+                        </button>
+                        <button
+                          onClick={() => handleDuplicateProperty(property)}
+                          className="p-2 hover:bg-blue-500/10 rounded-lg transition-colors"
+                          title="Duplicate"
+                        >
+                          <DocumentDuplicateIcon className="h-4 w-4 text-blue-500" />
                         </button>
                         <button
                           onClick={() => handleDeleteProperty(property.id)}

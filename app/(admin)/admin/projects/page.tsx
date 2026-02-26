@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PlusIcon, PencilIcon, TrashIcon, FolderIcon, DocumentArrowUpIcon, PhotoIcon, VideoCameraIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, PencilIcon, TrashIcon, FolderIcon, DocumentArrowUpIcon, PhotoIcon, VideoCameraIcon, CheckCircleIcon, XMarkIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
 
 
 interface Project {
@@ -366,6 +366,81 @@ const handleSubmit = async (e: React.FormEvent) => {
     setShowModal(true)
   }
 
+  // DUPLICATE PROJECT
+  const handleDuplicateProject = async (project: Project) => {
+    if (!confirm('Duplicate this project? The copy will be published and active.')) return
+
+    try {
+      // Create new project data with copy title
+      const duplicateData: any = {
+        name: `${project.name} (Copy)`,
+        slug: `${project.slug || 'project'}-copy-${Date.now()}`,
+        status: project.status,
+        developer_id: project.developer_id || null,
+        city: project.city,
+        area: project.area || null,
+        district: project.district || null,
+        address: project.address || null,
+        hero_image_url: project.hero_image_url || null,
+        description: project.description || null,
+        starting_price: project.starting_price || null,
+        min_price: project.min_price || null,
+        max_price: project.max_price || null,
+        currency: project.currency,
+        total_units: project.total_units || null,
+        available_units: project.available_units || null,
+        sold_units: project.sold_units || null,
+        amenities: project.amenities || [],
+        facilities: project.facilities || [],
+        property_types: project.property_types || [],
+        featured: project.featured,
+        published: true, // Make it active
+        launch_date: project.launch_date || null,
+        completion_date: project.completion_date || null,
+        handover_date: project.handover_date || null,
+        payment_plan: project.payment_plan || null,
+        payment_terms: project.payment_terms || null,
+        brochure_url: project.brochure_url || null,
+        video_url: project.video_url || null,
+        images: project.images || [],
+        brochure_en_url: project.brochure_en_url || null,
+        brochure_ar_url: project.brochure_ar_url || null,
+        fact_sheet_url: project.fact_sheet_url || null,
+        floor_plans_url: project.floor_plans_url || null,
+        masterplan_url: project.masterplan_url || null,
+        material_board_url: project.material_board_url || null,
+        one_pager_url: project.one_pager_url || null,
+        payment_plan_url: project.payment_plan_url || null,
+        videos: project.videos || [],
+        seo_title: project.seo_title || null,
+        seo_description: project.seo_description || null,
+        seo_keywords: project.seo_keywords || [],
+        coords: project.coords || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        views_count: 0,
+        inquiries_count: 0
+      }
+
+      const res = await fetch('/api/admin/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(duplicateData)
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error || 'Failed to duplicate project')
+
+      // Add to list
+      const newProject = { id: json.project?.id, ...duplicateData } as Project
+      setProjects([newProject, ...projects])
+
+      alert('Project duplicated successfully! The copy is now active.')
+    } catch (error: any) {
+      console.error('Error duplicating project:', error)
+      alert(error.message || 'Error duplicating project. Please try again.')
+    }
+  }
+
   const openAddModal = () => {
     setEditingProject(null)
     resetForm()
@@ -644,6 +719,13 @@ const handleSubmit = async (e: React.FormEvent) => {
                           title="Edit"
                         >
                           <PencilIcon className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDuplicateProject(project)}
+                          className="p-1 text-green-600 hover:text-green-900 hover:bg-green-100 rounded"
+                          title="Duplicate"
+                        >
+                          <DocumentDuplicateIcon className="h-5 w-5" />
                         </button>
                         <button
                           onClick={() => handleDeleteProject(project.id)}
