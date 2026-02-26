@@ -184,6 +184,7 @@ export async function POST(request: NextRequest) {
       currency: body.currency || 'AED',
       total_units: body.total_units,
       available_units: body.available_units,
+      sold_units: body.sold_units,
       amenities: body.amenities || [],
       facilities: body.facilities || [],
       property_types: body.property_types || [],
@@ -207,10 +208,14 @@ export async function POST(request: NextRequest) {
       material_board_url: materialBoardUrl,
       one_pager_url: onePagerUrl,
       payment_plan_url: paymentPlanUrl,
+      documents: body.documents || [],
       seo_title: body.seo_title,
       seo_description: body.seo_description,
       seo_keywords: body.seo_keywords || [],
       coords: body.coords,
+      inquiries_count: body.inquiries_count ?? 0,
+      views_count: body.views_count ?? 0,
+      created_at: body.created_at || new Date().toISOString(),
     }
 
     const { data, error } = await supabase.from('projects').insert(projectData).select().single()
@@ -219,7 +224,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ project: data, message: 'Project created successfully' }, { status: 201 })
   } catch (error: any) {
     console.error('Error creating project:', error)
-    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
+    return NextResponse.json({ error: error.message || 'Failed to create project', details: error.details || error.hint || null }, { status: 500 })
   }
 }
 
@@ -245,7 +250,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ project: data, message: 'Project updated successfully' })
   } catch (error: any) {
     console.error('Error updating project:', error)
-    return NextResponse.json({ error: 'Failed to update project' }, { status: 500 })
+    return NextResponse.json({ error: error.message || 'Failed to update project', details: error.details || error.hint || null }, { status: 500 })
   }
 }
 

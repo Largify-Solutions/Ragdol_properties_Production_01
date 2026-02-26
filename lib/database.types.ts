@@ -1332,6 +1332,8 @@ export type Database = {
           amenities: string[] | null
           area: string | null
           available_units: number | null
+          brochure_en_url: string | null
+          brochure_ar_url: string | null
           brochure_url: string | null
           city: string | null
           completion_date: string | null
@@ -1341,18 +1343,26 @@ export type Database = {
           description: string | null
           developer_id: string | null
           district: string | null
+          documents: Json | null
           facilities: string[] | null
+          fact_sheet_url: string | null
           featured: boolean | null
+          floor_plans: string[] | null
+          floor_plans_url: string | null
           handover_date: string | null
           hero_image_url: string | null
           id: string
           images: string[] | null
           inquiries_count: number | null
           launch_date: string | null
+          masterplan_url: string | null
+          material_board_url: string | null
           max_price: number | null
           min_price: number | null
           name: string
+          one_pager_url: string | null
           payment_plan: string | null
+          payment_plan_url: string | null
           payment_terms: Json | null
           property_types: string[] | null
           published: boolean | null
@@ -1366,6 +1376,7 @@ export type Database = {
           total_units: number | null
           updated_at: string | null
           video_url: string | null
+          videos: string[] | null
           views_count: number | null
         }
         Insert: {
@@ -1373,6 +1384,8 @@ export type Database = {
           amenities?: string[] | null
           area?: string | null
           available_units?: number | null
+          brochure_en_url?: string | null
+          brochure_ar_url?: string | null
           brochure_url?: string | null
           city?: string | null
           completion_date?: string | null
@@ -1382,18 +1395,26 @@ export type Database = {
           description?: string | null
           developer_id?: string | null
           district?: string | null
+          documents?: Json | null
           facilities?: string[] | null
+          fact_sheet_url?: string | null
           featured?: boolean | null
+          floor_plans?: string[] | null
+          floor_plans_url?: string | null
           handover_date?: string | null
           hero_image_url?: string | null
           id?: string
           images?: string[] | null
           inquiries_count?: number | null
           launch_date?: string | null
+          masterplan_url?: string | null
+          material_board_url?: string | null
           max_price?: number | null
           min_price?: number | null
           name: string
+          one_pager_url?: string | null
           payment_plan?: string | null
+          payment_plan_url?: string | null
           payment_terms?: Json | null
           property_types?: string[] | null
           published?: boolean | null
@@ -1407,6 +1428,7 @@ export type Database = {
           total_units?: number | null
           updated_at?: string | null
           video_url?: string | null
+          videos?: string[] | null
           views_count?: number | null
         }
         Update: {
@@ -1414,6 +1436,8 @@ export type Database = {
           amenities?: string[] | null
           area?: string | null
           available_units?: number | null
+          brochure_en_url?: string | null
+          brochure_ar_url?: string | null
           brochure_url?: string | null
           city?: string | null
           completion_date?: string | null
@@ -1423,18 +1447,26 @@ export type Database = {
           description?: string | null
           developer_id?: string | null
           district?: string | null
+          documents?: Json | null
           facilities?: string[] | null
+          fact_sheet_url?: string | null
           featured?: boolean | null
+          floor_plans?: string[] | null
+          floor_plans_url?: string | null
           handover_date?: string | null
           hero_image_url?: string | null
           id?: string
           images?: string[] | null
           inquiries_count?: number | null
           launch_date?: string | null
+          masterplan_url?: string | null
+          material_board_url?: string | null
           max_price?: number | null
           min_price?: number | null
           name?: string
+          one_pager_url?: string | null
           payment_plan?: string | null
+          payment_plan_url?: string | null
           payment_terms?: Json | null
           property_types?: string[] | null
           published?: boolean | null
@@ -1448,6 +1480,7 @@ export type Database = {
           total_units?: number | null
           updated_at?: string | null
           video_url?: string | null
+          videos?: string[] | null
           views_count?: number | null
         }
         Relationships: [
