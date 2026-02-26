@@ -594,7 +594,18 @@ export default function Agents() {
       uploadData.append('file', profileImageFile)
       uploadData.append('agent_name', agentName)
       const res = await fetch('/api/admin/agents/upload-image', { method: 'POST', body: uploadData })
-      const json = await res.json()
+      
+      // Check content type before parsing JSON
+      const contentType = res.headers.get('content-type') || ''
+      let json: any
+      
+      if (contentType.includes('application/json')) {
+        json = await res.json()
+      } else {
+        const text = await res.text()
+        throw new Error(`Invalid response format. Status: ${res.status} ${res.statusText}. Response: ${text.substring(0, 100)}`)
+      }
+      
       if (!res.ok) throw new Error(json.error || 'Image upload failed')
       return json.url as string
     } catch (err) {

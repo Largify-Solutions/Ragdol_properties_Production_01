@@ -646,7 +646,18 @@ export default function PropertyForm({
         method: 'POST',
         body: uploadData,
       })
-      const json = await res.json()
+
+      // Check content type before parsing JSON
+      const contentType = res.headers.get('content-type') || ''
+      let json: any
+      
+      if (contentType.includes('application/json')) {
+        json = await res.json()
+      } else {
+        const text = await res.text()
+        throw new Error(`Invalid response format. Status: ${res.status} ${res.statusText}. Response: ${text.substring(0, 100)}`)
+      }
+
       if (!res.ok) throw new Error(json.error || 'Upload failed')
       const downloadUrl = json.url as string
 

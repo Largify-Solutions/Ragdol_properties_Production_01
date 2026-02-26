@@ -104,16 +104,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Get initial session
     const initializeAuth = async () => {
       try {
-        // Use getUser() to validate the token server-side — getSession() reads
-        // stale cookies without verification, which causes TOKEN_REFRESH errors.
-        const { data: { user: currentUser }, error } = await supabase.auth.getUser()
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth initialization timeout')), 8000)
+        );
+
+        // Use getUser() to validate the token server-side
+        const userPromise = supabase.auth.getUser();
+        const { data: { user: currentUser }, error } = await Promise.race([userPromise, timeoutPromise]) as any;
 
         if (error || !currentUser) {
-          // Stale / invalid token — sign out cleanly so cookies are cleared
-          await supabase.auth.signOut()
-          setUser(null)
-          setProfile(null)
-          return
+          // Stale / invalid token — sign out cleanly
+          await supabase.auth.signOut();
+          setUser(null);
+          setProfile(null);
+          setLoading(false);
+          return;
         }
 
         const userData: UserType = {
@@ -121,20 +127,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           uid: currentUser.id,
           email: currentUser.email!,
           displayName: currentUser.user_metadata?.full_name || null,
-        }
-        setUser(userData)
-
-        const profileData = await fetchProfile(currentUser)
-        if (profileData) {
-          setProfile(profileData)
-        }
+        };
+        setUser(userData);
+        
+        // Mark loading as false immediately, fetch profile in background
+        setLoading(false);
+        
+        // Fetch profile asynchronously without blocking
+        fetchProfile(currentUser).then(profileData => {
+          if (profileData) {
+            setProfile(profileData);
+          }
+        }).catch(err => {
+          console.error('Error fetching profile after auth:', err);
+        });
       } catch (error) {
-        console.error('Error initializing auth:', error)
-        // Clear any corrupted state
-        setUser(null)
-        setProfile(null)
-      } finally {
-        setLoading(false)
+        console.error('Error initializing auth:', error);
+        // Clear any corrupted state but don't block
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
       }
     }
 

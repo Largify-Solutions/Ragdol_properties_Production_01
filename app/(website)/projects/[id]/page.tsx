@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Database } from '@/lib/database.types'
+import { createServiceClient } from '@/lib/supabase-server'
 import {
   MapPinIcon,
   HomeIcon,
@@ -28,98 +29,7 @@ import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 type Project = Database['public']['Tables']['projects']['Row'] & {
   developer?: Database['public']['Tables']['developers']['Row']
   properties?: Database['public']['Tables']['properties']['Row'][]
-}
-
-// Mock project data for development
-const mockProject = {
-  id: 'project-1',
-  developer_id: 'dev-1',
-  name: 'The Edit at d3',
-  status: 'off-plan',
-  launch_date: '2024-06-01',
-  completion_date: '2030-03-31',
-  amenities: [
-    'Luxury and High-end Finishing',
-    'Gym',
-    'Central A/C',
-    'CCTV Cameras',
-    'Shared Pool',
-    'Covered Parking',
-    'Landmark View',
-    'Children Play Area',
-    'Lobby in Building',
-  ],
-  city: 'Dubai',
-  area: 'Dubai Design District',
-  address: 'Dubai Design District, Dubai',
-  coords: { lat: 25.1855, lng: 55.2972 },
-  hero_image_url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80',
-  images: [
-    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80',
-    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80',
-    'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1200&q=80',
-  ],
-  description: `The Edit at d3 by Meraas is a new design-driven residential development located in the iconic Dubai Design District (d3) — one of Dubai's most creative, lifestyle-centric communities. Set along a prime waterfront stretch, the project offers modern apartments crafted for residents who value innovation, urban convenience and architectural elegance.
-
-Positioned minutes from Downtown Dubai, DIFC, Business Bay, and Dubai International Airport, The Edit at d3 combines exceptional connectivity with an artistic neighbourhood atmosphere. Surrounded by design studios, galleries, boutique retail, cafés, and cultural events, the development appeals to young professionals, creatives, entrepreneurs and investors seeking a vibrant lifestyle with strong rental demand.
-
-The Edit features contemporary residences enhanced with floor-to-ceiling windows, smart layouts, premium finishes and breathtaking views of the Dubai skyline and water. Residents benefit from a curated selection of lifestyle amenities including wellness zones, co-working spaces, landscaped terraces, outdoor lounges, fitness areas, and social spaces designed for community engagement.
-
-With its strategic location, modern architecture and Meraas' reputation for delivering high-quality developments, The Edit at d3 is positioned as a strong investment opportunity. Whether for stylish living or long-term value, it stands out as a premium choice among Dubai Design District apartments for sale and luxury Dubai waterfront properties.`,
-  payment_plan: '20% First Installment, 55% Under Construction, 25% On Handover',
-  payment_terms: {
-    down_payment: '20%',
-    during_construction: '55%',
-    on_handover: '25%'
-  },
-  starting_price: 1200000,
-  slug: 'the-edit-at-d3',
-  published: true,
-  created_at: '2024-06-01T00:00:00Z',
-  updated_at: '2024-12-01T00:00:00Z',
-  // Additional required fields from database schema
-  available_units: 150,
-  brochure_url: 'https://example.com/brochure.pdf',
-  currency: 'AED',
-  district: 'Dubai Design District',
-  facilities: ['Gym', 'Pool', 'Parking', 'Security'],
-  featured: true,
-  handover_date: '2030-03-31',
-  inquiries_count: 25,
-  max_price: 8500000,
-  min_price: 1200000,
-  property_types: ['apartment', 'penthouse'],
-  seo_description: 'Premium residential development in Dubai Design District',
-  seo_keywords: ['Dubai Design District', 'luxury apartments', 'waterfront living'],
-  seo_title: 'The Edit at d3 - Luxury Apartments in Dubai Design District',
-  sold_units: 45,
-  total_units: 200,
-  video_url: 'https://example.com/video.mp4',
-  views_count: 1250,
-  developer: {
-    id: 'dev-1',
-    name: 'Meraas',
-    logo_url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjUwIiB2aWV3Qm94PSIwIDAgMTAwIDUwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNkZGQiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+TWVyYWFzPC90ZXh0Pjwvc3ZnPg==',
-    website: 'https://meraas.com',
-    description: 'Leading real estate developer in Dubai',
-    contact_email: 'info@meraas.com',
-    contact_phone: '+971-4-123-4567',
-    created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2024-12-01T00:00:00Z',
-    // Additional required fields for developer
-    active_projects: 5,
-    completed_projects: 12,
-    founded_year: 2007,
-    headquarters: 'Dubai, UAE',
-    total_projects: 17,
-    website_url: 'https://meraas.com',
-    social_links: {
-      linkedin: 'https://linkedin.com/company/meraas',
-      twitter: 'https://twitter.com/meraas',
-      instagram: 'https://instagram.com/meraas'
-    },
-    verified: true
-  }
+  documents?: { name: string; url: string }[]
 }
 
 const mockExperts = [
@@ -140,8 +50,19 @@ const mockFloorPlans = [
 ]
 
 async function getProject(id: string): Promise<Project | null> {
-  // Return mock data
-  return mockProject as Project
+  try {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*, developer:developers(*)')
+      .or(`id.eq.${id},slug.eq.${id}`)
+      .eq('published', true)
+      .single()
+    if (error || !data) return null
+    return data as Project
+  } catch {
+    return null
+  }
 }
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
@@ -563,9 +484,30 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <div className="card-custom">
               <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full btn-primary py-3 px-4">
-                  Download Brochure
-                </button>
+                {project.documents && project.documents.length > 0 ? (
+                  project.documents.map((doc, i) => (
+                    <a
+                      key={i}
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full btn-primary py-3 px-4 flex items-center gap-2 justify-center"
+                    >
+                      <DocumentTextIcon className="w-4 h-4 shrink-0" />
+                      {doc.name}
+                    </a>
+                  ))
+                ) : project.brochure_url ? (
+                  <a
+                    href={project.brochure_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full btn-primary py-3 px-4 flex items-center gap-2 justify-center"
+                  >
+                    <DocumentTextIcon className="w-4 h-4 shrink-0" />
+                    Download Brochure
+                  </a>
+                ) : null}
                 <button className="w-full btn-outline py-3 px-4">
                   Schedule Site Visit
                 </button>

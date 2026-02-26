@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PlusIcon, PencilIcon, TrashIcon, FolderIcon, DocumentArrowUpIcon, PhotoIcon, VideoCameraIcon, CheckCircleIcon, XMarkIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, PencilIcon, TrashIcon, FolderIcon, DocumentArrowUpIcon, DocumentTextIcon, PhotoIcon, VideoCameraIcon, CheckCircleIcon, XMarkIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
 
 
 interface Project {
@@ -46,6 +46,7 @@ interface Project {
   one_pager_url?: string
   payment_plan_url?: string
   videos?: string[]
+  documents?: { name: string; url: string }[]
   seo_title?: string
   seo_description?: string
   seo_keywords?: string[]
@@ -112,12 +113,15 @@ export default function ProjectManagement() {
     one_pager_url: '',
     payment_plan_url: '',
     videos: [] as string[],
+    documents: [] as { name: string; url: string }[],
     seo_title: '',
     seo_description: '',
     seo_keywords: [] as string[],
     coords_lat: '',
     coords_lng: ''
   })
+
+  const [newDoc, setNewDoc] = useState({ name: '', url: '' })
 
   // Load projects from Firebase
   useEffect(() => {
@@ -186,6 +190,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       one_pager_url: formData.one_pager_url.trim() || null,
       payment_plan_url: formData.payment_plan_url.trim() || null,
       videos: formData.videos.length > 0 ? formData.videos : [],
+      documents: formData.documents.length > 0 ? formData.documents : [],
       seo_title: formData.seo_title.trim() || null,
       seo_description: formData.seo_description.trim() || null,
       seo_keywords: formData.seo_keywords.length > 0 ? formData.seo_keywords : [],
@@ -357,6 +362,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       one_pager_url: project.one_pager_url || '',
       payment_plan_url: project.payment_plan_url || '',
       videos: project.videos || [],
+      documents: (project.documents as { name: string; url: string }[]) || [],
       seo_title: project.seo_title || '',
       seo_description: project.seo_description || '',
       seo_keywords: project.seo_keywords || [],
@@ -412,6 +418,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         one_pager_url: project.one_pager_url || null,
         payment_plan_url: project.payment_plan_url || null,
         videos: project.videos || [],
+        documents: project.documents || [],
         seo_title: project.seo_title || null,
         seo_description: project.seo_description || null,
         seo_keywords: project.seo_keywords || [],
@@ -500,6 +507,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       one_pager_url: '',
       payment_plan_url: '',
       videos: [],
+      documents: [],
       seo_title: '',
       seo_description: '',
       seo_keywords: [],
@@ -553,7 +561,18 @@ const handleSubmit = async (e: React.FormEvent) => {
     fd.append('type', type)
     fd.append('project_name', formData.name.trim() || 'project')
     const res = await fetch('/api/admin/projects/upload-files', { method: 'POST', body: fd })
-    const json = await res.json()
+    
+    // Check content type before parsing JSON
+    const contentType = res.headers.get('content-type') || ''
+    let json: any
+    
+    if (contentType.includes('application/json')) {
+      json = await res.json()
+    } else {
+      const text = await res.text()
+      throw new Error(`Invalid response format. Status: ${res.status} ${res.statusText}. Response: ${text.substring(0, 100)}`)
+    }
+    
     if (!res.ok) throw new Error(json.error || 'Upload failed')
     return json.url as string
   }
@@ -1199,6 +1218,75 @@ const handleSubmit = async (e: React.FormEvent) => {
                       ))}
                     </div>
                   )}
+                </div>
+
+                {/* ── CUSTOM DOCUMENT LINKS ─────────────────────────────────── */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <DocumentTextIcon className="h-4 w-4 text-blue-500" />
+                    Document Links
+                    <span className="text-xs font-normal text-gray-500 ml-1">— shown as download buttons on the project page</span>
+                  </h4>
+
+                  {/* Existing documents */}
+                  {formData.documents.length > 0 && (
+                    <div className="mb-3 space-y-2">
+                      {formData.documents.map((doc, i) => (
+                        <div key={i} className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-md">
+                          <DocumentTextIcon className="h-4 w-4 text-blue-500 shrink-0" />
+                          <span className="text-xs font-medium text-blue-800 truncate w-28">{doc.name}</span>
+                          <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline truncate flex-1">{doc.url}</a>
+                          <button
+                            type="button"
+                            onClick={() => setFormData(f => ({ ...f, documents: f.documents.filter((_, idx) => idx !== i) }))}
+                            className="text-red-400 hover:text-red-600 shrink-0"
+                            disabled={isSubmitting}
+                          >
+                            <XMarkIcon className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Add new document row */}
+                  <div className="flex gap-2 items-end">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1">Document Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Brochure, Floor Plan, Fact Sheet"
+                        value={newDoc.name}
+                        onChange={(e) => setNewDoc(d => ({ ...d, name: e.target.value }))}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <div className="flex-[2]">
+                      <label className="block text-xs text-gray-500 mb-1">URL</label>
+                      <input
+                        type="url"
+                        placeholder="https://..."
+                        value={newDoc.url}
+                        onChange={(e) => setNewDoc(d => ({ ...d, url: e.target.value }))}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (newDoc.name.trim() && newDoc.url.trim()) {
+                          setFormData(f => ({ ...f, documents: [...f.documents, { name: newDoc.name.trim(), url: newDoc.url.trim() }] }))
+                          setNewDoc({ name: '', url: '' })
+                        }
+                      }}
+                      className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap"
+                      disabled={isSubmitting || !newDoc.name.trim() || !newDoc.url.trim()}
+                    >
+                      Add
+                    </button>
+                  </div>
                 </div>
 
                 {/* Arrays */}

@@ -317,7 +317,18 @@ export default function CMSPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image_url: publicUrl, title: '', subtitle: '' }),
         })
-        const json = await res.json()
+        
+        // Check content type before parsing JSON
+        const contentType = res.headers.get('content-type') || ''
+        let json: any
+        
+        if (contentType.includes('application/json')) {
+          json = await res.json()
+        } else {
+          const text = await res.text()
+          throw new Error(`Invalid response format. Status: ${res.status}. Response: ${text.substring(0, 100)}`)
+        }
+        
         if (!res.ok || json.error) throw new Error(json.error || 'Failed to save slide')
         if (json.slide) {
           setSlides((prev) => [...prev, json.slide])

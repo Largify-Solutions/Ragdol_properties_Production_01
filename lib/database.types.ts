@@ -1519,6 +1519,7 @@ export type Database = {
           views_count: number | null
           virtual_tour_url: string | null
           year_built: number | null
+          documents: Json | null
         }
         Insert: {
           address?: string | null
@@ -1578,6 +1579,7 @@ export type Database = {
           views_count?: number | null
           virtual_tour_url?: string | null
           year_built?: number | null
+          documents?: Json | null
         }
         Update: {
           address?: string | null
@@ -1637,6 +1639,7 @@ export type Database = {
           views_count?: number | null
           virtual_tour_url?: string | null
           year_built?: number | null
+          documents?: Json | null
         }
         Relationships: [
           {

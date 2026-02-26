@@ -454,7 +454,18 @@ export default function Blogs() {
                           const fd = new FormData()
                           fd.append('file', file)
                           const res = await fetch('/api/admin/blogs/upload-image', { method: 'POST', body: fd })
-                          const json = await res.json()
+                          
+                          // Check content type before parsing JSON
+                          const contentType = res.headers.get('content-type') || ''
+                          let json: any
+                          
+                          if (contentType.includes('application/json')) {
+                            json = await res.json()
+                          } else {
+                            const text = await res.text()
+                            throw new Error(`Invalid response format. Status: ${res.status}. Response: ${text.substring(0, 100)}`)
+                          }
+                          
                           if (!res.ok) throw new Error(json.error)
                           setFormData(prev => ({ ...prev, featured_image: json.url }))
                         } catch (err: any) {

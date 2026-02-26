@@ -110,34 +110,7 @@ async function fetchFeaturedProperties(): Promise<UIProperty[]> {
       featured: p.featured || false,
     }));
 
-    // Also fetch from agent_properties
-    const { data: agentProps } = await supabase
-      .from('agent_properties')
-      .select('*')
-      .in('status', ['buy', 'sale'])
-      .eq('published', true)
-      .order('created_at', { ascending: false })
-      .limit(4);
-
-    if (agentProps) {
-      agentProps.forEach((p: any) => {
-        allProperties.push({
-          id: `agent_${p.id}`,
-          title: p.title || "Agent Property",
-          price: p.price || 0,
-          priceLabel: "total",
-          image: p.images?.[0] || "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
-          location: p.address ? `${p.address}${p.area ? ", " + p.area : ""}${p.city ? ", " + p.city : ""}` : p.area || p.city || "Location not specified",
-          beds: p.beds || 0,
-          baths: p.bathrooms || 0,
-          sqft: p.sqft || 0,
-          type: p.type || "property",
-          featured: p.featured || false,
-        });
-      });
-    }
-
-    const result = allProperties.slice(0, 4);
+    const result = allProperties
     setCachedData('featured_properties', result);
     return result;
   } catch (error) {
@@ -176,34 +149,7 @@ async function fetchRentalProperties(): Promise<UIProperty[]> {
       featured: p.featured || false,
     }));
 
-    // Also fetch from agent_properties for rent
-    const { data: agentProps } = await supabase
-      .from('agent_properties')
-      .select('*')
-      .eq('status', 'rent')
-      .eq('published', true)
-      .order('created_at', { ascending: false })
-      .limit(4);
-
-    if (agentProps) {
-      agentProps.forEach((p: any) => {
-        allRentalProperties.push({
-          id: `agent_${p.id}`,
-          title: p.title || "Agent Rental Property",
-          price: p.price || 0,
-          priceLabel: "per_month",
-          image: p.images?.[0] || "https://images.pexels.com/photos/1396126/pexels-photo-1396126.jpeg?auto=compress&cs=tinysrgb&w=800",
-          location: p.address ? `${p.address}${p.area ? ", " + p.area : ""}${p.city ? ", " + p.city : ""}` : p.area || p.city || "Location not specified",
-          beds: p.beds || 0,
-          baths: p.bathrooms || p.baths || 0,
-          sqft: p.sqft || 0,
-          type: p.type || "property",
-          featured: p.featured || false,
-        });
-      });
-    }
-
-    const result = allRentalProperties.slice(0, 4);
+    const result = allRentalProperties
     setCachedData('rental_properties', result);
     return result;
   } catch (error) {

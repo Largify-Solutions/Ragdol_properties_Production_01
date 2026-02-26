@@ -51,6 +51,7 @@ type Property = Database['public']['Tables']['properties']['Row'] & {
     agent_details?: Database['public']['Tables']['agents']['Row']
   }
   project?: Database['public']['Tables']['projects']['Row']
+  documents?: { name: string; url: string }[]
 }
 
 type RelatedProperty = Database['public']['Tables']['properties']['Row']
@@ -277,7 +278,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   const [showBrochureForm, setShowBrochureForm] = useState(false)
 
   // Mock property data (in real app, this would be fetched)
-  const property = { ...mockProperty, agent: mockAgent }
+  const property = { ...mockProperty, agent: mockAgent } as unknown as Property
   const relatedProperties = mockRelatedProperties
 
   const formatPrice = (price: number, currency: string = 'AED') => {
@@ -514,8 +515,8 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                   </h2>
                   <div className="rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50">
                     <LocationPicker 
-                      lat={property.coords?.lat || 25.2048} 
-                      lng={property.coords?.lng || 55.2708} 
+                      lat={(property.coords as any)?.lat || 25.2048} 
+                      lng={(property.coords as any)?.lng || 55.2708} 
                       onChange={() => {}} // Read-only on details page
                     />
                   </div>
@@ -570,6 +571,29 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                     </div>
                   </button>
                 </div>
+
+                {/* Custom document links added from admin */}
+                {property.documents && property.documents.length > 0 && (
+                  <div className="space-y-3 pt-2 border-t border-slate-100">
+                    <p className="text-sm font-semibold text-slate-500 uppercase tracking-widest">Additional Documents</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {property.documents.map((doc, i) => (
+                        <a
+                          key={i}
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group p-5 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-2xl transition-all duration-300 flex items-center gap-4"
+                        >
+                          <div className="w-10 h-10 bg-primary/10 group-hover:bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+                            <DocumentTextIcon className="w-5 h-5 text-primary group-hover:text-white" />
+                          </div>
+                          <span className="font-bold text-slate-900 group-hover:text-white truncate">{doc.name}</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

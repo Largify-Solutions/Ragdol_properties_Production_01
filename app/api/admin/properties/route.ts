@@ -15,6 +15,7 @@ const ALLOWED_COLUMNS = new Set([
   'short_description', 'premium', 'urgent', 'verified', 'original_price',
   'price_per_sqft', 'favorites_count', 'expires_at', 'last_viewed',
   'title_ar', 'title_fr', 'description_ar', 'description_fr',
+  'documents',
 ])
 
 function sanitize(body: Record<string, any>): Record<string, any> {

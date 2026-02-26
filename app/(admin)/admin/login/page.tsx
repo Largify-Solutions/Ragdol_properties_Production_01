@@ -35,9 +35,15 @@ export default function EnhancedLoginPage() {
 
   // ✅ Redirect if already logged in
   useEffect(() => {
-    if (user && profile) {
-      console.log('User already logged in:', { role: profile.role })
-      redirectBasedOnRole(profile.role)
+    if (user) {
+      // Redirect based on user's role if available, otherwise check after profile loads
+      if (profile) {
+        redirectBasedOnRole(profile.role);
+      } else {
+        // If profile not loaded yet but user exists, redirect to dashboard based on role
+        // The actual dashboard will handle the redirect if role is wrong
+        redirectBasedOnRole('customer');
+      }
     }
   }, [user, profile])
 
@@ -118,7 +124,7 @@ export default function EnhancedLoginPage() {
   return (
     <div className="min-h-screen bg-secondary flex flex-col lg:flex-row overflow-hidden">
       {/* Left Side: Visual/Branding */}
-      <div className="lg:w-1/2 bg-gradient-to-br from-primary/10 to-secondary/10 p-12 flex items-center justify-center">
+      <div className="lg:w-1/2 bg-linear-to-br from-primary/10 to-secondary/10 p-12 flex items-center justify-center">
         <div className="max-w-md text-center">
           <div className="inline-block p-4 bg-white/90 rounded-3xl shadow-2xl mb-8">
             <h1 className="text-5xl font-serif text-secondary">
