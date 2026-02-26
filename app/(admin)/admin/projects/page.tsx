@@ -4,6 +4,14 @@ import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon, FolderIcon, DocumentArrowUpIcon, DocumentTextIcon, PhotoIcon, VideoCameraIcon, CheckCircleIcon, XMarkIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
 import { directUpload } from '@/lib/direct-upload'
 
+const STATUS_LABELS: Record<string, string> = {
+  upcoming: 'Upcoming',
+  under_construction: 'Under Construction',
+  ready: 'Ready',
+  completed: 'Completed',
+  sold_out: 'Sold Out',
+}
+
 
 interface Project {
   id: string
@@ -64,7 +72,7 @@ export default function ProjectManagement() {
   const [showModal, setShowModal] = useState(false)
   const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [filterStatus, setFilterStatus] = useState<'all' | 'planned' | 'in-progress' | 'completed'>('all')
+  const [filterStatus, setFilterStatus] = useState<'all' | 'upcoming' | 'under_construction' | 'ready' | 'completed' | 'sold_out'>('all')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [docUploading, setDocUploading] = useState<Record<string, boolean>>({})
   const [tempInput, setTempInput] = useState({
@@ -77,7 +85,7 @@ export default function ProjectManagement() {
 
   const [formData, setFormData] = useState({
     name: '',
-    status: 'planned',
+    status: 'upcoming',
     developer_id: '',
     city: 'Dubai',
     area: '',
@@ -471,7 +479,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   const resetForm = () => {
     setFormData({
       name: '',
-      status: 'planned',
+      status: 'upcoming',
       developer_id: '',
       city: 'Dubai',
       area: '',
@@ -667,9 +675,11 @@ const handleSubmit = async (e: React.FormEvent) => {
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="all">All Status</option>
-                <option value="planned">Planned</option>
-                <option value="in-progress">In Progress</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="under_construction">Under Construction</option>
+                <option value="ready">Ready</option>
                 <option value="completed">Completed</option>
+                <option value="sold_out">Sold Out</option>
               </select>
             </div>
           </div>
@@ -708,7 +718,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         <div>
                           <h3 className="text-lg font-medium text-gray-900">{project.name}</h3>
                           <p className="text-sm text-gray-600">
-                            {project.city} • {project.area || 'No area'} • {project.status}
+                            {project.city} • {project.area || 'No area'} • {STATUS_LABELS[project.status] ?? project.status}
                           </p>
                           <p className="text-sm text-gray-500">
                             {project.currency} {project.starting_price?.toLocaleString() || '0'} - {project.max_price?.toLocaleString() || '0'}
@@ -806,9 +816,11 @@ const handleSubmit = async (e: React.FormEvent) => {
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       disabled={isSubmitting}
                     >
-                      <option value="planned">Planned</option>
-                      <option value="in-progress">In Progress</option>
+                      <option value="upcoming">Upcoming</option>
+                      <option value="under_construction">Under Construction</option>
+                      <option value="ready">Ready</option>
                       <option value="completed">Completed</option>
+                      <option value="sold_out">Sold Out</option>
                     </select>
                   </div>
 
