@@ -295,7 +295,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 coords={project.coords}
                 name={project.name}
                 area={project.area}
-                city={project.city}
+                city={project.city ?? undefined}
               />
             </div>
 
