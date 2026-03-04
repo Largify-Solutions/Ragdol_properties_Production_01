@@ -1,8 +1,21 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { PlusIcon, PencilIcon, TrashIcon, FolderIcon, DocumentArrowUpIcon, DocumentTextIcon, PhotoIcon, VideoCameraIcon, CheckCircleIcon, XMarkIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
+import dynamic from 'next/dynamic'
+import { PlusIcon, PencilIcon, TrashIcon, FolderIcon, DocumentArrowUpIcon, DocumentTextIcon, PhotoIcon, VideoCameraIcon, CheckCircleIcon, XMarkIcon, DocumentDuplicateIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { directUpload } from '@/lib/direct-upload'
+
+const DynamicLocationPicker = dynamic(
+  () => import('@/components/shared/LocationPicker'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[300px] w-full bg-gray-100 animate-pulse rounded-lg flex items-center justify-center border border-gray-200">
+        <p className="text-sm text-gray-400">Loading map…</p>
+      </div>
+    ),
+  }
+)
 
 const STATUS_LABELS: Record<string, string> = {
   upcoming: 'Upcoming',
@@ -104,7 +117,7 @@ export default function ProjectManagement() {
     facilities: [] as string[],
     property_types: [] as string[],
     featured: false,
-    published: false,
+    published: true,
     launch_date: '',
     completion_date: '',
     handover_date: '',
@@ -498,7 +511,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       facilities: [],
       property_types: [],
       featured: false,
-      published: false,
+      published: true,
       launch_date: '',
       completion_date: '',
       handover_date: '',
@@ -1483,30 +1496,76 @@ const handleSubmit = async (e: React.FormEvent) => {
                   />
                 </div>
 
-                {/* Coordinates */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Latitude</label>
-                    <input
-                      type="number"
-                      step="any"
-                      value={formData.coords_lat}
-                      onChange={(e) => setFormData({...formData, coords_lat: e.target.value})}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {/* Project Location (map picker) */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                      <MapPinIcon className="w-4 h-4" />
+                      Project Location
+                    </label>
+                    <button
+                      type="button"
                       disabled={isSubmitting}
-                    />
+                      onClick={() => {
+                        if (!navigator.geolocation) {
+                          alert('Geolocation is not supported by your browser.')
+                          return
+                        }
+                        navigator.geolocation.getCurrentPosition(
+                          ({ coords }) =>
+                            setFormData(f => ({
+                              ...f,
+                              coords_lat: coords.latitude.toFixed(6),
+                              coords_lng: coords.longitude.toFixed(6),
+                            })),
+                          (err) => alert('Could not get location: ' + err.message)
+                        )
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 disabled:opacity-50"
+                    >
+                      📍 Use My Current Location
+                    </button>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Longitude</label>
-                    <input
-                      type="number"
-                      step="any"
-                      value={formData.coords_lng}
-                      onChange={(e) => setFormData({...formData, coords_lng: e.target.value})}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      disabled={isSubmitting}
-                    />
+                  <p className="text-xs text-gray-500">Click on the map or drag the marker to set the project location</p>
+
+                  <DynamicLocationPicker
+                    lat={parseFloat(formData.coords_lat) || 25.2048}
+                    lng={parseFloat(formData.coords_lng) || 55.2708}
+                    onChange={(lat, lng, _address) => {
+                      setFormData(f => ({
+                        ...f,
+                        coords_lat: lat.toFixed(6),
+                        coords_lng: lng.toFixed(6),
+                      }))
+                    }}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-500">Latitude</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={formData.coords_lat}
+                        onChange={(e) => setFormData({ ...formData, coords_lat: e.target.value })}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={isSubmitting}
+                        placeholder="e.g. 25.2048"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500">Longitude</label>
+                      <input
+                        type="number"
+                        step="any"
+                        value={formData.coords_lng}
+                        onChange={(e) => setFormData({ ...formData, coords_lng: e.target.value })}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={isSubmitting}
+                        placeholder="e.g. 55.2708"
+                      />
+                    </div>
                   </div>
                 </div>
 

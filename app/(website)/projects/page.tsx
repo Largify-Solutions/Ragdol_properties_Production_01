@@ -676,6 +676,7 @@ const FullScreenGallery = ({
 
 function ProjectsPageContent() {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedDeveloper, setSelectedDeveloper] = useState("all");
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -711,6 +712,7 @@ function ProjectsPageContent() {
     if (cached) {
       setProjects(cached as Project[])
       updateDeveloperCounts(cached as Project[])
+      setIsLoading(false)
       return
     }
     try {
@@ -769,6 +771,8 @@ function ProjectsPageContent() {
       updateDeveloperCounts(projectsData);
     } catch (error) {
       console.error("Error fetching projects:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -1111,15 +1115,23 @@ function ProjectsPageContent() {
       {/* Projects Grid */}
       <section className="py-5">
         <div className="container-custom">
-          {filteredProjects.length == 0 ? (
+          {isLoading ? (
+            <div className="text-center py-20">
+              <div className="w-24 h-24 mx-auto mb-6 bg-slate-100 rounded-full flex items-center justify-center">
+                <svg className="w-10 h-10 text-primary animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+              </div>
+              <h3 className="text-xl text-slate-400">Loading projects…</h3>
+            </div>
+          ) : filteredProjects.length === 0 ? (
             <div className="text-center py-20">
               <div className="w-24 h-24 mx-auto mb-6 bg-slate-100 rounded-full flex items-center justify-center">
                 <BuildingOfficeIcon className="h-12 w-12 text-slate-400" />
               </div>
-              <h3 className="text-2xl text-slate-400 mb-2">
-              Load project...
-              </h3>
-             
+              <h3 className="text-2xl text-slate-400 mb-2">No projects found</h3>
+              <p className="text-slate-400 text-sm">Check back soon for new developments.</p>
             </div>
           ) : (
             <div className="grid gap-12">

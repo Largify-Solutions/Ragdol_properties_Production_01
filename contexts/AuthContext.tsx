@@ -101,60 +101,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /* ---------------------------------------------------------------------- */
 
   useEffect(() => {
-    // Get initial session
-    const initializeAuth = async () => {
-      try {
-        // Add timeout to prevent hanging
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Auth initialization timeout')), 8000)
-        );
+    let mounted = true
 
-        // Use getUser() to validate the token server-side
-        const userPromise = supabase.auth.getUser();
-        const { data: { user: currentUser }, error } = await Promise.race([userPromise, timeoutPromise]) as any;
-
-        if (error || !currentUser) {
-          // Stale / invalid token — sign out cleanly
-          await supabase.auth.signOut();
-          setUser(null);
-          setProfile(null);
-          setLoading(false);
-          return;
-        }
-
-        const userData: UserType = {
-          id: currentUser.id,
-          uid: currentUser.id,
-          email: currentUser.email!,
-          displayName: currentUser.user_metadata?.full_name || null,
-        };
-        setUser(userData);
-        
-        // Mark loading as false immediately, fetch profile in background
-        setLoading(false);
-        
-        // Fetch profile asynchronously without blocking
-        fetchProfile(currentUser).then(profileData => {
-          if (profileData) {
-            setProfile(profileData);
-          }
-        }).catch(err => {
-          console.error('Error fetching profile after auth:', err);
-        });
-      } catch (error) {
-        console.error('Error initializing auth:', error);
-        // Clear any corrupted state but don't block
-        setUser(null);
-        setProfile(null);
-        setLoading(false);
-      }
-    }
-
-    initializeAuth()
-
-    // Listen for auth state changes
+    // onAuthStateChange fires INITIAL_SESSION immediately from the local
+    // cache — no network round-trip, so there's nothing that can time out.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return
+
+        if (event === 'INITIAL_SESSION') {
+          if (session?.user) {
+            const userData: UserType = {
+              id: session.user.id,
+              uid: session.user.id,
+              email: session.user.email!,
+              displayName: session.user.user_metadata?.full_name || null,
+            }
+            setUser(userData)
+            setLoading(false)
+            fetchProfile(session.user)
+              .then(profileData => {
+                if (profileData && mounted) setProfile(profileData)
+              })
+              .catch(err => console.error('Error fetching profile after auth:', err))
+          } else {
+            setUser(null)
+            setProfile(null)
+            setLoading(false)
+          }
+          return
+        }
+
         if (event === 'SIGNED_IN' && session?.user) {
           const userData: UserType = {
             id: session.user.id,
@@ -193,6 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     )
 
     return () => {
+      mounted = false
       subscription.unsubscribe()
     }
   }, [fetchProfile])

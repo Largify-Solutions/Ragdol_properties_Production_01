@@ -104,7 +104,7 @@ export default function AdminSidebar() {
               <span className="text-primary-foreground font-bold text-sm">R</span>
             </div>
             <div>
-              <p className="font-bold text-sm text-foreground tracking-wide">RAGDOL</p>
+              <p className="font-bold text-sm text-foreground tracking-wide">RAGDOLL PROPERTIES</p>
               <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Admin Portal</p>
             </div>
           </Link>

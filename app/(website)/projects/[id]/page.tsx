@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Database } from '@/lib/database.types'
+import ProjectLocationSection from '@/components/map/ProjectLocationSection'
 import { createServiceClient } from '@/lib/supabase-server'
 import {
   MapPinIcon,
@@ -288,36 +289,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <div className="card-custom">
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                 <MapPinIcon className="w-6 h-6" />
-                Location
+                Project Location
               </h2>
-              <div className="space-y-4">
-                <div className="aspect-[16/9] bg-muted rounded-lg flex items-center justify-center">
-                  <div className="text-center text-muted-foreground">
-                    <GlobeAltIcon className="w-12 h-12 mx-auto mb-2" />
-                    <p>Interactive map would be displayed here</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h3 className="font-semibold mb-2">Nearby Landmarks</h3>
-                    <ul className="space-y-1 text-sm text-muted-foreground">
-                      <li>• Downtown Dubai (5 min)</li>
-                      <li>• DIFC (10 min)</li>
-                      <li>• Business Bay (8 min)</li>
-                      <li>• Dubai International Airport (20 min)</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Area Highlights</h3>
-                    <ul className="space-y-1 text-sm text-muted-foreground">
-                      <li>• Design studios & galleries</li>
-                      <li>• Boutique retail & cafés</li>
-                      <li>• Cultural events</li>
-                      <li>• Waterfront location</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <ProjectLocationSection
+                coords={project.coords}
+                name={project.name}
+                area={project.area}
+                city={project.city}
+              />
             </div>
 
             {/* Views and Amenities */}

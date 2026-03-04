@@ -752,7 +752,7 @@ async function fetchTopAgents(): Promise<AgentWithProfile[]> {
         license_no: agent.license_no || "",
         approved: agent.approved || false,
         social: agent.social || { linkedin: "", instagram: "" },
-        brokerage: agent.brokerage || "RAGDOL",
+        brokerage: agent.brokerage || "RAGDOLL PROPERTIES",
         certifications: agent.certifications || [],
         commission_rate: agent.commission_rate || 2.5,
         languages: agent.languages || ["English", "Arabic"],
@@ -1071,7 +1071,7 @@ async function fetchBlogPosts() {
           post.featured_image ||
           "https://images.pexels.com/photos/1396130/pexels-photo-1396130.jpeg?auto=compress&cs=tinysrgb&w=800",
         excerpt: post.excerpt || "",
-        author: "RAGDOL",
+        author: "Ragdoll Properties",
         readTime: "3 min read",
         slug: post.slug || post.id,
       }));
@@ -1197,7 +1197,7 @@ export default function HomePage() {
         category: post.category || "General",
         image: post.featured_image || FALLBACK_IMG,
         excerpt: post.excerpt || "",
-        author: "RAGDOL",
+        author: "Ragdoll Properties",
         readTime: "3 min read",
         slug: post.slug || post.id,
       })))

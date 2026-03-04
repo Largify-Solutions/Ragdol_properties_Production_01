@@ -92,7 +92,7 @@ export default function CustomerSidebar() {
               R
             </div>
             <div>
-              <h1 className="font-bold text-white text-lg">RAGDOL</h1>
+              <h1 className="font-bold text-white text-lg">RAGDOLL PROPERTIES</h1>
               <p className="text-xs text-slate-400">Customer Portal</p>
             </div>
           </Link>

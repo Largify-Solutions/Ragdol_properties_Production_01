@@ -37,9 +37,9 @@ const amiri = Amiri({
 });
 
 export const metadata: Metadata = {
-  title: "RAGDOL - Premium Real Estate in Pakistan",
-  description: "Find your dream property in Pakistan. Browse apartments, villas, plots, and commercial properties in Lahore, Karachi, Islamabad, and more.",
-  keywords: "real estate pakistan, property for sale, buy house pakistan, apartments lahore, villas karachi",
+  title: "Ragdoll Properties - Premium Real Estate in Dubai",
+  description: "Find your dream property in Dubai. Browse apartments, villas, townhouses, and commercial properties with Ragdoll Properties.",
+  keywords: "real estate dubai, property for sale dubai, buy house dubai, apartments dubai, villas dubai, ragdoll properties",
 };
 
 function RootContent({ children }: { children: React.ReactNode }) {

@@ -543,7 +543,7 @@ export default function Header() {
 <Link href="/" className="flex items-center group shrink-0">
       <img 
         src="/ragdol.png" 
-        alt="Ragdol Logo" 
+        alt="Ragdoll Properties Logo" 
         className="h-10 w-auto rounded-xl group-hover:opacity-90 transition-opacity"
       />
     </Link>

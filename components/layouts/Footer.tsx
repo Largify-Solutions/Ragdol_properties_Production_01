@@ -60,7 +60,7 @@ export default function Footer() {
             <Link href="/" className=" ">
               <img
                 src="/ragdol.png"
-                alt="Ragdol Logo"
+                alt="Ragdoll Properties Logo"
                 className="h-15 mb-15 -mt-10 rounded-2xl group-hover:opacity-90 transition-opacity"
               />
             </Link>
@@ -160,7 +160,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-4">
                 <EnvelopeIcon className="h-6 w-6 text-primary shrink-0" />
-                <span className="text-sm">concierge@ragdol.com</span>
+                <span className="text-sm">concierge@ragdollproperties.com</span>
               </li>
 
               {/* EXTRA LARGE SOCIAL ICONS */}
