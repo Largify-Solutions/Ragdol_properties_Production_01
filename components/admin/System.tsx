@@ -127,7 +127,7 @@ const System: React.FC<SystemProps> = () => {
       level: 'info',
       message: 'User authentication successful',
       source: 'auth-service',
-      user: 'admin@ragdol.com',
+      user: 'admin@ragdollproperties.com',
       ip: '203.0.113.195',
     },
   ]);

@@ -32,7 +32,7 @@ const mockAgents = [
     license_no: '123456789',
     approved: true,
     social: { linkedin: 'https://linkedin.com', instagram: '@agent' },
-    brokerage: 'RAGDOL',
+    brokerage: 'Ragdoll Properties',
     certifications: ['RERA', 'Certified'],
     commission_rate: 2.5,
     languages: ['English', 'Arabic'],
@@ -80,7 +80,7 @@ const mockAgents = [
     license_no: '987654321',
     approved: true,
     social: { linkedin: 'https://linkedin.com', instagram: '@agent' },
-    brokerage: 'RAGDOL',
+    brokerage: 'Ragdoll Properties',
     certifications: ['RERA', 'Certified'],
     commission_rate: 2.75,
     languages: ['English', 'Arabic', 'French'],
@@ -128,7 +128,7 @@ const mockAgents = [
     license_no: '456789123',
     approved: true,
     social: { linkedin: 'https://linkedin.com', instagram: '@agent' },
-    brokerage: 'RAGDOL',
+    brokerage: 'Ragdoll Properties',
     certifications: ['RERA', 'Certified'],
     commission_rate: 3.0,
     languages: ['English', 'Arabic', 'Urdu'],
@@ -176,7 +176,7 @@ const mockAgents = [
     license_no: '789123456',
     approved: true,
     social: { linkedin: 'https://linkedin.com', instagram: '@agent' },
-    brokerage: 'RAGDOL',
+    brokerage: 'Ragdoll Properties',
     certifications: ['RERA', 'Certified'],
     commission_rate: 2.25,
     languages: ['English', 'Arabic', 'Hindi'],
@@ -224,7 +224,7 @@ const mockAgents = [
     license_no: '321654987',
     approved: true,
     social: { linkedin: 'https://linkedin.com', instagram: '@agent' },
-    brokerage: 'RAGDOL',
+    brokerage: 'Ragdoll Properties',
     certifications: ['RERA', 'Certified'],
     commission_rate: 2.5,
     languages: ['English', 'Arabic'],
@@ -272,7 +272,7 @@ const mockAgents = [
     license_no: '654987321',
     approved: true,
     social: { linkedin: 'https://linkedin.com', instagram: '@agent' },
-    brokerage: 'RAGDOL',
+    brokerage: 'Ragdoll Properties',
     certifications: ['RERA', 'Certified'],
     commission_rate: 1.5,
     languages: ['English', 'Arabic', 'Russian'],
@@ -320,7 +320,7 @@ const mockAgents = [
     license_no: '987321654',
     approved: true,
     social: { linkedin: 'https://linkedin.com', instagram: '@agent' },
-    brokerage: 'RAGDOL',
+    brokerage: 'Ragdoll Properties',
     certifications: ['RERA', 'Certified', 'Luxury Specialist'],
     commission_rate: 3.0,
     languages: ['English', 'Arabic', 'French', 'Italian'],
@@ -368,7 +368,7 @@ const mockAgents = [
     license_no: '456123789',
     approved: true,
     social: { linkedin: 'https://linkedin.com', instagram: '@agent' },
-    brokerage: 'RAGDOL',
+    brokerage: 'Ragdoll Properties',
     certifications: ['RERA', 'Certified', 'Commercial Broker'],
     commission_rate: 2.75,
     languages: ['English', 'Arabic', 'Urdu'],
@@ -414,8 +414,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const mockAgent = mockAgents.find(a => a.id === resolvedParams.id)
   const title = mockAgent?.profiles?.full_name || 'Agent Profile'
   return {
-    title: `${title} | RAGDOL Elite Agents`,
-    description: `Connect with ${title}, a premier real estate specialist at RAGDOL.`,
+    title: `${title} | Ragdoll Properties Elite Agents`,
+    description: `Connect with ${title}, a premier real estate specialist at Ragdoll Properties.`,
   }
 }
 
@@ -601,7 +601,7 @@ export default async function AgentDetail({ params }: { params: Promise<{ id: st
             <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
               <h2 className="text-3xl font-serif text-secondary mb-6">About <span className="text-primary">{name.split(' ')[0]}</span></h2>
               <div className="prose prose-slate max-w-none text-slate-600 leading-relaxed">
-                <p>{agent?.bio || profile?.bio || `${name} is a dedicated real estate professional at RAGDOL, specializing in the Dubai luxury market. With a deep understanding of local trends and a commitment to excellence, ${name} helps clients find their dream homes and high-yield investment opportunities.`}</p>
+                <p>{agent?.bio || profile?.bio || `${name} is a dedicated real estate professional at Ragdoll Properties, specializing in the Dubai luxury market. With a deep understanding of local trends and a commitment to excellence, ${name} helps clients find their dream homes and high-yield investment opportunities.`}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 pt-12 border-t border-slate-100">

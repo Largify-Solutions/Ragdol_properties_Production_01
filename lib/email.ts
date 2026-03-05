@@ -21,7 +21,7 @@ export async function sendEmail(options: EmailOptions) {
 
     const msg = {
       to: options.to,
-      from: process.env.EMAIL_FROM || 'noreply@ragdol.com',
+      from: process.env.EMAIL_FROM || 'noreply@ragdollproperties.com',
       subject: options.subject,
       html: options.html,
       text: options.text || options.html.replace(/<[^>]*>/g, '')

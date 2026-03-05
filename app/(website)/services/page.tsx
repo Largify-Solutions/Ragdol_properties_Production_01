@@ -300,7 +300,7 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      {/* Why Choose Ragdol Section */}
+      {/* Why Choose Ragdoll Properties Section */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-transparent to-amber-50/5">
         <div className="container-custom mx-auto">
           <div className="text-center mb-16">

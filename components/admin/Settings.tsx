@@ -68,9 +68,9 @@ const Settings: React.FC<SettingsProps> = () => {
   // State for settings data
   const [settings, setSettings] = useState<SettingsData>({
     general: {
-      siteTitle: 'RAGDOL - Dubai\'s Premier Real Estate Platform',
-      siteDescription: 'Discover your dream property in Dubai with RAGDOL. Browse apartments, villas, and commercial properties with expert guidance.',
-      contactEmail: 'info@ragdol.com',
+      siteTitle: 'Ragdoll Properties - Dubai\'s Premier Real Estate Platform',
+      siteDescription: 'Discover your dream property in Dubai with Ragdoll Properties. Browse apartments, villas, and commercial properties with expert guidance.',
+      contactEmail: 'info@ragdollproperties.com',
       supportPhone: '+971 50 123 4567',
       timezone: 'Asia/Dubai',
       language: 'en',
@@ -101,7 +101,7 @@ const Settings: React.FC<SettingsProps> = () => {
       ipWhitelist: [],
     },
     api: {
-      apiKey: 'ragdol_api_key_' + Math.random().toString(36).substr(2, 9),
+      apiKey: 'ragdollproperties_api_key_' + Math.random().toString(36).substr(2, 9),
       apiRateLimit: 1000,
       webhookUrl: '',
       enableLogs: true,
@@ -167,7 +167,7 @@ const Settings: React.FC<SettingsProps> = () => {
 
   // Generate new API key
   const handleGenerateApiKey = () => {
-    const newApiKey = 'ragdol_api_key_' + Math.random().toString(36).substr(2, 9);
+    const newApiKey = 'ragdollproperties_api_key_' + Math.random().toString(36).substr(2, 9);
     handleInputChange('api', 'apiKey', newApiKey);
   };
 
@@ -686,7 +686,7 @@ const Settings: React.FC<SettingsProps> = () => {
               <div className="space-y-4">
                 <div className="p-4 bg-muted/30 rounded-lg">
                   <h4 className="font-semibold text-foreground mb-2">Base URL</h4>
-                  <code className="text-sm text-muted-foreground">https://api.ragdol.com/v1/</code>
+                  <code className="text-sm text-muted-foreground">https://api.ragdollproperties.com/v1/</code>
                 </div>
                 <div className="p-4 bg-muted/30 rounded-lg">
                   <h4 className="font-semibold text-foreground mb-2">Authentication</h4>

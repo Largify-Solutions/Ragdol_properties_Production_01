@@ -165,7 +165,7 @@ export default function PropertyAgents() {
                       </a>
                     )}
                     <a
-                      href={`mailto:support@ragdol.com`}
+                      href={`mailto:support@ragdollproperties.com`}
                       className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
                       title="Email"
                     >

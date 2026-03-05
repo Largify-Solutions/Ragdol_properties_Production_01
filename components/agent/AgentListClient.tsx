@@ -206,7 +206,7 @@ async function fetchRealAgents(): Promise<Agent[]> {
         office: item.office || 'Dubai',
         license_no: item.license_no || '',
         approved: item.approved || false,
-        brokerage: item.brokerage || 'RAGDOL',
+        brokerage: item.brokerage || 'Ragdoll Properties',
         certifications: item.certifications || [],
         commission_rate: item.commission_rate || 2.5,
         languages: item.languages || ['English', 'Arabic'],

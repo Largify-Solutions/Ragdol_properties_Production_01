@@ -210,7 +210,7 @@ export default function CustomerLogin() {
                     <p className="text-muted-foreground mt-2">
                       {isLogin
                         ? 'Sign in to access your personalized dashboard'
-                        : 'Join RAGDOL to start your property journey'
+                        : 'Join Ragdoll Properties to start your property journey'
                       }
                     </p>
                   </div>
