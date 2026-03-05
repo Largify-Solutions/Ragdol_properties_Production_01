@@ -181,8 +181,8 @@ export default function DubaiProjectsMapPage() {
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case 'completed': return 'bg-emerald-100 text-emerald-700'
-      case 'ongoing': return 'bg-blue-100 text-blue-700'
+      case 'completed': return 'bg-[#c5a059]/20 text-[#996515]'
+      case 'ongoing': return 'bg-[#c5a059]/10 text-[#996515]'
       case 'upcoming': return 'bg-purple-100 text-purple-700'
       default: return 'bg-slate-100 text-slate-700'
     }
@@ -190,8 +190,8 @@ export default function DubaiProjectsMapPage() {
 
   const getInvestmentColor = (investment: string) => {
     switch(investment) {
-      case 'Very High': return 'text-emerald-600'
-      case 'High': return 'text-blue-600'
+      case 'Very High': return 'text-[#c5a059]'
+      case 'High': return 'text-[#c5a059]'
       case 'Medium-High': return 'text-amber-600'
       default: return 'text-slate-600'
     }
@@ -203,7 +203,7 @@ export default function DubaiProjectsMapPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Dubai Projects <span className="text-emerald-600">Map</span>
+            Dubai Projects <span className="text-[#c5a059]">Map</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Comprehensive overview of major real estate development projects across Dubai with investment potential and completion timelines
@@ -223,8 +223,8 @@ export default function DubaiProjectsMapPage() {
               onClick={() => setFilterStatus(item.status as any)}
               className={`p-4 rounded-xl text-center transition-all ${
                 filterStatus === item.status
-                  ? 'bg-emerald-600 text-white shadow-lg'
-                  : 'bg-white border border-slate-200 text-slate-900 hover:border-emerald-600'
+                  ? 'bg-[#c5a059] text-white shadow-lg'
+                  : 'bg-white border border-slate-200 text-slate-900 hover:border-[#c5a059]'
               }`}
             >
               <p className="text-2xl font-bold">{item.count}</p>
@@ -241,8 +241,8 @@ export default function DubaiProjectsMapPage() {
               onClick={() => setFilterStatus(status as any)}
               className={`px-4 py-2 rounded-lg font-medium capitalize transition-all ${
                 filterStatus === status
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-white border border-slate-200 text-slate-700 hover:border-emerald-600'
+                  ? 'bg-[#c5a059] text-white'
+                  : 'bg-white border border-slate-200 text-slate-700 hover:border-[#c5a059]'
               }`}
             >
               {status === 'all' ? 'Show All' : status}
@@ -297,7 +297,7 @@ export default function DubaiProjectsMapPage() {
                 {/* Price Range */}
                 <div className="mb-4">
                   <p className="text-xs text-slate-600 font-semibold mb-1">PRICE RANGE</p>
-                  <p className="text-sm font-bold text-emerald-600">{project.avgPrice}</p>
+                  <p className="text-sm font-bold text-[#c5a059]">{project.avgPrice}</p>
                 </div>
 
                 {/* Expandable Details */}
@@ -311,7 +311,7 @@ export default function DubaiProjectsMapPage() {
                       <p className="text-xs font-semibold text-slate-600 mb-2">AMENITIES</p>
                       <div className="flex flex-wrap gap-2">
                         {project.amenities.map((amenity, idx) => (
-                          <span key={idx} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
+                          <span key={idx} className="px-2 py-1 bg-[#c5a059]/10 text-[#996515] text-xs rounded-full">
                             {amenity}
                           </span>
                         ))}
@@ -321,7 +321,7 @@ export default function DubaiProjectsMapPage() {
                     <div className="flex gap-2 pt-2">
                       <Link
                         href={`/properties?project=${project.name.toLowerCase().replace(/\s+/g, '-')}`}
-                        className="flex-1 text-center px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm"
+                        className="flex-1 text-center px-4 py-2 bg-[#c5a059] text-white font-semibold rounded-lg hover:bg-[#996515] transition-colors text-sm"
                       >
                         View Properties
                       </Link>
@@ -353,7 +353,7 @@ export default function DubaiProjectsMapPage() {
         )}
 
         {/* Newsletter CTA */}
-        <div className="mt-16 bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
+        <div className="mt-16 bg-gradient-to-r from-[#c5a059] to-[#996515] rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Get Updates on New Projects</h2>
           <p className="text-lg mb-8 opacity-90">
             Subscribe to our newsletter to receive updates on upcoming projects, pre-launch offers, and exclusive investment opportunities
@@ -364,7 +364,7 @@ export default function DubaiProjectsMapPage() {
               placeholder="Enter your email"
               className="flex-1 px-4 py-3 rounded-lg text-slate-900 placeholder-slate-500 focus:outline-none"
             />
-            <button className="px-8 py-3 bg-white text-emerald-600 font-bold rounded-lg hover:bg-slate-100 transition-colors whitespace-nowrap">
+            <button className="px-8 py-3 bg-white text-[#c5a059] font-bold rounded-lg hover:bg-slate-100 transition-colors whitespace-nowrap">
               Subscribe
             </button>
           </div>

@@ -41,7 +41,7 @@ export default function CalculatorPage() {
             ROI Calculator
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Investment <span className="text-emerald-600">Calculator</span>
+            Investment <span className="text-[#c5a059]">Calculator</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Calculate your investment returns, mortgage payments, rental yields, and property appreciation
@@ -57,7 +57,7 @@ export default function CalculatorPage() {
               {/* Purchase Price */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Purchase Price: <span className="text-emerald-600">AED {purchasePrice.toLocaleString()}</span>
+                  Purchase Price: <span className="text-[#c5a059]">AED {purchasePrice.toLocaleString()}</span>
                 </label>
                 <input
                   type="range"
@@ -72,7 +72,7 @@ export default function CalculatorPage() {
                   type="number"
                   value={purchasePrice}
                   onChange={(e) => setPurchasePrice(Number(e.target.value))}
-                  className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full mt-2 px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c5a059]"
                 />
               </div>
 
@@ -125,13 +125,13 @@ export default function CalculatorPage() {
               {/* Monthly Rental Income */}
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Monthly Rental Income: <span className="text-blue-600">AED {rentalIncome.toLocaleString()}</span>
+                  Monthly Rental Income: <span className="text-[#c5a059]">AED {rentalIncome.toLocaleString()}</span>
                 </label>
                 <input
                   type="number"
                   value={rentalIncome}
                   onChange={(e) => setRentalIncome(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c5a059]"
                 />
               </div>
 
@@ -144,7 +144,7 @@ export default function CalculatorPage() {
                   type="number"
                   value={annualExpenses}
                   onChange={(e) => setAnnualExpenses(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c5a059]"
                 />
               </div>
 
@@ -169,24 +169,24 @@ export default function CalculatorPage() {
           {/* Results Section */}
           <div className="space-y-6">
             {/* Monthly Metrics */}
-            <div className="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl p-8 text-white shadow-sm">
+            <div className="bg-gradient-to-br from-[#b8941f] to-[#996515] rounded-2xl p-8 text-white shadow-sm">
               <h3 className="text-xl font-bold mb-6">Monthly Metrics</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center pb-3 border-b border-emerald-500/30">
+                <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">
                   <span className="opacity-90">Mortgage Payment</span>
                   <span className="text-2xl font-bold">AED {Math.round(monthlyPayment).toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between items-center pb-3 border-b border-emerald-500/30">
+                <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">
                   <span className="opacity-90">Monthly Expenses</span>
                   <span className="text-xl font-bold">AED {Math.round(monthlyExpenses).toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between items-center pb-3 border-b border-emerald-500/30">
+                <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">
                   <span className="opacity-90">Rental Income</span>
-                  <span className="text-xl font-bold text-emerald-300">+AED {rentalIncome.toLocaleString()}</span>
+                  <span className="text-xl font-bold text-[#f0d090]">+AED {rentalIncome.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center pt-3">
                   <span className="font-semibold text-lg">Net Monthly</span>
-                  <span className={`text-3xl font-bold ${monthlyNetIncome >= 0 ? 'text-emerald-300' : 'text-red-300'}`}>
+                  <span className={`text-3xl font-bold ${monthlyNetIncome >= 0 ? 'text-[#f0d090]' : 'text-red-300'}`}>
                     {monthlyNetIncome >= 0 ? '+' : ''}AED {Math.round(monthlyNetIncome).toLocaleString()}
                   </span>
                 </div>
@@ -194,20 +194,20 @@ export default function CalculatorPage() {
             </div>
 
             {/* Annual Metrics */}
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 text-white shadow-sm">
+            <div className="bg-gradient-to-br from-[#1e293b] to-[#0f172a] rounded-2xl p-8 text-white shadow-sm">
               <h3 className="text-xl font-bold mb-6">Annual Returns</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center pb-3 border-b border-blue-500/30">
+                <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">
                   <span className="opacity-90">Annual Rental Income</span>
                   <span className="text-2xl font-bold">AED {Math.round(annualRentalIncome).toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between items-center pb-3 border-b border-blue-500/30">
+                <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">
                   <span className="opacity-90">Rental Yield</span>
-                  <span className="text-xl font-bold text-blue-300">{rentalYield.toFixed(2)}%</span>
+                  <span className="text-xl font-bold text-[#f0d090]">{rentalYield.toFixed(2)}%</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-lg">Annual Net</span>
-                  <span className={`text-3xl font-bold ${annualNetIncome >= 0 ? 'text-blue-300' : 'text-red-300'}`}>
+                  <span className={`text-3xl font-bold ${annualNetIncome >= 0 ? 'text-[#f0d090]' : 'text-red-300'}`}>
                     {annualNetIncome >= 0 ? '+' : ''}AED {Math.round(annualNetIncome).toLocaleString()}
                   </span>
                 </div>
@@ -215,20 +215,20 @@ export default function CalculatorPage() {
             </div>
 
             {/* 5-Year Projection */}
-            <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-8 text-white shadow-sm">
+            <div className="bg-gradient-to-br from-[#4a3728] to-[#3d2e20] rounded-2xl p-8 text-white shadow-sm">
               <h3 className="text-xl font-bold mb-6">5-Year Projection</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center pb-3 border-b border-purple-500/30">
+                <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">
                   <span className="opacity-90">Property Value</span>
                   <span className="text-2xl font-bold">AED {Math.round(futureValue).toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between items-center pb-3 border-b border-purple-500/30">
+                <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">
                   <span className="opacity-90">Appreciation Gain</span>
-                  <span className="text-xl font-bold text-purple-300">+AED {Math.round(appreciationGain).toLocaleString()}</span>
+                  <span className="text-xl font-bold text-[#f0d090]">+AED {Math.round(appreciationGain).toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-lg">Total Equity Built</span>
-                  <span className="text-3xl font-bold text-purple-300">AED {Math.round(totalEquity).toLocaleString()}</span>
+                  <span className="text-3xl font-bold text-[#f0d090]">AED {Math.round(totalEquity).toLocaleString()}</span>
                 </div>
               </div>
             </div>

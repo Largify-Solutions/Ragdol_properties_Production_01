@@ -209,7 +209,7 @@ export default function TopInvestmentAreasPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Top Investment <span className="text-emerald-600">Areas</span>
+            Top Investment <span className="text-[#c5a059]">Areas</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Ranked and analyzed according to growth potential, rental yield, and investment returns. Updated with 2024 market data.
@@ -233,7 +233,7 @@ export default function TopInvestmentAreasPage() {
                     onClick={() => setFilterType(filter.id as any)}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                       filterType === filter.id
-                        ? 'bg-emerald-600 text-white'
+                        ? 'bg-[#c5a059] text-white'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -281,7 +281,7 @@ export default function TopInvestmentAreasPage() {
                   <div className="md:col-span-2">
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0">
-                        <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-600 to-blue-600 text-white font-bold text-lg">
+                        <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-[#c5a059] to-[#996515] text-white font-bold text-lg">
                           {area.rank}
                         </div>
                       </div>
@@ -290,7 +290,7 @@ export default function TopInvestmentAreasPage() {
                         <p className="text-slate-600 text-sm mb-3">{area.highlights}</p>
                         <div className="flex flex-wrap gap-2">
                           {area.bestFor.slice(0, 2).map((use, idx) => (
-                            <span key={idx} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
+                            <span key={idx} className="px-3 py-1 bg-[#c5a059]/10 text-[#996515] text-xs font-medium rounded-full">
                               {use}
                             </span>
                           ))}
@@ -307,11 +307,11 @@ export default function TopInvestmentAreasPage() {
                     </div>
                     <div>
                       <p className="text-xs text-slate-600 font-semibold mb-1">GROWTH RATE</p>
-                      <p className="text-xl md:text-2xl font-bold text-emerald-600">{area.growth}</p>
+                      <p className="text-xl md:text-2xl font-bold text-[#c5a059]">{area.growth}</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-600 font-semibold mb-1">RENTAL YIELD</p>
-                      <p className="text-xl md:text-2xl font-bold text-blue-600">{area.yield}</p>
+                      <p className="text-xl md:text-2xl font-bold text-[#c5a059]">{area.yield}</p>
                     </div>
                   </div>
                 </div>
@@ -323,15 +323,15 @@ export default function TopInvestmentAreasPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-slate-700">Year 1</span>
-                        <span className="font-bold text-emerald-600 text-sm">{area.roi.year1}</span>
+                        <span className="font-bold text-[#c5a059] text-sm">{area.roi.year1}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-slate-700">Year 3</span>
-                        <span className="font-bold text-emerald-600 text-sm">{area.roi.year3}</span>
+                        <span className="font-bold text-[#c5a059] text-sm">{area.roi.year3}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-slate-700">Year 5+</span>
-                        <span className="font-bold text-emerald-600 text-sm">{area.roi.year5}</span>
+                        <span className="font-bold text-[#c5a059] text-sm">{area.roi.year5}</span>
                       </div>
                     </div>
                   </div>
@@ -340,8 +340,8 @@ export default function TopInvestmentAreasPage() {
                     <p className="text-xs text-slate-600 font-semibold mb-3">MARKET DEMAND</p>
                     <div className="mb-2">
                       <p className={`text-sm font-bold ${
-                        area.demand === 'Very High' ? 'text-emerald-600' :
-                        area.demand === 'High' ? 'text-blue-600' :
+                        area.demand === 'Very High' ? 'text-[#c5a059]' :
+                        area.demand === 'High' ? 'text-[#c5a059]' :
                         'text-slate-600'
                       }`}>
                         {area.demand}
@@ -353,7 +353,7 @@ export default function TopInvestmentAreasPage() {
                   <div className="flex gap-2 items-end">
                     <Link
                       href={`/properties?area=${area.name.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="flex-1 px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-center text-sm"
+                      className="flex-1 px-4 py-2 bg-[#c5a059] text-white font-semibold rounded-lg hover:bg-[#996515] transition-colors text-center text-sm"
                     >
                       View Properties
                     </Link>
@@ -371,14 +371,14 @@ export default function TopInvestmentAreasPage() {
         </div>
 
         {/* Investment Guide CTA */}
-        <div className="mt-16 bg-gradient-to-r from-purple-600 to-emerald-600 rounded-2xl p-12 text-white text-center">
+        <div className="mt-16 bg-gradient-to-r from-[#996515] to-[#c5a059] rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Compare Properties in These Areas</h2>
           <p className="text-lg mb-8 opacity-90">
             Browse listings, compare prices, and find your perfect investment property in Dubai's top growth areas
           </p>
           <Link
             href="/properties?sort=latest"
-            className="inline-block px-8 py-4 bg-white text-emerald-600 font-bold rounded-lg hover:bg-slate-100 transition-colors"
+            className="inline-block px-8 py-4 bg-white text-[#c5a059] font-bold rounded-lg hover:bg-slate-100 transition-colors"
           >
             Browse All Properties
           </Link>
