@@ -675,8 +675,10 @@ const FullScreenGallery = ({
 };
 
 function ProjectsPageContent() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Initialize directly from module-level cache so there's no loading flash
+  // when the user navigates back to this page within the cache window.
+  const [projects, setProjects] = useState<Project[]>(() => getCachedProjects() as Project[] || []);
+  const [isLoading, setIsLoading] = useState(() => getCachedProjects() === null);
   const [selectedDeveloper, setSelectedDeveloper] = useState("all");
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;

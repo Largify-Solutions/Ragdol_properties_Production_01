@@ -244,7 +244,7 @@ export default function CustomerDashboard() {
               <div>
                 <h3 className="text-2xl font-serif text-secondary">Your Activity</h3>
                 <p className="text-slate-500 text-sm">
-                  Real-time counts from Firebase
+                  Live activity
                 </p>
               </div>
               <div className="flex gap-2">

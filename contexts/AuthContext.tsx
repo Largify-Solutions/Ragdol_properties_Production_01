@@ -78,18 +78,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = useCallback(async (supabaseUser: User) => {
     try {
-      const { data, error } = await supabase
+      const timeout = new Promise<null>((resolve) =>
+        setTimeout(() => resolve(null), 8000)
+      )
+      const query = supabase
         .from('profiles')
         .select('*')
         .eq('id', supabaseUser.id)
         .single()
+        .then(({ data, error }) => {
+          if (error) {
+            console.error('Error fetching profile:', error)
+            return null
+          }
+          return { ...data, email: supabaseUser.email || '' } as ProfileType
+        })
 
-      if (error) {
-        console.error('Error fetching profile:', error)
-        return null
-      }
-
-      return { ...data, email: supabaseUser.email || '' } as ProfileType
+      return await Promise.race([query, timeout])
     } catch (error) {
       console.error('Error fetching profile:', error)
       return null
@@ -118,12 +123,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               displayName: session.user.user_metadata?.full_name || null,
             }
             setUser(userData)
+            // Await profile before clearing the loading flag so that
+            // role-gated layouts (admin/agent/customer) always have the
+            // profile available when they first evaluate auth state.
+            // Without this, AdminLayout would see profile=null and redirect
+            // every authenticated user to the login page on page refresh.
+            const profileData = await fetchProfile(session.user)
+            if (!mounted) return
+            setProfile(profileData)
             setLoading(false)
-            fetchProfile(session.user)
-              .then(profileData => {
-                if (profileData && mounted) setProfile(profileData)
-              })
-              .catch(err => console.error('Error fetching profile after auth:', err))
           } else {
             setUser(null)
             setProfile(null)
