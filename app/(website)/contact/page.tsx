@@ -58,23 +58,13 @@ export default function ContactPage() {
       const { data: insertedData, error } = await supabase
         .from('inquiries')
         .insert({
-          // Basic contact info
           client_name: formData.name.trim(),
           client_email: formData.email.trim(),
-          client_phone: formData.phone.trim() || "Not provided",
-
-          // Message content
-          message: formData.message.trim(),
-
-          // Metadata
-          inquiry_type: "private_inquiry",
-          status: "pending",
-          source: "contact_page",
-          notes: formData.subject || "General Inquiry",
-
-          // Timestamps
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          client_phone: formData.phone.trim() || null,
+          message: formData.subject
+            ? `[${formData.subject}] ${formData.message.trim()}`
+            : formData.message.trim(),
+          status: 'new',
         })
         .select()
         .single();

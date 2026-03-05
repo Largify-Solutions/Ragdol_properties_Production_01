@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
+import { createServiceClient } from '@/lib/supabase-server'
 
 export async function GET(req: NextRequest) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   try {
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   try {
     const body = await req.json()
     const { full_name, email, phone, message, user_id, type } = body
@@ -41,9 +41,11 @@ export async function POST(req: NextRequest) {
     }
 
     const valuationData = {
+      full_name: full_name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
       property_type: type || 'general',
       location: 'Dubai',
-      additional_features: `Name: ${full_name.trim()}, Email: ${email.trim()}, Phone: ${phone.trim()}`,
       valuation_notes: message?.trim() || '',
       status: 'pending' as const,
       user_id: user_id || null,

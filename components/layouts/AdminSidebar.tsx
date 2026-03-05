@@ -50,6 +50,7 @@ const sections: NavSection[] = [
     label: 'Engagement',
     items: [
       { name: 'Enquiries', href: '/admin/questions', icon: <MessageSquare className="h-4 w-4" /> },
+      { name: 'Inquiries', href: '/admin/inquiries', icon: <MessageSquare className="h-4 w-4" /> },
       { name: 'Valuations', href: '/admin/valuations', icon: <Calculator className="h-4 w-4" /> },
     ],
   },

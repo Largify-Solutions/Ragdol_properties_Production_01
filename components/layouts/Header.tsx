@@ -470,14 +470,10 @@ export default function Header() {
       
       // Prepare data for submission
       const formData = {
-        source: 'valuation_request',
-        name: data.full_name?.trim() || '',
+        full_name: data.full_name?.trim() || '',
         email: data.email?.trim() || '',
         phone: data.phone?.trim() || '',
         message: data.message?.trim() || '',
-        status: 'pending',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
       };
       
       // Try API endpoint first for better real-time handling
@@ -490,30 +486,17 @@ export default function Header() {
           body: JSON.stringify(formData),
         });
         
-        if (response.ok) {
-          const result = await response.json();
-          console.log('Valuation saved via API:', result);
-          alert("✓ Thank you for your valuation request! Our team will contact you soon.");
-          setIsValuationModalOpen(false);
-          return;
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.error || 'Failed to submit valuation request');
         }
-      } catch (apiError) {
-        console.warn('API endpoint not available, falling back to Supabase:', apiError);
+        alert("✓ Thank you for your valuation request! Our team will contact you soon.");
+        setIsValuationModalOpen(false);
+      } catch (apiError: any) {
+        console.error('Error saving valuation request:', apiError);
+        alert("✗ Something went wrong. Please try again.");
+        throw apiError;
       }
-      
-      // Fallback to Supabase if API endpoint is not available
-      console.log("Saving to Supabase as fallback:", formData);
-      const { data: docData, error } = await supabase
-        .from('request_information')
-        .insert(formData)
-        .select()
-        .single();
-      if (error) throw error;
-      console.log('Valuation saved to Supabase with ID:', docData.id);
-      
-      alert("✓ Thank you for your valuation request! Our team will contact you soon.");
-      setIsValuationModalOpen(false);
-      
     } catch (error) {
       console.error('Error saving valuation request:', error);
       alert("✗ Something went wrong. Please try again.");

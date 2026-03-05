@@ -65,8 +65,8 @@ export default function ValuationsPage() {
       if (!res.ok) throw new Error(json.error || 'Failed to load valuations')
       const valuationsData: Valuation[] = (json.data || []).map((item: any) => ({
         id: item.id,
-        user_name: item.profiles?.full_name || 'N/A',
-        user_email: item.profiles?.email || '',
+        user_name: item.full_name || item.profiles?.full_name || 'N/A',
+        user_email: item.email || item.profiles?.email || 'N/A',
         property_type: item.property_type || 'Not specified',
         location: item.location || 'Not specified',
         bedrooms: item.bedrooms || 'N/A',
@@ -76,7 +76,7 @@ export default function ValuationsPage() {
         year_built: item.year_built || 'N/A',
         urgency: item.urgency || 'low',
         contact_method: item.contact_method || 'email',
-        phoneNumber: item.profiles?.phone || 'N/A',
+        phoneNumber: item.phone || item.profiles?.phone || 'N/A',
         additional_features: item.additional_features || 'N/A',
         estimated_value: item.estimated_value || '0',
         status: item.status || 'pending',
