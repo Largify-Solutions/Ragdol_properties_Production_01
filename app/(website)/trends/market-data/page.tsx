@@ -92,7 +92,7 @@ export default function MarketDataPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -134,7 +134,7 @@ export default function MarketDataPage() {
               >
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex-1">
-                    <div className="p-3 bg-gradient-to-br from-emerald-100 to-blue-100 rounded-xl w-fit mb-4 group-hover:scale-110 transition-transform">
+                    <div className="p-3 bg-linear-to-br from-emerald-100 to-blue-100 rounded-xl w-fit mb-4 group-hover:scale-110 transition-transform">
                       <Icon className="w-6 h-6 text-emerald-600" />
                     </div>
                     <h3 className="text-lg font-bold text-slate-900 mb-2">{category.title}</h3>
@@ -215,7 +215,7 @@ export default function MarketDataPage() {
         </div>
 
         {/* Export Data CTA */}
-        <div className="mt-16 bg-gradient-to-r from-purple-600 to-emerald-600 rounded-2xl p-12 text-white text-center">
+        <div className="mt-16 bg-linear-to-r from-purple-600 to-emerald-600 rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Export Market Data</h2>
           <p className="text-lg mb-8 opacity-90">
             Download comprehensive market reports, data sheets, and analysis in PDF or Excel format

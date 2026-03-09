@@ -407,7 +407,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                 <ArrowLeftIcon className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                 Back to Search
               </Link>
-              <div className="h-4 w-[1px] bg-slate-200 mx-2" />
+              <div className="h-4 w-px bg-slate-200 mx-2" />
               <button className="p-2 text-slate-400 hover:text-primary transition-colors">
                 <ShareIcon className="w-5 h-5" />
               </button>
@@ -702,7 +702,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                     </div>
 
                     <div className="space-y-3">
-                      <button className="btn-primary w-full! !rounded-2xl !py-4 flex items-center justify-center gap-3 shadow-lg shadow-primary/20">
+                      <button className="btn-primary w-full! rounded-2xl! py-4! flex items-center justify-center gap-3 shadow-lg shadow-primary/20">
                         <PhoneIcon className="w-5 h-5" />
                         Call Agent
                       </button>
@@ -747,7 +747,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                     />
                     <button
                       type="submit"
-                      className="btn-primary w-full! !rounded-2xl !py-4 shadow-xl shadow-primary/20"
+                      className="btn-primary w-full! rounded-2xl! py-4! shadow-xl shadow-primary/20"
                     >
                       Send Inquiry
                     </button>
@@ -773,7 +773,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                   You Might Also Like
                 </h3>
               </div>
-              <Link href="/properties" className="btn-outline rounded-full! !px-8">
+              <Link href="/properties" className="btn-outline rounded-full! px-8!">
                 View All Properties
               </Link>
             </div>

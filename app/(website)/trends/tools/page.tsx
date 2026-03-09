@@ -104,7 +104,7 @@ export default function ToolsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -126,7 +126,7 @@ export default function ToolsPage() {
                 href={tool.href}
                 className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all overflow-hidden"
               >
-                <div className={`bg-gradient-to-br ${tool.color} h-24 flex items-center justify-center`}>
+                <div className={`bg-linear-to-br ${tool.color} h-24 flex items-center justify-center`}>
                   <Icon className="w-12 h-12 text-white" />
                 </div>
 
@@ -204,7 +204,7 @@ export default function ToolsPage() {
         </div>
 
         {/* Expert Support */}
-        <div className="bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
+        <div className="bg-linear-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Need Expert Help?</h2>
           <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
             Our team of investment consultants is ready to provide personalized guidance for your real estate investment journey

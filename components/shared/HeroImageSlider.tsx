@@ -129,7 +129,7 @@ export default function HeroImageSlider() {
   // ── Loading skeleton ──
   if (!settings) {
     return (
-      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-slate-900 to-slate-800 animate-pulse" />
+      <div className="absolute inset-0 w-full h-full bg-linear-to-br from-slate-900 to-slate-800 animate-pulse" />
     )
   }
 
@@ -160,7 +160,7 @@ export default function HeroImageSlider() {
                 </div>
               ))
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+              <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900" />
             )}
           </>
         ) : (
@@ -184,7 +184,7 @@ export default function HeroImageSlider() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+              <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900" />
             )}
           </>
         )}
@@ -192,7 +192,7 @@ export default function HeroImageSlider() {
         {/* Colour overlay for text contrast */}
         <div className="absolute inset-0 z-10" style={{ background: overlay }} />
         {/* Bottom vignette */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+        <div className="absolute inset-0 z-10 bg-linear-to-t from-black/60 via-transparent to-black/20" />
       </div>
 
       {/* ── Slider controls (slider mode + more than 1 slide) ── */}

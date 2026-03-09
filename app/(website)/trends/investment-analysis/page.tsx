@@ -143,7 +143,7 @@ export default function InvestmentAnalysisPage() {
   const currentStrategy = investmentStrategies.find(s => s.id === activeStrategy)!
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -311,7 +311,7 @@ export default function InvestmentAnalysisPage() {
         </div>
 
         {/* ROI Calculator CTA */}
-        <div className="bg-gradient-to-r from-blue-600 to-emerald-600 rounded-2xl p-12 text-white text-center">
+        <div className="bg-linear-to-r from-blue-600 to-emerald-600 rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Calculate Your Investment Returns</h2>
           <p className="text-lg mb-8 opacity-90">
             Use our advanced ROI calculator to project your investment returns based on purchase price, rental income, and market appreciation

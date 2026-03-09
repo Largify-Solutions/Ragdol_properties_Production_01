@@ -74,7 +74,7 @@ export default function PropertyImageGallery({
   return (
     <div className="card-custom overflow-hidden">
       <div className="relative w-full">
-        <div className="aspect-[16/10] md:aspect-[16/9] relative overflow-hidden bg-muted w-full">
+        <div className="aspect-16/10 md:aspect-video relative overflow-hidden bg-muted w-full">
           {selectedMedia.type === 'video' ? (
             (() => {
               const ytId = getYouTubeId(selectedMedia.url)

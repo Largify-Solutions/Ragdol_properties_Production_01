@@ -32,7 +32,7 @@ export default function CalculatorPage() {
   const totalEquity = downPaymentAmount + (monthlyPayment * 60 - monthlyExpenses * 60) + appreciationGain
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -169,7 +169,7 @@ export default function CalculatorPage() {
           {/* Results Section */}
           <div className="space-y-6">
             {/* Monthly Metrics */}
-            <div className="bg-gradient-to-br from-[#b8941f] to-[#996515] rounded-2xl p-8 text-white shadow-sm">
+            <div className="bg-linear-to-br from-[#b8941f] to-[#996515] rounded-2xl p-8 text-white shadow-sm">
               <h3 className="text-xl font-bold mb-6">Monthly Metrics</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">
@@ -194,7 +194,7 @@ export default function CalculatorPage() {
             </div>
 
             {/* Annual Metrics */}
-            <div className="bg-gradient-to-br from-[#1e293b] to-[#0f172a] rounded-2xl p-8 text-white shadow-sm">
+            <div className="bg-linear-to-br from-[#1e293b] to-[#0f172a] rounded-2xl p-8 text-white shadow-sm">
               <h3 className="text-xl font-bold mb-6">Annual Returns</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">
@@ -215,7 +215,7 @@ export default function CalculatorPage() {
             </div>
 
             {/* 5-Year Projection */}
-            <div className="bg-gradient-to-br from-[#4a3728] to-[#3d2e20] rounded-2xl p-8 text-white shadow-sm">
+            <div className="bg-linear-to-br from-[#4a3728] to-[#3d2e20] rounded-2xl p-8 text-white shadow-sm">
               <h3 className="text-xl font-bold mb-6">5-Year Projection</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center pb-3 border-b border-[#c5a059]/30">

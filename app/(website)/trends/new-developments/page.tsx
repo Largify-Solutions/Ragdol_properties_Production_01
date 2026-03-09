@@ -146,7 +146,7 @@ export default function NewDevelopmentsPage() {
   const developments = newDevelopments[selectedCategory]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -235,7 +235,7 @@ export default function NewDevelopmentsPage() {
               <div className="p-6">
                 {/* Discount Banner */}
                 {dev.preLaunchDiscount && (
-                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 mb-4">
+                  <div className="bg-linear-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 mb-4">
                     <p className="text-xs text-amber-600 font-semibold mb-1">LIMITED TIME OFFER</p>
                     <p className="text-lg font-bold text-amber-700">{dev.preLaunchDiscount} Early Bird Discount</p>
                   </div>
@@ -319,7 +319,7 @@ export default function NewDevelopmentsPage() {
         </div>
 
         {/* Contact CTA */}
-        <div className="bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
+        <div className="bg-linear-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Schedule a Site Visit</h2>
           <p className="text-lg mb-8 opacity-90">
             Visit our showrooms or arrange a virtual tour of new developments. Our investment consultants are ready to assist you with personalized recommendations.

@@ -75,7 +75,7 @@ export default function TopInvestmentAreasPage() {
   })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -193,8 +193,8 @@ export default function TopInvestmentAreasPage() {
                       {/* Rank and Name */}
                       <div className="md:col-span-2">
                         <div className="flex items-start gap-4">
-                          <div className="flex-shrink-0">
-                            <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-[#c5a059] to-[#996515] text-white font-bold text-lg">
+                          <div className="shrink-0">
+                            <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-linear-to-br from-[#c5a059] to-[#996515] text-white font-bold text-lg">
                               {rank}
                             </div>
                           </div>
@@ -285,7 +285,7 @@ export default function TopInvestmentAreasPage() {
         )}
 
         {/* Investment Guide CTA */}
-        <div className="mt-16 bg-gradient-to-r from-[#996515] to-[#c5a059] rounded-2xl p-12 text-white text-center">
+        <div className="mt-16 bg-linear-to-r from-[#996515] to-[#c5a059] rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Compare Properties in These Areas</h2>
           <p className="text-lg mb-8 opacity-90">
             Browse listings, compare prices, and find your perfect investment property in Dubai's top growth areas

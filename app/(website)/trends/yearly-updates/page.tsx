@@ -64,7 +64,7 @@ export default function YearlyUpdatesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -80,7 +80,7 @@ export default function YearlyUpdatesPage() {
         <div className="space-y-8 mb-16">
           {yearlyReports.map((report, idx) => (
             <div key={idx} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all overflow-hidden">
-              <div className="bg-gradient-to-r from-slate-100 to-slate-50 p-6 border-b border-slate-200">
+              <div className="bg-linear-to-r from-slate-100 to-slate-50 p-6 border-b border-slate-200">
                 <div className="grid md:grid-cols-5 gap-6">
                   <div className="md:col-span-2">
                     <h2 className="text-3xl font-black text-slate-900 mb-2">{report.year}</h2>

@@ -79,7 +79,7 @@ export default function DubaiPopulationPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -201,7 +201,7 @@ export default function DubaiPopulationPage() {
         </div>
 
         {/* Key Insights */}
-        <div className="bg-gradient-to-r from-blue-600 to-emerald-600 rounded-2xl p-12 text-white mb-16">
+        <div className="bg-linear-to-r from-blue-600 to-emerald-600 rounded-2xl p-12 text-white mb-16">
           <h2 className="text-3xl font-bold mb-6">Population Growth Opportunities for Investors</h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div>

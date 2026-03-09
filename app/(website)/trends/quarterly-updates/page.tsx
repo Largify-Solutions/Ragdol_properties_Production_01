@@ -40,7 +40,7 @@ export default function QuarterlyUpdatesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -70,15 +70,15 @@ export default function QuarterlyUpdatesPage() {
                 </div>
 
                 <div className="md:col-span-3 grid grid-cols-3 gap-4">
-                  <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4">
+                  <div className="bg-linear-to-br from-emerald-50 to-emerald-100 rounded-xl p-4">
                     <p className="text-xs text-emerald-600 font-semibold mb-1">GROWTH</p>
                     <p className="text-3xl font-bold text-emerald-700">{report.growth}</p>
                   </div>
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4">
+                  <div className="bg-linear-to-br from-blue-50 to-blue-100 rounded-xl p-4">
                     <p className="text-xs text-blue-600 font-semibold mb-1">TRANSACTIONS</p>
                     <p className="text-lg font-bold text-blue-700">{report.transactions}</p>
                   </div>
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4">
+                  <div className="bg-linear-to-br from-purple-50 to-purple-100 rounded-xl p-4">
                     <p className="text-xs text-purple-600 font-semibold mb-1">INVESTMENT</p>
                     <p className="text-lg font-bold text-purple-700">{report.investment}</p>
                   </div>

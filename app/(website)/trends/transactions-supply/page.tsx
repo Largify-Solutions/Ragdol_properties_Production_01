@@ -37,7 +37,7 @@ export default function TransactionSupplyPage() {
   const totalTypeCount = stats?.byType.reduce((sum, t) => sum + t.count, 0) ?? 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -142,7 +142,7 @@ export default function TransactionSupplyPage() {
                       </div>
                       <div className="w-full bg-slate-200 rounded-full h-3">
                         <div
-                          className="bg-gradient-to-r from-emerald-500 to-blue-500 h-3 rounded-full"
+                          className="bg-linear-to-r from-emerald-500 to-blue-500 h-3 rounded-full"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -154,7 +154,7 @@ export default function TransactionSupplyPage() {
             </div>
 
             {/* Supply Status Summary */}
-            <div className="bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white">
+            <div className="bg-linear-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white">
               <h2 className="text-3xl font-bold mb-8">Supply Snapshot</h2>
               <div className="grid md:grid-cols-3 gap-8">
                 <div>

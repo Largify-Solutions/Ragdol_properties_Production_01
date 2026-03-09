@@ -81,7 +81,7 @@ export default function TrendsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -123,7 +123,7 @@ export default function TrendsPage() {
                 href={cat.href}
                 className="group bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all overflow-hidden"
               >
-                <div className={`bg-gradient-to-br ${cat.color} h-16 flex items-center justify-center`}>
+                <div className={`bg-linear-to-br ${cat.color} h-16 flex items-center justify-center`}>
                   <Icon className="w-8 h-8 text-white" />
                 </div>
 
@@ -149,7 +149,7 @@ export default function TrendsPage() {
           <div className="grid md:grid-cols-2 gap-8">
             {/* Investment Strategies */}
             <Link href="/trends/investment-analysis" className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all overflow-hidden group">
-              <div className="h-40 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+              <div className="h-40 bg-linear-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                 <ArrowTrendingUpIcon className="w-16 h-16 text-blue-600 opacity-50" />
               </div>
               <div className="p-6">
@@ -165,7 +165,7 @@ export default function TrendsPage() {
 
             {/* Market Performance */}
             <Link href="/trends/market-performance" className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all overflow-hidden group">
-              <div className="h-40 bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center">
+              <div className="h-40 bg-linear-to-br from-emerald-100 to-emerald-200 flex items-center justify-center">
                 <ChartBarIcon className="w-16 h-16 text-emerald-600 opacity-50" />
               </div>
               <div className="p-6">
@@ -182,7 +182,7 @@ export default function TrendsPage() {
         </div>
 
         {/* Call to Action */}
-        <div className="bg-gradient-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
+        <div className="bg-linear-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Start Your Investment Journey?</h2>
           <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
             Use our comprehensive tools and market insights to identify the right investment opportunities in Dubai's real estate market.

@@ -446,7 +446,7 @@ export default function ContactPage() {
 
             {/* Right Side - Google Maps */}
             <div>
-              <div className="bg-slate-100 rounded-[2rem] h-[350px] overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50 relative">
+              <div className="bg-slate-100 rounded-4xl h-[350px] overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50 relative">
                 <div className="w-full h-full">
                   <iframe
                     src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.966634416174!2d55.26822837649556!3d25.208017977686725!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f42e9b4b5a6c1%3A0x50a6b6c0c0b6c0c0!2sBurj%20Daman!5e0!3m2!1sen!2sae!4v1696941234567!5m2!1sen!2sae`}
