@@ -126,10 +126,11 @@ export default function EnhancedLoginPage() {
       {/* Left Side: Visual/Branding */}
       <div className="lg:w-1/2 bg-linear-to-br from-primary/10 to-secondary/10 p-12 flex items-center justify-center">
         <div className="max-w-md text-center">
-          <div className="inline-block p-4 bg-white/90 rounded-3xl shadow-2xl mb-8">
+          <div className="inline-block px-6 py-4 bg-white/90 rounded-3xl shadow-2xl mb-8">
             <h1 className="text-5xl font-serif text-secondary">
               RAG<span className="text-primary italic">DOLL</span>
             </h1>
+            <p className="text-sm font-semibold tracking-widest text-slate-500 uppercase text-center mt-1">Properties</p>
           </div>
           <h2 className="text-3xl font-serif text-white mb-4">Welcome Back!</h2>
           <p className="text-white/80 text-lg leading-relaxed">
