@@ -476,35 +476,8 @@ export default function AgentSlider({ agents, showCount = 4 }: AgentSliderProps)
       )}
 
       <style>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes slideOut {
-          from {
-            opacity: 1;
-            transform: translateX(0);
-          }
-          to {
-            opacity: 0;
-            transform: translateX(-20px);
-          }
-        }
-
-        .slide-item {
-          animation: slideIn 0.5s ease-out forwards;
-        }
-
-        .slide-item.transitioning {
-          animation: slideOut 0.3s ease-in forwards;
-        }
+        .slide-item { opacity: 1; }
+        .slide-item.transitioning { opacity: 0; }
       `}</style>
 
       <div className="flex gap-2 ml-8">

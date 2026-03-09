@@ -25,19 +25,19 @@ export const OPTIMIZATION_CONFIG = {
   // Request configuration
   requests: {
     // Timeout in milliseconds
-    timeout: 30000,
+    timeout: 15000,
 
     // Request deduplication timeout
-    dedupeTimeout: 1000,
+    dedupeTimeout: 500,
 
     // Retry configuration
-    maxRetries: 3,
-    baseDelay: 1000, // milliseconds
+    maxRetries: 2,
+    baseDelay: 500, // milliseconds
     backoffMultiplier: 2,
 
     // Rate limiting
-    maxConcurrentRequests: 6,
-    requestQueueTimeout: 60000,
+    maxConcurrentRequests: 10,
+    requestQueueTimeout: 30000,
   },
 
   // Pagination configuration

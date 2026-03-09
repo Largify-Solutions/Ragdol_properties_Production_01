@@ -5,27 +5,31 @@ import { createServiceClient } from '@/lib/supabase-server'
 export async function GET() {
   const db = createServiceClient()
 
-  const { data: settings, error } = await db
-    .from('hero_settings')
-    .select('*')
-    .eq('is_active', true)
-    .maybeSingle()
+  // Fetch settings and slides in parallel
+  const [settingsResult, allSlidesResult] = await Promise.all([
+    db.from('hero_settings').select('*').eq('is_active', true).maybeSingle(),
+    db.from('hero_slides').select('*').order('sort_order', { ascending: true }),
+  ])
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (settingsResult.error) {
+    return NextResponse.json({ error: settingsResult.error.message }, { status: 500 })
   }
 
+  const settings = settingsResult.data
   if (!settings) {
-    return NextResponse.json({ settings: null, slides: [] })
+    return NextResponse.json({ settings: null, slides: [] }, {
+      headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=120' },
+    })
   }
 
-  const { data: slides } = await db
-    .from('hero_slides')
-    .select('*')
-    .eq('hero_setting_id', settings.id)
-    .order('sort_order', { ascending: true })
+  // Filter slides by the active setting
+  const slides = (allSlidesResult.data || []).filter(
+    (s: any) => s.hero_setting_id === settings.id
+  )
 
-  return NextResponse.json({ settings, slides: slides || [] })
+  return NextResponse.json({ settings, slides }, {
+    headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=120' },
+  })
 }
 
 // PATCH /api/admin/hero — create or update hero settings

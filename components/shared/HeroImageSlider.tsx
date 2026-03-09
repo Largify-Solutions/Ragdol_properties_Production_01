@@ -106,15 +106,11 @@ export default function HeroImageSlider() {
   // ── Slider auto-advance ──
   const advance = useCallback((dir: 'next' | 'prev') => {
     if (!slides.length) return
-    setIsTransitioning(true)
-    setTimeout(() => {
-      setCurrentIndex((prev) =>
-        dir === 'next'
-          ? (prev + 1) % slides.length
-          : (prev - 1 + slides.length) % slides.length
-      )
-      setIsTransitioning(false)
-    }, 500)
+    setCurrentIndex((prev) =>
+      dir === 'next'
+        ? (prev + 1) % slides.length
+        : (prev - 1 + slides.length) % slides.length
+    )
   }, [slides.length])
 
   useEffect(() => {
@@ -143,14 +139,6 @@ export default function HeroImageSlider() {
 
   return (
     <>
-      <style>{`
-        @keyframes heroZoom {
-          from { transform: scale(1); }
-          to   { transform: scale(1.08); }
-        }
-        .hero-zoom { animation: heroZoom 10s ease-in-out infinite alternate; }
-      `}</style>
-
       {/* ── Background layer ── */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         {settings.mode === 'slider' ? (
@@ -166,7 +154,7 @@ export default function HeroImageSlider() {
                   <img
                     src={slide.image_url}
                     alt={slide.title || `Slide ${index + 1}`}
-                    className={`w-full h-full object-cover ${index === currentIndex ? 'hero-zoom' : ''}`}
+                    className="w-full h-full object-cover"
                     loading={index === 0 ? 'eager' : 'lazy'}
                   />
                 </div>
@@ -193,7 +181,7 @@ export default function HeroImageSlider() {
               <img
                 src={settings.video_poster_url}
                 alt="Hero background"
-                className="w-full h-full object-cover hero-zoom"
+                className="w-full h-full object-cover"
               />
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
@@ -212,7 +200,7 @@ export default function HeroImageSlider() {
         <div className="absolute bottom-12 left-12 z-30 flex items-center gap-3">
           <button
             onClick={() => { advance('prev'); setUserPaused(true) }}
-            className="p-3 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-white hover:bg-primary hover:border-primary transition-all duration-300"
+            className="p-3 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-white hover:bg-primary hover:border-primary"
             aria-label="Previous slide"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -220,7 +208,7 @@ export default function HeroImageSlider() {
 
           <button
             onClick={() => { advance('next'); setUserPaused(true) }}
-            className="p-3 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-white hover:bg-primary hover:border-primary transition-all duration-300"
+            className="p-3 rounded-full border border-white/20 bg-white/10 backdrop-blur-md text-white hover:bg-primary hover:border-primary"
             aria-label="Next slide"
           >
             <ChevronRight className="w-5 h-5" />
@@ -282,14 +270,14 @@ export function HeroCtaButtons() {
     <div className="flex flex-wrap gap-3 mt-6 justify-center md:justify-start">
       <Link
         href={settings.primary_cta_url || '/properties'}
-        className="px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5"
+        className="px-6 py-3 rounded-full bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 shadow-lg"
       >
         {settings.primary_cta_text}
       </Link>
       {settings.secondary_cta_text && settings.secondary_cta_url && (
         <Link
           href={settings.secondary_cta_url}
-          className="px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition-all hover:-translate-y-0.5"
+          className="px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold text-sm hover:bg-white/20"
         >
           {settings.secondary_cta_text}
         </Link>

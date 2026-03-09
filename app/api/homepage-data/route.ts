@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
 
+// Re-validate every 60 seconds at the edge (ISR)
+export const revalidate = 60
+
 // Server-side fetch — runs close to DB, no browser auth overhead
 export async function GET() {
   const supabase = createServiceClient()
@@ -97,8 +100,8 @@ export async function GET() {
       },
       {
         headers: {
-          // Cache at CDN/edge for 60 s, stale-while-revalidate for 120 s
-          'Cache-Control': 's-maxage=60, stale-while-revalidate=120',
+          // Cache at CDN/edge for 60 s, stale-while-revalidate for 5 min
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
         },
       }
     )

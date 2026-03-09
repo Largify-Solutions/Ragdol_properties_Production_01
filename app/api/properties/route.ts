@@ -44,6 +44,8 @@ export async function GET(req: NextRequest) {
       total: count || 0,
       limit,
       offset,
+    }, {
+      headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=120' },
     })
   } catch (error: any) {
     console.error('Error fetching properties:', error)

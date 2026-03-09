@@ -68,7 +68,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 // Module-level cache for properties data
-const CACHE_DURATION = 3 * 60 * 1000 // 3 minutes
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 let propertiesCache: { data: any[] | null; timestamp: number } = { data: null, timestamp: 0 }
 
 function getCachedProperties() {
@@ -2315,7 +2315,7 @@ async function fetchAllPropertiesFromAgentCollection() {
   try {
     const { data: propertiesData, error } = await supabase
       .from('agent_properties')
-      .select('*')
+      .select('id,title,slug,description,short_description,type,status,property_status,price,currency,beds,baths,sqft,images,image_url,features,amenities,address,city,area,coords,featured,agent_id,furnishing,parking_spaces,video_url,category_id,project_id,developer_id,created_at,updated_at')
       .eq('published', true)
       .order('created_at', { ascending: false })
       .limit(500);

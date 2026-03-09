@@ -1113,7 +1113,7 @@ export default function HomePage() {
   // Reload all homepage data (used on mount and by realtime subscription)
   const reloadAllData = useCallback(async () => {
     try {
-      const res = await fetch('/api/homepage-data', { cache: 'no-store' })
+      const res = await fetch('/api/homepage-data')
       if (!res.ok) throw new Error(`homepage-data fetch failed: ${res.status}`)
       const d = await res.json()
 
