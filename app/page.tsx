@@ -1504,9 +1504,9 @@ export default function HomePage() {
               trustedPartners.slice(0, 6).map((partner, index) => (
                 <div
                   key={partner.id || index}
-                  className="group flex flex-col items-center justify-center p-2 w-50 sm:p-6 rounded-2xl bg-gray-100 hover:bg-white "
+                  className="group flex flex-col items-center gap-3"
                 >
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden mx-auto">
                     <img
                       src={partner.logo}
                       alt={`${partner.name} Logo`}
@@ -1517,106 +1517,35 @@ export default function HomePage() {
                       }}
                     />
                   </div>
-                  <h3 className="text-sm sm:text-lg font-bold text-secondary group-hover:text-primary transition-colors text-center">
+                  <h3 className="text-sm font-bold text-secondary group-hover:text-primary text-center">
                     {partner.name}
                   </h3>
-                 
                 </div>
               ))
             ) : (
               // CHANGED: 6 fallback partners
               <>
-                <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <img
-                      src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
-                      alt="Emaar Logo"
-                      className="w-full h-full object-cover"
-                    />
+                {[
+                  { name: "Emaar", src: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" },
+                  { name: "Sobha", src: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" },
+                  { name: "Damac", src: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" },
+                  { name: "Nakheel", src: "https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" },
+                  { name: "Dubai Properties", src: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" },
+                  { name: "Meraas", src: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" },
+                ].map((p, i) => (
+                  <div key={i} className="group flex flex-col items-center gap-3">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden mx-auto">
+                      <img
+                        src={p.src}
+                        alt={`${p.name} Logo`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <h3 className="text-sm font-bold text-secondary group-hover:text-primary text-center">
+                      {p.name}
+                    </h3>
                   </div>
-                  <h3 className="text-sm sm:text-lg font-bold text-secondary group-hover:text-primary transition-colors text-center">
-                    Emaar
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1 text-center">
-                    Real Estate
-                  </p>
-                </div>
-                <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <img
-                      src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
-                      alt="Sobha Logo"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-sm sm:text-lg font-bold text-secondary group-hover:text-primary transition-colors text-center">
-                    Sobha
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1 text-center">
-                    Real Estate
-                  </p>
-                </div>
-                <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <img
-                      src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
-                      alt="Damac Logo"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-sm sm:text-lg font-bold text-secondary group-hover:text-primary transition-colors text-center">
-                    Damac
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1 text-center">
-                    Real Estate
-                  </p>
-                </div>
-                <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <img
-                      src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
-                      alt="Nakheel Logo"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-sm sm:text-lg font-bold text-secondary group-hover:text-primary transition-colors text-center">
-                    Nakheel
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1 text-center">
-                    Real Estate
-                  </p>
-                </div>
-                {/* Added 2 more fallback partners */}
-                <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <img
-                      src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
-                      alt="Dubai Properties Logo"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-sm sm:text-lg font-bold text-secondary group-hover:text-primary transition-colors text-center">
-                    Dubai Properties
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1 text-center">
-                    Real Estate
-                  </p>
-                </div>
-                <div className="group flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl bg-slate-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-primary/20">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 mb-3 sm:mb-4 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <img
-                      src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop"
-                      alt="Meraas Logo"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-sm sm:text-lg font-bold text-secondary group-hover:text-primary transition-colors text-center">
-                    Meraas
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1 text-center">
-                    Real Estate
-                  </p>
-                </div>
+                ))}
               </>
             )}
           </div>
