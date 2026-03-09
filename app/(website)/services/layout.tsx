@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Real Estate Services in Dubai | Property Valuation & Investment Advisory | RAGDOLL',
+  title: 'Real Estate Services in Dubai | Property Valuation & Investment Advisory | Ragdoll Properties',
   description: 'Comprehensive real estate services in Dubai including property valuation, investment advisory, property management, and legal support. Expert guidance for all your property needs.',
   keywords: 'real estate services dubai, property valuation dubai, investment advisory dubai, property management dubai, real estate legal services dubai',
   openGraph: {

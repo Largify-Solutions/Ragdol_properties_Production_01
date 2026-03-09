@@ -289,7 +289,7 @@ export default function EnhancedLoginPage() {
               <ArrowLeftIcon className="h-4 w-4" />
               Back to Home
             </Link>
-            <span className="text-xs text-slate-300 uppercase tracking-widest">© 2026 RAGDOLL</span>
+            <span className="text-xs text-slate-300 uppercase tracking-widest">© 2026 Ragdoll Properties</span>
           </div>
         </div>
       </div>

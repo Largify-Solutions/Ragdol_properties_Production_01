@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   EnvelopeIcon,
   PhoneIcon,
@@ -18,6 +19,7 @@ import AgentListClient from "@/components/agent/AgentListClient";
 import { supabase } from '@/lib/supabase-browser';
 
 export default function ContactPage() {
+  const searchParams = useSearchParams()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,6 +27,11 @@ export default function ContactPage() {
     subject: "",
     message: "",
   });
+  useEffect(() => {
+    const subject = searchParams.get('subject')
+    if (subject) setFormData(prev => ({ ...prev, subject }))
+  }, [searchParams])
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -104,7 +111,7 @@ export default function ContactPage() {
     {
       icon: EnvelopeIcon,
       title: "Email Inquiry",
-      details: ["concierge@RAGDOLL.com", "invest@RAGDOLL.com"],
+      details: ["concierge@ragdollproperties.com", "invest@ragdollproperties.com"],
       description: "Priority response within 2 hours",
     },
     {
@@ -127,7 +134,7 @@ export default function ContactPage() {
               Inquiry Received
             </h2>
             <p className="text-slate-500 mb-8 leading-relaxed">
-              Thank you for reaching out to RAGDOLLL. One of our senior property
+              Thank you for reaching out to Ragdoll Properties. One of our senior property
               advisors will contact you shortly to discuss your requirements.
             </p>
             <button
@@ -145,7 +152,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-[50vh] flex items-center justify-center overflow-hidden bg-secondary">
+      <section className="relative h-[28vh] flex items-center justify-center overflow-hidden bg-secondary">
         <div className="absolute inset-0">
           <Image
             src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1600"
@@ -160,35 +167,35 @@ export default function ContactPage() {
           <span className="inline-block px-4 py-1 bg-primary/20 text-primary text-sm font-bold tracking-widest uppercase rounded-full mb-6">
             Get In Touch
           </span>
-          <h1 className="text-5xl md:text-7xl font-serif text-white mb-6">
+          <h1 className="text-3xl md:text-5xl font-serif text-white mb-3">
             Connect with <span className="text-primary italic">Excellence</span>
           </h1>
-          <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
             Whether you're looking to invest, sell, or find your dream home, our
             elite team is here to provide bespoke guidance.
           </p>
         </div>
       </section>
 
-      <section className="py-24 -mt-24 relative z-20">
+      <section className="py-10 -mt-10 relative z-20">
         <div className="container-custom">
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Contact Info Cards */}
-            <div className="lg:col-span-1 space-y-8">
+            <div className="lg:col-span-1 space-y-4">
               {contactInfo.map((info, index) => (
                 <div
                   key={index}
-                  className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 group hover:border-primary/30 transition-all duration-500"
+                  className="bg-white p-5 rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100 group hover:border-primary/30 transition-all duration-500"
                 >
-                  <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
-                    <info.icon className="h-7 w-7 text-primary" />
+                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center mb-3 group-hover:bg-primary/10 transition-colors">
+                    <info.icon className="h-5 w-5 text-primary" />
                   </div>
-                  <h3 className="text-xl font-serif text-secondary mb-4">
+                  <h3 className="text-base font-serif text-secondary mb-2">
                     {info.title}
                   </h3>
-                  <div className="space-y-2 mb-4">
+                  <div className="space-y-1 mb-2">
                     {info.details.map((detail, idx) => (
-                      <p key={idx} className="text-slate-600 font-medium">
+                      <p key={idx} className="text-slate-600 text-sm font-medium">
                         {detail}
                       </p>
                     ))}
@@ -204,10 +211,10 @@ export default function ContactPage() {
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <div className="bg-white p-10 md:p-16 rounded-[3rem] shadow-2xl shadow-slate-200 border border-slate-100">
-                <div className="flex items-center gap-3 mb-10">
-                  <SparklesIcon className="h-6 w-6 text-primary" />
-                  <h2 className="text-3xl font-serif text-secondary">
+              <div className="bg-white p-6 md:p-10 rounded-2xl shadow-2xl shadow-slate-200 border border-slate-100">
+                <div className="flex items-center gap-3 mb-5">
+                  <SparklesIcon className="h-5 w-5 text-primary" />
+                  <h2 className="text-2xl font-serif text-secondary">
                     Send a Private Inquiry
                   </h2>
                 </div>
@@ -221,10 +228,10 @@ export default function ContactPage() {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-8">
-                  <div className="grid md:grid-cols-2 gap-8">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-secondary uppercase tracking-wider ml-1">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
                         Full Name *
                       </label>
                       <input
@@ -234,11 +241,11 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         required
                         placeholder="John Doe"
-                        className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-300"
+                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-300 text-sm"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-secondary uppercase tracking-wider ml-1">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
                         Email Address *
                       </label>
                       <input
@@ -248,14 +255,14 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         required
                         placeholder="john@example.com"
-                        className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-300"
+                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-300 text-sm"
                       />
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-8">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-secondary uppercase tracking-wider ml-1">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
                         Phone Number
                       </label>
                       <input
@@ -264,20 +271,21 @@ export default function ContactPage() {
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="+971 50 000 0000"
-                        className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-300"
+                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-300 text-sm"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-secondary uppercase tracking-wider ml-1">
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
                         Inquiry Type
                       </label>
                       <select
                         name="subject"
                         value={formData.subject}
                         onChange={handleInputChange}
-                        className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/50 transition-all text-slate-600"
+                        className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 transition-all text-slate-600 text-sm"
                       >
                         <option value="">Select Interest</option>
+                        <option value="mortgage">Mortgage Pre-Approval</option>
                         <option value="buying">Buying Property</option>
                         <option value="selling">Selling Property</option>
                         <option value="investment">Investment Advice</option>
@@ -286,8 +294,8 @@ export default function ContactPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-secondary uppercase tracking-wider ml-1">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-secondary uppercase tracking-wider ml-1">
                       Your Message *
                     </label>
                     <textarea
@@ -295,16 +303,16 @@ export default function ContactPage() {
                       value={formData.message}
                       onChange={handleInputChange}
                       required
-                      rows={6}
+                      rows={4}
                       placeholder="Tell us about your property requirements..."
-                      className="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-300 resize-none"
+                      className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-slate-300 resize-none text-sm"
                     ></textarea>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-5 bg-secondary text-white font-bold rounded-2xl hover:bg-primary hover:text-secondary transition-all duration-500 shadow-xl shadow-secondary/20 flex items-center justify-center gap-3 disabled:opacity-70"
+                    className="w-full py-3.5 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-500 shadow-lg shadow-secondary/20 flex items-center justify-center gap-3 disabled:opacity-70"
                   >
                     {isSubmitting ? (
                       <div className="flex items-center gap-3">
@@ -331,10 +339,10 @@ export default function ContactPage() {
       </section>
 
       {/* Map Section */}
-      <section className="py-20 bg-white">
+      <section className="py-10 bg-white">
         <div className="container-custom">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-serif text-secondary mb-4">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl md:text-3xl font-serif text-secondary mb-3">
               Visit Our <span className="text-primary">Premium Office</span>
             </h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
@@ -438,7 +446,7 @@ export default function ContactPage() {
 
             {/* Right Side - Google Maps */}
             <div>
-              <div className="bg-slate-100 rounded-[2.5rem] h-[500px] overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50 relative">
+              <div className="bg-slate-100 rounded-[2rem] h-[350px] overflow-hidden border border-slate-100 shadow-xl shadow-slate-200/50 relative">
                 <div className="w-full h-full">
                   <iframe
                     src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3608.966634416174!2d55.26822837649556!3d25.208017977686725!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f42e9b4b5a6c1%3A0x50a6b6c0c0b6c0c0!2sBurj%20Daman!5e0!3m2!1sen!2sae!4v1696941234567!5m2!1sen!2sae`}
@@ -448,7 +456,7 @@ export default function ContactPage() {
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="RAGDOLLL Real Estate Office Location"
+                    title="Ragdoll Properties Real Estate Office Location"
                     className="rounded-[2.5rem]"
                   ></iframe>
 
@@ -463,7 +471,7 @@ export default function ContactPage() {
 
                       <div className="mt-4 bg-white rounded-2xl p-4 shadow-2xl max-w-xs">
                         <div className="font-bold text-slate-900 text-lg mb-1">
-                          RAGDOLLL Real Estate Office
+                          Ragdoll Properties Real Estate Office
                         </div>
                         <div className="text-slate-600 text-sm">
                           Burj Daman, Level 45, DIFC, Dubai

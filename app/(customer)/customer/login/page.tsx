@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import ValuationModal, { ValuationData } from '@/components/forms/ValuationModal'
 import Link from 'next/link'
+import Image from 'next/image'
 import { EyeIcon, EyeSlashIcon, HomeIcon, SparklesIcon, BuildingOfficeIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
 
 import { supabase } from '@/lib/supabase-browser'
@@ -124,10 +125,14 @@ export default function CustomerLogin() {
         <div className="container-custom">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <BuildingOfficeIcon className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold text-gradient">RAGDOLL PROPERTIES</span>
+              <Image
+                src="/ragdol.png"
+                alt="Ragdoll Properties"
+                width={140}
+                height={40}
+                className="h-10 w-auto object-contain"
+                priority
+              />
             </Link>
             <Link
               href="/"
@@ -170,7 +175,7 @@ export default function CustomerLogin() {
                     </li>
                     <li className="flex items-center gap-3 text-muted-foreground">
                       <div className="w-2 h-2 bg-primary rounded-full"></div>
-                      Get free property valuations
+                      Get free property value estimation
                     </li>
                     <li className="flex items-center gap-3 text-muted-foreground">
                       <div className="w-2 h-2 bg-primary rounded-full"></div>
@@ -181,13 +186,12 @@ export default function CustomerLogin() {
 
                 {/* Quick Links */}
                 <div className="flex flex-wrap gap-4">
-                  <button
-                   onClick={() => setShowValuationModal(true)}
-                   
+                  <Link
+                    href="/properties"
                     className="btn-primary"
                   >
                     Browse Properties
-                  </button>
+                  </Link>
                   <button
                     onClick={() => setShowValuationModal(true)}
                     className="btn-outline"
@@ -334,7 +338,7 @@ export default function CustomerLogin() {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Why Choose <span className="text-gradient">RAGDOLL PROPERTIES</span>
+              Why Choose <span className="text-gradient">Ragdoll Properties PROPERTIES</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Experience the difference with Dubai's premier real estate platform

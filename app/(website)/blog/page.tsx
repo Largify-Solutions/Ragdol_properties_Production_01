@@ -101,7 +101,7 @@ export default function BlogPage() {
           </div>
           <div className="container-custom relative z-10 text-center">
             <h2 className="text-primary font-bold tracking-[0.4em] uppercase text-sm mb-6">Insights & News</h2>
-            <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-8">RAGDOLL <span className="text-gradient">Journal</span></h1>
+            <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-8">Ragdoll Properties <span className="text-gradient">Journal</span></h1>
             <p className="text-xl text-white/80 max-w-2xl mx-auto font-medium">No posts published yet. Check back soon!</p>
           </div>
         </section>
@@ -127,7 +127,7 @@ export default function BlogPage() {
             Insights & News
           </h2>
           <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight mb-8 animate-slide-up [animation-delay:100ms]">
-            RAGDOLL <span className="text-gradient">Journal</span>
+            Ragdoll Properties <span className="text-gradient">Journal</span>
           </h1>
           <p className="text-xl text-white/80 max-w-2xl mx-auto font-medium animate-slide-up [animation-delay:200ms]">
             Stay ahead of the curve with expert market analysis, investment guides, and the latest real estate news from Dubai.
@@ -170,7 +170,7 @@ export default function BlogPage() {
                     <UserIcon className="h-6 w-6" />
                   </div>
                   <div>
-                    <div className="text-white font-bold">RAGDOLL</div>
+                    <div className="text-white font-bold">Ragdoll Properties</div>
                     <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">{formatDate(featuredPost.published_at || featuredPost.created_at)}</div>
                   </div>
                 </div>

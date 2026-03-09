@@ -266,7 +266,7 @@ export default function ServicesPage() {
             const Icon = service.icon
             return (
               <Link key={service.id} href={service.href}>
-                <div className="group relative h-full bg-linear-to-br from-slate-800 to-slate-900 border border-amber-500/20 rounded-3xl p-8 hover:border-amber-400/50 transition-all duration-500 cursor-pointer overflow-hidden">
+                <div className="group relative h-full bg-white border-2 border-amber-700/50 rounded-3xl p-8 hover:border-amber-700 transition-all duration-500 cursor-pointer overflow-hidden shadow-sm hover:shadow-lg">
                   {/* Golden gradient overlay on hover */}
                   <div className={`absolute inset-0 bg-linear-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 -z-10`}></div>
                   
@@ -279,17 +279,17 @@ export default function ServicesPage() {
                   </div>
                   
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-amber-300 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-amber-700 transition-colors">
                     {service.title}
                   </h3>
                   
                   {/* Description */}
-                  <p className="text-gray-400 text-sm leading-relaxed mb-6 group-hover:text-gray-300 transition-colors">
+                  <p className="text-gray-600 text-sm leading-relaxed mb-6 transition-colors">
                     {service.description}
                   </p>
                   
                   {/* Learn More Link */}
-                  <div className="flex items-center text-amber-400 font-semibold text-sm group-hover:text-amber-300 transition-colors">
+                  <div className="flex items-center text-amber-700 font-semibold text-sm group-hover:text-amber-800 transition-colors">
                     <span>Learn More</span>
                     <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-2 transition-transform" />
                   </div>
@@ -332,11 +332,11 @@ export default function ServicesPage() {
             ].map((item, idx) => {
               const Icon = item.icon
               return (
-                <div key={idx} className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-amber-400/20 rounded-2xl p-8 hover:border-amber-400/50 transition-all duration-300">
+                <div key={idx} className="group bg-white border-2 border-amber-700/50 rounded-2xl p-8 hover:border-amber-700 transition-all duration-300 shadow-sm hover:shadow-md">
                   <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-yellow-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
                   <p className="text-gray-600 leading-relaxed">{item.description}</p>
                 </div>
               )
@@ -387,16 +387,16 @@ export default function ServicesPage() {
       {/* CTA Section - Premium */}
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="container-custom mx-auto">
-          <div className="relative overflow-hidden rounded-4xl p-12 md:p-20 bg-linear-to-br from-slate-800 via-slate-900 to-slate-950 border border-amber-500/30">
+          <div className="relative overflow-hidden rounded-4xl p-12 md:p-20 bg-white border-2 border-amber-700/60 shadow-lg">
             {/* Golden glow effects */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl -z-10"></div>
             
             <div className="relative z-10 max-w-3xl">
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-                Ready to Experience <span className="bg-linear-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">Excellence?</span>
+              <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
+                Ready to Experience <span className="bg-linear-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">Excellence?</span>
               </h2>
-              <p className="text-xl text-gray-300 mb-12 leading-relaxed">
+              <p className="text-xl text-gray-600 mb-12 leading-relaxed">
                 Connect with our specialist team today for a confidential consultation about your property needs.
               </p>
               <Link

@@ -752,7 +752,7 @@ async function fetchTopAgents(): Promise<AgentWithProfile[]> {
         license_no: agent.license_no || "",
         approved: agent.approved || false,
         social: agent.social || { linkedin: "", instagram: "" },
-        brokerage: agent.brokerage || "RAGDOLL PROPERTIES",
+        brokerage: agent.brokerage || "Ragdoll Properties PROPERTIES",
         certifications: agent.certifications || [],
         commission_rate: agent.commission_rate || 2.5,
         languages: agent.languages || ["English", "Arabic"],

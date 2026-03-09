@@ -386,7 +386,7 @@ export default function AboutPage() {
                   Founded in 2008, RAGDOLL Properties emerged as a visionary real estate firm dedicated to transforming Dubai's property landscape. What began as a boutique agency has grown into one of the region's most respected property consultancies.
                 </p>
                 <p>
-                  Our name, RAGDOLL, represents flexibility and personalized service - adapting to our clients' needs while maintaining the highest standards of professionalism. Over the past decade, we have been instrumental in shaping Dubai's luxury residential and commercial sectors.
+                  Our name, Ragdoll Properties, represents flexibility and personalized service - adapting to our clients' needs while maintaining the highest standards of professionalism. Over the past decade, we have been instrumental in shaping Dubai's luxury residential and commercial sectors.
                 </p>
                 <p>
                   Today, we stand as a bridge between international investors and Dubai's dynamic real estate market, combining local expertise with global perspectives to deliver exceptional results.

@@ -223,7 +223,7 @@ const featuredGuides = [
     difficulty: 'Advanced',
     featured: true,
     tags: ['Market Analysis', 'ROI', 'Trends'],
-    author: 'RAGDOLL Investment Team',
+    author: 'Ragdoll Properties Investment Team',
     date: 'Jan 2025'
   },
   {

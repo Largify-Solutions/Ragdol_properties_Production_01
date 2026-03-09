@@ -133,7 +133,7 @@ const stats = [
 
 export default function ConstructionPMPage() {
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
@@ -150,16 +150,16 @@ export default function ConstructionPMPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Construction <span className="bg-linear-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">Project Management</span>
+              Construction <span className="bg-linear-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">Project Management</span>
             </h1>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
               Expert oversight of your entire construction project from planning to handover. On-time delivery, budget control, and exceptional quality guaranteed.
             </p>
             <div className="flex gap-4 flex-wrap">
-              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-teal-400 to-cyan-500 text-slate-950 font-bold rounded-lg hover:shadow-2xl hover:shadow-teal-500/50 transition-all duration-300">
+              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-amber-600 to-amber-800 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-amber-500/50 transition-all duration-300">
                 Get Project Manager
               </Link>
-              <Link href="#details" className="px-8 py-4 border-2 border-teal-400/50 text-teal-300 font-bold rounded-lg hover:bg-teal-400/10 transition-all duration-300">
+              <Link href="#details" className="px-8 py-4 border-2 border-amber-700/50 text-amber-800 font-bold rounded-lg hover:bg-amber-50 transition-all duration-300">
                 Learn More <ArrowRightIcon className="inline h-5 w-5 ml-2" />
               </Link>
             </div>
@@ -171,20 +171,20 @@ export default function ConstructionPMPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-6">
-              Expert Construction <span className="bg-linear-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent">Oversight & Control</span>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+              Expert Construction <span className="bg-linear-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">Oversight &amp; Control</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-4 leading-relaxed">
+            <p className="text-gray-700 text-lg mb-4 leading-relaxed">
               Our Construction Project Management service oversees the entire construction process, ensuring your project is completed on time, within budget, and to the highest quality standards. We coordinate between architects, contractors, and suppliers for seamless execution.
             </p>
-            <p className="text-gray-400 text-base leading-relaxed mb-8">
+            <p className="text-gray-600 text-base leading-relaxed mb-8">
               Our experienced project managers take responsibility for keeping your construction running smoothly, mitigating risks, and addressing challenges as they arise. Whether residential, commercial, or mixed-use, we provide expert guidance for successful outcomes.
             </p>
             <div className="space-y-3">
               {['End-to-End Management', 'Budget Control', 'Quality Assurance'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
-                  <CheckCircleIcon className="h-6 w-6 text-teal-400 shrink-0" />
-                  <span className="text-gray-200">{item}</span>
+                  <CheckCircleIcon className="h-6 w-6 text-amber-700 shrink-0" />
+                  <span className="text-gray-800">{item}</span>
                 </div>
               ))}
             </div>
@@ -202,11 +202,11 @@ export default function ConstructionPMPage() {
       </section>
 
       {/* Core Services Section */}
-      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-amber-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Project Management Services</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">Comprehensive services covering every aspect of construction project lifecycle</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Project Management Services</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Comprehensive services covering every aspect of construction project lifecycle</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -215,13 +215,13 @@ export default function ConstructionPMPage() {
               return (
                 <div 
                   key={idx}
-                  className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-teal-400/20 rounded-2xl p-6 hover:border-teal-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-teal-400/10"
-                >
-                  <div className="w-12 h-12 bg-linear-to-br from-teal-400 to-cyan-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <Icon className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">{service.description}</p>
+                className="group bg-white border-2 border-amber-700/30 rounded-2xl p-6 hover:border-amber-700 transition-all duration-300 hover:shadow-xl hover:shadow-amber-400/10"
+              >
+                <div className="w-12 h-12 bg-linear-to-br from-amber-600 to-amber-800 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Icon className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
                 </div>
               )
             })}
@@ -233,26 +233,26 @@ export default function ConstructionPMPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-teal-400/20 rounded-2xl p-8 text-center hover:border-teal-400/50 transition-all">
-              <div className="text-4xl font-bold bg-linear-to-r from-teal-400 to-cyan-500 bg-clip-text text-transparent mb-2">
+            <div key={idx} className="bg-white border-2 border-amber-700/30 rounded-2xl p-8 text-center hover:border-amber-700 transition-all">
+              <div className="text-4xl font-bold bg-linear-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
-              <p className="text-gray-300">{stat.label}</p>
+              <p className="text-gray-700">{stat.label}</p>
             </div>
           ))}
         </div>
 
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Why Choose fäm Project Management?</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Why Choose fäm Project Management?</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {benefits.map((benefit, idx) => {
             const Icon = benefit.icon
             return (
               <div key={idx} className="flex gap-4">
-                <Icon className="h-6 w-6 text-teal-400 shrink-0 mt-1" />
+                <Icon className="h-6 w-6 text-amber-700 shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
-                  <p className="text-gray-400">{benefit.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                  <p className="text-gray-600">{benefit.description}</p>
                 </div>
               </div>
             )
@@ -261,24 +261,24 @@ export default function ConstructionPMPage() {
       </section>
 
       {/* Process Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-amber-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Project Management Process</h2>
-            <p className="text-xl text-gray-300">Our systematic approach to construction excellence</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Project Management Process</h2>
+            <p className="text-xl text-gray-600">Our systematic approach to construction excellence</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {processSteps.map((step, idx) => (
               <div key={idx} className="flex gap-6">
                 <div className="shrink-0">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-teal-400 to-cyan-500 text-white font-bold text-lg">
-                    {step.number}
-                  </div>
+                <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-amber-600 to-amber-800 text-white font-bold text-lg">
+                  {step.number}
                 </div>
-                <div className="pt-1">
-                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+              </div>
+              <div className="pt-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -288,7 +288,7 @@ export default function ConstructionPMPage() {
 
       {/* Gallery Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Managed Construction Projects</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Managed Construction Projects</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
@@ -313,7 +313,7 @@ export default function ConstructionPMPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-amber-50 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_12.jpg"
@@ -324,29 +324,29 @@ export default function ConstructionPMPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Ready to Ensure Project Success?
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             Let fäm Properties manage your construction project with expertise, precision, and unwavering commitment to delivering excellence on time and within budget.
           </p>
 
           <div className="flex gap-4 flex-wrap justify-center">
             <Link 
               href="tel:+971" 
-              className="px-8 py-4 bg-linear-to-r from-teal-400 to-cyan-500 text-slate-950 font-bold rounded-lg hover:shadow-2xl hover:shadow-teal-500/50 transition-all duration-300"
+              className="px-8 py-4 bg-linear-to-r from-amber-600 to-amber-800 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-amber-500/50 transition-all duration-300"
             >
               Schedule Consultation
             </Link>
             <Link 
               href="/contact" 
-              className="px-8 py-4 border-2 border-teal-400 text-teal-300 font-bold rounded-lg hover:bg-teal-400/10 transition-all duration-300"
+              className="px-8 py-4 border-2 border-amber-700 text-amber-800 font-bold rounded-lg hover:bg-amber-50 transition-all duration-300"
             >
               Contact Project Team
             </Link>
           </div>
 
-          <p className="text-gray-400 text-sm mt-8">
+          <p className="text-gray-500 text-sm mt-8">
             150+ projects delivered on time with 98% completion rate and 99% budget adherence
           </p>
         </div>

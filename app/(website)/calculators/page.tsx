@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { CalculatorIcon, CurrencyDollarIcon, PercentBadgeIcon, ClockIcon } from '@heroicons/react/24/outline'
 
 export default function MortgageCalculatorPage() {
@@ -296,9 +297,9 @@ export default function MortgageCalculatorPage() {
               <p className="text-[#a3a3a3] mb-6">
                 Get pre-approved for your mortgage and find the best rates available.
               </p>
-              <button className="bg-[#d4af37] hover:bg-[#b8941f] text-[#1a1a1a] font-semibold px-8 py-3 rounded-lg transition-colors">
+              <Link href="/contact?subject=mortgage" className="inline-block bg-[#d4af37] hover:bg-[#b8941f] text-[#1a1a1a] font-semibold px-8 py-3 rounded-lg transition-colors">
                 Get Pre-Approved
-              </button>
+              </Link>
             </div>
           </div>
         </div>

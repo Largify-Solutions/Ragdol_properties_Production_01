@@ -11,7 +11,7 @@ export async function GET(
 
     const { data, error } = await supabase
       .from('properties')
-      .select('*, agents(id, title, profile_image, phone, whatsapp, rating, review_count, user_id, profiles:user_id(full_name, email))')
+      .select('*, agents(id, title, profile_image, phone, whatsapp, rating, review_count, user_id, profiles:user_id(full_name, email, avatar_url))')
       .eq('id', id)
       .single()
 

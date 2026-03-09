@@ -32,14 +32,14 @@ const faqs = [
   {
     id: 1,
     category: 'general',
-    question: 'What services does RAGDOLL Properties offer?',
+    question: 'What services does Ragdoll Properties Properties offer?',
     answer: 'We specialize in real estate sales, rentals, and property management in Dubai. Our services include residential and commercial property listings, investment consultations, and full support throughout the buying, selling, or renting process.',
     icon: BuildingOfficeIcon
   },
   {
     id: 2,
     category: 'general',
-    question: 'Where is RAGDOLL Properties located?',
+    question: 'Where is Ragdoll Properties Properties located?',
     answer: 'Our office is based in Dubai, UAE. You can find our full contact details and location map on our Contact Us page. We serve clients throughout the UAE with a focus on Dubai\'s prime real estate markets.',
     icon: MapPinIcon
   },
@@ -53,7 +53,7 @@ const faqs = [
   {
     id: 4,
     category: 'services',
-    question: 'How can I list my property with RAGDOLL Properties?',
+    question: 'How can I list my property with Ragdoll Properties Properties?',
     answer: 'You can list your property through our website using the "Submit Property" feature, or contact our team directly via phone or email. We will guide you through the listing and marketing process, including professional photography and virtual tours.',
     icon: DocumentTextIcon
   },
@@ -298,7 +298,7 @@ export default function FAQsPage() {
       <footer className="bg-secondary text-white py-12">
         <div className="container-custom">
           <div className="text-center">
-            <p className="text-white/60">© 2024 RAGDOLL Properties. All rights reserved.</p>
+            <p className="text-white/60">© 2024 Ragdoll Properties Properties. All rights reserved.</p>
           </div>
         </div>
       </footer>

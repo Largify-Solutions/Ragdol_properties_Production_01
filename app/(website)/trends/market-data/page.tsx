@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import {
   ChartBarIcon,
   ArrowTrendingUpIcon,
@@ -9,7 +10,36 @@ import {
   CalendarIcon
 } from '@heroicons/react/24/outline'
 
+interface MarketSummary {
+  totalListings: number
+  forSale: number
+  forRent: number
+  offPlan: number
+  ready: number
+  totalProjects: number
+  avgPrice: number
+  avgPricePerSqft: number
+}
+
 export default function MarketDataPage() {
+  const [summary, setSummary] = useState<MarketSummary | null>(null)
+  const [loadedAt, setLoadedAt] = useState<string>('')
+
+  useEffect(() => {
+    fetch('/api/market-stats')
+      .then(r => r.json())
+      .then(d => {
+        if (d.summary) {
+          setSummary(d.summary)
+          setLoadedAt(new Date(d.generatedAt).toLocaleString())
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const fmt = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n)
+  const fmtPrice = (n: number) => n >= 1_000_000 ? `AED ${(n / 1_000_000).toFixed(1)}M` : `AED ${(n / 1000).toFixed(0)}K`
+
   const dataCategories = [
     {
       id: 'dubai-population',
@@ -24,40 +54,40 @@ export default function MarketDataPage() {
       title: 'Market Performance',
       description: 'Real estate market indicators, price trends, and sector analysis',
       icon: ArrowTrendingUpIcon,
-      stats: '+9.8%',
-      growth: 'Average appreciation'
+      stats: summary ? fmtPrice(summary.avgPrice) : '...',
+      growth: 'Avg listing price'
     },
     {
       id: 'transactions-supply',
       title: 'Transactions & Supply',
       description: 'Sales volume, rental transactions, and inventory data',
       icon: ChartBarIcon,
-      stats: '185.5K',
-      growth: 'Transactions per year'
+      stats: summary ? fmt(summary.totalListings) : '...',
+      growth: 'Active listings'
     },
     {
       id: 'monthly-updates',
       title: 'Monthly Market Updates',
       description: 'Monthly performance metrics, new launches, and trends',
       icon: CalendarIcon,
-      stats: 'Updated',
-      growth: 'Every month'
+      stats: 'Live',
+      growth: 'Updated in real-time'
     },
     {
       id: 'quarterly-updates',
       title: 'Quarterly Market Updates',
       description: 'Quarterly deep dives into market performance and forecasts',
       icon: ChartBarIcon,
-      stats: '4',
-      growth: 'Per year'
+      stats: summary ? fmt(summary.offPlan) : '...',
+      growth: 'Off-plan listings'
     },
     {
       id: 'yearly-updates',
       title: 'Yearly Market Updates',
       description: 'Annual comprehensive market analysis and outlook',
-      icon: ArrowTrendingUpIcon,
-      stats: '2024',
-      growth: 'Latest report'
+      icon: BuildingOffice2Icon,
+      stats: summary ? String(summary.totalProjects) : '...',
+      growth: 'Active projects'
     }
   ]
 
@@ -72,15 +102,18 @@ export default function MarketDataPage() {
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Comprehensive market data, statistics, and reports to understand Dubai's real estate landscape
           </p>
+          {loadedAt && (
+            <p className="mt-3 text-xs text-slate-400">Live data — last refreshed {loadedAt}</p>
+          )}
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats — real data from DB */}
         <div className="grid md:grid-cols-4 gap-4 mb-12">
           {[
-            { label: 'Total Population', value: '3.7M+' },
-            { label: 'Properties Listed', value: '185K+' },
-            { label: 'Market Growth', value: '+9.8%' },
-            { label: 'Data Points', value: '10K+' }
+            { label: 'Total Listings', value: summary ? fmt(summary.totalListings) : '...' },
+            { label: 'For Sale', value: summary ? fmt(summary.forSale) : '...' },
+            { label: 'For Rent', value: summary ? fmt(summary.forRent) : '...' },
+            { label: 'Active Projects', value: summary ? String(summary.totalProjects) : '...' }
           ].map((stat, idx) => (
             <div key={idx} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm text-center">
               <p className="text-2xl font-bold text-slate-900 mb-1">{stat.value}</p>

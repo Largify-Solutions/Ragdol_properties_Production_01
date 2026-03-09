@@ -132,7 +132,7 @@ const stats = [
 
 export default function ConstructionServicesPage() {
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
@@ -149,16 +149,16 @@ export default function ConstructionServicesPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Construction <span className="bg-linear-to-r from-slate-400 to-gray-500 bg-clip-text text-transparent">Services</span>
+              Construction <span className="bg-linear-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">Services</span>
             </h1>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
               Comprehensive base-build and specialized construction solutions delivered with technical expertise, precision, and unwavering quality standards.
             </p>
             <div className="flex gap-4 flex-wrap">
-              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-slate-400 to-gray-500 text-slate-950 font-bold rounded-lg hover:shadow-2xl hover:shadow-slate-500/50 transition-all duration-300">
+              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-amber-600 to-amber-800 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-amber-500/50 transition-all duration-300">
                 Get Construction Quote
               </Link>
-              <Link href="#details" className="px-8 py-4 border-2 border-slate-400/50 text-slate-300 font-bold rounded-lg hover:bg-slate-400/10 transition-all duration-300">
+              <Link href="#details" className="px-8 py-4 border-2 border-amber-700/50 text-amber-800 font-bold rounded-lg hover:bg-amber-50 transition-all duration-300">
                 Learn More <ArrowRightIcon className="inline h-5 w-5 ml-2" />
               </Link>
             </div>
@@ -170,20 +170,20 @@ export default function ConstructionServicesPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-6">
-              Comprehensive Construction <span className="bg-linear-to-r from-slate-400 to-gray-500 bg-clip-text text-transparent">Solutions</span>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+              Comprehensive Construction <span className="bg-linear-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">Solutions</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-4 leading-relaxed">
+            <p className="text-gray-700 text-lg mb-4 leading-relaxed">
               Our Construction Services division delivers comprehensive base-build and specialized construction solutions designed to meet the highest industry standards. Whether residential, commercial, or mixed-use, our team provides the technical expertise needed to turn concepts into reality.
             </p>
-            <p className="text-gray-400 text-base leading-relaxed mb-8">
+            <p className="text-gray-600 text-base leading-relaxed mb-8">
               We manage every phase of construction with precision and transparency, from enabling and civil works to MEP installations, specialized features, and protective systems. By combining innovative methods, strict quality controls, and experienced project teams, we ensure timely delivery, cost efficiency, and uncompromised quality.
             </p>
             <div className="space-y-3">
               {['Expert Teams', 'Precision Execution', 'Quality Assurance'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
-                  <CheckCircleIcon className="h-6 w-6 text-slate-400 shrink-0" />
-                  <span className="text-gray-200">{item}</span>
+                  <CheckCircleIcon className="h-6 w-6 text-amber-700 shrink-0" />
+                  <span className="text-gray-800">{item}</span>
                 </div>
               ))}
             </div>
@@ -201,15 +201,15 @@ export default function ConstructionServicesPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-amber-50">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, idx) => (
-              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-slate-400/20 rounded-2xl p-8 text-center hover:border-slate-400/50 transition-all">
-                <div className="text-4xl font-bold bg-linear-to-r from-slate-400 to-gray-500 bg-clip-text text-transparent mb-2">
+              <div key={idx} className="bg-white border-2 border-amber-700/30 rounded-2xl p-8 text-center hover:border-amber-700 transition-all">
+                <div className="text-4xl font-bold bg-linear-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent mb-2">
                   {stat.value}
                 </div>
-                <p className="text-gray-300">{stat.label}</p>
+                <p className="text-gray-700">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -219,8 +219,8 @@ export default function ConstructionServicesPage() {
       {/* Core Services Section */}
       <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">Construction Services</h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">Comprehensive solutions spanning every phase of construction</p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Construction Services</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Comprehensive solutions spanning every phase of construction</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -229,13 +229,13 @@ export default function ConstructionServicesPage() {
             return (
               <div 
                 key={idx}
-                className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-slate-400/20 rounded-2xl p-6 hover:border-slate-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-slate-400/10"
+                className="group bg-white border-2 border-amber-700/30 rounded-2xl p-6 hover:border-amber-700 transition-all duration-300 hover:shadow-xl hover:shadow-amber-400/10"
               >
-                <div className="w-12 h-12 bg-linear-to-br from-slate-400 to-gray-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-linear-to-br from-amber-600 to-amber-800 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Icon className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                <p className="text-gray-300 text-sm leading-relaxed">{service.description}</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
               </div>
             )
           })}
@@ -243,19 +243,19 @@ export default function ConstructionServicesPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-amber-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Why Choose fäm Construction Services?</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Why Choose fäm Construction Services?</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {benefits.map((benefit, idx) => {
               const Icon = benefit.icon
               return (
                 <div key={idx} className="flex gap-4">
-                  <Icon className="h-6 w-6 text-slate-400 shrink-0 mt-1" />
+                  <Icon className="h-6 w-6 text-amber-700 shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
-                    <p className="text-gray-400">{benefit.description}</p>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                    <p className="text-gray-600">{benefit.description}</p>
                   </div>
                 </div>
               )
@@ -267,21 +267,21 @@ export default function ConstructionServicesPage() {
       {/* Process Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">Construction Process</h2>
-          <p className="text-xl text-gray-300">From planning to completion with precision and quality</p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Construction Process</h2>
+          <p className="text-xl text-gray-600">From planning to completion with precision and quality</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {processSteps.map((step, idx) => (
             <div key={idx} className="flex gap-6">
               <div className="shrink-0">
-                <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-slate-400 to-gray-500 text-white font-bold text-lg">
+                <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-amber-600 to-amber-800 text-white font-bold text-lg">
                   {step.number}
                 </div>
               </div>
               <div className="pt-1">
-                <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
               </div>
             </div>
           ))}
@@ -289,9 +289,9 @@ export default function ConstructionServicesPage() {
       </section>
 
       {/* Expertise Areas */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-amber-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Our Expertise</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Our Expertise</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
@@ -312,13 +312,13 @@ export default function ConstructionServicesPage() {
                 items: ['Thermal Insulation', 'Energy Efficiency', 'Protective Coatings', 'Quality Assurance']
               }
             ].map((expertise, idx) => (
-              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-slate-400/20 rounded-2xl p-8 hover:border-slate-400/50 transition-all">
-                <h3 className="text-2xl font-bold text-white mb-6">{expertise.title}</h3>
+              <div key={idx} className="bg-white border-2 border-amber-700/30 rounded-2xl p-8 hover:border-amber-700 transition-all">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">{expertise.title}</h3>
                 <ul className="space-y-3">
                   {expertise.items.map((item, i) => (
                     <li key={i} className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-linear-to-r from-slate-400 to-gray-500 rounded-full"></div>
-                      <span className="text-gray-300">{item}</span>
+                      <div className="h-2 w-2 bg-amber-700 rounded-full"></div>
+                      <span className="text-gray-700">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -330,7 +330,7 @@ export default function ConstructionServicesPage() {
 
       {/* Gallery Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Construction Excellence</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Construction Excellence</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
@@ -355,7 +355,7 @@ export default function ConstructionServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-amber-50 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_14.jpg"
@@ -366,29 +366,29 @@ export default function ConstructionServicesPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Build Your Next Project with Confidence
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             Partner with fäm Properties Construction for expertise, innovation, and uncompromised quality across all construction disciplines.
           </p>
 
           <div className="flex gap-4 flex-wrap justify-center">
             <Link 
               href="tel:+971" 
-              className="px-8 py-4 bg-linear-to-r from-slate-400 to-gray-500 text-slate-950 font-bold rounded-lg hover:shadow-2xl hover:shadow-slate-500/50 transition-all duration-300"
+              className="px-8 py-4 bg-linear-to-r from-amber-600 to-amber-800 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-amber-500/50 transition-all duration-300"
             >
               Get Construction Quote
             </Link>
             <Link 
               href="/contact" 
-              className="px-8 py-4 border-2 border-slate-400 text-slate-300 font-bold rounded-lg hover:bg-slate-400/10 transition-all duration-300"
+              className="px-8 py-4 border-2 border-amber-700 text-amber-800 font-bold rounded-lg hover:bg-amber-50 transition-all duration-300"
             >
               Contact Our Team
             </Link>
           </div>
 
-          <p className="text-gray-400 text-sm mt-8">
+          <p className="text-gray-500 text-sm mt-8">
             200+ projects completed with 98% on-time delivery and 50M+ sq.ft. of construction excellence
           </p>
         </div>

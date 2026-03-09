@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -132,6 +132,30 @@ export default function Header() {
   const [isTrendsOpen, setIsTrendsOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openMenu = (label: string) => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    if (label === "Buy") setIsBuyOpen(true);
+    else if (label === "Rent") setIsRentOpen(true);
+    else if (label === "Luxe") setIsLuxeOpen(true);
+    else if (label === "Commercial") setIsCommercialOpen(true);
+    else if (label === "Services") setIsServicesOpen(true);
+    else if (label === "Trends") setIsTrendsOpen(true);
+    else if (label === "More") setIsMoreOpen(true);
+  };
+
+  const scheduleCloseAll = () => {
+    closeTimerRef.current = setTimeout(() => {
+      setIsBuyOpen(false);
+      setIsRentOpen(false);
+      setIsLuxeOpen(false);
+      setIsCommercialOpen(false);
+      setIsServicesOpen(false);
+      setIsTrendsOpen(false);
+      setIsMoreOpen(false);
+    }, 150);
+  };
 
   // Handle logout
   const handleLogout = async () => {
@@ -537,28 +561,8 @@ export default function Header() {
               {item.hasDropdown ? (
                 <div
                   className="relative"
-                  onMouseEnter={() => {
-                    if (item.label === "Buy") setIsBuyOpen(true);
-                    else if (item.label === "Rent") setIsRentOpen(true);
-                    else if (item.label === "Luxe") setIsLuxeOpen(true);
-                    else if (item.label === "Commercial")
-                      setIsCommercialOpen(true);
-                    else if (item.label === "Services") setIsServicesOpen(true);
-                    else if (item.label === "Trends") setIsTrendsOpen(true);
-                    else if (item.label === "More") setIsMoreOpen(true);
-                  }}
-                  onMouseLeave={() => {
-                    if (item.label === "Buy") setIsBuyOpen(false);
-                    else if (item.label === "Rent") setIsRentOpen(false);
-                    else if (item.label === "Luxe") setIsLuxeOpen(false);
-                    else if (item.label === "Commercial")
-                      setIsCommercialOpen(false);
-                    else if (item.label === "Services")
-                      setIsServicesOpen(false);
-                    else if (item.label === "Trends")
-                      setIsTrendsOpen(false);
-                    else if (item.label === "More") setIsMoreOpen(false);
-                  }}
+                  onMouseEnter={() => openMenu(item.label)}
+                  onMouseLeave={scheduleCloseAll}
                 >
                   <button
                     className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide transition-all hover:text-primary hover:bg-slate-50 cursor-pointer text-secondary"
@@ -596,6 +600,8 @@ export default function Header() {
 
                   {/* Dropdown Menu */}
                   <div
+                    onMouseEnter={() => { if (closeTimerRef.current) clearTimeout(closeTimerRef.current); }}
+                    onMouseLeave={scheduleCloseAll}
                     className={cn(
                       "bg-white shadow-2xl transition-all duration-300 z-50 top-full",
                       // Compact dropdown only for Services

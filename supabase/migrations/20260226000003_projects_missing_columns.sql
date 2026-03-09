@@ -15,3 +15,4 @@ ALTER TABLE public.projects
   ADD COLUMN IF NOT EXISTS documents          JSONB    DEFAULT '[]'::jsonb;
 
 COMMENT ON COLUMN public.projects.documents IS 'Array of {name, url} document links shown as download buttons on the project page';
+

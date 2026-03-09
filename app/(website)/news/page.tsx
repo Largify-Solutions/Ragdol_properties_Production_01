@@ -63,7 +63,7 @@ async function fetchBlogs() {
         title: row.title || 'Untitled Blog',
         excerpt: row.excerpt || '',
         content: row.content || '',
-        author: 'RAGDOLL Properties',
+        author: 'Ragdoll Properties Properties',
         category: row.category || 'Uncategorized',
         readTime: `${readMinutes} min read`,
         imageUrl: row.featured_image || '/api/placeholder/800/450',

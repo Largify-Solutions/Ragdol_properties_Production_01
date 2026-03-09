@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { CalculatorIcon, CurrencyDollarIcon, CalendarIcon, PercentBadgeIcon } from '@heroicons/react/24/outline'
 
 interface MortgageCalculatorProps {
@@ -136,9 +137,12 @@ export default function MortgageCalculator({ defaultPrice = 1000000 }: MortgageC
           </div>
         </div>
 
-        <button className="w-full py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all shadow-lg shadow-secondary/10">
+        <Link
+          href="/contact?subject=mortgage"
+          className="block w-full py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all shadow-lg shadow-secondary/10 text-center"
+        >
           Get Pre-Approved Now
-        </button>
+        </Link>
       </div>
     </div>
   )

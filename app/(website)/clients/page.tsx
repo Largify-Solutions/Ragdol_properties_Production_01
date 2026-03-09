@@ -148,7 +148,7 @@ function ReviewSubmissionModal({ isOpen, onClose }: { isOpen: boolean; onClose: 
             <div className="flex items-center justify-between">
               <div>
                 <h6 className="text-2xl font-serif text-white">Submit Your Review</h6>
-                <p className="text-slate-200 mt-2">Share your experience with RAGDOLL Properties</p>
+                <p className="text-slate-200 mt-2">Share your experience with Ragdoll Properties Properties</p>
               </div>
               <button
                 onClick={onClose}
@@ -257,7 +257,7 @@ function ReviewSubmissionModal({ isOpen, onClose }: { isOpen: boolean; onClose: 
                     required
                     rows={5}
                     className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                    placeholder="Share your experience with RAGDOLL Properties. What did you like? How was the service? Would you recommend us to others?"
+                    placeholder="Share your experience with Ragdoll Properties Properties. What did you like? How was the service? Would you recommend us to others?"
                   />
                  
                 </div>
@@ -380,7 +380,7 @@ function getDemoTestimonials(): Testimonial[] {
       position: 'Investment Director',
       company: 'Global Ventures',
       email: 'sarah@globalventures.com',
-      message: 'RAGDOLL Properties transformed our Dubai investment portfolio. Their market insights and attention to detail are unparalleled. We have complete trust in their expertise.',
+      message: 'Ragdoll Properties Properties transformed our Dubai investment portfolio. Their market insights and attention to detail are unparalleled. We have complete trust in their expertise.',
       rating: 5,
       featured: true,
       approved: true,
@@ -394,7 +394,7 @@ function getDemoTestimonials(): Testimonial[] {
       position: 'Business Owner',
       company: 'Al Mansoori Group',
       email: 'ahmed@almansoori.com',
-      message: 'The team at RAGDOLL made purchasing my dream villa seamless. Their professionalism and local knowledge exceeded all expectations. Highly recommended!',
+      message: 'The team at Ragdoll Properties made purchasing my dream villa seamless. Their professionalism and local knowledge exceeded all expectations. Highly recommended!',
       rating: 5,
       featured: false,
       approved: true,
@@ -540,7 +540,7 @@ export default function TestimonialsPage() {
               Testimonials
             </h5>
             <p className="text-xl text-slate-200 mb-8 leading-relaxed">
-              Real feedback from our valued clients who have experienced the RAGDOLL PROPERTIES.
+              Real feedback from our valued clients who have experienced the Ragdoll Properties PROPERTIES.
              
             </p>
           </div>
@@ -586,7 +586,7 @@ export default function TestimonialsPage() {
               What Our <span className="text-primary">Clients</span> Say
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              Authentic feedback from clients who have trusted RAGDOLL Properties with their real estate journey
+              Authentic feedback from clients who have trusted Ragdoll Properties Properties with their real estate journey
             </p>
           </div>
 
@@ -754,7 +754,7 @@ export default function TestimonialsPage() {
               </div>
               <h3 className="text-2xl font-bold text-slate-700 mb-4">No Testimonials Yet</h3>
               <p className="text-slate-600 max-w-md mx-auto mb-8">
-                Be the first to share your experience with RAGDOLL Properties.
+                Be the first to share your experience with Ragdoll Properties Properties.
               </p>
               <button
                 onClick={() => setShowReviewModal(true)}
@@ -783,7 +783,7 @@ export default function TestimonialsPage() {
             </h2>
             
             <p className="text-xl text-slate-200 mb-12 max-w-2xl mx-auto">
-              Experience the RAGDOLL difference and share your story with future clients.
+              Experience the Ragdoll Properties difference and share your story with future clients.
               Every review helps us maintain our standard of excellence.
             </p>
             

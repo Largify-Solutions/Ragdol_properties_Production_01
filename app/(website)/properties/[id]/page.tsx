@@ -9,7 +9,7 @@ import PropertySlider from '@/components/property/PropertySlider'
 import PropertyAgents from '@/components/property/PropertyAgents'
 import MortgageCalculator from '@/components/shared/MortgageCalculator'
 import DownloadInterestForm, { DownloadInterestData } from '@/components/forms/DownloadInterestForm'
-import { useState, use } from 'react'
+import { useState, useEffect, use } from 'react'
 import dynamic from 'next/dynamic'
 import {
   MapPinIcon,
@@ -277,9 +277,57 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   const [showFloorPlanForm, setShowFloorPlanForm] = useState(false)
   const [showBrochureForm, setShowBrochureForm] = useState(false)
 
-  // Mock property data (in real app, this would be fetched)
-  const property = { ...mockProperty, agent: mockAgent } as unknown as Property
-  const relatedProperties = mockRelatedProperties
+  // Property data state
+  const [property, setProperty] = useState<Property | null>(null)
+  const [relatedProperties, setRelatedProperties] = useState<RelatedProperty[]>([])
+  const [loading, setLoading] = useState(true)
+  const [notFoundState, setNotFoundState] = useState(false)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch(`/api/properties/${id}`)
+        if (res.status === 404) {
+          setNotFoundState(true)
+          setLoading(false)
+          return
+        }
+        if (!res.ok) throw new Error('Failed to load property')
+        const { data } = await res.json()
+        // Map the agents join to the shape the component expects
+        if (data?.agents) {
+          const ag = Array.isArray(data.agents) ? data.agents[0] : data.agents
+          if (ag) {
+            data.agent = {
+              id: ag.id,
+              full_name: ag.profiles?.full_name || ag.title || '',
+              avatar_url: ag.profile_image || ag.profiles?.avatar_url || null,
+              email: ag.profiles?.email || null,
+              phone: ag.phone || null,
+              created_at: data.created_at,
+              updated_at: data.updated_at,
+              role: 'agent',
+              agent_details: { ...ag, office: ag.title || 'Senior Consultant' },
+            }
+          }
+        }
+        setProperty(data)
+        // Fetch related properties of the same type
+        const relatedRes = await fetch(`/api/properties?limit=4&type=${data.type || 'apartment'}`)
+        if (relatedRes.ok) {
+          const relatedJson = await relatedRes.json()
+          setRelatedProperties(
+            (relatedJson.data || []).filter((p: RelatedProperty) => p.id !== id).slice(0, 3)
+          )
+        }
+      } catch (err) {
+        console.error('Error loading property:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [id])
 
   const formatPrice = (price: number, currency: string = 'AED') => {
     return `${currency} ${price.toLocaleString()}`
@@ -326,6 +374,16 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   const handleBrochureSubmit = (data: DownloadInterestData) => {
     return handleDownloadInterest(data, 'brochure')
   }
+
+  if (notFoundState) return notFound()
+  if (loading || !property) return (
+    <div className="w-full min-h-screen flex items-center justify-center bg-slate-50/50">
+      <div className="flex flex-col items-center gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <p className="text-slate-500 font-medium">Loading property...</p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="w-full min-h-screen bg-slate-50/50">
@@ -528,7 +586,8 @@ export default function PropertyPage({ params }: PropertyPageProps) {
               </div>
             </div>
 
-            {/* Download Buttons */}
+            {/* Download Buttons — only for new projects (project-linked properties) */}
+            {property.project_id && (
             <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
               <div className="space-y-6">
                 <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
@@ -596,6 +655,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                 )}
               </div>
             </div>
+            )}
           </div>
 
           {/* Sidebar */}
