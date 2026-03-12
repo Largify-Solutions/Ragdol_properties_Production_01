@@ -20,8 +20,8 @@ interface Inquiry {
 
 const STATUS_STYLES: Record<string, string> = {
   new:       'bg-blue-100 text-blue-700',
-  contacted: 'bg-yellow-100 text-yellow-700',
-  resolved:  'bg-green-100 text-green-700',
+  contacted: 'bg-[#FFC636]/15 text-[#FFC636]',
+  resolved:  'bg-[#FFC636]/15 text-[#FFC636]',
   closed:    'bg-slate-100 text-slate-500',
 }
 
@@ -138,8 +138,8 @@ export default function AdminInquiriesPage() {
         {[
           { label: 'Total', value: counts.all, color: 'text-slate-700' },
           { label: 'New', value: counts.new, color: 'text-blue-600' },
-          { label: 'Contacted', value: counts.contacted, color: 'text-yellow-600' },
-          { label: 'Resolved', value: counts.resolved, color: 'text-green-600' },
+          { label: 'Contacted', value: counts.contacted, color: 'text-[#FFC636]' },
+          { label: 'Resolved', value: counts.resolved, color: 'text-[#FFC636]' },
         ].map(s => (
           <div key={s.label} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
             <p className="text-xs text-slate-500 font-medium uppercase">{s.label}</p>
@@ -239,7 +239,7 @@ export default function AdminInquiriesPage() {
                         {inquiry.status === 'new' && (
                           <button
                             onClick={() => updateStatus(inquiry.id, 'contacted')}
-                            className="p-1.5 text-slate-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-500 hover:text-[#FFC636] hover:bg-[#FFC636]/10 rounded-lg transition-colors"
                             title="Mark Contacted"
                           >
                             <Clock className="w-4 h-4" />
@@ -248,7 +248,7 @@ export default function AdminInquiriesPage() {
                         {inquiry.status !== 'resolved' && (
                           <button
                             onClick={() => updateStatus(inquiry.id, 'resolved')}
-                            className="p-1.5 text-slate-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-500 hover:text-[#FFC636] hover:bg-[#FFC636]/10 rounded-lg transition-colors"
                             title="Mark Resolved"
                           >
                             <CheckCircle className="w-4 h-4" />
@@ -290,7 +290,7 @@ export default function AdminInquiriesPage() {
               {selected.agent_reply && (
                 <div>
                   <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Previous Reply</p>
-                  <p className="text-slate-700 bg-yellow-50 rounded-xl p-3 text-sm">{selected.agent_reply}</p>
+                  <p className="text-slate-700 bg-[#FFC636]/10 rounded-xl p-3 text-sm">{selected.agent_reply}</p>
                 </div>
               )}
               <div>

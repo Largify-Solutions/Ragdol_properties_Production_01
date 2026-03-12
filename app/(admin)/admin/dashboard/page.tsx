@@ -147,8 +147,8 @@ export default function AdminDashboard() {
   }, [fetchAll])
 
   const statusColor = (s: string) =>
-    ({ new: 'bg-blue-100 text-blue-700', contacted: 'bg-yellow-100 text-yellow-700',
-       qualified: 'bg-purple-100 text-purple-700', closed: 'bg-green-100 text-green-700',
+    ({ new: 'bg-blue-100 text-blue-700', contacted: 'bg-[#FFC636]/15 text-[#FFC636]',
+       qualified: 'bg-purple-100 text-purple-700', closed: 'bg-[#FFC636]/15 text-[#FFC636]',
        lost: 'bg-red-100 text-red-700' } as Record<string, string>)[s] || 'bg-gray-100 text-gray-700'
 
   if (loading && stats.totalProperties === 0) {
@@ -369,10 +369,10 @@ export default function AdminDashboard() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <p className="font-medium text-sm truncate">{agent.full_name}</p>
-                      {agent.approved && <CheckCircle2 className="h-3.5 w-3.5 text-green-500 flex-shrink-0" />}
+                      {agent.approved && <CheckCircle2 className="h-3.5 w-3.5 text-[#FFC636] flex-shrink-0" />}
                     </div>
                     <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
-                      <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
+                      <Star className="h-3 w-3 text-[#FFC636] fill-[#FFC636]" />
                       <span>{agent.rating > 0 ? agent.rating.toFixed(1) : '—'}</span>
                       {agent.review_count > 0 && <span>({agent.review_count})</span>}
                     </div>

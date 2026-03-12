@@ -69,8 +69,8 @@ export default function ApplyPage() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
         <div className="max-w-md w-full bg-white rounded-[2.5rem] p-12 text-center shadow-xl shadow-slate-200/50 border border-slate-100">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
-            <CheckCircleIcon className="h-10 w-10 text-green-600" />
+          <div className="w-20 h-20 bg-[#FFC636]/15 rounded-full flex items-center justify-center mx-auto mb-8">
+            <CheckCircleIcon className="h-10 w-10 text-[#FFC636]" />
           </div>
           <h1 className="text-3xl font-serif text-secondary mb-4">Application Received</h1>
           <p className="text-slate-500 mb-10 leading-relaxed">

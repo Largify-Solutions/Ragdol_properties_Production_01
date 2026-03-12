@@ -699,7 +699,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                         />
                       </div>
                       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-md flex items-center gap-1">
-                        <StarSolidIcon className="h-3 w-3 text-yellow-400" />
+                        <StarSolidIcon className="h-3 w-3 text-[#FFC636]" />
                         <span className="text-[10px] font-black text-slate-900">4.9</span>
                       </div>
                     </div>

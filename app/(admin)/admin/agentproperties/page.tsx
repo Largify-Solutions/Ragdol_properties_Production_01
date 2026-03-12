@@ -207,7 +207,7 @@ export default function AdminAgentProperties() {
     const colors: { [key: string]: string } = {
       'sale': 'bg-purple-100 text-purple-800',
       'rent': 'bg-indigo-100 text-indigo-800',
-      'sold': 'bg-green-100 text-green-800',
+      'sold': 'bg-[#FFC636]/15 text-[#FFC636]',
       'rented': 'bg-teal-100 text-teal-800'
     }
     return colors[status] || 'bg-gray-100 text-gray-800'
@@ -252,14 +252,14 @@ export default function AdminAgentProperties() {
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center">
-            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+            <div className="w-2 h-2 bg-[#FFC636] rounded-full mr-2"></div>
             <p className="text-sm text-gray-500">Published</p>
           </div>
           <p className="text-2xl font-bold text-gray-900">{stats.published}</p>
         </div>
         <div className="bg-white rounded-lg shadow p-4">
           <div className="flex items-center">
-            <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+            <div className="w-2 h-2 bg-[#FFC636] rounded-full mr-2"></div>
             <p className="text-sm text-gray-500">Unpublished</p>
           </div>
           <p className="text-2xl font-bold text-gray-900">{stats.unpublished}</p>
@@ -458,13 +458,13 @@ export default function AdminAgentProperties() {
                         <option value="rented">Rented</option>
                       </select>
                       {property.published && (
-                        <p className="text-xs text-green-600 mt-1">✓ Published on site</p>
+                        <p className="text-xs text-[#FFC636] mt-1">✓ Published on site</p>
                       )}
                     </td>
 
                     {/* Published Status */}
                     <td className="px-6 py-4">
-                      <span className={`inline-flex text-xs font-medium px-2 py-1 rounded-full ${property.published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                      <span className={`inline-flex text-xs font-medium px-2 py-1 rounded-full ${property.published ? 'bg-[#FFC636]/15 text-[#FFC636]' : 'bg-[#FFC636]/15 text-[#FFC636]'}`}>
                         {property.published ? 'PUBLISHED' : 'DRAFT'}
                       </span>
                       {property.featured && (
@@ -481,7 +481,7 @@ export default function AdminAgentProperties() {
                           <button
                             onClick={() => updatePropertyStatus(property.id, true)}
                             disabled={updating === property.id}
-                            className="text-sm px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                            className="text-sm px-3 py-1 bg-[#FFC636] text-white rounded hover:bg-[#FFC636] disabled:opacity-50"
                           >
                             {updating === property.id ? 'Processing...' : 'Publish'}
                           </button>
@@ -489,7 +489,7 @@ export default function AdminAgentProperties() {
                           <button
                             onClick={() => updatePropertyStatus(property.id, false)}
                             disabled={updating === property.id}
-                            className="text-sm px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50"
+                            className="text-sm px-3 py-1 bg-[#FFC636] text-white rounded hover:bg-[#FFC636] disabled:opacity-50"
                           >
                             {updating === property.id ? 'Processing...' : 'Unpublish'}
                           </button>
@@ -543,7 +543,7 @@ export default function AdminAgentProperties() {
                 fetchAgentProperties()
               }
             }}
-            className="px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100"
+            className="px-4 py-3 bg-[#FFC636]/10 text-[#FFC636] rounded-lg hover:bg-[#FFC636]/15"
           >
             Publish All Unpublished ({stats.unpublished})
           </button>
@@ -565,7 +565,7 @@ export default function AdminAgentProperties() {
                 fetchAgentProperties()
               }
             }}
-            className="px-4 py-3 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100"
+            className="px-4 py-3 bg-[#FFC636]/10 text-[#FFC636] rounded-lg hover:bg-[#FFC636]/15"
           >
             Unpublish All ({stats.published})
           </button>
@@ -583,11 +583,11 @@ export default function AdminAgentProperties() {
         <h4 className="text-sm font-medium text-gray-900 mb-3">Status Legend:</h4>
         <div className="flex flex-wrap gap-3">
           <div className="flex items-center">
-            <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+            <div className="w-3 h-3 bg-[#FFC636] rounded-full mr-2"></div>
             <span className="text-sm text-gray-600">Published</span>
           </div>
           <div className="flex items-center">
-            <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+            <div className="w-3 h-3 bg-[#FFC636] rounded-full mr-2"></div>
             <span className="text-sm text-gray-600">Draft (Unpublished)</span>
           </div>
           <div className="flex items-center">

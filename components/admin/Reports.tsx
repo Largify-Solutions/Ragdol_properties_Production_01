@@ -244,11 +244,11 @@ const Reports: React.FC<ReportsProps> = () => {
                   <p className="text-sm text-muted-foreground">Page Views</p>
                   <div className="flex items-center mt-1">
                     {getPercentageChange(reportData.pageViews, mockDataByPeriod['7d'].pageViews).isPositive ? (
-                      <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                      <ArrowTrendingUpIcon className="h-4 w-4 text-[#FFC636] mr-1" />
                     ) : (
                       <ArrowTrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
                     )}
-                    <p className={`text-xs ${getPercentageChange(reportData.pageViews, mockDataByPeriod['7d'].pageViews).isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                    <p className={`text-xs ${getPercentageChange(reportData.pageViews, mockDataByPeriod['7d'].pageViews).isPositive ? 'text-[#FFC636]' : 'text-red-500'}`}>
                       {getPercentageChange(reportData.pageViews, mockDataByPeriod['7d'].pageViews).value.toFixed(1)}% from last period
                     </p>
                   </div>
@@ -259,19 +259,19 @@ const Reports: React.FC<ReportsProps> = () => {
             {/* Property Inquiries Card */}
             <div className="bg-card border border-border rounded-xl p-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-500/10 rounded-lg">
-                  <HomeIcon className="h-6 w-6 text-green-500" />
+                <div className="p-3 bg-[#FFC636]/10 rounded-lg">
+                  <HomeIcon className="h-6 w-6 text-[#FFC636]" />
                 </div>
                 <div className="flex-1">
                   <p className="text-2xl font-bold text-foreground">{reportData.propertyInquiries.toLocaleString()}</p>
                   <p className="text-sm text-muted-foreground">Property Inquiries</p>
                   <div className="flex items-center mt-1">
                     {getPercentageChange(reportData.propertyInquiries, mockDataByPeriod['7d'].propertyInquiries).isPositive ? (
-                      <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                      <ArrowTrendingUpIcon className="h-4 w-4 text-[#FFC636] mr-1" />
                     ) : (
                       <ArrowTrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
                     )}
-                    <p className={`text-xs ${getPercentageChange(reportData.propertyInquiries, mockDataByPeriod['7d'].propertyInquiries).isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                    <p className={`text-xs ${getPercentageChange(reportData.propertyInquiries, mockDataByPeriod['7d'].propertyInquiries).isPositive ? 'text-[#FFC636]' : 'text-red-500'}`}>
                       {getPercentageChange(reportData.propertyInquiries, mockDataByPeriod['7d'].propertyInquiries).value.toFixed(1)}% from last period
                     </p>
                   </div>
@@ -290,11 +290,11 @@ const Reports: React.FC<ReportsProps> = () => {
                   <p className="text-sm text-muted-foreground">Properties Sold</p>
                   <div className="flex items-center mt-1">
                     {getPercentageChange(reportData.propertiesSold, mockDataByPeriod['7d'].propertiesSold).isPositive ? (
-                      <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                      <ArrowTrendingUpIcon className="h-4 w-4 text-[#FFC636] mr-1" />
                     ) : (
                       <ArrowTrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
                     )}
-                    <p className={`text-xs ${getPercentageChange(reportData.propertiesSold, mockDataByPeriod['7d'].propertiesSold).isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                    <p className={`text-xs ${getPercentageChange(reportData.propertiesSold, mockDataByPeriod['7d'].propertiesSold).isPositive ? 'text-[#FFC636]' : 'text-red-500'}`}>
                       {getPercentageChange(reportData.propertiesSold, mockDataByPeriod['7d'].propertiesSold).value.toFixed(1)}% from last period
                     </p>
                   </div>
@@ -313,11 +313,11 @@ const Reports: React.FC<ReportsProps> = () => {
                   <p className="text-sm text-muted-foreground">Transaction Value</p>
                   <div className="flex items-center mt-1">
                     {getPercentageChange(reportData.transactionValue, mockDataByPeriod['7d'].transactionValue).isPositive ? (
-                      <ArrowTrendingUpIcon className="h-4 w-4 text-green-500 mr-1" />
+                      <ArrowTrendingUpIcon className="h-4 w-4 text-[#FFC636] mr-1" />
                     ) : (
                       <ArrowTrendingDownIcon className="h-4 w-4 text-red-500 mr-1" />
                     )}
-                    <p className={`text-xs ${getPercentageChange(reportData.transactionValue, mockDataByPeriod['7d'].transactionValue).isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                    <p className={`text-xs ${getPercentageChange(reportData.transactionValue, mockDataByPeriod['7d'].transactionValue).isPositive ? 'text-[#FFC636]' : 'text-red-500'}`}>
                       {getPercentageChange(reportData.transactionValue, mockDataByPeriod['7d'].transactionValue).value.toFixed(1)}% from last period
                     </p>
                   </div>
@@ -396,7 +396,7 @@ const Reports: React.FC<ReportsProps> = () => {
               <div className="text-center">
                 <p className="text-3xl font-bold text-primary mb-2">{reportData.monthlyPerformance.propertiesListed}</p>
                 <p className="text-sm text-muted-foreground">Properties Listed</p>
-                <p className="text-xs text-green-500 mt-1">+12% vs last month</p>
+                <p className="text-xs text-[#FFC636] mt-1">+12% vs last month</p>
               </div>
               <div className="text-center">
                 <p className="text-3xl font-bold text-primary mb-2">{reportData.monthlyPerformance.propertiesSold}</p>
@@ -406,7 +406,7 @@ const Reports: React.FC<ReportsProps> = () => {
               <div className="text-center">
                 <p className="text-3xl font-bold text-primary mb-2">{reportData.monthlyPerformance.totalRevenue}</p>
                 <p className="text-sm text-muted-foreground">Total Revenue</p>
-                <p className="text-xs text-green-500 mt-1">+18% vs last month</p>
+                <p className="text-xs text-[#FFC636] mt-1">+18% vs last month</p>
               </div>
             </div>
           </div>
@@ -421,7 +421,7 @@ const Reports: React.FC<ReportsProps> = () => {
                 <div>
                   <p className="text-2xl font-bold text-foreground">8,942</p>
                   <p className="text-sm text-muted-foreground">Active Users</p>
-                  <p className="text-xs text-green-500 mt-1">+23.5% from last month</p>
+                  <p className="text-xs text-[#FFC636] mt-1">+23.5% from last month</p>
                 </div>
               </div>
             </div>
@@ -434,7 +434,7 @@ const Reports: React.FC<ReportsProps> = () => {
                 <div>
                   <p className="text-2xl font-bold text-foreground">4.2</p>
                   <p className="text-sm text-muted-foreground">Avg Session Duration</p>
-                  <p className="text-xs text-green-500 mt-1">+8.1% from last month</p>
+                  <p className="text-xs text-[#FFC636] mt-1">+8.1% from last month</p>
                 </div>
               </div>
             </div>
@@ -447,7 +447,7 @@ const Reports: React.FC<ReportsProps> = () => {
                 <div>
                   <p className="text-2xl font-bold text-foreground">67.8%</p>
                   <p className="text-sm text-muted-foreground">Conversion Rate</p>
-                  <p className="text-xs text-green-500 mt-1">+5.2% from last month</p>
+                  <p className="text-xs text-[#FFC636] mt-1">+5.2% from last month</p>
                 </div>
               </div>
             </div>

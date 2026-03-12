@@ -123,7 +123,7 @@ export default function PropertyManagementPage() {
           </Link>
           
           <h1 className="text-5xl md:text-6xl font-black text-white mb-6 leading-tight">
-            Property Management <span className="bg-linear-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">Services</span>
+            Property Management <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Services</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl">
             Comprehensive property management and snagging services designed to enhance value, functionality, and investor returns.
@@ -147,7 +147,7 @@ export default function PropertyManagementPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-yellow-500 text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all"
             >
               Get Your Free Assessment
               <ArrowRightIcon className="h-5 w-5" />
@@ -180,7 +180,7 @@ export default function PropertyManagementPage() {
               const Icon = item.icon
               return (
                 <div key={idx} className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-amber-400/20 rounded-2xl p-8 hover:border-amber-400/50 transition-all duration-300">
-                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-yellow-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
@@ -323,18 +323,18 @@ export default function PropertyManagementPage() {
         {/* CTA Section */}
         <div className="relative overflow-hidden rounded-3xl p-12 md:p-20 bg-linear-to-br from-slate-800 via-slate-900 to-slate-950 border border-amber-500/30">
           <div className="absolute top-0 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl -z-10"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC636]/5 rounded-full blur-3xl -z-10"></div>
           
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-black text-white mb-6">
-              Ready to Optimize Your <span className="bg-linear-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">Property Portfolio?</span>
+              Ready to Optimize Your <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Property Portfolio?</span>
             </h2>
             <p className="text-gray-300 text-lg mb-8">
               Let our expert team handle all aspects of property management while you enjoy steady returns and peace of mind.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-yellow-500 text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all group"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all group"
             >
               Schedule Free Consultation
               <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-2 transition-transform" />

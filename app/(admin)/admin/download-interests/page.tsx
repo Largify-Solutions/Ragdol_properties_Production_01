@@ -115,9 +115,9 @@ export default function DownloadInterestsPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'new': return 'bg-blue-100 text-blue-800'
-      case 'contacted': return 'bg-yellow-100 text-yellow-800'
+      case 'contacted': return 'bg-[#FFC636]/15 text-[#FFC636]'
       case 'qualified': return 'bg-purple-100 text-purple-800'
-      case 'converted': return 'bg-green-100 text-green-800'
+      case 'converted': return 'bg-[#FFC636]/15 text-[#FFC636]'
       case 'not_interested': return 'bg-red-100 text-red-800'
       default: return 'bg-gray-100 text-gray-800'
     }
@@ -169,9 +169,9 @@ export default function DownloadInterestsPage() {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         {[
           { label: 'Total', value: interests.length, color: 'bg-blue-500' },
-          { label: 'New', value: interests.filter(i => i.status === 'new').length, color: 'bg-yellow-500' },
+          { label: 'New', value: interests.filter(i => i.status === 'new').length, color: 'bg-[#FFC636]' },
           { label: 'Contacted', value: interests.filter(i => i.status === 'contacted').length, color: 'bg-purple-500' },
-          { label: 'Qualified', value: interests.filter(i => i.status === 'qualified').length, color: 'bg-green-500' },
+          { label: 'Qualified', value: interests.filter(i => i.status === 'qualified').length, color: 'bg-[#FFC636]' },
           { label: 'Converted', value: interests.filter(i => i.status === 'converted').length, color: 'bg-emerald-500' },
         ].map((stat, index) => (
           <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -242,7 +242,7 @@ export default function DownloadInterestsPage() {
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       interest.download_type === 'floor_plan'
                         ? 'bg-blue-100 text-blue-800'
-                        : 'bg-green-100 text-green-800'
+                        : 'bg-[#FFC636]/15 text-[#FFC636]'
                     }`}>
                       {interest.download_type === 'floor_plan' ? 'Floor Plan' : 'Brochure'}
                     </span>

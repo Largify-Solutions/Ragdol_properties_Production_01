@@ -92,7 +92,7 @@ export function PropertyComparison({ properties: allProperties }: PropertyCompar
           ))}
 
           {comparisonProperties.length > 0 && (
-            <div className="bg-green-50 rounded-lg p-4 border-2 border-green-300">
+            <div className="bg-[#FFC636]/10 rounded-lg p-4 border-2 border-[#FFC636]/40">
               <p className="font-semibold text-gray-900 text-sm mb-3">Average</p>
               <div className="space-y-2 text-sm">
                 <div>
@@ -101,7 +101,7 @@ export function PropertyComparison({ properties: allProperties }: PropertyCompar
                 </div>
                 <div>
                   <p className="text-gray-600 text-xs">Avg Score</p>
-                  <p className="font-bold text-green-600">{avgMetrics.score}/100</p>
+                  <p className="font-bold text-[#FFC636]">{avgMetrics.score}/100</p>
                 </div>
               </div>
             </div>
@@ -112,7 +112,7 @@ export function PropertyComparison({ properties: allProperties }: PropertyCompar
           <div className="grid grid-cols-4 gap-4 pt-4 border-t">
             <div className="text-center">
               <p className="text-gray-600 text-sm font-medium mb-2">Avg Yield</p>
-              <p className="text-2xl font-bold text-green-600">{avgMetrics.yield}%</p>
+              <p className="text-2xl font-bold text-[#FFC636]">{avgMetrics.yield}%</p>
             </div>
             <div className="text-center">
               <p className="text-gray-600 text-sm font-medium mb-2">Avg Appreciation</p>

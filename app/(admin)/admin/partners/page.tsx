@@ -361,7 +361,7 @@ export default function Partners() {
         </div>
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Active</h3>
-          <p className="text-2xl font-bold text-green-600">
+          <p className="text-2xl font-bold text-[#FFC636]">
             {partners.filter(p => p.is_active).length}
           </p>
         </div>
@@ -661,7 +661,7 @@ export default function Partners() {
                         <div className="flex items-center space-x-2 mb-1">
                           <h4 className="font-medium text-gray-900 truncate">{partner.name}</h4>
                           {partner.featured && (
-                            <StarIcon className="h-4 w-4 text-yellow-500 shrink-0" />
+                            <StarIcon className="h-4 w-4 text-[#FFC636] shrink-0" />
                           )}
                         </div>
                         {partner.category && (
@@ -669,7 +669,7 @@ export default function Partners() {
                         )}
                         <div className="flex items-center space-x-2 mt-1">
                           {partner.is_active ? (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#FFC636]/15 text-[#FFC636]">
                               <CheckCircleIcon className="h-3 w-3 mr-1" />
                               Active
                             </span>
@@ -718,7 +718,7 @@ export default function Partners() {
                           onClick={() => toggleFeatured(partner)}
                           className={`p-1.5 rounded-md ${
                             partner.featured
-                              ? 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50'
+                              ? 'text-[#FFC636] hover:text-[#FFC636] hover:bg-[#FFC636]/10'
                               : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
                           }`}
                           title={partner.featured ? 'Remove featured' : 'Mark as featured'}
@@ -729,7 +729,7 @@ export default function Partners() {
                           onClick={() => toggleActive(partner)}
                           className={`p-1.5 rounded-md ${
                             partner.is_active
-                              ? 'text-green-600 hover:text-green-800 hover:bg-green-50'
+                              ? 'text-[#FFC636] hover:text-[#FFC636] hover:bg-[#FFC636]/10'
                               : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                           }`}
                           title={partner.is_active ? 'Deactivate' : 'Activate'}

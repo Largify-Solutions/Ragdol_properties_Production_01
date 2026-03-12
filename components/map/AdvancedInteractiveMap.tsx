@@ -160,7 +160,7 @@ export const AdvancedInteractiveMap: React.FC<AdvancedMapProps> = ({
       className={`${height} w-full bg-slate-100 relative shadow-2xl overflow-hidden flex flex-col group`}
     >
       {/* Map Background - Google Maps Style */}
-      <div className="absolute inset-0 bg-linear-to-b from-blue-50 via-slate-50 to-green-50">
+      <div className="absolute inset-0 bg-linear-to-b from-blue-50 via-slate-50 to-[#FFC636]/10">
         {/* Subtle grid overlay */}
         <svg className="absolute inset-0 w-full h-full opacity-5">
           <defs>
@@ -375,7 +375,7 @@ export const AdvancedInteractiveMap: React.FC<AdvancedMapProps> = ({
               <p className="font-semibold text-xs text-slate-700 mb-2">STATUS</p>
               <div className="space-y-1 text-xs">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#FFC636]"></div>
                   <span className="text-slate-600">Available</span>
                 </div>
                 <div className="flex items-center gap-2">

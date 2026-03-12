@@ -345,7 +345,7 @@ export default function PropertyReviewsPage() {
                     <button
                       onClick={() => handleApprove(selectedProperty.id)}
                       disabled={submitting}
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 font-medium"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#FFC636] text-white rounded-lg hover:bg-[#FFC636] transition-colors disabled:opacity-50 font-medium"
                     >
                       <CheckCircleIcon className="h-5 w-5" />
                       Approve

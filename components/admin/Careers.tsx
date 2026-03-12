@@ -126,9 +126,9 @@ export default function CareersAdmin() {
                     <div className="flex justify-between items-start mb-1">
                       <span className="font-medium text-gray-900">{app.full_name}</span>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${
-                        app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                        app.status === 'pending' ? 'bg-[#FFC636]/15 text-[#FFC636]' :
                         app.status === 'reviewed' ? 'bg-blue-100 text-blue-700' :
-                        app.status === 'accepted' ? 'bg-green-100 text-green-700' :
+                        app.status === 'accepted' ? 'bg-[#FFC636]/15 text-[#FFC636]' :
                         'bg-red-100 text-red-700'
                       }`}>
                         {app.status}
@@ -157,7 +157,7 @@ export default function CareersAdmin() {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleUpdateAppStatus(selectedApplication.id, 'accepted')}
-                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                      className="p-2 text-[#FFC636] hover:bg-[#FFC636]/10 rounded-lg transition-colors"
                       title="Accept"
                     >
                       <CheckCircleIcon className="w-6 h-6" />

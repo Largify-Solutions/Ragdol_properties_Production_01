@@ -41,7 +41,7 @@ const services = [
     description: "Full-range specialized fit-out solutions for premium properties.",
     icon: CogIcon,
     href: "/services/fitout",
-    color: "from-amber-300 to-yellow-500",
+    color: "from-amber-300 to-[#FFC636]",
     details: "We provide a full range of specialized fit-out solutions, including aluminium and façade works, glazing, metal works, joinery, glass installations, and premium finishing."
   },
   {
@@ -50,7 +50,7 @@ const services = [
     description: "End-to-end real estate development services and analysis.",
     icon: Square3Stack3DIcon,
     href: "/services/360-solutions",
-    color: "from-yellow-400 to-amber-500",
+    color: "from-[#FFC636] to-amber-500",
     details: "We provide end-to-end real estate development services, beginning with development structuring, investment analysis, ROI feasibility, and strategic market analysis."
   },
   {
@@ -68,7 +68,7 @@ const services = [
     description: "Comprehensive property management to enhance value.",
     icon: HomeIcon,
     href: "/services/property-management",
-    color: "from-yellow-400 to-amber-600",
+    color: "from-[#FFC636] to-amber-600",
     details: "Offering full-service property management to maintain and enhance property value through proactive maintenance and professional tenant relations."
   },
   {
@@ -86,7 +86,7 @@ const services = [
     description: "Expert financing solutions through premier banking partners.",
     icon: BanknotesIcon,
     href: "/services/mortgage-advisory",
-    color: "from-yellow-500 to-amber-600",
+    color: "from-[#FFC636] to-amber-600",
     details: "Offering expert advice and brokerage services for property financing with access to competitive rates and flexible solutions."
   },
   {
@@ -95,7 +95,7 @@ const services = [
     description: "Master agency services for seamless transactions.",
     icon: UserGroupIcon,
     href: "/services/property-master-agency",
-    color: "from-amber-400 to-yellow-600",
+    color: "from-amber-400 to-[#FFC636]",
     details: "Acting as a master agency to streamline and manage property transactions across multiple channels and market segments."
   },
   {
@@ -104,7 +104,7 @@ const services = [
     description: "Visionary architecture and design excellence.",
     icon: WrenchIcon,
     href: "/services/development",
-    color: "from-amber-500 to-yellow-600",
+    color: "from-amber-500 to-[#FFC636]",
     details: "Delivering architecture and design excellence through seamless development management, blending minimalism with luxurious aesthetics."
   },
   {
@@ -113,7 +113,7 @@ const services = [
     description: "Expert oversight from inception to handover.",
     icon: CheckCircleIcon,
     href: "/services/development-management",
-    color: "from-yellow-400 to-amber-500",
+    color: "from-[#FFC636] to-amber-500",
     details: "Managing the entire development process from inception to handover with meticulous attention to detail and timeline compliance."
   },
   {
@@ -131,7 +131,7 @@ const services = [
     description: "Short-term rental property expertise.",
     icon: StarIcon,
     href: "/services/holiday-homes",
-    color: "from-yellow-500 to-amber-600",
+    color: "from-[#FFC636] to-amber-600",
     details: "Managing short-term rental properties to provide exceptional guest experiences and optimize occupancy and revenue."
   },
   {
@@ -140,7 +140,7 @@ const services = [
     description: "Technology-driven renovation solutions.",
     icon: BeakerIcon,
     href: "/services/rentech",
-    color: "from-amber-400 to-yellow-600",
+    color: "from-amber-400 to-[#FFC636]",
     details: "Utilizing the latest technologies to renovate and enhance properties with innovative solutions and modern techniques."
   },
   {
@@ -149,7 +149,7 @@ const services = [
     description: "Technology for enhanced real estate operations.",
     icon: CogIcon,
     href: "/services/proptech",
-    color: "from-yellow-400 to-amber-600",
+    color: "from-[#FFC636] to-amber-600",
     details: "Leveraging technology to improve real estate transactions and management with digital platforms and smart solutions."
   },
   {
@@ -158,7 +158,7 @@ const services = [
     description: "Comprehensive architectural design services.",
     icon: SparklesIcon,
     href: "/services/interior-design",
-    color: "from-amber-500 to-yellow-600",
+    color: "from-amber-500 to-[#FFC636]",
     details: "Comprehensive design services covering architecture and interior design with specialized expertise in FF&E selection."
   },
   {
@@ -167,7 +167,7 @@ const services = [
     description: "Complete project lifecycle management.",
     icon: WrenchIcon,
     href: "/services/construction-pm",
-    color: "from-yellow-500 to-amber-600",
+    color: "from-[#FFC636] to-amber-600",
     details: "Expertise covering the full spectrum of project life-cycle management ensuring smooth progress from inception to completion."
   },
   {
@@ -185,7 +185,7 @@ const services = [
     description: "Seamless property transition services.",
     icon: LockClosedIcon,
     href: "/services/handover",
-    color: "from-yellow-400 to-amber-600",
+    color: "from-[#FFC636] to-amber-600",
     details: "Ensuring a smooth transition of completed properties to owners and tenants with comprehensive handover support."
   },
   {
@@ -194,7 +194,7 @@ const services = [
     description: "Precision mechanical, electrical & plumbing.",
     icon: BoltIcon,
     href: "/services/mep",
-    color: "from-amber-500 to-yellow-600",
+    color: "from-amber-500 to-[#FFC636]",
     details: "Complete spectrum of MEP services ensuring seamless integration and optimal performance in every project."
   },
   {
@@ -203,7 +203,7 @@ const services = [
     description: "UAE Golden Visa investment guidance.",
     icon: StarIcon,
     href: "/services/golden-visa",
-    color: "from-yellow-500 to-amber-600",
+    color: "from-[#FFC636] to-amber-600",
     details: "Secure your UAE Golden Visa through smart Dubai property investment. Our experts guide you through every step."
   },
   {
@@ -212,7 +212,7 @@ const services = [
     description: "Professional real estate education.",
     icon: AcademicCapIcon,
     href: "/services/training-academy",
-    color: "from-amber-400 to-yellow-600",
+    color: "from-amber-400 to-[#FFC636]",
     details: "Providing comprehensive training for real estate professionals with industry expertise and certification programs."
   },
   {
@@ -221,7 +221,7 @@ const services = [
     description: "Optimized property rental management.",
     icon: HomeIcon,
     href: "/services/rental-services",
-    color: "from-yellow-400 to-amber-600",
+    color: "from-[#FFC636] to-amber-600",
     details: "Managing rental properties to optimize rental yields and occupancy rates with professional tenant management."
   },
   {
@@ -244,14 +244,14 @@ export default function ServicesPage() {
         {/* Golden gradient background */}
         <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-amber-900/20 via-transparent to-amber-800/10 -z-10"></div>
         <div className="absolute top-20 right-0 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
-        <div className="absolute top-40 left-0 w-64 h-64 bg-yellow-400/5 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-40 left-0 w-64 h-64 bg-[#FFC636]/5 rounded-full blur-3xl -z-10"></div>
         
         <div className="container-custom mx-auto text-center">
-          <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-yellow-500 rounded-full mb-8">
+          <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-[#FFC636] rounded-full mb-8">
             <span className="text-sm font-black text-amber-900 tracking-widest uppercase">Our Expertise</span>
           </div>
           <h1 className="text-5xl md:text-6xl font-black text-white mb-6 leading-tight">
-            <span className="bg-linear-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"> Premium Real Estate Services</span>
+            <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent"> Premium Real Estate Services</span>
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl mx-auto">
             Experience excellence with Ragdoll Properties' comprehensive suite of real estate solutions
@@ -271,7 +271,7 @@ export default function ServicesPage() {
                   <div className={`absolute inset-0 bg-linear-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 -z-10`}></div>
                   
                   {/* Golden accent bar */}
-                  <div className="absolute top-0 left-0 h-1 w-0 group-hover:w-full bg-linear-to-r from-amber-400 to-yellow-500 transition-all duration-500"></div>
+                  <div className="absolute top-0 left-0 h-1 w-0 group-hover:w-full bg-linear-to-r from-amber-400 to-[#FFC636] transition-all duration-500"></div>
                   
                   {/* Icon Container */}
                   <div className={`w-16 h-16 bg-linear-to-br ${service.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl`}>
@@ -304,11 +304,11 @@ export default function ServicesPage() {
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-transparent to-amber-50/5">
         <div className="container-custom mx-auto">
           <div className="text-center mb-16">
-            <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-yellow-500 rounded-full mb-6">
+            <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-[#FFC636] rounded-full mb-6">
               <span className="text-sm font-black text-amber-900 tracking-widest uppercase">Why Choose Us</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-              <span className="bg-linear-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent"> The Ragdoll Properties Difference</span>
+              <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent"> The Ragdoll Properties Difference</span>
             </h2>
           </div>
 
@@ -333,7 +333,7 @@ export default function ServicesPage() {
               const Icon = item.icon
               return (
                 <div key={idx} className="group bg-white border-2 border-amber-700/50 rounded-2xl p-8 hover:border-amber-700 transition-all duration-300 shadow-sm hover:shadow-md">
-                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-yellow-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
@@ -349,11 +349,11 @@ export default function ServicesPage() {
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-amber-50/5 to-transparent">
         <div className="container-custom mx-auto">
           <div className="text-center mb-16">
-            <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-yellow-500 rounded-full mb-6">
+            <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-[#FFC636] rounded-full mb-6">
               <span className="text-sm font-black text-amber-900 tracking-widest uppercase">Featured Portfolio</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-            <span className="bg-linear-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">  Premium Property  Showcase</span>
+            <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">  Premium Property  Showcase</span>
             </h2>
             <p className="text-gray-400 text-lg">Explore our curated selection of luxury developments</p>
           </div>
@@ -390,18 +390,18 @@ export default function ServicesPage() {
           <div className="relative overflow-hidden rounded-4xl p-12 md:p-20 bg-white border-2 border-amber-700/60 shadow-lg">
             {/* Golden glow effects */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC636]/5 rounded-full blur-3xl -z-10"></div>
             
             <div className="relative z-10 max-w-3xl">
               <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
-                Ready to Experience <span className="bg-linear-to-r from-amber-600 to-yellow-600 bg-clip-text text-transparent">Excellence?</span>
+                Ready to Experience <span className="bg-linear-to-r from-amber-600 to-[#FFC636] bg-clip-text text-transparent">Excellence?</span>
               </h2>
               <p className="text-xl text-gray-600 mb-12 leading-relaxed">
                 Connect with our specialist team today for a confidential consultation about your property needs.
               </p>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-3 px-10 py-4 bg-linear-to-r from-amber-400 to-yellow-500 text-slate-900 font-bold rounded-xl hover:from-amber-300 hover:to-yellow-400 transition-all duration-300 shadow-xl shadow-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/30 group"
+                className="inline-flex items-center gap-3 px-10 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:from-amber-300 hover:to-[#FFC636] transition-all duration-300 shadow-xl shadow-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/30 group"
               >
                 Schedule Consultation
                 <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-2 transition-transform" />

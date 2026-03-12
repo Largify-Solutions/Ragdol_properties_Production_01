@@ -148,7 +148,7 @@ export default function YearlyUpdatesPage() {
                       <span className={`px-3 py-1 rounded-full font-semibold text-sm ${
                         parseFloat(report.growth) > 7 ? 'bg-emerald-100 text-emerald-700' :
                         parseFloat(report.growth) > 5 ? 'bg-blue-100 text-blue-700' :
-                        'bg-yellow-100 text-yellow-700'
+                        'bg-[#FFC636]/15 text-[#FFC636]'
                       }`}>
                         {parseFloat(report.growth) > 7 ? 'Strong' : parseFloat(report.growth) > 5 ? 'Moderate' : 'Steady'}
                       </span>

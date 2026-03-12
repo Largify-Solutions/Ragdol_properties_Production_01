@@ -146,7 +146,7 @@ const areaCategories = [
     icon: HomeIcon,
     areas: ['Dubai Hills Estate', 'Arabian Ranches', 'Mudon', 'Al Barari'],
     description: 'Spacious villas and townhouses perfect for family living',
-    color: 'from-green-500 to-emerald-400'
+    color: 'from-[#FFC636] to-emerald-400'
   },
   {
     id: 'affordable-luxury',
@@ -162,7 +162,7 @@ const areaCategories = [
     icon: TrendingUpIcon,
     areas: ['Downtown Dubai', 'Business Bay', 'Dubai Creek Harbour', 'Dubai South'],
     description: 'High-growth areas with excellent ROI potential',
-    color: 'from-orange-500 to-yellow-400'
+    color: 'from-orange-500 to-[#FFC636]'
   }
 ]
 
@@ -358,7 +358,7 @@ export default function AreaGuidesPage() {
                 <div className="space-y-2">
                   {category.areas.slice(0, 3).map((area, idx) => (
                     <div key={idx} className="flex items-center text-sm text-slate-500">
-                      <CheckCircleIcon className="h-4 w-4 text-green-500 mr-2 shrink-0" />
+                      <CheckCircleIcon className="h-4 w-4 text-[#FFC636] mr-2 shrink-0" />
                       <span className="truncate">{area}</span>
                     </div>
                   ))}
@@ -427,7 +427,7 @@ export default function AreaGuidesPage() {
                     <div className="absolute inset-0 bg-linear-to-t from-slate-900/60 via-transparent to-transparent"></div>
                     
                     {/* Price Trend Badge */}
-                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
+                    <div className="absolute top-4 right-4 bg-[#FFC636] text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1">
                       <TrendingUpIcon className="h-3 w-3" />
                       {area.priceTrend}
                     </div>
@@ -543,7 +543,7 @@ export default function AreaGuidesPage() {
                             <ul className="space-y-2">
                               {area.amenities.map((amenity, idx) => (
                                 <li key={idx} className="flex items-center gap-2 text-slate-600">
-                                  <CheckCircleIcon className="h-4 w-4 text-green-500 shrink-0" />
+                                  <CheckCircleIcon className="h-4 w-4 text-[#FFC636] shrink-0" />
                                   <span>{amenity}</span>
                                 </li>
                               ))}
@@ -617,7 +617,7 @@ export default function AreaGuidesPage() {
                   <ul className="space-y-3">
                     {section.content.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-slate-600 text-sm">
-                        <CheckCircleIcon className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                        <CheckCircleIcon className="h-4 w-4 text-[#FFC636] mt-0.5 shrink-0" />
                         <span>{item}</span>
                       </li>
                     ))}

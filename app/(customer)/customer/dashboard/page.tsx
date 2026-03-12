@@ -420,10 +420,10 @@ export default function CustomerDashboard() {
           </div>
 
           {/* Firebase Status */}
-          <div className="bg-linear-to-r from-emerald-50 to-green-50 rounded-[2.5rem] p-6 border border-emerald-200">
+          <div className="bg-linear-to-r from-emerald-50 to-[#FFC636]/10 rounded-[2.5rem] p-6 border border-emerald-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-white rounded-full shadow-sm">
-                <div className="h-6 w-6 rounded-full bg-green-500 flex items-center justify-center">
+                <div className="h-6 w-6 rounded-full bg-[#FFC636] flex items-center justify-center">
                   <span className="text-white text-xs font-bold">✓</span>
                 </div>
               </div>

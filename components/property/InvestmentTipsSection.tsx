@@ -38,7 +38,7 @@ export function InvestmentTipsSection() {
 
   const colorClasses: Record<string, { bg: string; icon: string; border: string }> = {
     blue: { bg: 'bg-blue-50', icon: 'text-blue-600', border: 'border-blue-200' },
-    green: { bg: 'bg-green-50', icon: 'text-green-600', border: 'border-green-200' },
+    green: { bg: 'bg-[#FFC636]/10', icon: 'text-[#FFC636]', border: 'border-[#FFC636]/30' },
     purple: { bg: 'bg-purple-50', icon: 'text-purple-600', border: 'border-purple-200' },
     orange: { bg: 'bg-orange-50', icon: 'text-orange-600', border: 'border-orange-200' },
   };

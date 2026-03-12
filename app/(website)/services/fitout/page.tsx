@@ -96,7 +96,7 @@ export default function FitoutServicesPage() {
           </Link>
           
           <h1 className="text-5xl md:text-6xl font-black text-white mb-6 leading-tight">
-            Fitout <span className="bg-linear-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">Services</span>
+            Fitout <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Services</span>
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl">
             End-to-end interior and exterior solutions crafted to the highest standards of craftsmanship and design.
@@ -120,7 +120,7 @@ export default function FitoutServicesPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-yellow-500 text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all"
             >
               Get Started Today
               <ArrowRightIcon className="h-5 w-5" />
@@ -153,7 +153,7 @@ export default function FitoutServicesPage() {
               const Icon = item.icon
               return (
                 <div key={idx} className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-amber-400/20 rounded-2xl p-8 hover:border-amber-400/50 transition-all duration-300">
-                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-yellow-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
@@ -204,7 +204,7 @@ export default function FitoutServicesPage() {
             {processSteps.map((step, idx) => (
               <div key={idx} className="flex gap-8 items-start">
                 <div className="shrink-0">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-amber-400 to-yellow-500 text-slate-900 font-black text-xl">
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-amber-400 to-[#FFC636] text-slate-900 font-black text-xl">
                     {step.number}
                   </div>
                 </div>
@@ -256,14 +256,14 @@ export default function FitoutServicesPage() {
           
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-black text-white mb-6">
-              Ready to Transform Your <span className="bg-linear-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">Property?</span>
+              Ready to Transform Your <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Property?</span>
             </h2>
             <p className="text-gray-300 text-lg mb-8">
               Let our fitout experts create a premium finish that maximizes your property's value and appeal.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-yellow-500 text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all group"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all group"
             >
               Schedule Consultation
               <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-2 transition-transform" />

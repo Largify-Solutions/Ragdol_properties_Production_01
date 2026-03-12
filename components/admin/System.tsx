@@ -314,10 +314,10 @@ const System: React.FC<SystemProps> = () => {
     switch (status) {
       case 'operational':
       case 'completed':
-        return 'text-green-500';
+        return 'text-[#FFC636]';
       case 'degraded':
       case 'warning':
-        return 'text-yellow-500';
+        return 'text-[#FFC636]';
       case 'down':
       case 'error':
       case 'failed':
@@ -339,8 +339,8 @@ const System: React.FC<SystemProps> = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-card border border-border rounded-xl p-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-green-500/10 rounded-lg">
-                    <ClockIcon className="h-6 w-6 text-green-500" />
+                  <div className="p-3 bg-[#FFC636]/10 rounded-lg">
+                    <ClockIcon className="h-6 w-6 text-[#FFC636]" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-foreground">{systemMetrics.uptime}</p>
@@ -412,8 +412,8 @@ const System: React.FC<SystemProps> = () => {
                     <div className="flex items-center justify-between mb-2">
                       <p className="font-semibold text-foreground">{api.name}</p>
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        api.status === 'operational' ? 'bg-green-500/10 text-green-500' :
-                        api.status === 'degraded' ? 'bg-yellow-500/10 text-yellow-500' :
+                        api.status === 'operational' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
+                        api.status === 'degraded' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
                         'bg-red-500/10 text-red-500'
                       }`}>
                         {api.status}
@@ -437,11 +437,11 @@ const System: React.FC<SystemProps> = () => {
                   <div key={alert.id} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
                     <div className={`p-2 rounded-lg ${
                       alert.type === 'error' ? 'bg-red-500/10' :
-                      alert.type === 'warning' ? 'bg-yellow-500/10' :
+                      alert.type === 'warning' ? 'bg-[#FFC636]/10' :
                       'bg-blue-500/10'
                     }`}>
                       {alert.type === 'error' ? <ExclamationTriangleIcon className="h-4 w-4 text-red-500" /> :
-                       alert.type === 'warning' ? <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" /> :
+                       alert.type === 'warning' ? <ExclamationTriangleIcon className="h-4 w-4 text-[#FFC636]" /> :
                        <CheckCircleIcon className="h-4 w-4 text-blue-500" />}
                     </div>
                     <div className="flex-1">
@@ -544,13 +544,13 @@ const System: React.FC<SystemProps> = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-3 ${
-                    systemMetrics.responseTime < 500 ? 'bg-green-500/10' :
-                    systemMetrics.responseTime < 1000 ? 'bg-yellow-500/10' :
+                    systemMetrics.responseTime < 500 ? 'bg-[#FFC636]/10' :
+                    systemMetrics.responseTime < 1000 ? 'bg-[#FFC636]/10' :
                     'bg-red-500/10'
                   }`}>
                     <BoltIcon className={`h-8 w-8 ${
-                      systemMetrics.responseTime < 500 ? 'text-green-500' :
-                      systemMetrics.responseTime < 1000 ? 'text-yellow-500' :
+                      systemMetrics.responseTime < 500 ? 'text-[#FFC636]' :
+                      systemMetrics.responseTime < 1000 ? 'text-[#FFC636]' :
                       'text-red-500'
                     }`} />
                   </div>
@@ -560,13 +560,13 @@ const System: React.FC<SystemProps> = () => {
 
                 <div className="text-center">
                   <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-3 ${
-                    systemMetrics.errorRate < 0.01 ? 'bg-green-500/10' :
-                    systemMetrics.errorRate < 0.05 ? 'bg-yellow-500/10' :
+                    systemMetrics.errorRate < 0.01 ? 'bg-[#FFC636]/10' :
+                    systemMetrics.errorRate < 0.05 ? 'bg-[#FFC636]/10' :
                     'bg-red-500/10'
                   }`}>
                     <ShieldCheckIcon className={`h-8 w-8 ${
-                      systemMetrics.errorRate < 0.01 ? 'text-green-500' :
-                      systemMetrics.errorRate < 0.05 ? 'text-yellow-500' :
+                      systemMetrics.errorRate < 0.01 ? 'text-[#FFC636]' :
+                      systemMetrics.errorRate < 0.05 ? 'text-[#FFC636]' :
                       'text-red-500'
                     }`} />
                   </div>
@@ -624,12 +624,12 @@ const System: React.FC<SystemProps> = () => {
                       <div className="flex items-start gap-3">
                         <div className={`p-1 rounded ${
                           log.level === 'error' ? 'bg-red-500/10' :
-                          log.level === 'warning' ? 'bg-yellow-500/10' :
+                          log.level === 'warning' ? 'bg-[#FFC636]/10' :
                           log.level === 'info' ? 'bg-blue-500/10' :
                           'bg-gray-500/10'
                         }`}>
                           {log.level === 'error' ? <ExclamationTriangleIcon className="h-4 w-4 text-red-500" /> :
-                           log.level === 'warning' ? <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" /> :
+                           log.level === 'warning' ? <ExclamationTriangleIcon className="h-4 w-4 text-[#FFC636]" /> :
                            log.level === 'info' ? <CheckCircleIcon className="h-4 w-4 text-blue-500" /> :
                            <DocumentTextIcon className="h-4 w-4 text-gray-500" />}
                         </div>
@@ -637,7 +637,7 @@ const System: React.FC<SystemProps> = () => {
                           <div className="flex items-center gap-2 mb-1">
                             <span className={`px-2 py-1 rounded text-xs font-medium ${
                               log.level === 'error' ? 'bg-red-500/10 text-red-500' :
-                              log.level === 'warning' ? 'bg-yellow-500/10 text-yellow-500' :
+                              log.level === 'warning' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
                               log.level === 'info' ? 'bg-blue-500/10 text-blue-500' :
                               'bg-gray-500/10 text-gray-500'
                             }`}>
@@ -808,10 +808,10 @@ const System: React.FC<SystemProps> = () => {
                         <td className="px-4 py-3 text-sm text-muted-foreground capitalize">{job.type}</td>
                         <td className="px-4 py-3">
                           <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-                            job.status === 'completed' ? 'bg-green-500/10 text-green-500' :
+                            job.status === 'completed' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
                             job.status === 'running' ? 'bg-blue-500/10 text-blue-500' :
                             job.status === 'failed' ? 'bg-red-500/10 text-red-500' :
-                            'bg-yellow-500/10 text-yellow-500'
+                            'bg-[#FFC636]/10 text-[#FFC636]'
                           }`}>
                             {job.status === 'running' && <ArrowPathIcon className="h-3 w-3 animate-spin" />}
                             {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
@@ -862,18 +862,18 @@ const System: React.FC<SystemProps> = () => {
                   <div className="flex items-start gap-3">
                     <div className={`p-2 rounded-lg ${
                       alert.type === 'error' ? 'bg-red-500/10' :
-                      alert.type === 'warning' ? 'bg-yellow-500/10' :
+                      alert.type === 'warning' ? 'bg-[#FFC636]/10' :
                       'bg-blue-500/10'
                     }`}>
                       {alert.type === 'error' ? <ExclamationTriangleIcon className="h-5 w-5 text-red-500" /> :
-                       alert.type === 'warning' ? <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" /> :
+                       alert.type === 'warning' ? <ExclamationTriangleIcon className="h-5 w-5 text-[#FFC636]" /> :
                        <CheckCircleIcon className="h-5 w-5 text-blue-500" />}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-semibold text-foreground">{alert.title}</h4>
                         {alert.resolved && (
-                          <span className="px-2 py-1 bg-green-500/10 text-green-500 text-xs rounded">
+                          <span className="px-2 py-1 bg-[#FFC636]/10 text-[#FFC636] text-xs rounded">
                             Resolved
                           </span>
                         )}

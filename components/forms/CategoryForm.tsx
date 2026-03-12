@@ -50,8 +50,8 @@ const availableIcons = [
 
 const categoryColors = [
   { value: 'blue', label: 'Blue', class: 'bg-blue-500' },
-  { value: 'green', label: 'Green', class: 'bg-green-500' },
-  { value: 'yellow', label: 'Yellow', class: 'bg-yellow-500' },
+  { value: 'green', label: 'Green', class: 'bg-[#FFC636]' },
+  { value: 'yellow', label: 'Yellow', class: 'bg-[#FFC636]' },
   { value: 'red', label: 'Red', class: 'bg-red-500' },
   { value: 'purple', label: 'Purple', class: 'bg-purple-500' },
   { value: 'orange', label: 'Orange', class: 'bg-orange-500' },
@@ -395,7 +395,7 @@ export default function CategoryForm({
                   <label
                     htmlFor="isActive"
                     className={`block h-6 w-12 rounded-full cursor-pointer transition-colors ${
-                      formData.isActive ? 'bg-green-500' : 'bg-gray-300'
+                      formData.isActive ? 'bg-[#FFC636]' : 'bg-gray-300'
                     }`}
                   >
                     <span

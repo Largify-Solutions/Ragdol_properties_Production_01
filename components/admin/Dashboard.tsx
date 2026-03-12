@@ -42,19 +42,19 @@ export default function Dashboard({ activeTab, setActiveTab, analyticsData, sele
             <div>
               <p className="text-2xl font-bold text-foreground">{analyticsData.overview.totalProperties}</p>
               <p className="text-sm text-muted-foreground">Total Properties</p>
-              <p className="text-xs text-green-500 mt-1">+12.5% from last month</p>
+              <p className="text-xs text-[#FFC636] mt-1">+12.5% from last month</p>
             </div>
           </div>
         </div>
         <div className="bg-card border border-border rounded-xl p-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-500/10 rounded-lg">
-              <EyeIcon className="h-6 w-6 text-green-500" />
+            <div className="p-3 bg-[#FFC636]/10 rounded-lg">
+              <EyeIcon className="h-6 w-6 text-[#FFC636]" />
             </div>
             <div>
               <p className="text-2xl font-bold text-foreground">{analyticsData.overview.totalViews.toLocaleString()}</p>
               <p className="text-sm text-muted-foreground">Page Views</p>
-              <p className="text-xs text-green-500 mt-1">+8.2% from last month</p>
+              <p className="text-xs text-[#FFC636] mt-1">+8.2% from last month</p>
             </div>
           </div>
         </div>
@@ -66,7 +66,7 @@ export default function Dashboard({ activeTab, setActiveTab, analyticsData, sele
             <div>
               <p className="text-2xl font-bold text-foreground">{analyticsData.overview.totalInquiries}</p>
               <p className="text-sm text-muted-foreground">Total Inquiries</p>
-              <p className="text-xs text-green-500 mt-1">+15.7% from last month</p>
+              <p className="text-xs text-[#FFC636] mt-1">+15.7% from last month</p>
             </div>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function Dashboard({ activeTab, setActiveTab, analyticsData, sele
             <div>
               <p className="text-2xl font-bold text-foreground">AED {(analyticsData.overview.totalRevenue / 1000000).toFixed(1)}M</p>
               <p className="text-sm text-muted-foreground">Total Revenue</p>
-              <p className="text-xs text-green-500 mt-1">+22.3% from last month</p>
+              <p className="text-xs text-[#FFC636] mt-1">+22.3% from last month</p>
             </div>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function Dashboard({ activeTab, setActiveTab, analyticsData, sele
                 <div className="flex items-center gap-3">
                   <div className="w-32 bg-muted rounded-full h-2">
                     <div
-                      className="bg-green-500 h-2 rounded-full"
+                      className="bg-[#FFC636] h-2 rounded-full"
                       style={{
                         width: `${(item.revenue / Math.max(...analyticsData.revenueAnalytics.monthlyRevenue.map((r: any) => r.revenue))) * 100}%`
                       }}
@@ -172,11 +172,11 @@ export default function Dashboard({ activeTab, setActiveTab, analyticsData, sele
               <div key={index} className="flex items-start gap-3">
                 <div className={`p-2 rounded-lg ${
                   activity.type === 'property' ? 'bg-blue-500/10' :
-                  activity.type === 'inquiry' ? 'bg-green-500/10' :
+                  activity.type === 'inquiry' ? 'bg-[#FFC636]/10' :
                   activity.type === 'update' ? 'bg-orange-500/10' : 'bg-purple-500/10'
                 }`}>
                   {activity.type === 'property' && <BuildingOfficeIcon className="h-4 w-4 text-blue-500" />}
-                  {activity.type === 'inquiry' && <ChatBubbleLeftRightIcon className="h-4 w-4 text-green-500" />}
+                  {activity.type === 'inquiry' && <ChatBubbleLeftRightIcon className="h-4 w-4 text-[#FFC636]" />}
                   {activity.type === 'update' && <PencilIcon className="h-4 w-4 text-orange-500" />}
                   {activity.type === 'user' && <EyeIcon className="h-4 w-4 text-purple-500" />}
                 </div>
@@ -206,7 +206,7 @@ export default function Dashboard({ activeTab, setActiveTab, analyticsData, sele
             onClick={() => setActiveTab('users')}
             className="flex items-center gap-3 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
           >
-            <EyeIcon className="h-5 w-5 text-green-500" />
+            <EyeIcon className="h-5 w-5 text-[#FFC636]" />
             <span className="text-sm font-medium">View Users</span>
           </button>
           <button

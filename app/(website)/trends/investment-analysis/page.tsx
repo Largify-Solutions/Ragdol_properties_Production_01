@@ -209,7 +209,7 @@ export default function InvestmentAnalysisPage() {
                     <span className={`font-bold px-3 py-1 rounded-full text-sm ${
                       currentStrategy.riskLevel.includes('Low') ? 'bg-emerald-100 text-emerald-700' :
                       currentStrategy.riskLevel.includes('High') ? 'bg-red-100 text-red-700' :
-                      'bg-yellow-100 text-yellow-700'
+                      'bg-[#FFC636]/15 text-[#FFC636]'
                     }`}>
                       {currentStrategy.riskLevel}
                     </span>

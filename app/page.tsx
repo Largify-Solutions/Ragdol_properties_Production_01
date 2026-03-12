@@ -1439,7 +1439,7 @@ export default function HomePage() {
               
 
               <div className="absolute top-4 left-4 pointer-events-none">
-                <span className="px-2 py-1 bg-green-500/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest rounded">
+                <span className="px-2 py-1 bg-[#FFC636]/90 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest rounded">
                   LIVE
                 </span>
               </div>
@@ -1562,7 +1562,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-slate-500">
               <div className="flex items-center gap-2">
-                <StarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500" />
+                <StarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-[#FFC636]" />
                 <span>{t("homepage.trustedDevelopers")}</span>
               </div>
               <div className="flex items-center gap-2">
@@ -1969,7 +1969,7 @@ export default function HomePage() {
                               key={i}
                               className={`h-4 w-4 ${
                                 i < testimonial.rating
-                                  ? "text-yellow-500"
+                                  ? "text-[#FFC636]"
                                   : "text-slate-300"
                               }`}
                             />

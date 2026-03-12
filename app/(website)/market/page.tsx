@@ -112,7 +112,7 @@ export default function MarketInsightsPage() {
               <div className="flex items-center justify-between mb-4">
                 <stat.icon className="h-8 w-8 text-[#d4af37]" />
                 <div className={`flex items-center space-x-1 text-sm ${
-                  stat.trend === 'up' ? 'text-green-400' : 'text-red-400'
+                  stat.trend === 'up' ? 'text-[#FFC636]' : 'text-red-400'
                 }`}>
                   {stat.trend === 'up' ? (
                     <ArrowTrendingUpIcon className="h-4 w-4" />
@@ -140,7 +140,7 @@ export default function MarketInsightsPage() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold">{city.city}</h3>
                   <div className={`flex items-center space-x-1 text-sm ${
-                    city.trend === 'up' ? 'text-green-400' : 'text-red-400'
+                    city.trend === 'up' ? 'text-[#FFC636]' : 'text-red-400'
                   }`}>
                     <ArrowTrendingUpIcon className="h-4 w-4" />
                     <span>{city.growth}</span>
@@ -186,7 +186,7 @@ export default function MarketInsightsPage() {
                   <span className={`px-2 py-1 rounded text-xs ${
                     trend.impact === 'High'
                       ? 'bg-red-900/20 text-red-400'
-                      : 'bg-yellow-900/20 text-yellow-400'
+                      : 'bg-[#FFC636]/20 text-[#FFC636]'
                   }`}>
                     {trend.impact} Impact
                   </span>

@@ -271,7 +271,7 @@ export default function PropertyValuation() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckCircleIcon className="h-5 w-5 text-green-500" />
+        return <CheckCircleIcon className="h-5 w-5 text-[#FFC636]" />
       case 'in_progress':
         return <ClockIcon className="h-5 w-5 text-blue-500" />
       default:
@@ -316,7 +316,7 @@ export default function PropertyValuation() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
-            <CheckCircleIcon className="mx-auto h-16 w-16 text-green-500" />
+            <CheckCircleIcon className="mx-auto h-16 w-16 text-[#FFC636]" />
             <h2 className="mt-6 text-3xl font-serif text-secondary">Valuation Request Submitted!</h2>
             <p className="mt-2 text-sm text-gray-600">
               Your property valuation request has been successfully submitted.
@@ -397,13 +397,13 @@ export default function PropertyValuation() {
         <div className="flex items-center justify-between">
           <div className="space-y-2">
             <p className="text-base font-medium text-slate-600">Completed</p>
-            <p className="text-4xl font-bold text-green-600">
+            <p className="text-4xl font-bold text-[#FFC636]">
               {valuations.filter(v => v.status === 'completed').length}
             </p>
             <p className="text-xs text-slate-400">Valuations finished</p>
           </div>
-          <div className="p-4 bg-green-50 rounded-2xl">
-            <CheckCircleIcon className="h-10 w-10 text-green-500" />
+          <div className="p-4 bg-[#FFC636]/10 rounded-2xl">
+            <CheckCircleIcon className="h-10 w-10 text-[#FFC636]" />
           </div>
         </div>
       </div>
@@ -415,13 +415,13 @@ export default function PropertyValuation() {
         <div className="flex items-center justify-between">
           <div className="space-y-2">
             <p className="text-base font-medium text-slate-600">Pending</p>
-            <p className="text-4xl font-bold text-yellow-600">
+            <p className="text-4xl font-bold text-[#FFC636]">
               {getPendingValuationsCount()}
             </p>
             <p className="text-xs text-slate-400">Awaiting review</p>
           </div>
-          <div className="p-4 bg-yellow-50 rounded-2xl">
-            <AlertCircleIcon className="h-10 w-10 text-yellow-500" />
+          <div className="p-4 bg-[#FFC636]/10 rounded-2xl">
+            <AlertCircleIcon className="h-10 w-10 text-[#FFC636]" />
           </div>
         </div>
       </div>
@@ -510,10 +510,10 @@ export default function PropertyValuation() {
                             <div className="text-right">
                               <div className={`text-sm font-bold px-3 py-1 rounded-full ${
                                 valuation.status === 'completed' 
-                                  ? 'bg-green-100 text-green-800'
+                                  ? 'bg-[#FFC636]/15 text-[#FFC636]'
                                   : valuation.status === 'in_progress'
                                   ? 'bg-blue-100 text-blue-800'
-                                  : 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-[#FFC636]/15 text-[#FFC636]'
                               }`}>
                                 {getStatusText(valuation.status)}
                               </div>
@@ -536,15 +536,15 @@ export default function PropertyValuation() {
                           )}
 
                           {valuation.status === 'completed' && valuation.estimated_value && (
-                            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-4">
+                            <div className="bg-[#FFC636]/10 border border-[#FFC636]/30 rounded-xl p-4 mb-4">
                               <div className="flex items-center gap-2 mb-2">
-                                <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                                <span className="font-bold text-green-800">Valuation Complete</span>
+                                <CheckCircleIcon className="h-5 w-5 text-[#FFC636]" />
+                                <span className="font-bold text-[#FFC636]">Valuation Complete</span>
                               </div>
-                              <div className="text-2xl font-serif text-green-800">
+                              <div className="text-2xl font-serif text-[#FFC636]">
                                 {formatCurrency(valuation.estimated_value, valuation.currency)}
                               </div>
-                              <div className="text-sm text-green-600 mt-1">
+                              <div className="text-sm text-[#FFC636] mt-1">
                                 Completed on {valuation.completed_at 
                                   ? new Date(valuation.completed_at).toLocaleDateString('en-US', {
                                       year: 'numeric',
@@ -553,7 +553,7 @@ export default function PropertyValuation() {
                                     })
                                   : 'N/A'}
                               </div>
-                              <div className="mt-2 text-sm text-green-700">
+                              <div className="mt-2 text-sm text-[#FFC636]">
                                 Contact method: {valuation.contact_method || 'Email'}
                               </div>
                             </div>

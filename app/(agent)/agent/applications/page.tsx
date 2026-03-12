@@ -74,9 +74,9 @@ export default function AgentApplications() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800'
+        return 'bg-[#FFC636]/15 text-[#FFC636]'
       case 'accepted':
-        return 'bg-green-100 text-green-800'
+        return 'bg-[#FFC636]/15 text-[#FFC636]'
       case 'rejected':
         return 'bg-red-100 text-red-800'
       default:
@@ -221,7 +221,7 @@ export default function AgentApplications() {
                         setSelectedApp(app)
                         setRespondingId(app.id)
                       }}
-                      className="flex-1 md:flex-none px-4 py-2 bg-green-100 text-green-700 hover:bg-green-200 rounded-lg transition-colors font-medium text-sm"
+                      className="flex-1 md:flex-none px-4 py-2 bg-[#FFC636]/15 text-[#FFC636] hover:bg-[#FFC636]/25 rounded-lg transition-colors font-medium text-sm"
                     >
                       Accept
                     </button>
@@ -322,7 +322,7 @@ export default function AgentApplications() {
                   <div className="flex gap-3 mt-4">
                     <button
                       onClick={() => handleRespond(selectedApp.id, 'accept')}
-                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                      className="flex-1 px-4 py-2 bg-[#FFC636] text-white rounded-lg hover:bg-[#FFC636] transition-colors font-medium"
                     >
                       Accept Application
                     </button>

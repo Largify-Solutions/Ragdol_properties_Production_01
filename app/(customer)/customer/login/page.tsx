@@ -228,8 +228,8 @@ export default function CustomerLogin() {
 
                   {/* Success Message */}
                   {success && (
-                    <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
-                      <p className="text-green-600 text-sm">{success}</p>
+                    <div className="mb-6 p-4 bg-[#FFC636]/10 border border-[#FFC636]/20 rounded-xl">
+                      <p className="text-[#FFC636] text-sm">{success}</p>
                     </div>
                   )}
 

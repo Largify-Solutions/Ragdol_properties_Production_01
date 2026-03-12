@@ -131,7 +131,7 @@ export default function PropertyAgents() {
                           key={i}
                           className={`h-4 w-4 ${
                             i < Math.floor(agent.rating)
-                              ? 'text-yellow-400'
+                              ? 'text-[#FFC636]'
                               : 'text-gray-300'
                           }`}
                         />

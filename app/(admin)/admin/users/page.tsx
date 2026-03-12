@@ -387,9 +387,9 @@ export default function UsersPage() {
                       <button
                         onClick={() => handleToggleStatus(user)}
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer ${
-                          user.status === 'active' ? 'bg-green-100 text-green-800 hover:bg-green-200' : 
+                          user.status === 'active' ? 'bg-[#FFC636]/15 text-[#FFC636] hover:bg-[#FFC636]/25' : 
                           user.status === 'suspended' ? 'bg-red-100 text-red-800 hover:bg-red-200' : 
-                          'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                          'bg-[#FFC636]/15 text-[#FFC636] hover:bg-[#FFC636]/25'
                         }`}
                         title="Click to toggle status"
                       >

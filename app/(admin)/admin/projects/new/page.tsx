@@ -346,7 +346,7 @@ export default function NewProjectPage() {
                   onChange={(e) => setBrochureEnFile(e.target.files?.[0] || null)}
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
-                {brochureEnFile && <p className="text-xs text-green-600 mt-1">Selected: {brochureEnFile.name}</p>}
+                {brochureEnFile && <p className="text-xs text-[#FFC636] mt-1">Selected: {brochureEnFile.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Brochure (Arabic) PDF</label>
@@ -356,7 +356,7 @@ export default function NewProjectPage() {
                   onChange={(e) => setBrochureArFile(e.target.files?.[0] || null)}
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
-                {brochureArFile && <p className="text-xs text-green-600 mt-1">Selected: {brochureArFile.name}</p>}
+                {brochureArFile && <p className="text-xs text-[#FFC636] mt-1">Selected: {brochureArFile.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Fact Sheet PDF</label>
@@ -366,7 +366,7 @@ export default function NewProjectPage() {
                   onChange={(e) => setFactSheetFile(e.target.files?.[0] || null)}
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
-                {factSheetFile && <p className="text-xs text-green-600 mt-1">Selected: {factSheetFile.name}</p>}
+                {factSheetFile && <p className="text-xs text-[#FFC636] mt-1">Selected: {factSheetFile.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">One Pager PDF</label>
@@ -376,7 +376,7 @@ export default function NewProjectPage() {
                   onChange={(e) => setOnePagerFile(e.target.files?.[0] || null)}
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
-                {onePagerFile && <p className="text-xs text-green-600 mt-1">Selected: {onePagerFile.name}</p>}
+                {onePagerFile && <p className="text-xs text-[#FFC636] mt-1">Selected: {onePagerFile.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Material Board PDF</label>
@@ -386,7 +386,7 @@ export default function NewProjectPage() {
                   onChange={(e) => setMaterialBoardFile(e.target.files?.[0] || null)}
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
-                {materialBoardFile && <p className="text-xs text-green-600 mt-1">Selected: {materialBoardFile.name}</p>}
+                {materialBoardFile && <p className="text-xs text-[#FFC636] mt-1">Selected: {materialBoardFile.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Payment Plan PDF</label>
@@ -396,7 +396,7 @@ export default function NewProjectPage() {
                   onChange={(e) => setPaymentPlanFile(e.target.files?.[0] || null)}
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
-                {paymentPlanFile && <p className="text-xs text-green-600 mt-1">Selected: {paymentPlanFile.name}</p>}
+                {paymentPlanFile && <p className="text-xs text-[#FFC636] mt-1">Selected: {paymentPlanFile.name}</p>}
               </div>
             </div>
           </div>
@@ -417,7 +417,7 @@ export default function NewProjectPage() {
                     onChange={(e) => setFloorPlansFile(e.target.files?.[0] || null)}
                     className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
-                  {floorPlansFile && <p className="text-xs text-green-600 mt-1">Selected: {floorPlansFile.name}</p>}
+                  {floorPlansFile && <p className="text-xs text-[#FFC636] mt-1">Selected: {floorPlansFile.name}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Masterplan PDF</label>
@@ -427,7 +427,7 @@ export default function NewProjectPage() {
                     onChange={(e) => setMasterplanFile(e.target.files?.[0] || null)}
                     className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   />
-                  {masterplanFile && <p className="text-xs text-green-600 mt-1">Selected: {masterplanFile.name}</p>}
+                  {masterplanFile && <p className="text-xs text-[#FFC636] mt-1">Selected: {masterplanFile.name}</p>}
                 </div>
               </div>
               <div>
@@ -441,7 +441,7 @@ export default function NewProjectPage() {
                 />
                 <p className="text-xs text-muted-foreground mt-1">Upload multiple floor plan images (JPG, PNG)</p>
                 {floorPlanImages.length > 0 && (
-                  <p className="text-xs text-green-600 mt-1">{floorPlanImages.length} files selected</p>
+                  <p className="text-xs text-[#FFC636] mt-1">{floorPlanImages.length} files selected</p>
                 )}
               </div>
             </div>
@@ -475,7 +475,7 @@ export default function NewProjectPage() {
                 />
                 <p className="text-xs text-muted-foreground mt-1">Upload video files (MP4, MOV)</p>
                 {videoFiles.length > 0 && (
-                  <p className="text-xs text-green-600 mt-1">{videoFiles.length} video(s) selected</p>
+                  <p className="text-xs text-[#FFC636] mt-1">{videoFiles.length} video(s) selected</p>
                 )}
               </div>
             </div>

@@ -757,8 +757,8 @@ const handleSubmit = async (e: React.FormEvent) => {
                       <div className="flex items-center space-x-2">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                           project.published
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
+                            ? 'bg-[#FFC636]/15 text-[#FFC636]'
+                            : 'bg-[#FFC636]/15 text-[#FFC636]'
                         }`}>
                           {project.published ? 'Published' : 'Draft'}
                         </span>
@@ -778,7 +778,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                         </button>
                         <button
                           onClick={() => handleDuplicateProject(project)}
-                          className="p-1 text-green-600 hover:text-green-900 hover:bg-green-100 rounded"
+                          className="p-1 text-[#FFC636] hover:text-[#FFC636] hover:bg-[#FFC636]/15 rounded"
                           title="Duplicate"
                         >
                           <DocumentDuplicateIcon className="h-5 w-5" />
@@ -1155,13 +1155,13 @@ const handleSubmit = async (e: React.FormEvent) => {
                         <div key={type} className="flex flex-col gap-1">
                           <label className="block text-xs font-medium text-gray-600">{label}</label>
                           {url ? (
-                            <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-md">
-                              <CheckCircleIcon className="h-4 w-4 text-green-600 shrink-0" />
+                            <div className="flex items-center gap-2 px-3 py-2 bg-[#FFC636]/10 border border-[#FFC636]/30 rounded-md">
+                              <CheckCircleIcon className="h-4 w-4 text-[#FFC636] shrink-0" />
                               <a
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs text-green-700 underline truncate flex-1"
+                                className="text-xs text-[#FFC636] underline truncate flex-1"
                               >
                                 {url.split('/').pop()}
                               </a>
@@ -1391,12 +1391,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {formData.property_types.map((type, index) => (
-                        <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                        <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-[#FFC636]/15 text-[#FFC636]">
                           {type}
                           <button
                             type="button"
                             onClick={() => removeFromArray('property_types', type)}
-                            className="ml-1 text-green-600 hover:text-green-800"
+                            className="ml-1 text-[#FFC636] hover:text-[#FFC636]"
                             disabled={isSubmitting}
                           >
                             ×
@@ -1431,12 +1431,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {formData.facilities.map((facility, index) => (
-                      <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-800">
+                      <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-[#FFC636]/15 text-[#FFC636]">
                         {facility}
                         <button
                           type="button"
                           onClick={() => removeFromArray('facilities', facility)}
-                          className="ml-1 text-yellow-600 hover:text-yellow-800"
+                          className="ml-1 text-[#FFC636] hover:text-[#FFC636]"
                           disabled={isSubmitting}
                         >
                           ×

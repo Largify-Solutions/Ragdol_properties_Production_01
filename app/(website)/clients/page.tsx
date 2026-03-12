@@ -165,8 +165,8 @@ function ReviewSubmissionModal({ isOpen, onClose }: { isOpen: boolean; onClose: 
           <div className="p-8">
             {success ? (
               <div className="text-center py-12">
-                <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center bg-green-100 rounded-full">
-                  <svg className="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center bg-[#FFC636]/15 rounded-full">
+                  <svg className="h-10 w-10 text-[#FFC636]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
@@ -729,7 +729,7 @@ export default function TestimonialsPage() {
                         <div className="pt-4 border-t border-slate-100">
                           <div className="flex items-center justify-between text-xs">
                             <div className="flex items-center gap-2 text-slate-500">
-                              <CheckBadgeIcon className="h-3 w-3 text-green-500" />
+                              <CheckBadgeIcon className="h-3 w-3 text-[#FFC636]" />
                               <span>Verified</span>
                             </div>
                             <div className="flex items-center gap-1 text-slate-400">

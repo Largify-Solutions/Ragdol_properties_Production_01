@@ -20,7 +20,7 @@ export default function FloatingActionButtons() {
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={handleWhatsAppClick}
-          className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 group relative"
+          className="bg-[#FFC636] hover:bg-[#FFC636] text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 group relative"
           aria-label="Contact us on WhatsApp"
         >
           <svg
@@ -85,7 +85,7 @@ export default function FloatingActionButtons() {
                     setIsChatbotOpen(false)
                     handleWhatsAppClick()
                   }}
-                  className="flex-1 bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                  className="flex-1 bg-[#FFC636] hover:bg-[#FFC636] text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                 >
                   WhatsApp
                 </button>

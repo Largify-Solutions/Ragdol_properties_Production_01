@@ -720,7 +720,7 @@ const Settings: React.FC<SettingsProps> = () => {
           {saveStatus !== 'idle' && (
             <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
               saveStatus === 'saving' ? 'bg-blue-500/10 text-blue-500' :
-              saveStatus === 'saved' ? 'bg-green-500/10 text-green-500' :
+              saveStatus === 'saved' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
               'bg-red-500/10 text-red-500'
             }`}>
               {saveStatus === 'saving' && <ArrowPathIcon className="h-4 w-4 animate-spin" />}
@@ -783,11 +783,11 @@ const Settings: React.FC<SettingsProps> = () => {
 
       {/* Unsaved Changes Warning */}
       {hasUnsavedChanges && (
-        <div className="fixed bottom-4 right-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 max-w-sm">
+        <div className="fixed bottom-4 right-4 bg-[#FFC636]/10 border border-[#FFC636]/20 rounded-lg p-4 max-w-sm">
           <div className="flex items-start gap-3">
-            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
+            <ExclamationTriangleIcon className="h-5 w-5 text-[#FFC636] shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-yellow-500">Unsaved Changes</p>
+              <p className="text-sm font-medium text-[#FFC636]">Unsaved Changes</p>
               <p className="text-xs text-muted-foreground mt-1">
                 You have unsaved changes. Click "Save Changes" to apply them.
               </p>

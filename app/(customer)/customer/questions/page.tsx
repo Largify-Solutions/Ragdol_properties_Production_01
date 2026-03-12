@@ -444,7 +444,7 @@ export default function CustomerQuestions() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'responded':
-        return <CheckCircleIcon className="h-5 w-5 text-green-500" />
+        return <CheckCircleIcon className="h-5 w-5 text-[#FFC636]" />
       case 'pending':
         return <ClockIcon className="h-5 w-5 text-blue-500" />
       default:
@@ -505,7 +505,7 @@ export default function CustomerQuestions() {
       <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
-            <CheckCircleIcon className="mx-auto h-16 w-16 text-green-500" />
+            <CheckCircleIcon className="mx-auto h-16 w-16 text-[#FFC636]" />
             <h2 className="mt-6 text-3xl font-serif text-secondary">Enquiry Submitted!</h2>
             <p className="mt-2 text-sm text-gray-600">
               We'll get back to you within 24 hours with a response.
@@ -547,8 +547,8 @@ export default function CustomerQuestions() {
             </div>
             {enquiries.length > 0 && (
               <div className="flex items-center gap-2 text-sm">
-                <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-green-600 font-medium">Live Updates Active</span>
+                <div className="h-2 w-2 bg-[#FFC636] rounded-full animate-pulse"></div>
+                <span className="text-[#FFC636] font-medium">Live Updates Active</span>
               </div>
             )}
           </div>
@@ -580,13 +580,13 @@ export default function CustomerQuestions() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-2">
                       <p className="text-base font-medium text-slate-600">Responded</p>
-                      <p className="text-4xl font-bold text-green-600">
+                      <p className="text-4xl font-bold text-[#FFC636]">
                         {getEnquiryStats().responded}
                       </p>
                       <p className="text-xs text-slate-400">With admin responses</p>
                     </div>
-                    <div className="p-4 bg-green-50 rounded-2xl">
-                      <CheckCircleIcon className="h-10 w-10 text-green-500" />
+                    <div className="p-4 bg-[#FFC636]/10 rounded-2xl">
+                      <CheckCircleIcon className="h-10 w-10 text-[#FFC636]" />
                     </div>
                   </div>
                 </div>
@@ -596,13 +596,13 @@ export default function CustomerQuestions() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-2">
                       <p className="text-base font-medium text-slate-600">Pending</p>
-                      <p className="text-4xl font-bold text-yellow-600">
+                      <p className="text-4xl font-bold text-[#FFC636]">
                         {getEnquiryStats().pending}
                       </p>
                       <p className="text-xs text-slate-400">Awaiting response</p>
                     </div>
-                    <div className="p-4 bg-yellow-50 rounded-2xl">
-                      <ClockIcon className="h-10 w-10 text-yellow-500" />
+                    <div className="p-4 bg-[#FFC636]/10 rounded-2xl">
+                      <ClockIcon className="h-10 w-10 text-[#FFC636]" />
                     </div>
                   </div>
                 </div>
@@ -713,12 +713,12 @@ export default function CustomerQuestions() {
                           <div className="flex items-center gap-3">
                             <div className="text-right">
                               <div className={`text-sm font-bold ${
-                                enquiry.status === 'responded' ? 'text-green-600' :
+                                enquiry.status === 'responded' ? 'text-[#FFC636]' :
                                 enquiry.status === 'pending' ? 'text-blue-600' : 'text-slate-600'
                               }`}>
                                 {getStatusText(enquiry.status)}
                                 {enquiry.status === 'responded' && getReplyCount(enquiry.id) > 0 && (
-                                  <span className="ml-1 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                                  <span className="ml-1 text-xs bg-[#FFC636]/15 text-[#FFC636] px-2 py-0.5 rounded-full">
                                     {getReplyCount(enquiry.id)} {getReplyCount(enquiry.id) === 1 ? 'reply' : 'replies'}
                                   </span>
                                 )}
@@ -892,17 +892,17 @@ export default function CustomerQuestions() {
                             {/* Display Replies for this enquiry */}
                             {getReplyCount(enquiry.id) > 0 && (
                               <div className="mb-4">
-                                <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                                <div className="bg-[#FFC636]/10 border border-[#FFC636]/30 rounded-xl p-4">
                                   <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-2">
-                                      <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                                      <span className="font-bold text-green-800">
+                                      <CheckCircleIcon className="h-5 w-5 text-[#FFC636]" />
+                                      <span className="font-bold text-[#FFC636]">
                                         {getReplyCount(enquiry.id)} {getReplyCount(enquiry.id) === 1 ? 'Reply' : 'Replies'} Received
                                       </span>
                                     </div>
                                     <button
                                       onClick={() => setActiveTab('replies')}
-                                      className="text-sm text-green-700 hover:text-green-800 font-medium flex items-center gap-1"
+                                      className="text-sm text-[#FFC636] hover:text-[#FFC636] font-medium flex items-center gap-1"
                                     >
                                       View All Replies
                                       <ArrowRightIcon className="h-3 w-3" />
@@ -913,13 +913,13 @@ export default function CustomerQuestions() {
                                   {getRepliesForEnquiry(enquiry.id).slice(0, 1).map((reply, index) => (
                                     <div key={index} className="mt-2">
                                       <div className="flex items-center gap-2 mb-1">
-                                        <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                                          <UserIcon className="h-3 w-3 text-green-600" />
+                                        <div className="w-6 h-6 rounded-full bg-[#FFC636]/15 flex items-center justify-center">
+                                          <UserIcon className="h-3 w-3 text-[#FFC636]" />
                                         </div>
-                                        <span className="text-sm font-medium text-green-700">{reply.admin_name}</span>
-                                        <span className="text-xs text-green-500">{formatDate(reply.created_at)}</span>
+                                        <span className="text-sm font-medium text-[#FFC636]">{reply.admin_name}</span>
+                                        <span className="text-xs text-[#FFC636]">{formatDate(reply.created_at)}</span>
                                       </div>
-                                      <p className="text-sm text-green-600 line-clamp-2">
+                                      <p className="text-sm text-[#FFC636] line-clamp-2">
                                         {reply.message}
                                       </p>
                                     </div>
@@ -929,12 +929,12 @@ export default function CustomerQuestions() {
                             )}
 
                             {enquiry.status === 'responded' && getReplyCount(enquiry.id) === 0 && (
-                              <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                              <div className="bg-[#FFC636]/10 border border-[#FFC636]/30 rounded-xl p-4">
                                 <div className="flex items-center gap-2 mb-2">
-                                  <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                                  <span className="font-bold text-green-800">Response Received</span>
+                                  <CheckCircleIcon className="h-5 w-5 text-[#FFC636]" />
+                                  <span className="font-bold text-[#FFC636]">Response Received</span>
                                 </div>
-                                <p className="text-sm text-green-600">
+                                <p className="text-sm text-[#FFC636]">
                                   Our team has responded to your inquiry.
                                   {enquiry.responded_at && ` Responded on ${formatDate(enquiry.responded_at)}.`}
                                 </p>
@@ -1008,11 +1008,11 @@ export default function CustomerQuestions() {
                     {allReplies.map((reply) => {
                       const enquiry = getEnquiryById(reply.enquiry_id)
                       return (
-                        <div key={reply.id} className="bg-linear-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+                        <div key={reply.id} className="bg-linear-to-r from-[#FFC636]/10 to-emerald-50 rounded-2xl p-6 border border-[#FFC636]/30">
                           <div className="flex items-start justify-between mb-6">
                             <div>
                               <h3 className="font-bold text-secondary text-lg flex items-center gap-2">
-                                <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                                <CheckCircleIcon className="h-6 w-6 text-[#FFC636]" />
                                 Reply from Admin
                               </h3>
                               {enquiry && (
@@ -1027,7 +1027,7 @@ export default function CustomerQuestions() {
                               )}
                             </div>
                             <div className="text-right">
-                              <div className="flex items-center gap-2 text-sm font-medium text-green-700">
+                              <div className="flex items-center gap-2 text-sm font-medium text-[#FFC636]">
                                 <UserIcon className="h-4 w-4" />
                                 {reply.admin_name}
                               </div>
@@ -1038,21 +1038,21 @@ export default function CustomerQuestions() {
                           </div>
 
                           {/* Reply Message - Highlighted Section */}
-                          <div className="bg-white rounded-xl p-4 border border-green-100 mb-4">
+                          <div className="bg-white rounded-xl p-4 border border-[#FFC636]/20 mb-4">
                             <div className="flex items-start gap-3">
                               <div className="shrink-0">
-                                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                                  <UserIcon className="h-5 w-5 text-green-600" />
+                                <div className="w-10 h-10 rounded-full bg-[#FFC636]/15 flex items-center justify-center">
+                                  <UserIcon className="h-5 w-5 text-[#FFC636]" />
                                 </div>
                               </div>
                               <div className="flex-1">
                                 <div className="flex items-center justify-between mb-2">
-                                  <span className="font-bold text-green-800">{reply.admin_name}</span>
-                                  <span className="text-xs text-green-600">
+                                  <span className="font-bold text-[#FFC636]">{reply.admin_name}</span>
+                                  <span className="text-xs text-[#FFC636]">
                                     {formatDate(reply.created_at)}
                                   </span>
                                 </div>
-                                <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                                <div className="bg-[#FFC636]/10 p-3 rounded-lg border border-[#FFC636]/30">
                                   <p className="text-slate-700 leading-relaxed">
                                     {reply.message}
                                   </p>
@@ -1100,7 +1100,7 @@ export default function CustomerQuestions() {
                                   }
                                 }, 100)
                               }}
-                              className="inline-flex items-center gap-2 text-sm text-green-600 hover:text-green-800 font-medium"
+                              className="inline-flex items-center gap-2 text-sm text-[#FFC636] hover:text-[#FFC636] font-medium"
                             >
                               View Full Inquiry
                               <ArrowRightIcon className="h-4 w-4" />

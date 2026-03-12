@@ -156,9 +156,9 @@ export default function AdminQuestionsPage() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'answered':
-        return <CheckCircle className="h-4 w-4 text-green-500" />
+        return <CheckCircle className="h-4 w-4 text-[#FFC636]" />
       case 'pending':
-        return <Clock className="h-4 w-4 text-yellow-500" />
+        return <Clock className="h-4 w-4 text-[#FFC636]" />
       case 'closed':
         return <AlertCircle className="h-4 w-4 text-gray-500" />
       default:
@@ -197,7 +197,7 @@ export default function AdminQuestionsPage() {
           </div>
         </div>
         <div className="bg-card p-4 rounded-xl border shadow-sm flex items-center gap-4">
-          <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
+          <div className="p-3 rounded-full bg-[#FFC636]/15 text-[#FFC636]">
             <Clock className="h-5 w-5" />
           </div>
           <div>
@@ -206,7 +206,7 @@ export default function AdminQuestionsPage() {
           </div>
         </div>
         <div className="bg-card p-4 rounded-xl border shadow-sm flex items-center gap-4">
-          <div className="p-3 rounded-full bg-green-100 text-green-600">
+          <div className="p-3 rounded-full bg-[#FFC636]/15 text-[#FFC636]">
             <CheckCircle className="h-5 w-5" />
           </div>
           <div>
@@ -283,8 +283,8 @@ export default function AdminQuestionsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                    q.status === 'answered' ? 'bg-green-100 text-green-800' : 
-                    q.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                    q.status === 'answered' ? 'bg-[#FFC636]/15 text-[#FFC636]' : 
+                    q.status === 'pending' ? 'bg-[#FFC636]/15 text-[#FFC636]' : 
                     'bg-gray-100 text-gray-800'
                   }`}>
                     {getStatusIcon(q.status)}

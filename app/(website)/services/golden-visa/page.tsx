@@ -181,16 +181,16 @@ export default function GoldenVisaPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              UAE Golden <span className="bg-linear-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Visa Advisory</span>
+              UAE Golden <span className="bg-linear-to-r from-[#FFC636] to-amber-500 bg-clip-text text-transparent">Visa Advisory</span>
             </h1>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
               10-year residency delivered through strategic property investment. Dubai's most trusted real estate advisors guiding your journey to long-term UAE residency.
             </p>
             <div className="flex gap-4 flex-wrap">
-              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-yellow-400 to-amber-500 text-slate-900 font-bold rounded-lg hover:shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300">
+              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-[#FFC636] to-amber-500 text-slate-900 font-bold rounded-lg hover:shadow-2xl hover:shadow-[#FFC636]/50 transition-all duration-300">
                 Free Consultation
               </Link>
-              <Link href="#requirements" className="px-8 py-4 border-2 border-yellow-400/50 text-yellow-300 font-bold rounded-lg hover:bg-yellow-400/10 transition-all duration-300">
+              <Link href="#requirements" className="px-8 py-4 border-2 border-[#FFC636]/50 text-[#FFC636]/40 font-bold rounded-lg hover:bg-[#FFC636]/10 transition-all duration-300">
                 View Requirements <ArrowRightIcon className="inline h-5 w-5 ml-2" />
               </Link>
             </div>
@@ -211,9 +211,9 @@ export default function GoldenVisaPage() {
             return (
               <div 
                 key={idx}
-                className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-yellow-400/20 rounded-2xl p-6 hover:border-yellow-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-yellow-400/10"
+                className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-[#FFC636]/20 rounded-2xl p-6 hover:border-[#FFC636]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#FFC636]/10"
               >
-                <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-linear-to-br from-[#FFC636] to-amber-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Icon className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
@@ -238,27 +238,27 @@ export default function GoldenVisaPage() {
                 key={idx}
                 className={`relative rounded-2xl overflow-hidden transition-all duration-300 ${
                   category.popular
-                    ? 'border-2 border-yellow-400 shadow-2xl shadow-yellow-400/20 scale-105'
-                    : 'border border-yellow-400/20 hover:border-yellow-400/50'
+                    ? 'border-2 border-[#FFC636] shadow-2xl shadow-[#FFC636]/20 scale-105'
+                    : 'border border-[#FFC636]/20 hover:border-[#FFC636]/50'
                 } bg-linear-to-br from-slate-800/50 to-slate-900/50`}
               >
                 {category.popular && (
-                  <div className="absolute top-0 left-0 right-0 bg-linear-to-r from-yellow-400 to-amber-500 text-slate-900 font-bold py-2 text-center text-sm">
+                  <div className="absolute top-0 left-0 right-0 bg-linear-to-r from-[#FFC636] to-amber-500 text-slate-900 font-bold py-2 text-center text-sm">
                     Most Popular
                   </div>
                 )}
                 
                 <div className={`p-8 ${category.popular ? 'pt-16' : ''}`}>
-                  <div className="text-4xl font-bold bg-linear-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent mb-2">
+                  <div className="text-4xl font-bold bg-linear-to-r from-[#FFC636] to-amber-500 bg-clip-text text-transparent mb-2">
                     {category.investment}
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-4">{category.title}</h3>
                   <p className="text-gray-300 text-sm mb-6 leading-relaxed">{category.description}</p>
                   
-                  <div className="space-y-3 border-t border-yellow-400/20 pt-6">
+                  <div className="space-y-3 border-t border-[#FFC636]/20 pt-6">
                     {category.features.map((feature, i) => (
                       <div key={i} className="flex items-start gap-3">
-                        <CheckCircleIcon className="h-5 w-5 text-yellow-400 shrink-0 mt-0.5" />
+                        <CheckCircleIcon className="h-5 w-5 text-[#FFC636] shrink-0 mt-0.5" />
                         <span className="text-gray-300 text-sm">{feature}</span>
                       </div>
                     ))}
@@ -280,7 +280,7 @@ export default function GoldenVisaPage() {
             <div className="space-y-4">
               {requirements.map((req, idx) => (
                 <div key={idx} className="flex gap-4">
-                  <DocumentCheckIcon className="h-6 w-6 text-yellow-400 shrink-0 mt-1" />
+                  <DocumentCheckIcon className="h-6 w-6 text-[#FFC636] shrink-0 mt-1" />
                   <div>
                     <h4 className="font-bold text-white">{req.title}</h4>
                     <p className="text-gray-400 text-sm">{req.detail}</p>
@@ -301,7 +301,7 @@ export default function GoldenVisaPage() {
                 { title: 'Mortgage Allowed', detail: 'Mortgaged properties qualify with proof' }
               ].map((req, idx) => (
                 <div key={idx} className="flex gap-4">
-                  <BuildingOfficeIcon className="h-6 w-6 text-yellow-400 shrink-0 mt-1" />
+                  <BuildingOfficeIcon className="h-6 w-6 text-[#FFC636] shrink-0 mt-1" />
                   <div>
                     <h4 className="font-bold text-white">{req.title}</h4>
                     <p className="text-gray-400 text-sm">{req.detail}</p>
@@ -322,17 +322,17 @@ export default function GoldenVisaPage() {
             {processingOptions.map((option, idx) => (
               <div 
                 key={idx}
-                className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-yellow-400/20 rounded-2xl p-8 hover:border-yellow-400/50 transition-all"
+                className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-[#FFC636]/20 rounded-2xl p-8 hover:border-[#FFC636]/50 transition-all"
               >
-                <div className="text-lg font-bold text-yellow-400 mb-2">{option.days}</div>
+                <div className="text-lg font-bold text-[#FFC636] mb-2">{option.days}</div>
                 <h3 className="text-2xl font-bold text-white mb-4">{option.title}</h3>
-                <div className="text-4xl font-bold bg-linear-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent mb-6">
+                <div className="text-4xl font-bold bg-linear-to-r from-[#FFC636] to-amber-500 bg-clip-text text-transparent mb-6">
                   {option.price}
                 </div>
-                <ul className="space-y-3 border-t border-yellow-400/20 pt-6">
+                <ul className="space-y-3 border-t border-[#FFC636]/20 pt-6">
                   {option.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <div className="h-2 w-2 bg-yellow-400 rounded-full mt-2"></div>
+                      <div className="h-2 w-2 bg-[#FFC636] rounded-full mt-2"></div>
                       <span className="text-gray-300 text-sm">{feature}</span>
                     </li>
                   ))}
@@ -356,7 +356,7 @@ export default function GoldenVisaPage() {
           {processSteps.map((step, idx) => (
             <div key={idx} className="flex gap-6">
               <div className="shrink-0">
-                <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-yellow-400 to-amber-500 text-slate-900 font-bold text-lg">
+                <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-[#FFC636] to-amber-500 text-slate-900 font-bold text-lg">
                   {step.number}
                 </div>
               </div>
@@ -376,9 +376,9 @@ export default function GoldenVisaPage() {
 
           <div className="space-y-6">
             {faqs.map((faq, idx) => (
-              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-yellow-400/20 rounded-2xl p-6 hover:border-yellow-400/50 transition-all">
+              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-[#FFC636]/20 rounded-2xl p-6 hover:border-[#FFC636]/50 transition-all">
                 <h3 className="text-lg font-bold text-white mb-3 flex items-start gap-3">
-                  <SparklesIcon className="h-6 w-6 text-yellow-400 shrink-0 mt-0.5" />
+                  <SparklesIcon className="h-6 w-6 text-[#FFC636] shrink-0 mt-0.5" />
                   {faq.question}
                 </h3>
                 <p className="text-gray-300 ml-9">{faq.answer}</p>
@@ -410,13 +410,13 @@ export default function GoldenVisaPage() {
           <div className="flex gap-4 flex-wrap justify-center">
             <Link 
               href="tel:+971" 
-              className="px-8 py-4 bg-linear-to-r from-yellow-400 to-amber-500 text-slate-900 font-bold rounded-lg hover:shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300"
+              className="px-8 py-4 bg-linear-to-r from-[#FFC636] to-amber-500 text-slate-900 font-bold rounded-lg hover:shadow-2xl hover:shadow-[#FFC636]/50 transition-all duration-300"
             >
               Free Consultation
             </Link>
             <Link 
               href="/contact" 
-              className="px-8 py-4 border-2 border-yellow-400 text-yellow-300 font-bold rounded-lg hover:bg-yellow-400/10 transition-all duration-300"
+              className="px-8 py-4 border-2 border-[#FFC636] text-[#FFC636]/40 font-bold rounded-lg hover:bg-[#FFC636]/10 transition-all duration-300"
             >
               Contact Us
             </Link>

@@ -198,10 +198,10 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                       <div className="absolute top-3 right-3">
                         <span className={`text-xs px-2 py-1 rounded-full font-bold ${
                           property.status === 'sale' 
-                            ? 'bg-green-500 text-white' 
+                            ? 'bg-[#FFC636] text-white' 
                             : property.status === 'rent'
                             ? 'bg-blue-500 text-white'
-                            : 'bg-yellow-500 text-white'
+                            : 'bg-[#FFC636] text-white'
                         }`}>
                           {property.status === 'sale' ? 'For Sale' : 
                            property.status === 'rent' ? 'For Rent' : 

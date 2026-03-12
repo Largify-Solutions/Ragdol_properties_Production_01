@@ -275,7 +275,7 @@ export default function Testimonials() {
     return Array.from({ length: 5 }, (_, i) => (
       <StarIcon
         key={i}
-        className={`h-4 w-4 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+        className={`h-4 w-4 ${i < rating ? 'text-[#FFC636] fill-current' : 'text-gray-300'}`}
       />
     ))
   }
@@ -330,7 +330,7 @@ export default function Testimonials() {
         </div>
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Approved</h3>
-          <p className="text-2xl font-bold text-green-600">{approvedCount}</p>
+          <p className="text-2xl font-bold text-[#FFC636]">{approvedCount}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Featured</h3>
@@ -338,7 +338,7 @@ export default function Testimonials() {
         </div>
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Avg. Rating</h3>
-          <p className="text-2xl font-bold text-yellow-600">{averageRating} ⭐</p>
+          <p className="text-2xl font-bold text-[#FFC636]">{averageRating} ⭐</p>
         </div>
       </div>
 
@@ -576,12 +576,12 @@ export default function Testimonials() {
                     <div className="flex justify-between items-center pt-3 border-t border-gray-100">
                       <div className="flex items-center space-x-2">
                         {testimonial.is_active ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#FFC636]/15 text-[#FFC636]">
                             <CheckCircleIcon className="h-3 w-3 mr-1" />
                             Active
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#FFC636]/15 text-[#FFC636]">
                             <EyeSlashIcon className="h-3 w-3 mr-1" />
                             Inactive
                           </span>
@@ -603,8 +603,8 @@ export default function Testimonials() {
                           onClick={() => toggleApproval(testimonial)}
                           className={`p-1.5 rounded-md ${
                             testimonial.is_active
-                              ? 'text-green-600 hover:text-green-800 hover:bg-green-50'
-                              : 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50'
+                              ? 'text-[#FFC636] hover:text-[#FFC636] hover:bg-[#FFC636]/10'
+                              : 'text-[#FFC636] hover:text-[#FFC636] hover:bg-[#FFC636]/10'
                           }`}
                           title={testimonial.is_active ? 'Deactivate' : 'Activate'}
                         >

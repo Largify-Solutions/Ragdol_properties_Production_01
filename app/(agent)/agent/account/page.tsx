@@ -131,9 +131,9 @@ export default function AgentAccount() {
                   <span
                     className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
                       profile.verification_status === 'verified'
-                        ? 'bg-green-100 text-green-800'
+                        ? 'bg-[#FFC636]/15 text-[#FFC636]'
                         : profile.verification_status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-[#FFC636]/15 text-[#FFC636]'
                         : 'bg-gray-100 text-gray-800'
                     }`}
                   >
@@ -265,12 +265,12 @@ export default function AgentAccount() {
 
           {/* Account Verification */}
           {profile.verification_status !== 'verified' && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-              <h3 className="text-lg font-bold text-yellow-900 mb-2">Verify Your Account</h3>
-              <p className="text-yellow-800 mb-4">
+            <div className="bg-[#FFC636]/10 border border-[#FFC636]/30 rounded-lg p-6">
+              <h3 className="text-lg font-bold text-[#FFC636] mb-2">Verify Your Account</h3>
+              <p className="text-[#FFC636] mb-4">
                 Verified agents get a badge on their profile and rank higher in search results. Complete verification to increase trust with potential buyers.
               </p>
-              <button className="px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors font-medium">
+              <button className="px-6 py-2 bg-[#FFC636] text-white rounded-lg hover:bg-[#FFC636] transition-colors font-medium">
                 Start Verification
               </button>
             </div>

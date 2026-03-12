@@ -315,14 +315,14 @@ export default function AccountPage() {
                           Luxury Penthouse in Downtown Dubai
                         </h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          Sent 2 days ago • Status: <span className="text-yellow-600 font-medium">Pending Response</span>
+                          Sent 2 days ago • Status: <span className="text-[#FFC636] font-medium">Pending Response</span>
                         </p>
                         <p className="text-sm text-foreground">
                           "I'm interested in this property and would like to know about the financing options available."
                         </p>
                       </div>
                       <div className="ml-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FFC636]/15 text-[#FFC636]">
                           New
                         </span>
                       </div>
@@ -336,14 +336,14 @@ export default function AccountPage() {
                           Modern 3BR Villa in Jumeirah
                         </h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          Sent 1 week ago • Status: <span className="text-green-600 font-medium">Responded</span>
+                          Sent 1 week ago • Status: <span className="text-[#FFC636] font-medium">Responded</span>
                         </p>
                         <p className="text-sm text-foreground">
                           "Can you provide more details about the neighborhood amenities and school districts?"
                         </p>
                       </div>
                       <div className="ml-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FFC636]/15 text-[#FFC636]">
                           Replied
                         </span>
                       </div>
@@ -406,7 +406,7 @@ export default function AccountPage() {
                           Modern 4BR Townhouse in Dubai Hills
                         </h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          Applied 1 week ago • Status: <span className="text-green-600 font-medium">Approved</span>
+                          Applied 1 week ago • Status: <span className="text-[#FFC636] font-medium">Approved</span>
                         </p>
                         <p className="text-sm text-foreground mb-3">
                           Application approved! Ready to proceed with purchase agreement.
@@ -418,7 +418,7 @@ export default function AccountPage() {
                         </div>
                       </div>
                       <div className="ml-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FFC636]/15 text-[#FFC636]">
                           Approved
                         </span>
                       </div>
@@ -432,7 +432,7 @@ export default function AccountPage() {
                           Premium 3BR Apartment in Business Bay
                         </h3>
                         <p className="text-sm text-muted-foreground mb-2">
-                          Applied 2 weeks ago • Status: <span className="text-yellow-600 font-medium">Pending Documents</span>
+                          Applied 2 weeks ago • Status: <span className="text-[#FFC636] font-medium">Pending Documents</span>
                         </p>
                         <p className="text-sm text-foreground mb-3">
                           Application submitted. Awaiting additional documentation from applicant.
@@ -444,7 +444,7 @@ export default function AccountPage() {
                         </div>
                       </div>
                       <div className="ml-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FFC636]/15 text-[#FFC636]">
                           Pending
                         </span>
                       </div>

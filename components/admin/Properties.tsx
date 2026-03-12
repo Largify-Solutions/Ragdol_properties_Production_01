@@ -342,8 +342,8 @@ export default function Properties({ activeTab, properties, setProperties, agent
         </div>
         <div className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-500/10 rounded-lg">
-              <HomeModernIcon className="h-5 w-5 text-green-500" />
+            <div className="p-2 bg-[#FFC636]/10 rounded-lg">
+              <HomeModernIcon className="h-5 w-5 text-[#FFC636]" />
             </div>
             <div className="flex-1">
               <p className="text-lg font-bold text-foreground">{stats.forSale}</p>
@@ -398,8 +398,8 @@ export default function Properties({ activeTab, properties, setProperties, agent
                 {Array.isArray(properties) ? properties.filter(p => p.published).length : 0}
               </p>
             </div>
-            <div className="p-2 bg-green-500/10 rounded-lg">
-              <EyeIcon className="h-5 w-5 text-green-500" />
+            <div className="p-2 bg-[#FFC636]/10 rounded-lg">
+              <EyeIcon className="h-5 w-5 text-[#FFC636]" />
             </div>
           </div>
         </div>
@@ -550,16 +550,16 @@ export default function Properties({ activeTab, properties, setProperties, agent
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        property.published ? 'bg-green-500/10 text-green-500' : 'bg-gray-500/10 text-gray-500'
+                        property.published ? 'bg-[#FFC636]/10 text-[#FFC636]' : 'bg-gray-500/10 text-gray-500'
                       }`}>
                         {property.published ? 'Published' : 'Draft'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded-full text-xs capitalize ${
-                        property.property_status === 'ready' ? 'bg-green-500/10 text-green-500' :
+                        property.property_status === 'ready' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
                         property.property_status === 'off-plan' ? 'bg-blue-500/10 text-blue-500' :
-                        property.property_status === 'under-construction' ? 'bg-yellow-500/10 text-yellow-500' :
+                        property.property_status === 'under-construction' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
                         property.property_status === 'reserved' ? 'bg-purple-500/10 text-purple-500' :
                         'bg-gray-500/10 text-gray-500'
                       }`}>
@@ -574,7 +574,7 @@ export default function Properties({ activeTab, properties, setProperties, agent
                     </td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        property.published ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
+                        property.published ? 'bg-[#FFC636]/10 text-[#FFC636]' : 'bg-red-500/10 text-red-500'
                       }`}>
                         {property.published ? 'Yes' : 'No'}
                       </span>
@@ -712,7 +712,7 @@ export default function Properties({ activeTab, properties, setProperties, agent
                   <p className="text-muted-foreground mb-4">{selectedPropertyDetails.address}, {selectedPropertyDetails.city}</p>
                   <div className="flex flex-wrap items-center gap-4 mb-4">
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedPropertyDetails.published ? 'bg-green-500/10 text-green-500' : 'bg-gray-500/10 text-gray-500'
+                      selectedPropertyDetails.published ? 'bg-[#FFC636]/10 text-[#FFC636]' : 'bg-gray-500/10 text-gray-500'
                     }`}>
                       {selectedPropertyDetails.published ? 'Published' : 'Draft'}
                     </span>
@@ -722,9 +722,9 @@ export default function Properties({ activeTab, properties, setProperties, agent
                       For {selectedPropertyDetails.status}
                     </span>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
-                      selectedPropertyDetails.property_status === 'ready' ? 'bg-green-500/10 text-green-500' :
+                      selectedPropertyDetails.property_status === 'ready' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
                       selectedPropertyDetails.property_status === 'off-plan' ? 'bg-blue-500/10 text-blue-500' :
-                      selectedPropertyDetails.property_status === 'under-construction' ? 'bg-yellow-500/10 text-yellow-500' :
+                      selectedPropertyDetails.property_status === 'under-construction' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
                       selectedPropertyDetails.property_status === 'reserved' ? 'bg-purple-500/10 text-purple-500' :
                       'bg-gray-500/10 text-gray-500'
                     }`}>

@@ -103,12 +103,12 @@ const PartnerDetailModal = ({ partner, isOpen, onClose }: {
             <div className="space-y-6">
               {/* Status Badges */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-green-50 rounded-xl p-4">
+                <div className="bg-[#FFC636]/10 rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <CheckCircleIcon className="h-5 w-5 text-green-600" />
-                    <span className="text-sm font-semibold text-green-700">Status</span>
+                    <CheckCircleIcon className="h-5 w-5 text-[#FFC636]" />
+                    <span className="text-sm font-semibold text-[#FFC636]">Status</span>
                   </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold inline-block ${partner.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  <div className={`px-3 py-1 rounded-full text-xs font-bold inline-block ${partner.active ? 'bg-[#FFC636]/15 text-[#FFC636]' : 'bg-red-100 text-red-800'}`}>
                     {partner.active ? 'Active' : 'Inactive'}
                   </div>
                 </div>
@@ -400,7 +400,7 @@ export default function PartnersPage() {
                           </p>
                         </div>
                         
-                        <span className={`px-2 py-1 text-xs font-bold rounded ${partner.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        <span className={`px-2 py-1 text-xs font-bold rounded ${partner.active ? 'bg-[#FFC636]/15 text-[#FFC636]' : 'bg-red-100 text-red-800'}`}>
                           {partner.active ? 'Active' : 'Inactive'}
                         </span>
                       </div>

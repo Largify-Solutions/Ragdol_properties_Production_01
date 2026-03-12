@@ -283,35 +283,35 @@ export default function WhyInvestDubaiPage() {
                           <tr>
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">Dubai Marina</td>
                             <td className="border border-slate-300 px-4 py-3">
-                              <span className="font-semibold text-green-600">28.5%</span>
+                              <span className="font-semibold text-[#FFC636]">28.5%</span>
                             </td>
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">2,800</td>
                           </tr>
                           <tr className="bg-slate-50">
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">Palm Jumeirah</td>
                             <td className="border border-slate-300 px-4 py-3">
-                              <span className="font-semibold text-green-600">25.2%</span>
+                              <span className="font-semibold text-[#FFC636]">25.2%</span>
                             </td>
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">3,500</td>
                           </tr>
                           <tr>
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">Downtown Dubai</td>
                             <td className="border border-slate-300 px-4 py-3">
-                              <span className="font-semibold text-green-600">22.8%</span>
+                              <span className="font-semibold text-[#FFC636]">22.8%</span>
                             </td>
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">3,200</td>
                           </tr>
                           <tr className="bg-slate-50">
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">Business Bay</td>
                             <td className="border border-slate-300 px-4 py-3">
-                              <span className="font-semibold text-green-600">20.1%</span>
+                              <span className="font-semibold text-[#FFC636]">20.1%</span>
                             </td>
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">1,800</td>
                           </tr>
                           <tr>
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">Jumeirah Village Circle</td>
                             <td className="border border-slate-300 px-4 py-3">
-                              <span className="font-semibold text-green-600">18.7%</span>
+                              <span className="font-semibold text-[#FFC636]">18.7%</span>
                             </td>
                             <td className="border border-slate-300 px-4 py-3 text-slate-700">1,200</td>
                           </tr>
@@ -435,10 +435,10 @@ export default function WhyInvestDubaiPage() {
                       <div className="text-lg font-bold text-blue-800">Palm Jumeirah</div>
                       <div className="text-sm text-blue-600">+92% over 4 years</div>
                     </div>
-                    <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                      <div className="text-sm text-green-700 mb-1">Average Growth</div>
-                      <div className="text-lg font-bold text-green-800">+87%</div>
-                      <div className="text-sm text-green-600">Across all prime areas</div>
+                    <div className="bg-[#FFC636]/10 p-4 rounded-lg border border-[#FFC636]/20">
+                      <div className="text-sm text-[#FFC636] mb-1">Average Growth</div>
+                      <div className="text-lg font-bold text-[#FFC636]">+87%</div>
+                      <div className="text-sm text-[#FFC636]">Across all prime areas</div>
                     </div>
                     <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
                       <div className="text-sm text-purple-700 mb-1">Best Value</div>

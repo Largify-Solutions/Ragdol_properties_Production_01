@@ -282,7 +282,7 @@
 //                     </td>
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       <div className="flex items-center text-sm text-gray-900">
-//                         <span className="text-yellow-400 mr-1">★</span>
+//                         <span className="text-[#FFC636] mr-1">★</span>
 //                         {agent.rating} <span className="text-gray-400 ml-1">({agent.review_count})</span>
 //                       </div>
 //                     </td>
@@ -292,8 +292,8 @@
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
 //                         agent.approved
-//                           ? 'bg-green-100 text-green-800'
-//                           : 'bg-yellow-100 text-yellow-800'
+//                           ? 'bg-[#FFC636]/15 text-[#FFC636]'
+//                           : 'bg-[#FFC636]/15 text-[#FFC636]'
 //                       }`}>
 //                         {agent.approved ? 'Approved' : 'Pending'}
 //                       </span>
@@ -303,7 +303,7 @@
 //                         <button
 //                           onClick={() => handleToggleApproval(agent)}
 //                           title={agent.approved ? 'Reject' : 'Approve'}
-//                           className={`p-1 rounded hover:bg-gray-100 ${agent.approved ? 'text-red-600' : 'text-green-600'}`}
+//                           className={`p-1 rounded hover:bg-gray-100 ${agent.approved ? 'text-red-600' : 'text-[#FFC636]'}`}
 //                         >
 //                           {agent.approved ? <XMarkIcon className="h-5 w-5" /> : <CheckIcon className="h-5 w-5" />}
 //                         </button>
@@ -989,7 +989,7 @@ export default function Agents() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center text-sm text-gray-900">
-                        <span className="text-yellow-400 mr-1">★</span>
+                        <span className="text-[#FFC636] mr-1">★</span>
                         {agent.rating} <span className="text-gray-400 ml-1">({agent.review_count})</span>
                       </div>
                     </td>
@@ -1000,8 +1000,8 @@ export default function Agents() {
                       <div className="flex flex-col gap-1">
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           agent.approved
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
+                            ? 'bg-[#FFC636]/15 text-[#FFC636]'
+                            : 'bg-[#FFC636]/15 text-[#FFC636]'
                         }`}>
                           {agent.approved ? 'Approved' : 'Pending'}
                         </span>
@@ -1017,7 +1017,7 @@ export default function Agents() {
                         <button
                           onClick={() => handleToggleApproval(agent)}
                           title={agent.approved ? 'Reject' : 'Approve'}
-                          className={`p-1 rounded hover:bg-gray-100 ${agent.approved ? 'text-red-600' : 'text-green-600'}`}
+                          className={`p-1 rounded hover:bg-gray-100 ${agent.approved ? 'text-red-600' : 'text-[#FFC636]'}`}
                         >
                           {agent.approved ? <XMarkIcon className="h-5 w-5" /> : <CheckIcon className="h-5 w-5" />}
                         </button>

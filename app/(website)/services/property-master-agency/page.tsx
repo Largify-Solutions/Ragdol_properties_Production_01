@@ -143,13 +143,13 @@ export default function MasterAgencyPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Real Estate <span className="bg-linear-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">Master Agency</span>
+              Real Estate <span className="bg-linear-to-r from-[#FFC636] to-amber-500 bg-clip-text text-transparent">Master Agency</span>
             </h1>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
               Your Strategic Partner for Development Success. From concept to completion, we orchestrate comprehensive sales strategies that drive results.
             </p>
             <div className="flex gap-4 flex-wrap">
-              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-yellow-400 to-amber-500 text-slate-950 font-bold rounded-lg hover:shadow-2xl hover:shadow-amber-500/50 transition-all duration-300">
+              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-[#FFC636] to-amber-500 text-slate-950 font-bold rounded-lg hover:shadow-2xl hover:shadow-amber-500/50 transition-all duration-300">
                 Partner with Us
               </Link>
               <Link href="#details" className="px-8 py-4 border-2 border-amber-400/50 text-amber-400 font-bold rounded-lg hover:bg-amber-400/10 transition-all duration-300">
@@ -165,7 +165,7 @@ export default function MasterAgencyPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-4xl font-bold text-white mb-6">
-              More Than a Sales Partner—<span className="bg-linear-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent">A Strategic Engine</span>
+              More Than a Sales Partner—<span className="bg-linear-to-r from-[#FFC636] to-amber-500 bg-clip-text text-transparent">A Strategic Engine</span>
             </h2>
             <p className="text-gray-300 text-lg mb-4 leading-relaxed">
               At fäm Properties, we act as a trusted Real Estate Master Agency, partnering with developers to streamline and manage the entire property transaction process from concept to completion. We don't just handle sales—we orchestrate a full-service strategy that brings developments to life.
@@ -210,7 +210,7 @@ export default function MasterAgencyPage() {
                   key={idx}
                   className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-amber-400/20 rounded-2xl p-6 hover:border-amber-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-amber-400/10"
                 >
-                  <div className="w-12 h-12 bg-linear-to-br from-yellow-400 to-amber-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-[#FFC636] to-amber-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
@@ -227,7 +227,7 @@ export default function MasterAgencyPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {stats.map((stat, idx) => (
             <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-amber-400/20 rounded-2xl p-8 text-center hover:border-amber-400/50 transition-all">
-              <div className="text-4xl font-bold bg-linear-to-r from-yellow-400 to-amber-500 bg-clip-text text-transparent mb-2">
+              <div className="text-4xl font-bold bg-linear-to-r from-[#FFC636] to-amber-500 bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
               <p className="text-gray-300">{stat.label}</p>
@@ -265,7 +265,7 @@ export default function MasterAgencyPage() {
             {processSteps.map((step, idx) => (
               <div key={idx} className="flex gap-6">
                 <div className="shrink-0">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-yellow-400 to-amber-500 text-white font-bold text-lg">
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-[#FFC636] to-amber-500 text-white font-bold text-lg">
                     {step.number}
                   </div>
                 </div>
@@ -327,7 +327,7 @@ export default function MasterAgencyPage() {
           <div className="flex gap-4 flex-wrap justify-center">
             <Link 
               href="tel:+971" 
-              className="px-8 py-4 bg-linear-to-r from-yellow-400 to-amber-500 text-slate-950 font-bold rounded-lg hover:shadow-2xl hover:shadow-amber-500/50 transition-all duration-300"
+              className="px-8 py-4 bg-linear-to-r from-[#FFC636] to-amber-500 text-slate-950 font-bold rounded-lg hover:shadow-2xl hover:shadow-amber-500/50 transition-all duration-300"
             >
               Schedule Consultation
             </Link>

@@ -331,13 +331,13 @@ export default function Blogs() {
         </div>
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Published</h3>
-          <p className="text-2xl font-bold text-green-600">
+          <p className="text-2xl font-bold text-[#FFC636]">
             {blogs.filter(blog => blog.status === 'published').length}
           </p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-sm border">
           <h3 className="text-sm font-medium text-gray-500">Drafts</h3>
-          <p className="text-2xl font-bold text-yellow-600">
+          <p className="text-2xl font-bold text-[#FFC636]">
             {blogs.filter(blog => blog.status !== 'published').length}
           </p>
         </div>
@@ -614,7 +614,7 @@ export default function Blogs() {
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             blog.status === 'published'
-                              ? 'bg-green-100 text-green-800'
+                              ? 'bg-[#FFC636]/15 text-[#FFC636]'
                               : blog.status === 'archived'
                               ? 'bg-red-100 text-red-800'
                               : 'bg-gray-100 text-gray-800'
@@ -667,8 +667,8 @@ export default function Blogs() {
                         disabled={publishLoading === blog.id}
                         className={`p-2 rounded-md ${
                           blog.status === 'published'
-                            ? 'text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50'
-                            : 'text-green-600 hover:text-green-800 hover:bg-green-50'
+                            ? 'text-[#FFC636] hover:text-[#FFC636] hover:bg-[#FFC636]/10'
+                            : 'text-[#FFC636] hover:text-[#FFC636] hover:bg-[#FFC636]/10'
                         } transition-colors`}
                         title={blog.status === 'published' ? 'Unpublish' : 'Publish'}
                       >

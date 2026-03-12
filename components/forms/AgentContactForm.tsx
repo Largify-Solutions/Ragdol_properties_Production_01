@@ -44,7 +44,7 @@ export default function AgentContactForm({ agentId, agentTitle }: AgentContactFo
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {success && (
-        <div className="p-4 bg-green-100 text-green-700 rounded-lg">
+        <div className="p-4 bg-[#FFC636]/15 text-[#FFC636] rounded-lg">
           ✓ Message sent successfully! The agent will contact you soon.
         </div>
       )}

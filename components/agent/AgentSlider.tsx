@@ -136,7 +136,7 @@ function AgentDetailsModal({
                 
                 {/* Verified Badge */}
                 {agent.verified && (
-                  <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-2 shadow-lg">
+                  <div className="absolute -top-2 -right-2 bg-[#FFC636] text-white rounded-full p-2 shadow-lg">
                     <ShieldCheckIcon className="h-5 w-5" />
                   </div>
                 )}
@@ -160,7 +160,7 @@ function AgentDetailsModal({
                       {[...Array(5)].map((_, i) => (
                         <StarSolidIcon 
                           key={i} 
-                          className={`h-5 w-5 ${i < Math.floor(agent.rating || 0) ? 'text-yellow-400' : 'text-slate-300'}`} 
+                          className={`h-5 w-5 ${i < Math.floor(agent.rating || 0) ? 'text-[#FFC636]' : 'text-slate-300'}`} 
                         />
                       ))}
                     </div>
@@ -237,7 +237,7 @@ function AgentDetailsModal({
                     <ul className="space-y-2">
                       {agent.certifications.map((cert, idx) => (
                         <li key={idx} className="flex items-center gap-3">
-                          <CheckBadgeIcon className="h-5 w-5 text-green-500" />
+                          <CheckBadgeIcon className="h-5 w-5 text-[#FFC636]" />
                           <span className="text-slate-700">{cert}</span>
                         </li>
                       ))}
@@ -268,8 +268,8 @@ function AgentDetailsModal({
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 text-slate-700 hover:text-primary transition-colors"
                       >
-                        <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                          <PhoneIcon className="h-5 w-5 text-green-600" />
+                        <div className="h-10 w-10 rounded-full bg-[#FFC636]/15 flex items-center justify-center">
+                          <PhoneIcon className="h-5 w-5 text-[#FFC636]" />
                         </div>
                         <div>
                           <div className="font-medium">WhatsApp</div>
@@ -513,7 +513,7 @@ export default function AgentSlider({ agents, showCount = 4 }: AgentSliderProps)
                   />
                 </div>
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-md flex items-center gap-1">
-                  <StarSolidIcon className="h-4 w-4 text-yellow-400" />
+                  <StarSolidIcon className="h-4 w-4 text-[#FFC636]" />
                   <span className="text-xs font-bold text-slate-900">{agent.rating || '5.0'}</span>
                 </div>
               </div>

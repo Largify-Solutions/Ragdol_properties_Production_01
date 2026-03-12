@@ -163,42 +163,42 @@ export default function ProjectSalesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-yellow-700">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-[#FFC636]">
             <p className="text-gray-600 text-sm font-medium">Total Transactions</p>
-            <p className="text-4xl font-bold text-yellow-700 mt-2">43</p>
+            <p className="text-4xl font-bold text-[#FFC636] mt-2">43</p>
             <p className="text-gray-500 text-sm mt-2">Jan 1 - Jun 30, 2025</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-yellow-700">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-[#FFC636]">
             <p className="text-gray-600 text-sm font-medium">Total Sales Value</p>
-            <p className="text-4xl font-bold text-yellow-700 mt-2">158.6M</p>
+            <p className="text-4xl font-bold text-[#FFC636] mt-2">158.6M</p>
             <p className="text-gray-500 text-sm mt-2">AED</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-yellow-700">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-[#FFC636]">
             <p className="text-gray-600 text-sm font-medium">Property Types</p>
-            <p className="text-4xl font-bold text-yellow-700 mt-2">5</p>
+            <p className="text-4xl font-bold text-[#FFC636] mt-2">5</p>
             <p className="text-gray-500 text-sm mt-2">Diverse portfolio</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-yellow-700">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-[#FFC636]">
             <p className="text-gray-600 text-sm font-medium">Top Location</p>
-            <p className="text-2xl font-bold text-yellow-700 mt-2">Palm Jumeirah</p>
+            <p className="text-2xl font-bold text-[#FFC636] mt-2">Palm Jumeirah</p>
             <p className="text-gray-500 text-sm mt-2">72.5M AED sales</p>
           </div>
         </div>
 
         {/* Sales Highlights Table */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-12 overflow-x-auto border-t-4 border-yellow-700">
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-12 overflow-x-auto border-t-4 border-[#FFC636]">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Key Sales Highlights</h2>
           <table className="w-full">
             <thead>
-              <tr className="border-b-2 border-yellow-200">
-                <th className="text-left py-3 px-4 font-semibold text-yellow-700">Property Type</th>
-                <th className="text-left py-3 px-4 font-semibold text-yellow-700">Location</th>
-                <th className="text-center py-3 px-4 font-semibold text-yellow-700">Units Sold</th>
-                <th className="text-right py-3 px-4 font-semibold text-yellow-700">Avg Price (AED)</th>
-                <th className="text-right py-3 px-4 font-semibold text-yellow-700">Total Value (AED)</th>
+              <tr className="border-b-2 border-[#FFC636]/30">
+                <th className="text-left py-3 px-4 font-semibold text-[#FFC636]">Property Type</th>
+                <th className="text-left py-3 px-4 font-semibold text-[#FFC636]">Location</th>
+                <th className="text-center py-3 px-4 font-semibold text-[#FFC636]">Units Sold</th>
+                <th className="text-right py-3 px-4 font-semibold text-[#FFC636]">Avg Price (AED)</th>
+                <th className="text-right py-3 px-4 font-semibold text-[#FFC636]">Total Value (AED)</th>
               </tr>
             </thead>
             <tbody>
@@ -208,7 +208,7 @@ export default function ProjectSalesPage() {
                   <td className="py-4 px-4 text-gray-700">{row.location}</td>
                   <td className="py-4 px-4 text-center text-gray-900 font-semibold">{row.unitsSold}</td>
                   <td className="py-4 px-4 text-right text-gray-900">{(row.averagePrice / 1000000).toFixed(2)}M</td>
-                  <td className="py-4 px-4 text-right font-semibold text-yellow-700">{(row.totalValue / 1000000).toFixed(2)}M</td>
+                  <td className="py-4 px-4 text-right font-semibold text-[#FFC636]">{(row.totalValue / 1000000).toFixed(2)}M</td>
                 </tr>
               ))}
             </tbody>
@@ -247,9 +247,9 @@ export default function ProjectSalesPage() {
         </div>
 
         {/* Buyer Demographics */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-12 border-t-4 border-yellow-700">
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-12 border-t-4 border-[#FFC636]">
           <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2">
-            <UsersIcon className="w-8 h-8 text-yellow-700" />
+            <UsersIcon className="w-8 h-8 text-[#FFC636]" />
             Buyer Demographics
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -276,7 +276,7 @@ export default function ProjectSalesPage() {
                     />
                   </svg>
                   <div className="absolute text-center">
-                    <p className="text-3xl font-bold text-yellow-700">{demo.percentage}%</p>
+                    <p className="text-3xl font-bold text-[#FFC636]">{demo.percentage}%</p>
                   </div>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mt-4">{demo.segment}</h3>
@@ -286,15 +286,15 @@ export default function ProjectSalesPage() {
         </div>
 
         {/* Transaction Trends */}
-        <div className="bg-linear-to-r from-yellow-50 to-yellow-100 rounded-xl p-8 mb-12 border-l-4 border-yellow-700">
+        <div className="bg-linear-to-r from-[#FFC636]/10 to-[#FFC636]/15 rounded-xl p-8 mb-12 border-l-4 border-[#FFC636]">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <ArrowTrendingUpIcon className="w-8 h-8 text-yellow-700" />
+            <ArrowTrendingUpIcon className="w-8 h-8 text-[#FFC636]" />
             Transaction Trends
           </h2>
           <div className="space-y-4">
             {transactionTrends.map((trend, index) => (
               <div key={index} className="flex items-start gap-4">
-                <div className="shrink-0 w-8 h-8 rounded-full bg-yellow-700 text-white flex items-center justify-center font-bold">
+                <div className="shrink-0 w-8 h-8 rounded-full bg-[#FFC636] text-white flex items-center justify-center font-bold">
                   {index + 1}
                 </div>
                 <p className="text-gray-700 text-lg leading-relaxed">{trend}</p>
@@ -304,8 +304,8 @@ export default function ProjectSalesPage() {
         </div>
 
         {/* Summary Section */}
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-12 border-t-4 border-yellow-700">
-          <h2 className="text-2xl font-bold text-yellow-700 mb-4">Summary</h2>
+        <div className="bg-white rounded-xl shadow-lg p-8 mb-12 border-t-4 border-[#FFC636]">
+          <h2 className="text-2xl font-bold text-[#FFC636] mb-4">Summary</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
             Ragdol Properties Dubai continues to grow its market presence by offering reliable services, premium listings, and client-focused investment solutions. With the evolving real estate landscape in Dubai, the company is positioned to capture further growth in the coming quarters.
           </p>
@@ -325,7 +325,7 @@ interface ProjectCardProps {
 }
 
 function ProjectCard({ project }: ProjectCardProps) {
-  const statusColor = project.status === 'ongoing' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700';
+  const statusColor = project.status === 'ongoing' ? 'bg-[#FFC636]/15 text-[#FFC636]' : 'bg-[#FFC636]/15 text-[#FFC636]';
   const statusLabel = project.status === 'ongoing' ? 'Ongoing' : 'Completed';
 
   return (
@@ -344,7 +344,7 @@ function ProjectCard({ project }: ProjectCardProps) {
           </div>
         )}
         {project.featured && (
-          <div className="absolute top-3 right-3 bg-yellow-400 text-white px-3 py-1 rounded-full text-xs font-bold">
+          <div className="absolute top-3 right-3 bg-[#FFC636] text-white px-3 py-1 rounded-full text-xs font-bold">
             ⭐ Featured
           </div>
         )}
@@ -352,7 +352,7 @@ function ProjectCard({ project }: ProjectCardProps) {
 
       {/* Content */}
       <div className="p-5">
-        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 hover:text-yellow-700">
+        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 hover:text-[#FFC636]">
           {project.name}
         </h3>
 
@@ -362,9 +362,9 @@ function ProjectCard({ project }: ProjectCardProps) {
         </p>
 
         {/* Price */}
-        <div className="bg-linear-to-r from-yellow-50 to-yellow-100 rounded-lg p-3 mb-4">
+        <div className="bg-linear-to-r from-[#FFC636]/10 to-[#FFC636]/15 rounded-lg p-3 mb-4">
           <p className="text-xs text-gray-600 mb-1">Starting Price</p>
-          <p className="text-2xl font-bold text-yellow-700">
+          <p className="text-2xl font-bold text-[#FFC636]">
             {(project.price / 1000000).toFixed(1)}M
           </p>
           <p className="text-xs text-gray-500">{project.currency}</p>
@@ -392,7 +392,7 @@ function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         {/* CTA Button */}
-        <button className="w-full bg-yellow-700 text-white font-semibold py-2 rounded-lg hover:bg-yellow-800 transition-colors">
+        <button className="w-full bg-[#FFC636] text-white font-semibold py-2 rounded-lg hover:bg-[#FFC636] transition-colors">
           Learn More
         </button>
       </div>

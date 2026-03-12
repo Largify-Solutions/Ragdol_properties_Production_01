@@ -567,7 +567,7 @@ export default function AgentListClient() {
 
                         {/* Verification Badge */}
                         {agent.verified && (
-                          <div className="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                          <div className="absolute top-4 left-4 bg-[#FFC636] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
@@ -643,9 +643,9 @@ export default function AgentListClient() {
                                     <div className="min-w-0 flex-1">
                                       <div className="flex items-center gap-2">
                                         <div className={`w-2 h-2 rounded-full ${
-                                          property.status === 'sale' ? 'bg-green-500' : 
+                                          property.status === 'sale' ? 'bg-[#FFC636]' : 
                                           property.status === 'rent' ? 'bg-blue-500' : 
-                                          'bg-yellow-500'
+                                          'bg-[#FFC636]'
                                         }`}></div>
                                         <span className="text-sm font-medium text-secondary truncate">
                                           {property.title}
@@ -663,10 +663,10 @@ export default function AgentListClient() {
                                     <div className="ml-2 shrink-0">
                                       <span className={`text-xs px-2 py-1 rounded-full ${
                                         property.status === 'sale' 
-                                          ? 'bg-green-100 text-green-800' 
+                                          ? 'bg-[#FFC636]/15 text-[#FFC636]' 
                                           : property.status === 'rent'
                                           ? 'bg-blue-100 text-blue-800'
-                                          : 'bg-yellow-100 text-yellow-800'
+                                          : 'bg-[#FFC636]/15 text-[#FFC636]'
                                       }`}>
                                         {property.status === 'sale' ? 'Sale' : 
                                          property.status === 'rent' ? 'Rent' : 
@@ -871,7 +871,7 @@ export default function AgentListClient() {
                     </div>
                     <div className="flex items-center gap-3 mt-4 md:mt-0">
                       {selectedAgent.verified && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-500 text-white text-sm font-bold rounded-full">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#FFC636] text-white text-sm font-bold rounded-full">
                           <CheckBadgeIcon className="w-4 h-4" />
                           Verified Agent
                         </span>
@@ -904,9 +904,9 @@ export default function AgentListClient() {
                             href={getWhatsAppUrl(selectedAgent.whatsapp)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
+                            className="flex items-center gap-3 p-3 bg-[#FFC636]/10 text-[#FFC636] rounded-lg hover:bg-[#FFC636]/15 transition-colors"
                           >
-                            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-[#FFC636]/15 rounded-full flex items-center justify-center">
                               <ChatBubbleLeftRightIcon className="w-5 h-5" />
                             </div>
                             <div>
@@ -1037,7 +1037,7 @@ export default function AgentListClient() {
                         </div>
                         <div className="mt-4 md:mt-0">
                           <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
-                            <ShieldCheckIcon className="w-5 h-5 text-green-500" />
+                            <ShieldCheckIcon className="w-5 h-5 text-[#FFC636]" />
                             <span className="font-semibold">Approved by RAGDOLL PROPERTIES</span>
                           </span>
                         </div>
@@ -1118,8 +1118,8 @@ export default function AgentListClient() {
                         <div className="space-y-3">
                           {selectedAgent.certifications?.map((cert, idx) => (
                             <div key={idx} className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                <CheckBadgeIcon className="w-4 h-4 text-green-600" />
+                              <div className="w-8 h-8 bg-[#FFC636]/15 rounded-full flex items-center justify-center">
+                                <CheckBadgeIcon className="w-4 h-4 text-[#FFC636]" />
                               </div>
                               <span className="text-slate-700 font-medium">{cert}</span>
                             </div>
@@ -1149,7 +1149,7 @@ export default function AgentListClient() {
                         </div>
                         <div>
                           <p className="text-sm text-slate-500">Status</p>
-                          <p className="font-semibold text-green-600">
+                          <p className="font-semibold text-[#FFC636]">
                             {selectedAgent.approved ? 'Active & Approved' : 'Pending Approval'}
                           </p>
                         </div>
@@ -1165,7 +1165,7 @@ export default function AgentListClient() {
                       href={getWhatsAppUrl(selectedAgent.whatsapp)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 bg-green-600 text-white py-3 px-6 rounded-xl font-bold text-center hover:bg-green-700 transition-colors flex items-center justify-center gap-3"
+                      className="flex-1 bg-[#FFC636] text-white py-3 px-6 rounded-xl font-bold text-center hover:bg-[#FFC636] transition-colors flex items-center justify-center gap-3"
                     >
                       <ChatBubbleLeftRightIcon className="w-5 h-5" />
                       Chat on WhatsApp

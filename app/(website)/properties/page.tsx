@@ -842,8 +842,8 @@ function FloorPlanForm({
       <div className="fixed inset-0 z-100 bg-black/50 flex items-center justify-center p-4">
         <div className="bg-white rounded-3xl max-w-2xl w-full p-8">
           <div className="text-center">
-            <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckIcon className="h-10 w-10 text-green-600" />
+            <div className="h-20 w-20 bg-[#FFC636]/15 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckIcon className="h-10 w-10 text-[#FFC636]" />
             </div>
             <h3 className="text-3xl font-black text-gray-900 mb-4">
               Request Submitted Successfully!
@@ -1062,7 +1062,7 @@ function AgentPopupModal({
                 </div>
                 <div className="flex items-center gap-3 mt-4 md:mt-0">
                   {agentData?.verified && (
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-500 text-white text-sm font-bold rounded-full">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#FFC636] text-white text-sm font-bold rounded-full">
                       <CheckBadgeIcon className="w-4 h-4" />
                       Verified Agent
                     </span>
@@ -1091,9 +1091,9 @@ function AgentPopupModal({
                         href={getWhatsAppUrl(agentData.whatsapp)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
+                        className="flex items-center gap-3 p-3 bg-[#FFC636]/10 text-[#FFC636] rounded-lg hover:bg-[#FFC636]/15 transition-colors"
                       >
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-[#FFC636]/15 rounded-full flex items-center justify-center">
                           <ChatBubbleLeftRightIcon className="w-5 h-5" />
                         </div>
                         <div>
@@ -1218,7 +1218,7 @@ function AgentPopupModal({
                           {[...Array(5)].map((_, i) => (
                             <StarSolid 
                               key={i} 
-                              className={`w-5 h-5 ${i < Math.floor(agentData?.rating || 0) ? 'text-yellow-500' : 'text-slate-300'}`} 
+                              className={`w-5 h-5 ${i < Math.floor(agentData?.rating || 0) ? 'text-[#FFC636]' : 'text-slate-300'}`} 
                             />
                           ))}
                         </div>
@@ -1232,7 +1232,7 @@ function AgentPopupModal({
                     </div>
                     <div className="mt-4 md:mt-0">
                       <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
-                        <ShieldCheckIcon className="w-5 h-5 text-green-500" />
+                        <ShieldCheckIcon className="w-5 h-5 text-[#FFC636]" />
                         <span className="font-semibold">
                           {agentData?.approved ? 'Verified Agent' : 'Pending Verification'}
                         </span>
@@ -1308,8 +1308,8 @@ function AgentPopupModal({
                     <div className="space-y-3">
                       {(agentData?.certifications || ['RERA Certified']).map((cert: string, idx: number) => (
                         <div key={idx} className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                            <CheckBadgeIcon className="w-4 h-4 text-green-600" />
+                          <div className="w-8 h-8 bg-[#FFC636]/15 rounded-full flex items-center justify-center">
+                            <CheckBadgeIcon className="w-4 h-4 text-[#FFC636]" />
                           </div>
                           <span className="text-slate-700 font-medium">{cert}</span>
                         </div>
@@ -1339,7 +1339,7 @@ function AgentPopupModal({
                     </div>
                     <div>
                       <p className="text-sm text-slate-500">Status</p>
-                      <p className="font-semibold text-green-600">
+                      <p className="font-semibold text-[#FFC636]">
                         {agentData?.approved ? 'Active' : 'Pending'}
                       </p>
                     </div>
@@ -1354,7 +1354,7 @@ function AgentPopupModal({
                   href={getWhatsAppUrl(agentData?.whatsapp || null)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 bg-green-600 text-white py-3 px-6 rounded-xl font-bold text-center hover:bg-green-700 transition-colors flex items-center justify-center gap-3"
+                  className="flex-1 bg-[#FFC636] text-white py-3 px-6 rounded-xl font-bold text-center hover:bg-[#FFC636] transition-colors flex items-center justify-center gap-3"
                 >
                   <ChatBubbleLeftRightIcon className="w-5 h-5" />
                   Chat on WhatsApp
@@ -2113,7 +2113,7 @@ function ViewDetailsModal({
                             />
                           </div>
                           <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-md flex items-center gap-1">
-                            <StarSolidIcon className="h-3 w-3 text-yellow-400" />
+                            <StarSolidIcon className="h-3 w-3 text-[#FFC636]" />
                             <span className="text-[10px] font-black text-slate-900">
                               {agentData?.rating
                                 ? agentData.rating.toFixed(1)
@@ -3002,7 +3002,7 @@ function PropertiesPageContent() {
                 </span>
               )}
               {formState.action === 'rent' && (
-                <span className="px-6 py-2 bg-green-500/20 backdrop-blur-md text-green-400 rounded-full border border-green-500/30 text-sm font-bold">
+                <span className="px-6 py-2 bg-[#FFC636]/20 backdrop-blur-md text-[#FFC636] rounded-full border border-[#FFC636]/30 text-sm font-bold">
                   🏠 For Rent
                 </span>
               )}
@@ -3415,7 +3415,7 @@ function PropertiesPageContent() {
                           </span>
                         )}
                         {property.status === 'rent' && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#FFC636]/15 text-[#FFC636]">
                             🏠 For Rent
                           </span>
                         )}

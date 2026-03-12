@@ -159,20 +159,20 @@ const SEOPage: React.FC = () => {
   ]
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-500'
-    if (score >= 70) return 'text-yellow-500'
+    if (score >= 90) return 'text-[#FFC636]'
+    if (score >= 70) return 'text-[#FFC636]'
     return 'text-red-500'
   }
 
   const getScoreBg = (score: number) => {
-    if (score >= 90) return 'bg-green-500/10'
-    if (score >= 70) return 'bg-yellow-500/10'
+    if (score >= 90) return 'bg-[#FFC636]/10'
+    if (score >= 70) return 'bg-[#FFC636]/10'
     return 'bg-red-500/10'
   }
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'up': return <ArrowTrendingUpIcon className="h-4 w-4 text-green-500" />
+      case 'up': return <ArrowTrendingUpIcon className="h-4 w-4 text-[#FFC636]" />
       case 'down': return <ArrowTrendingDownIcon className="h-4 w-4 text-red-500" />
       default: return <div className="h-4 w-4 rounded-full bg-gray-400"></div>
     }
@@ -255,8 +255,8 @@ const SEOPage: React.FC = () => {
 
                 <div className="bg-card border border-border rounded-xl p-6">
                   <div className="flex items-center gap-4">
-                    <div className="p-3 bg-green-500/10 rounded-lg">
-                      <GlobeAltIcon className="h-6 w-6 text-green-500" />
+                    <div className="p-3 bg-[#FFC636]/10 rounded-lg">
+                      <GlobeAltIcon className="h-6 w-6 text-[#FFC636]" />
                     </div>
                     <div>
                       <p className="text-2xl font-bold text-foreground">{seoMetrics.pagesIndexed}</p>
@@ -295,8 +295,8 @@ const SEOPage: React.FC = () => {
                 <h3 className="text-lg font-semibold text-foreground mb-4">Recent SEO Activity</h3>
                 <div className="space-y-4">
                   <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
-                    <div className="p-2 bg-green-500/10 rounded-lg">
-                      <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />
+                    <div className="p-2 bg-[#FFC636]/10 rounded-lg">
+                      <ArrowTrendingUpIcon className="h-5 w-5 text-[#FFC636]" />
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold text-foreground">Keyword ranking improved</p>
@@ -317,8 +317,8 @@ const SEOPage: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
-                    <div className="p-2 bg-yellow-500/10 rounded-lg">
-                      <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
+                    <div className="p-2 bg-[#FFC636]/10 rounded-lg">
+                      <ExclamationTriangleIcon className="h-5 w-5 text-[#FFC636]" />
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold text-foreground">SEO issue detected</p>
@@ -379,8 +379,8 @@ const SEOPage: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              keyword.position <= 3 ? 'bg-green-500/10 text-green-500' :
-                              keyword.position <= 10 ? 'bg-yellow-500/10 text-yellow-500' :
+                              keyword.position <= 3 ? 'bg-[#FFC636]/10 text-[#FFC636]' :
+                              keyword.position <= 10 ? 'bg-[#FFC636]/10 text-[#FFC636]' :
                               'bg-red-500/10 text-red-500'
                             }`}>
                               #{keyword.position}
@@ -395,7 +395,7 @@ const SEOPage: React.FC = () => {
                                 <div
                                   className={`h-2 rounded-full ${
                                     keyword.difficulty >= 70 ? 'bg-red-500' :
-                                    keyword.difficulty >= 40 ? 'bg-yellow-500' : 'bg-green-500'
+                                    keyword.difficulty >= 40 ? 'bg-[#FFC636]' : 'bg-[#FFC636]'
                                   }`}
                                   style={{ width: `${keyword.difficulty}%` }}
                                 ></div>
@@ -471,12 +471,12 @@ const SEOPage: React.FC = () => {
                     </div>
 
                     {page.issues.length > 0 && (
-                      <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-4">
+                      <div className="bg-[#FFC636]/10 border border-[#FFC636]/20 rounded-lg p-4 mb-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <ExclamationTriangleIcon className="h-4 w-4 text-yellow-500" />
-                          <span className="text-sm font-medium text-yellow-500">Issues Found</span>
+                          <ExclamationTriangleIcon className="h-4 w-4 text-[#FFC636]" />
+                          <span className="text-sm font-medium text-[#FFC636]">Issues Found</span>
                         </div>
-                        <ul className="text-sm text-yellow-700 space-y-1">
+                        <ul className="text-sm text-[#FFC636] space-y-1">
                           {page.issues.map((issue, i) => (
                             <li key={i}>• {issue}</li>
                           ))}
@@ -546,16 +546,16 @@ const SEOPage: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              backlink.type === 'dofollow' ? 'bg-green-500/10 text-green-500' : 'bg-gray-500/10 text-gray-500'
+                              backlink.type === 'dofollow' ? 'bg-[#FFC636]/10 text-[#FFC636]' : 'bg-gray-500/10 text-gray-500'
                             }`}>
                               {backlink.type}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              backlink.status === 'active' ? 'bg-green-500/10 text-green-500' :
+                              backlink.status === 'active' ? 'bg-[#FFC636]/10 text-[#FFC636]' :
                               backlink.status === 'broken' ? 'bg-red-500/10 text-red-500' :
-                              'bg-yellow-500/10 text-yellow-500'
+                              'bg-[#FFC636]/10 text-[#FFC636]'
                             }`}>
                               {backlink.status}
                             </span>
@@ -609,7 +609,7 @@ const SEOPage: React.FC = () => {
 
                       <div className="flex items-center gap-2">
                         <span className={`text-sm font-medium ${
-                          metric.growth > 0 ? 'text-green-500' : 'text-red-500'
+                          metric.growth > 0 ? 'text-[#FFC636]' : 'text-red-500'
                         }`}>
                           {metric.growth > 0 ? '+' : ''}{metric.growth}%
                         </span>
@@ -683,8 +683,8 @@ const SEOPage: React.FC = () => {
 
                 <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="p-3 bg-green-500/10 rounded-lg">
-                      <DocumentTextIcon className="h-6 w-6 text-green-500" />
+                    <div className="p-3 bg-[#FFC636]/10 rounded-lg">
+                      <DocumentTextIcon className="h-6 w-6 text-[#FFC636]" />
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-foreground">Content Analysis</h3>

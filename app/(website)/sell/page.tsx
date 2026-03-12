@@ -931,7 +931,7 @@ useEffect(() => {
                                 <p className="font-bold text-foreground">{agent.title}</p>
                                 <p className="text-sm text-muted-foreground">{agent.brokerage} • {agent.experience_years} years exp.</p>
                                 {agent.verified && (
-                                  <span className="text-xs text-green-600 font-semibold">✓ Verified Agent</span>
+                                  <span className="text-xs text-[#FFC636] font-semibold">✓ Verified Agent</span>
                                 )}
                               </div>
                             </div>
@@ -1148,7 +1148,7 @@ useEffect(() => {
                         </p>
                         <p className="flex items-center justify-between">
                           <span className="text-muted-foreground">Title Deed:</span>
-                          <span className={formData.titleDeed ? "text-green-600 font-semibold" : "text-red-500 font-semibold"}>
+                          <span className={formData.titleDeed ? "text-[#FFC636] font-semibold" : "text-red-500 font-semibold"}>
                             {formData.titleDeed ? "✓ Uploaded" : "✗ Missing"}
                           </span>
                         </p>
@@ -1156,8 +1156,8 @@ useEffect(() => {
                     </div>
                   </div>
 
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <p className="text-sm text-yellow-800">
+                  <div className="bg-[#FFC636]/10 border border-[#FFC636]/30 rounded-lg p-4">
+                    <p className="text-sm text-[#FFC636]">
                       ⏳ Your listing will be submitted for <strong>admin approval</strong>. 
                       Once approved, it will be published on our website. You will receive a confirmation email.
                     </p>

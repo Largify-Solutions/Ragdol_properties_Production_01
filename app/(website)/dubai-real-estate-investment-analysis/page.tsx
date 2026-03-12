@@ -188,13 +188,13 @@ export default function DubaiRealEstateInvestmentAnalysis() {
           </div>
 
           {/* Average Rental Yield */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#FFC636]">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm font-medium">Avg Rental Yield</p>
                 <p className="text-3xl font-bold text-gray-900">{avgYield}%</p>
               </div>
-              <CurrencyDollarIcon className="w-12 h-12 text-green-500 opacity-30" />
+              <CurrencyDollarIcon className="w-12 h-12 text-[#FFC636] opacity-30" />
             </div>
           </div>
 
@@ -292,13 +292,13 @@ interface PropertyInvestmentCardProps {
 }
 
 function PropertyInvestmentCard({ property }: PropertyInvestmentCardProps) {
-  const scoreColor = property.overallScore >= 80 ? 'text-green-600' :
+  const scoreColor = property.overallScore >= 80 ? 'text-[#FFC636]' :
                     property.overallScore >= 60 ? 'text-blue-600' :
-                    property.overallScore >= 40 ? 'text-yellow-600' : 'text-red-600';
+                    property.overallScore >= 40 ? 'text-[#FFC636]' : 'text-red-600';
 
-  const scoreBackground = property.overallScore >= 80 ? 'bg-green-50 border-green-200' :
+  const scoreBackground = property.overallScore >= 80 ? 'bg-[#FFC636]/10 border-[#FFC636]/30' :
                          property.overallScore >= 60 ? 'bg-blue-50 border-blue-200' :
-                         property.overallScore >= 40 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200';
+                         property.overallScore >= 40 ? 'bg-[#FFC636]/10 border-[#FFC636]/30' : 'bg-red-50 border-red-200';
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
@@ -316,7 +316,7 @@ function PropertyInvestmentCard({ property }: PropertyInvestmentCardProps) {
           </div>
         )}
         {property.featured && (
-          <div className="absolute top-3 right-3 bg-yellow-400 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+          <div className="absolute top-3 right-3 bg-[#FFC636] text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
             <SparklesIcon className="w-4 h-4" />
             Featured
           </div>
@@ -343,9 +343,9 @@ function PropertyInvestmentCard({ property }: PropertyInvestmentCardProps) {
             <div className="flex-1 bg-gray-300 rounded-full h-2 overflow-hidden">
               <div
                 className={`h-full transition-all duration-300 ${
-                  property.overallScore >= 80 ? 'bg-green-500' :
+                  property.overallScore >= 80 ? 'bg-[#FFC636]' :
                   property.overallScore >= 60 ? 'bg-blue-500' :
-                  property.overallScore >= 40 ? 'bg-yellow-500' : 'bg-red-500'
+                  property.overallScore >= 40 ? 'bg-[#FFC636]' : 'bg-red-500'
                 }`}
                 style={{ width: `${property.overallScore}%` }}
               />
@@ -366,9 +366,9 @@ function PropertyInvestmentCard({ property }: PropertyInvestmentCardProps) {
           </div>
 
           {/* Income Generating */}
-          <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+          <div className="bg-[#FFC636]/10 rounded-lg p-3 border border-[#FFC636]/30">
             <p className="text-xs text-gray-600 font-medium">Rental Yield</p>
-            <p className="text-xl font-bold text-green-600">{property.incomeGenerating}%</p>
+            <p className="text-xl font-bold text-[#FFC636]">{property.incomeGenerating}%</p>
             <p className="text-xs text-gray-500">Per Year</p>
           </div>
 

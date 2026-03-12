@@ -194,9 +194,9 @@ export default function ValuationsPage() {
   // Get status color
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800'
+      case 'completed': return 'bg-[#FFC636]/15 text-[#FFC636]'
       case 'contacted': return 'bg-blue-100 text-blue-800'
-      default: return 'bg-yellow-100 text-yellow-800'
+      default: return 'bg-[#FFC636]/15 text-[#FFC636]'
     }
   }
 
@@ -275,11 +275,11 @@ export default function ValuationsPage() {
         </div>
         <div className="bg-card p-4 rounded-xl border shadow-sm">
           <p className="text-sm text-muted-foreground mb-1">Pending</p>
-          <p className="text-2xl font-bold text-yellow-600">{valuations.filter(v => v.status === 'pending').length}</p>
+          <p className="text-2xl font-bold text-[#FFC636]">{valuations.filter(v => v.status === 'pending').length}</p>
         </div>
         <div className="bg-card p-4 rounded-xl border shadow-sm">
           <p className="text-sm text-muted-foreground mb-1">Completed</p>
-          <p className="text-2xl font-bold text-green-600">{valuations.filter(v => v.status === 'completed').length}</p>
+          <p className="text-2xl font-bold text-[#FFC636]">{valuations.filter(v => v.status === 'completed').length}</p>
         </div>
         <div className="bg-card p-4 rounded-xl border shadow-sm">
           <p className="text-sm text-muted-foreground mb-1">Avg. Valuation</p>
@@ -375,7 +375,7 @@ export default function ValuationsPage() {
                           </button>
                           <button 
                             onClick={() => handleSendResponse(v)}
-                            className="p-2 hover:bg-green-50 rounded-md transition-colors text-green-600 hover:text-green-700 hover:bg-green-100"
+                            className="p-2 hover:bg-[#FFC636]/10 rounded-md transition-colors text-[#FFC636] hover:text-[#FFC636] hover:bg-[#FFC636]/15"
                             title="Send Response"
                           >
                             <MessageSquare className="h-4 w-4" />
@@ -428,8 +428,8 @@ export default function ValuationsPage() {
                                   <span className="text-muted-foreground">Urgency:</span>
                                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                                     v.urgency === 'high' ? 'bg-red-100 text-red-800' :
-                                    v.urgency === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                    'bg-green-100 text-green-800'
+                                    v.urgency === 'medium' ? 'bg-[#FFC636]/15 text-[#FFC636]' :
+                                    'bg-[#FFC636]/15 text-[#FFC636]'
                                   }`}>
                                     {v.urgency}
                                   </span>
