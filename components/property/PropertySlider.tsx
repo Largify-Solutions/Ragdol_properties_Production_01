@@ -30,15 +30,18 @@ export default function PropertySlider({ title, properties, showCount = 4}: Prop
   const [isPaused, setIsPaused] = useState(false)
   const sliderRef = useRef<HTMLDivElement>(null)
   
-  // Agar properties kam hain, toh unhe duplicate karte hain smooth sliding ke liye
-  const extendedProperties = [...properties, ...properties.slice(0, showCount)]
-  
+  // Only add loop-buffer if there are more properties than fit in one slide
+  const needsLoop = properties.length > showCount
+  const extendedProperties = needsLoop
+    ? [...properties, ...properties.slice(0, showCount)]
+    : [...properties]
+
   // Total slides calculate karte hain
-  const totalSlides = Math.ceil(extendedProperties.length / showCount)
+  const totalSlides = Math.max(1, Math.ceil(extendedProperties.length / showCount))
   
-  // Auto slide effect
+  // Auto slide effect — only runs when there is more than one slide to cycle through
   useEffect(() => {
-    if (isPaused) return
+    if (isPaused || !needsLoop || totalSlides <= 1) return
     
     const interval = setInterval(() => {
       handleNext()

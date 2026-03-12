@@ -336,7 +336,7 @@ const getSmartVideoUrl = (url: string): string => {
   // YouTube
   if (isYouTubeUrl(url)) {
     const videoId = getYouTubeId(url);
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0`;
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}`;
   }
   
   // Vimeo
@@ -356,7 +356,7 @@ const YouTubeVideoPlayer = ({ url, title }: { url: string, title: string }) => {
   return (
     <div className="w-full h-full">
       <iframe
-        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0`}
+        src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&rel=0`}
         title={title}
         className="w-full h-full object-cover"
         frameBorder="0"
@@ -501,7 +501,7 @@ const AutoPlayYouTubeVideoPlayer = ({ url, title, poster }: { url: string, title
       {isPlaying ? (
         <>
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&playsinline=1`}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&rel=0&playsinline=1`}
             title={title}
             className="w-full h-full object-cover pointer-events-none"
             frameBorder="0"
@@ -840,7 +840,7 @@ const AutoPlayYouTubePlayer = ({ url, title, poster }: { url: string, title: str
       {isPlaying ? (
         <>
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&iv_load_policy=3&start=0&end=0`}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&rel=0&playsinline=1`}
             title={title}
             className="w-full h-full object-cover pointer-events-none"
             frameBorder="0"

@@ -278,95 +278,9 @@ export default function PropertyCard({ property, isSaved = false, onSaveToggle }
     return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='
   }
 
-  const imageSrc = getValidImageSrc(property.image)
-
-  // ✅ Dynamic link based on property status and type
-  const getPropertyLink = () => {
-    // Check multiple conditions for rent properties
-    const isRentProperty = 
-      property.status === 'rent' || 
-      property.priceLabel === 'rent' ||
-      property.priceLabel === 'per_year' ||
-      property.priceLabel === 'per_month'
-    
-    // Base URL based on status
-    const baseUrl = isRentProperty ? '/rent' : '/sale'
-    
-    // Build query parameters
-    const params = new URLSearchParams()
-    
-    // Add action parameter for sale properties
-    if (!isRentProperty) {
-      params.set('action', 'buy')
-    }
-    
-    // Add type parameter if property type exists
-    if (property.type) {
-      // Convert type to URL-friendly format
-      const typeMap: Record<string, string> = {
-        'apartment': 'apartment',
-        'villa': 'villa',
-        'townhouse': 'townhouse',
-        'penthouse': 'penthouse',
-        'studio': 'studio',
-        'plot': 'plot',
-        'commercial': 'commercial',
-        'office': 'office',
-        'shop': 'shop',
-        'warehouse': 'warehouse',
-        'industrial': 'industrial',
-        'building': 'building',
-        'furnished-studio': 'furnished-studio',
-        'residential-plot': 'residential-plot',
-        'industrial-plot': 'industrial-plot'
-      }
-      
-      const typeValue = typeMap[property.type.toLowerCase()] || property.type.toLowerCase()
-      params.set('type', typeValue)
-    }
-    
-    // Add area parameter if location exists
-    if (property.area) {
-      const areaSlug = property.area.toLowerCase().replace(/\s+/g, '-')
-      params.set('area', areaSlug)
-    } else if (property.city) {
-      const citySlug = property.city.toLowerCase().replace(/\s+/g, '-')
-      params.set('area', citySlug)
-    } else if (property.location) {
-      // Extract city/area from location string
-      const locationParts = property.location.split(',')
-      const mainArea = locationParts[0]?.trim() || ''
-      if (mainArea) {
-        const areaSlug = mainArea.toLowerCase().replace(/\s+/g, '-')
-        params.set('area', areaSlug)
-      }
-    }
-    
-    // Add price range if available
-    if (property.price) {
-      // Optional: Add price range based on property price
-      // You can customize this logic
-    }
-    
-    // Add beds if available
-    if (property.beds && property.beds > 0) {
-      params.set('beds', property.beds.toString())
-    }
-    
-    // Add baths if available
-    if (property.baths && property.baths > 0) {
-      params.set('baths', property.baths.toString())
-    }
-    
-    // Build the final URL
-    const queryString = params.toString()
-    return queryString ? `${baseUrl}?${queryString}` : baseUrl
-  }
-
-  const propertyLink = getPropertyLink()
 
   return (
-    <Link href={propertyLink} className="group block h-full">
+    <Link href="/properties" className="group block h-full">
       <div className="card-custom overflow-hidden hover:shadow-xl transition-all duration-500 h-full flex flex-col">
         {/* Image with Background */}
         <div className="relative h-48 md:h-56 overflow-hidden bg-muted">
@@ -431,7 +345,7 @@ export default function PropertyCard({ property, isSaved = false, onSaveToggle }
         {/* Content */}
         <div className="p-4 space-y-3 transition-all duration-300 flex flex-col flex-1">
           {/* Price */}
-          <div className="text-xl font-bold text-primary group-hover:text-primary/80 transition-colors duration-300">
+          <div className="text-lg font-bold text-primary">
             {property.currency || 'AED'} {property.price.toLocaleString()}
             {property.status === 'rent' && <span className="text-sm font-normal text-muted-foreground"> /year</span>}
           </div>
