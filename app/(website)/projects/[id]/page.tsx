@@ -24,13 +24,14 @@ import {
   BuildingOfficeIcon,
   ClockIcon,
   GlobeAltIcon,
+  VideoCameraIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid'
 
 type Project = Database['public']['Tables']['projects']['Row'] & {
   developer?: Database['public']['Tables']['developers']['Row']
   properties?: Database['public']['Tables']['properties']['Row'][]
-  documents?: { name: string; url: string }[]
 }
 
 const mockExperts = [
@@ -49,6 +50,15 @@ const mockFloorPlans = [
   { type: 'Apartment', beds: 4, sizeRange: '2,771 - 2,975 Sqft', image: 'https://images.unsplash.com/photo-1600566753151-384129cf4e3e?w=400&q=80' },
   { type: 'Penthouse', beds: 5, sizeRange: '9,398 - 9,398 Sqft', image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&q=80' },
 ]
+
+function getYouTubeId(url: string): string | null {
+  try {
+    if (url.includes('youtube.com/watch')) return new URL(url).searchParams.get('v')
+    if (url.includes('youtu.be/')) return url.split('youtu.be/')[1]?.split('?')[0] || null
+    if (url.includes('youtube.com/embed/')) return url.split('embed/')[1]?.split('?')[0] || null
+  } catch {}
+  return null
+}
 
 async function getProject(id: string): Promise<Project | null> {
   try {
@@ -212,6 +222,128 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
             </div>
+
+            {/* Video Section */}
+            {(project.video_url || (project.videos && project.videos.length > 0)) && (
+              <div className="card-custom overflow-hidden">
+                <div className="p-6">
+                  <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <VideoCameraIcon className="w-6 h-6 text-primary" />
+                    Project Video
+                  </h2>
+                  {(() => {
+                    const url = project.video_url || project.videos?.[0]
+                    if (!url) return null
+                    const ytId = getYouTubeId(url)
+                    if (ytId) {
+                      return (
+                        <div className="relative aspect-video rounded-xl overflow-hidden bg-black shadow-lg">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${ytId}?rel=0`}
+                            title="Project Video"
+                            className="absolute inset-0 w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      )
+                    }
+                    const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/)
+                    if (vimeoMatch) {
+                      return (
+                        <div className="relative aspect-video rounded-xl overflow-hidden bg-black shadow-lg">
+                          <iframe
+                            src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
+                            title="Project Video"
+                            className="absolute inset-0 w-full h-full"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      )
+                    }
+                    return (
+                      <div className="relative aspect-video rounded-xl overflow-hidden bg-black shadow-lg">
+                        <video controls className="w-full h-full">
+                          <source src={url} />
+                        </video>
+                      </div>
+                    )
+                  })()}
+                  {/* Additional uploaded videos */}
+                  {project.videos && project.videos.length > 1 && (
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {project.videos.slice(project.video_url ? 0 : 1).map((vid, i) => (
+                        <a
+                          key={i}
+                          href={vid}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex items-center gap-3 p-3 bg-muted/50 hover:bg-primary hover:text-white border border-border hover:border-primary rounded-xl transition-all duration-200"
+                        >
+                          <div className="w-9 h-9 bg-primary/10 group-hover:bg-white/20 rounded-lg flex items-center justify-center shrink-0">
+                            <VideoCameraIcon className="w-4 h-4 text-primary group-hover:text-white" />
+                          </div>
+                          <span className="text-sm font-medium text-foreground group-hover:text-white truncate">Video {i + (project.video_url ? 1 : 2)}</span>
+                          <ArrowDownTrayIcon className="w-4 h-4 ml-auto shrink-0 text-muted-foreground group-hover:text-white" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Download Resources Section */}
+            {(() => {
+              const docs: { name: string; url: string }[] = []
+              const urlFields: [string, string | null | undefined][] = [
+                ['Brochure (English)', project.brochure_en_url],
+                ['Brochure (Arabic)', project.brochure_ar_url],
+                ['Fact Sheet', project.fact_sheet_url],
+                ['Floor Plans', project.floor_plans_url],
+                ['Masterplan', project.masterplan_url],
+                ['Material Board', project.material_board_url],
+                ['One Pager', project.one_pager_url],
+                ['Payment Plan', project.payment_plan_url],
+                ['Brochure', project.brochure_url],
+              ]
+              urlFields.forEach(([name, url]) => {
+                if (url && !docs.find(d => d.url === url)) docs.push({ name, url })
+              })
+              if (Array.isArray(project.documents)) {
+                ;(project.documents as { name: string; url: string }[]).forEach(d => {
+                  if (d?.url && !docs.find(x => x.url === d.url)) docs.push(d)
+                })
+              }
+              if (docs.length === 0) return null
+              return (
+                <div className="card-custom">
+                  <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                    <DocumentTextIcon className="w-6 h-6 text-primary" />
+                    Download Resources
+                  </h2>
+                  <p className="text-muted-foreground text-sm mb-6">Access all project documents and materials. Click any item to download or view.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {docs.map((doc, i) => (
+                      <a
+                        key={i}
+                        href={doc.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center gap-3 p-4 bg-muted/50 hover:bg-primary border border-border hover:border-primary rounded-xl transition-all duration-200"
+                      >
+                        <div className="w-10 h-10 bg-primary/10 group-hover:bg-white/20 rounded-lg flex items-center justify-center shrink-0">
+                          <DocumentTextIcon className="w-5 h-5 text-primary group-hover:text-white" />
+                        </div>
+                        <span className="flex-1 font-semibold text-sm text-foreground group-hover:text-white truncate">{doc.name}</span>
+                        <ArrowDownTrayIcon className="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-white" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Experts */}
             <div className="card-custom">

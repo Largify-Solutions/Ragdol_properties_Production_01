@@ -295,9 +295,9 @@ export default function PropertyForm({
     parking: initialData?.parking,
     property_age: initialData?.property_age,
     completion: initialData?.completion,
-    brochure_url: initialData?.brochure_url || '',
-    fact_sheet_url: initialData?.fact_sheet_url || '',
-    material_board_url: initialData?.material_board_url || '',
+    brochure_url: initialData?.brochure_url || (initialData as any)?.meta_data?.brochure_url || '',
+    fact_sheet_url: initialData?.fact_sheet_url || (initialData as any)?.meta_data?.fact_sheet_url || '',
+    material_board_url: initialData?.material_board_url || (initialData as any)?.meta_data?.material_board_url || '',
   })
 
   // Input states
@@ -365,9 +365,9 @@ export default function PropertyForm({
         parking: initialData.parking,
         property_age: initialData.property_age,
         completion: initialData.completion,
-        brochure_url: initialData.brochure_url || '',
-        fact_sheet_url: initialData.fact_sheet_url || '',
-        material_board_url: initialData.material_board_url || '',
+        brochure_url: initialData.brochure_url || (initialData as any).meta_data?.brochure_url || '',
+        fact_sheet_url: initialData.fact_sheet_url || (initialData as any).meta_data?.fact_sheet_url || '',
+        material_board_url: initialData.material_board_url || (initialData as any).meta_data?.material_board_url || '',
       })
     }
   }, [initialData])

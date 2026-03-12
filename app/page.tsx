@@ -1609,7 +1609,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Properties for RENT (INCLUDES AGENT PROPERTIES) */}
+      {/* Properties for RENT — only shown when rent properties exist */}
+      {rentalProperties.length > 0 && (
       <section className="py-24 bg-slate-50">
         <div className="container-custom">
           <div className="text-center mb-5">
@@ -1628,17 +1629,14 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {rentalProperties.length > 0 ? (
-            <PropertySlider
-              title=""
-              properties={rentalProperties.slice(0, 8)}
-              showCount={4}
-            />
-          ) : (
-            <PropertySliderSkeleton count={4} />
-          )}
+          <PropertySlider
+            title=""
+            properties={rentalProperties.slice(0, 8)}
+            showCount={4}
+          />
         </div>
       </section>
+      )}
 
       {/* New Projects Section - MAX 4 */}
   <section className="py-24 bg-white">

@@ -431,7 +431,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                 status={property.status || 'sale'}
                 property_status={property.property_status || 'ready'}
                 featured={property.featured || false}
-                video_url={property.video_url || ((property as any).meta_data as any)?.videos?.[0] || undefined}
+                video_url={property.video_url || (property as any).videos?.[0] || ((property as any).meta_data as any)?.videos?.[0] || undefined}
               />
             </div>
 
