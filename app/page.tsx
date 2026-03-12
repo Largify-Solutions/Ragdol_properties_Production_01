@@ -1506,11 +1506,11 @@ export default function HomePage() {
                   key={partner.id || index}
                   className="group flex flex-col items-center gap-3"
                 >
-                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden mx-auto">
+                  <div className="h-16 sm:h-20 flex items-center justify-center mx-auto">
                     <img
                       src={partner.logo}
                       alt={`${partner.name} Logo`}
-                      className="w-full h-full object-cover"
+                      className="max-h-full w-auto max-w-[120px]"
                       onError={(e) => {
                         e.currentTarget.src =
                           "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop";
@@ -1534,11 +1534,11 @@ export default function HomePage() {
                   { name: "Meraas", src: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" },
                 ].map((p, i) => (
                   <div key={i} className="group flex flex-col items-center gap-3">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden mx-auto">
+                    <div className="h-16 sm:h-20 flex items-center justify-center mx-auto">
                       <img
                         src={p.src}
                         alt={`${p.name} Logo`}
-                        className="w-full h-full object-cover"
+                        className="max-h-full w-auto max-w-[120px]"
                       />
                     </div>
                     <h3 className="text-sm font-bold text-secondary group-hover:text-primary text-center">
