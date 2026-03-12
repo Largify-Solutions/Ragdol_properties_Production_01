@@ -463,8 +463,30 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             <div className="card-custom">
               <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                {project.documents && project.documents.length > 0 ? (
-                  project.documents.map((doc, i) => (
+                {(() => {
+                  const docs: { name: string; url: string }[] = []
+                  // From the documents JSONB array
+                  if (project.documents && Array.isArray(project.documents)) {
+                    ;(project.documents as { name: string; url: string }[]).forEach(d => {
+                      if (d?.url) docs.push(d)
+                    })
+                  }
+                  // From individual URL fields
+                  const fields: [string, string | null | undefined][] = [
+                    ['Download Brochure', (project as any).brochure_url],
+                    ['Brochure (English)', (project as any).brochure_en_url],
+                    ['Brochure (Arabic)', (project as any).brochure_ar_url],
+                    ['Fact Sheet', (project as any).fact_sheet_url],
+                    ['Floor Plans', (project as any).floor_plans_url],
+                    ['Masterplan', (project as any).masterplan_url],
+                    ['Material Board', (project as any).material_board_url],
+                    ['One Pager', (project as any).one_pager_url],
+                    ['Payment Plan', (project as any).payment_plan_url],
+                  ]
+                  fields.forEach(([name, url]) => {
+                    if (url && !docs.find(d => d.url === url)) docs.push({ name, url })
+                  })
+                  return docs.length > 0 ? docs.map((doc, i) => (
                     <a
                       key={i}
                       href={doc.url}
@@ -475,18 +497,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                       <DocumentTextIcon className="w-4 h-4 shrink-0" />
                       {doc.name}
                     </a>
-                  ))
-                ) : project.brochure_url ? (
-                  <a
-                    href={project.brochure_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full btn-primary py-3 px-4 flex items-center gap-2 justify-center"
-                  >
-                    <DocumentTextIcon className="w-4 h-4 shrink-0" />
-                    Download Brochure
-                  </a>
-                ) : null}
+                  )) : null
+                })()}
                 <button className="w-full btn-outline py-3 px-4">
                   Schedule Site Visit
                 </button>

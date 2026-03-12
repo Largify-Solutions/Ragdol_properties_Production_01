@@ -431,7 +431,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                 status={property.status || 'sale'}
                 property_status={property.property_status || 'ready'}
                 featured={property.featured || false}
-                video_url={property.video_url}
+                video_url={property.video_url || ((property as any).meta_data as any)?.videos?.[0] || undefined}
               />
             </div>
 
@@ -586,8 +586,8 @@ export default function PropertyPage({ params }: PropertyPageProps) {
               </div>
             </div>
 
-            {/* Download Buttons — only for new projects (project-linked properties) */}
-            {property.project_id && (
+            {/* Download Buttons — shown for project-linked properties or any property with attached documents */}
+            {(property.project_id || (() => { const m = (property as any).meta_data as any; return (m?.documents?.length > 0 || m?.brochures?.length > 0 || m?.brochure_url || m?.fact_sheet_url || m?.material_board_url) })()) && (
             <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
               <div className="space-y-6">
                 <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
@@ -632,27 +632,50 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                 </div>
 
                 {/* Custom document links added from admin */}
-                {property.documents && property.documents.length > 0 && (
-                  <div className="space-y-3 pt-2 border-t border-slate-100">
-                    <p className="text-sm font-semibold text-slate-500 uppercase tracking-widest">Additional Documents</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {property.documents.map((doc, i) => (
-                        <a
-                          key={i}
-                          href={doc.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group p-5 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-2xl transition-all duration-300 flex items-center gap-4"
-                        >
-                          <div className="w-10 h-10 bg-primary/10 group-hover:bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-                            <DocumentTextIcon className="w-5 h-5 text-primary group-hover:text-white" />
-                          </div>
-                          <span className="font-bold text-slate-900 group-hover:text-white truncate">{doc.name}</span>
-                        </a>
-                      ))}
+                {(() => {
+                  const metaData = (property as any).meta_data as Record<string, any> | null | undefined
+                  const docs: { name: string; url: string }[] = []
+                  if (Array.isArray(metaData?.documents)) {
+                    metaData.documents.forEach((d: any) => { if (d?.url) docs.push(d) })
+                  }
+                  // Individual URL fields stored in meta_data
+                  const urlFields: [string, string | null | undefined][] = [
+                    ['Brochure', metaData?.brochure_url],
+                    ['Fact Sheet', metaData?.fact_sheet_url],
+                    ['Material Board', metaData?.material_board_url],
+                  ]
+                  urlFields.forEach(([name, url]) => {
+                    if (url && !docs.find(d => d.url === url)) docs.push({ name, url })
+                  })
+                  // Brochures array (PDF uploads)
+                  if (Array.isArray(metaData?.brochures)) {
+                    metaData.brochures.forEach((url: string, idx: number) => {
+                      if (url && !docs.find(d => d.url === url)) docs.push({ name: `Brochure ${idx + 1}`, url })
+                    })
+                  }
+                  if (docs.length === 0) return null
+                  return (
+                    <div className="space-y-3 pt-2 border-t border-slate-100">
+                      <p className="text-sm font-semibold text-slate-500 uppercase tracking-widest">Additional Documents</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {docs.map((doc, i) => (
+                          <a
+                            key={i}
+                            href={doc.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group p-5 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-2xl transition-all duration-300 flex items-center gap-4"
+                          >
+                            <div className="w-10 h-10 bg-primary/10 group-hover:bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+                              <DocumentTextIcon className="w-5 h-5 text-primary group-hover:text-white" />
+                            </div>
+                            <span className="font-bold text-slate-900 group-hover:text-white truncate">{doc.name}</span>
+                          </a>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )
+                })()}
               </div>
             </div>
             )}
