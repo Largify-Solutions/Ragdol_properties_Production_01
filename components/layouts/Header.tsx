@@ -452,7 +452,6 @@ export default function Header() {
           label: "Market Insights",
           href: "/market",
           subItems: [
-            { label: "Investments Map", href: "/market/investments-map" },
             { label: "Projects Sales Transactions", href: "/market/projects-sales" },
             { label: "Market Performance 2024", href: "/market/performance-2024" },
             { label: "Dubai Properties Prices 2024", href: "/market/prices-2024" },
@@ -1211,13 +1210,6 @@ export default function Header() {
                   <div className="text-xs font-bold text-slate-600 px-4 mt-3">
                     Market Insights
                   </div>
-                  <Link
-                    href="/market/investments-map"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
-                  >
-                    Investments Map
-                  </Link>
                   <Link
                     href="/market/projects-sales"
                     onClick={() => setIsMobileMenuOpen(false)}

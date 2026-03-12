@@ -148,10 +148,10 @@ export default function ConstructionServicesPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               Construction <span className="bg-linear-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">Services</span>
             </h1>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Comprehensive base-build and specialized construction solutions delivered with technical expertise, precision, and unwavering quality standards.
             </p>
             <div className="flex gap-4 flex-wrap">

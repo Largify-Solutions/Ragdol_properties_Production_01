@@ -138,7 +138,7 @@ const stats = [
 
 export default function PropTechPage() {
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
@@ -154,11 +154,11 @@ export default function PropTechPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               PropTech <span className="bg-linear-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">Innovation</span>
             </h1>
             <p className="text-2xl font-semibold text-blue-200 mb-4">DXB Interact</p>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Cutting-edge technology solutions transforming real estate transactions, property management, and investment decisions. Streamline operations with intelligent platforms.
             </p>
             <div className="flex gap-4 flex-wrap">
@@ -177,20 +177,20 @@ export default function PropTechPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               The Future of Real Estate <span className="bg-linear-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">is Digital</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-4 leading-relaxed">
+            <p className="text-gray-600 text-lg mb-4 leading-relaxed">
               At DXB Interact, we're at the forefront of the real estate revolution, leveraging cutting-edge technology to enhance how properties are bought, sold, and managed. Our PropTech services bring together innovative tools, software, and digital platforms to streamline transactions and property management.
             </p>
-            <p className="text-gray-400 text-base leading-relaxed mb-8">
+            <p className="text-gray-600 text-base leading-relaxed mb-8">
               By utilizing the latest technological advancements, we empower clients to make smarter decisions, reduce operational costs, and improve overall user experiences. From virtual property tours to automated lease management and data-driven investment analysis, our solutions transform traditional processes into seamless, tech-driven experiences.
             </p>
             <div className="space-y-3">
               {['AI-Powered Solutions', 'Blockchain Security', 'Real-Time Analytics'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   <CheckCircleIcon className="h-6 w-6 text-blue-400 shrink-0" />
-                  <span className="text-gray-200">{item}</span>
+                  <span className="text-gray-700">{item}</span>
                 </div>
               ))}
             </div>
@@ -208,11 +208,11 @@ export default function PropTechPage() {
       </section>
 
       {/* Core Services Section */}
-      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">PropTech Solutions</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">Comprehensive platform combining digital innovation, automation, and intelligent analytics</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">PropTech Solutions</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Comprehensive platform combining digital innovation, automation, and intelligent analytics</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -221,13 +221,13 @@ export default function PropTechPage() {
               return (
                 <div 
                   key={idx}
-                  className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-blue-400/20 rounded-2xl p-6 hover:border-blue-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-400/10"
+                  className="group bg-white border border-blue-400/20 rounded-2xl p-6 hover:border-blue-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-400/10"
                 >
                   <div className="w-12 h-12 bg-linear-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">{service.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
                 </div>
               )
             })}
@@ -239,16 +239,16 @@ export default function PropTechPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-blue-400/20 rounded-2xl p-8 text-center hover:border-blue-400/50 transition-all">
+            <div key={idx} className="bg-white border border-blue-400/20 rounded-2xl p-8 text-center hover:border-blue-400/50 transition-all">
               <div className="text-4xl font-bold bg-linear-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
-              <p className="text-gray-300">{stat.label}</p>
+              <p className="text-gray-600">{stat.label}</p>
             </div>
           ))}
         </div>
 
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Why Choose DXB Interact?</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Why Choose DXB Interact?</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {benefits.map((benefit, idx) => {
@@ -257,8 +257,8 @@ export default function PropTechPage() {
               <div key={idx} className="flex gap-4">
                 <Icon className="h-6 w-6 text-blue-400 shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
-                  <p className="text-gray-400">{benefit.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                  <p className="text-gray-600">{benefit.description}</p>
                 </div>
               </div>
             )
@@ -267,11 +267,11 @@ export default function PropTechPage() {
       </section>
 
       {/* Process Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Implementation Process</h2>
-            <p className="text-xl text-gray-300">Our systematic approach to digital transformation</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Implementation Process</h2>
+            <p className="text-xl text-gray-600">Our systematic approach to digital transformation</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -283,8 +283,8 @@ export default function PropTechPage() {
                   </div>
                 </div>
                 <div className="pt-1">
-                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -294,7 +294,7 @@ export default function PropTechPage() {
 
       {/* Gallery Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Properties Powered by DXB Interact</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Properties Powered by DXB Interact</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
@@ -319,7 +319,7 @@ export default function PropTechPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_12.jpg"
@@ -330,10 +330,10 @@ export default function PropTechPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Ready to Transform Your Real Estate Operations?
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             Join the PropTech revolution with DXB Interact. Streamline transactions, optimize management, and unlock data-driven growth with our cutting-edge platform.
           </p>
 
@@ -352,7 +352,7 @@ export default function PropTechPage() {
             </Link>
           </div>
 
-          <p className="text-gray-400 text-sm mt-8">
+          <p className="text-gray-600 text-sm mt-8">
             Transforming real estate with AI, blockchain, and intelligent automation
           </p>
         </div>

@@ -132,7 +132,7 @@ const stats = [
 
 export default function SnagginPage() {
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
@@ -148,10 +148,10 @@ export default function SnagginPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               Property Engineered <span className="bg-linear-to-r from-red-400 to-rose-500 bg-clip-text text-transparent">Snagging & Inspection</span>
             </h1>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Professional quality assurance service ensuring your property meets the highest standards of construction quality, safety, and workmanship.
             </p>
             <div className="flex gap-4 flex-wrap">
@@ -170,20 +170,20 @@ export default function SnagginPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               Quality Assurance Through <span className="bg-linear-to-r from-red-400 to-rose-500 bg-clip-text text-transparent">Expert Inspection</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-4 leading-relaxed">
+            <p className="text-gray-600 text-lg mb-4 leading-relaxed">
               Snagging is the process of thoroughly inspecting a property to detect issues such as incomplete finishes, cosmetic defects, or functional problems. These inspections are essential before moving in, leasing, or completing a purchase.
             </p>
-            <p className="text-gray-400 text-base leading-relaxed mb-8">
+            <p className="text-gray-600 text-base leading-relaxed mb-8">
               At fäm Properties, our specialized snagging and inspection service helps property owners, buyers, and investors identify and resolve construction defects before handover or occupation. Our goal is to protect your investment and ensure your property meets the highest standards.
             </p>
             <div className="space-y-3">
               {['Engineering Excellence', 'Comprehensive Reports', 'Actionable Solutions'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   <CheckCircleIcon className="h-6 w-6 text-red-400 shrink-0" />
-                  <span className="text-gray-200">{item}</span>
+                  <span className="text-gray-700">{item}</span>
                 </div>
               ))}
             </div>
@@ -201,11 +201,11 @@ export default function SnagginPage() {
       </section>
 
       {/* Core Services Section */}
-      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Snagging Services</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">Comprehensive inspection and quality assurance across all property types</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Snagging Services</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Comprehensive inspection and quality assurance across all property types</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -214,13 +214,13 @@ export default function SnagginPage() {
               return (
                 <div 
                   key={idx}
-                  className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-red-400/20 rounded-2xl p-6 hover:border-red-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-red-400/10"
+                  className="group bg-white border border-red-400/20 rounded-2xl p-6 hover:border-red-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-red-400/10"
                 >
                   <div className="w-12 h-12 bg-linear-to-br from-red-400 to-rose-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">{service.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
                 </div>
               )
             })}
@@ -232,16 +232,16 @@ export default function SnagginPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-red-400/20 rounded-2xl p-8 text-center hover:border-red-400/50 transition-all">
+            <div key={idx} className="bg-white border border-red-400/20 rounded-2xl p-8 text-center hover:border-red-400/50 transition-all">
               <div className="text-4xl font-bold bg-linear-to-r from-red-400 to-rose-500 bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
-              <p className="text-gray-300">{stat.label}</p>
+              <p className="text-gray-600">{stat.label}</p>
             </div>
           ))}
         </div>
 
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Why Choose fäm Snagging Services?</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Why Choose fäm Snagging Services?</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {benefits.map((benefit, idx) => {
@@ -250,8 +250,8 @@ export default function SnagginPage() {
               <div key={idx} className="flex gap-4">
                 <Icon className="h-6 w-6 text-red-400 shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
-                  <p className="text-gray-400">{benefit.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                  <p className="text-gray-600">{benefit.description}</p>
                 </div>
               </div>
             )
@@ -260,9 +260,9 @@ export default function SnagginPage() {
       </section>
 
       {/* Who Should Use Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Who Should Use This Service?</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Who Should Use This Service?</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {[
@@ -272,8 +272,8 @@ export default function SnagginPage() {
               'Landlords & Tenants',
               'Property Managers'
             ].map((category, idx) => (
-              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-red-400/20 rounded-2xl p-6 text-center hover:border-red-400/50 transition-all">
-                <h3 className="text-lg font-bold text-white">{category}</h3>
+              <div key={idx} className="bg-white border border-red-400/20 rounded-2xl p-6 text-center hover:border-red-400/50 transition-all">
+                <h3 className="text-lg font-bold text-gray-900">{category}</h3>
                 <div className="mt-4 h-1 w-8 bg-linear-to-r from-red-400 to-rose-500 mx-auto rounded-full"></div>
               </div>
             ))}
@@ -285,8 +285,8 @@ export default function SnagginPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Snagging Process</h2>
-            <p className="text-xl text-gray-300">Our systematic approach to comprehensive quality assurance</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Snagging Process</h2>
+            <p className="text-xl text-gray-600">Our systematic approach to comprehensive quality assurance</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -298,8 +298,8 @@ export default function SnagginPage() {
                   </div>
                 </div>
                 <div className="pt-1">
-                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -308,9 +308,9 @@ export default function SnagginPage() {
       </section>
 
       {/* Gallery Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Quality Assurance in Action</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Quality Assurance in Action</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
@@ -336,7 +336,7 @@ export default function SnagginPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_13.jpg"
@@ -347,10 +347,10 @@ export default function SnagginPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Protect Your Investment Today
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             Schedule a professional snagging and inspection with fäm Properties. Our expert engineers will ensure your property meets the highest quality standards before handover.
           </p>
 
@@ -369,7 +369,7 @@ export default function SnagginPage() {
             </Link>
           </div>
 
-          <p className="text-gray-400 text-sm mt-8">
+          <p className="text-gray-600 text-sm mt-8">
             5000+ properties inspected with 98% defect detection rate and 95% client satisfaction
           </p>
         </div>

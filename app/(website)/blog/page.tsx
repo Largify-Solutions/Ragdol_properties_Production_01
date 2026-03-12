@@ -43,6 +43,7 @@ export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState('All Posts')
+  const [displayCount, setDisplayCount] = useState(6)
 
   const fetchPosts = useCallback(async (silent = false) => {
     if (!silent) {
@@ -76,7 +77,9 @@ export default function BlogPage() {
   const categories = ['All Posts', ...Array.from(new Set(posts.map(p => p.category).filter((c): c is string => !!c)))]
   const filteredPosts = activeCategory === 'All Posts' ? posts : posts.filter(p => p.category === activeCategory)
   const featuredPost = filteredPosts[0]
-  const gridPosts = filteredPosts.slice(1)
+  const allGridPosts = filteredPosts.slice(1)
+  const gridPosts = allGridPosts.slice(0, displayCount)
+  const hasMore = displayCount < allGridPosts.length
 
   if (loading) {
     return (
@@ -139,7 +142,7 @@ export default function BlogPage() {
       {featuredPost && (
       <section className="py-24">
         <div className="container-custom">
-          <div className="group relative bg-slate-900 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row animate-slide-up">
+          <Link href={`/blog/${featuredPost.id}`} className="group relative bg-slate-900 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row animate-slide-up">
             <div className="lg:w-1/2 relative h-96 lg:h-auto overflow-hidden">
               <img 
                 src={featuredPost.featured_image || 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800'} 
@@ -174,12 +177,12 @@ export default function BlogPage() {
                     <div className="text-slate-500 text-xs font-bold uppercase tracking-widest">{formatDate(featuredPost.published_at || featuredPost.created_at)}</div>
                   </div>
                 </div>
-                <Link href={`/blog/${featuredPost.id}`} className="h-14 w-14 bg-primary rounded-2xl flex items-center justify-center text-secondary hover:bg-white transition-all">
+                <span className="h-14 w-14 bg-primary rounded-2xl flex items-center justify-center text-secondary group-hover:bg-white transition-all">
                   <ArrowRightIcon className="h-6 w-6" />
-                </Link>
+                </span>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
       </section>
       )}
@@ -191,7 +194,7 @@ export default function BlogPage() {
             {categories.map(cat => (
               <button 
                 key={cat} 
-                onClick={() => setActiveCategory(cat)} 
+                onClick={() => { setActiveCategory(cat); setDisplayCount(6) }} 
                 className={`px-8 py-3 rounded-full border text-sm font-bold transition-all ${
                   activeCategory === cat 
                     ? 'border-primary bg-primary text-white' 
@@ -211,7 +214,7 @@ export default function BlogPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {gridPosts.map((post, i) => (
               <Link key={post.id} href={`/blog/${post.id}`} className="group animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
-                <div className="relative aspect-[16/10] rounded-4xl overflow-hidden mb-8 shadow-xl">
+                <div className="relative aspect-16/10 rounded-4xl overflow-hidden mb-8 shadow-xl">
                   <img 
                     src={post.featured_image || 'https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800'} 
                     alt={post.title || 'Blog post'}
@@ -238,11 +241,16 @@ export default function BlogPage() {
             ))}
           </div>
           
+          {hasMore && (
           <div className="text-center mt-20">
-            <button className="btn-outline rounded-full! !px-12 !py-4">
+            <button
+              onClick={() => setDisplayCount(prev => prev + 6)}
+              className="btn-outline rounded-full! px-12! py-4!"
+            >
               Load More Articles
             </button>
           </div>
+          )}
         </div>
       </section>
 

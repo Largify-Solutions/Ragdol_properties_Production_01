@@ -134,7 +134,7 @@ const stats = [
 
 export default function HolidayHomesPage() {
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
@@ -150,11 +150,11 @@ export default function HolidayHomesPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               Holiday Homes <span className="bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Management</span>
             </h1>
             <p className="text-2xl font-semibold text-orange-200 mb-4">fäm living</p>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Premium short-term rental management for holiday homes. Expert handling of bookings, guest services, and property maintenance to maximize returns and guest satisfaction.
             </p>
             <div className="flex gap-4 flex-wrap">
@@ -173,20 +173,20 @@ export default function HolidayHomesPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               Turn Your Property Into a <span className="bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Revenue Engine</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-4 leading-relaxed">
+            <p className="text-gray-600 text-lg mb-4 leading-relaxed">
               At fäm living, we specialize in managing short-term rental properties with seamless expertise. We understand the growing demand for high-quality vacation rentals and provide comprehensive services that ensure your property stands out while delivering exceptional guest experiences.
             </p>
-            <p className="text-gray-400 text-base leading-relaxed mb-8">
+            <p className="text-gray-600 text-base leading-relaxed mb-8">
               Our team handles everything from booking management to guest services, ensuring your property is always in top condition, occupied, and delivering strong returns. Whether you're renting out a single unit or multiple properties, we provide expert management tailored to your needs.
             </p>
             <div className="space-y-3">
               {['Professional Listing Management', 'Guest Satisfaction Focus', 'Revenue Optimization'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   <CheckCircleIcon className="h-6 w-6 text-orange-400 shrink-0" />
-                  <span className="text-gray-200">{item}</span>
+                  <span className="text-gray-700">{item}</span>
                 </div>
               ))}
             </div>
@@ -204,11 +204,11 @@ export default function HolidayHomesPage() {
       </section>
 
       {/* Core Services Section */}
-      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Holiday Homes Services</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">Complete short-term rental management covering every aspect of property success</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Holiday Homes Services</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Complete short-term rental management covering every aspect of property success</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -217,13 +217,13 @@ export default function HolidayHomesPage() {
               return (
                 <div 
                   key={idx}
-                  className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-orange-400/20 rounded-2xl p-6 hover:border-orange-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-orange-400/10"
+                  className="group bg-white border border-orange-400/20 rounded-2xl p-6 hover:border-orange-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-orange-400/10"
                 >
                   <div className="w-12 h-12 bg-linear-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">{service.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
                 </div>
               )
             })}
@@ -235,16 +235,16 @@ export default function HolidayHomesPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-orange-400/20 rounded-2xl p-8 text-center hover:border-orange-400/50 transition-all">
+            <div key={idx} className="bg-white border border-orange-400/20 rounded-2xl p-8 text-center hover:border-orange-400/50 transition-all">
               <div className="text-4xl font-bold bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
-              <p className="text-gray-300">{stat.label}</p>
+              <p className="text-gray-600">{stat.label}</p>
             </div>
           ))}
         </div>
 
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Why Choose fäm living?</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Why Choose fäm living?</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {benefits.map((benefit, idx) => {
@@ -253,8 +253,8 @@ export default function HolidayHomesPage() {
               <div key={idx} className="flex gap-4">
                 <Icon className="h-6 w-6 text-orange-400 shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
-                  <p className="text-gray-400">{benefit.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                  <p className="text-gray-600">{benefit.description}</p>
                 </div>
               </div>
             )
@@ -263,11 +263,11 @@ export default function HolidayHomesPage() {
       </section>
 
       {/* Process Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">fäm living Process</h2>
-            <p className="text-xl text-gray-300">Our systematic approach to rental property success</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">fäm living Process</h2>
+            <p className="text-xl text-gray-600">Our systematic approach to rental property success</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -279,8 +279,8 @@ export default function HolidayHomesPage() {
                   </div>
                 </div>
                 <div className="pt-1">
-                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -290,7 +290,7 @@ export default function HolidayHomesPage() {
 
       {/* Gallery Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Premium Properties in Our Portfolio</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Premium Properties in Our Portfolio</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
@@ -315,7 +315,7 @@ export default function HolidayHomesPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_1.jpg"
@@ -326,10 +326,10 @@ export default function HolidayHomesPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Ready to Maximize Your Holiday Home Revenue?
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             Let fäm living handle all management details while you enjoy reliable passive income. Professional service, exceptional guest experiences, optimized returns.
           </p>
 
@@ -348,7 +348,7 @@ export default function HolidayHomesPage() {
             </Link>
           </div>
 
-          <p className="text-gray-400 text-sm mt-8">
+          <p className="text-gray-600 text-sm mt-8">
             Managing premium holiday properties with 95%+ occupancy rates and AED 500K+ annual revenue per property
           </p>
         </div>

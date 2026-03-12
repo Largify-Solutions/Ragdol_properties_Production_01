@@ -346,28 +346,64 @@ export default function ServicesPage() {
       </section>
 
       {/* Premium Property Gallery Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-amber-50/5 to-transparent">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gray-900">
         <div className="container-custom mx-auto">
           <div className="text-center mb-16">
             <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-[#FFC636] rounded-full mb-6">
               <span className="text-sm font-black text-amber-900 tracking-widest uppercase">Featured Portfolio</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-            <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">  Premium Property  Showcase</span>
+              Premium Property <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Showcase</span>
             </h2>
             <p className="text-gray-400 text-lg">Explore our curated selection of luxury developments</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { img: "/CREEK_PALACE_DCH_EMAAR_1.jpg", title: "Waterfront Luxury", desc: "Premium creek-side living" },
-              { img: "/CREEK_PALACE_DCH_EMAAR_3.jpg", title: "Modern Architecture", desc: "Contemporary excellence" },
-              { img: "/CREEK_PALACE_DCH_EMAAR_6.jpg", title: "Urban Living", desc: "Mixed-use development" },
-              { img: "/CREEK_PALACE_DCH_EMAAR_9.jpg", title: "Interior Design", desc: "Premium finishes" },
-              { img: "/CREEK_PALACE_DCH_EMAAR_12.jpg", title: "Modern Interiors", desc: "Design innovation" },
-              { img: "/CREEK_PALACE_DCH_EMAAR_15.jpg", title: "Investment Grade", desc: "High-value returns" }
+              {
+                img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
+                title: "Waterfront Luxury",
+                desc: "Premium creek-side living",
+                href: "/services/property-sales",
+                label: "Explore Sales"
+              },
+              {
+                img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80",
+                title: "Modern Architecture",
+                desc: "Contemporary excellence",
+                href: "/services/construction-pm",
+                label: "View Construction"
+              },
+              {
+                img: "https://images.unsplash.com/photo-1555636222-cae831e670b3?w=800&q=80",
+                title: "Urban Living",
+                desc: "Mixed-use development",
+                href: "/services/360-solutions",
+                label: "360 Solutions"
+              },
+              {
+                img: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=80",
+                title: "Interior Design",
+                desc: "Premium finishes",
+                href: "/services/interior-design",
+                label: "Interior Design"
+              },
+              {
+                img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
+                title: "Modern Interiors",
+                desc: "Design innovation",
+                href: "/services/fitout",
+                label: "Fitout Services"
+              },
+              {
+                img: "https://images.unsplash.com/photo-1560520031-3a4dc4e9de0c?w=800&q=80",
+                title: "Investment Grade",
+                desc: "High-value returns",
+                href: "/services/private-equity",
+                label: "Private Equity"
+              }
             ].map((project, idx) => (
-              <div key={idx} className="group relative h-72 rounded-3xl overflow-hidden shadow-2xl cursor-pointer">
+              <Link key={idx} href={project.href} className="group relative h-72 rounded-3xl overflow-hidden shadow-2xl block">
                 <Image
                   src={project.img}
                   alt={project.title}
@@ -375,10 +411,13 @@ export default function ServicesPage() {
                   className="object-cover group-hover:scale-125 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-slate-900/95 via-slate-900/40 to-transparent group-hover:from-slate-900/98 transition-all duration-300 flex flex-col justify-end p-6">
-                  <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
-                  <p className="text-amber-300 font-semibold text-sm">{project.desc}</p>
+                  <h3 className="text-xl font-bold text-white mb-1">{project.title}</h3>
+                  <p className="text-amber-300 font-semibold text-sm mb-3">{project.desc}</p>
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-white/70 group-hover:text-amber-300 transition-colors">
+                    {project.label} <ArrowRightIcon className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  </span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -164,7 +164,7 @@ const faqs = [
 
 export default function GoldenVisaPage() {
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
@@ -183,14 +183,14 @@ export default function GoldenVisaPage() {
             <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
               UAE Golden <span className="bg-linear-to-r from-[#FFC636] to-amber-500 bg-clip-text text-transparent">Visa Advisory</span>
             </h1>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-100 mb-8 leading-relaxed">
               10-year residency delivered through strategic property investment. Dubai's most trusted real estate advisors guiding your journey to long-term UAE residency.
             </p>
             <div className="flex gap-4 flex-wrap">
               <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-[#FFC636] to-amber-500 text-slate-900 font-bold rounded-lg hover:shadow-2xl hover:shadow-[#FFC636]/50 transition-all duration-300">
                 Free Consultation
               </Link>
-              <Link href="#requirements" className="px-8 py-4 border-2 border-[#FFC636]/50 text-[#FFC636]/40 font-bold rounded-lg hover:bg-[#FFC636]/10 transition-all duration-300">
+              <Link href="#requirements" className="px-8 py-4 border-2 border-white/60 text-white font-bold rounded-lg hover:bg-white/10 transition-all duration-300">
                 View Requirements <ArrowRightIcon className="inline h-5 w-5 ml-2" />
               </Link>
             </div>
@@ -200,8 +200,8 @@ export default function GoldenVisaPage() {
 
       {/* Benefits Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-white mb-6 text-center">Why Choose a UAE Golden Visa?</h2>
-        <p className="text-xl text-gray-300 text-center mb-12 max-w-2xl mx-auto">
+        <h2 className="text-4xl font-bold text-gray-900 mb-6 text-center">Why Choose a UAE Golden Visa?</h2>
+        <p className="text-xl text-gray-600 text-center mb-12 max-w-2xl mx-auto">
           Enjoy seamless, long-term residency in the UAE - valid for up to 10 years, without the need for a local sponsor or frequent renewals.
         </p>
 
@@ -211,13 +211,13 @@ export default function GoldenVisaPage() {
             return (
               <div 
                 key={idx}
-                className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-[#FFC636]/20 rounded-2xl p-6 hover:border-[#FFC636]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#FFC636]/10"
+                className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-gray-300 transition-all duration-300 hover:shadow-xl hover:shadow-gray-100"
               >
                 <div className="w-12 h-12 bg-linear-to-br from-[#FFC636] to-amber-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Icon className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
-                <p className="text-gray-300 text-sm leading-relaxed">{benefit.description}</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{benefit.description}</p>
               </div>
             )
           })}
@@ -225,11 +225,11 @@ export default function GoldenVisaPage() {
       </section>
 
       {/* Visa Categories Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Golden Visa Categories</h2>
-            <p className="text-xl text-gray-300">Choose the pathway that matches your investment goals and residency requirements</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Golden Visa Categories</h2>
+            <p className="text-xl text-gray-600">Choose the pathway that matches your investment goals and residency requirements</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -239,8 +239,8 @@ export default function GoldenVisaPage() {
                 className={`relative rounded-2xl overflow-hidden transition-all duration-300 ${
                   category.popular
                     ? 'border-2 border-[#FFC636] shadow-2xl shadow-[#FFC636]/20 scale-105'
-                    : 'border border-[#FFC636]/20 hover:border-[#FFC636]/50'
-                } bg-linear-to-br from-slate-800/50 to-slate-900/50`}
+                    : 'border border-gray-200 hover:border-gray-300'
+                } bg-white`}
               >
                 {category.popular && (
                   <div className="absolute top-0 left-0 right-0 bg-linear-to-r from-[#FFC636] to-amber-500 text-slate-900 font-bold py-2 text-center text-sm">
@@ -252,14 +252,14 @@ export default function GoldenVisaPage() {
                   <div className="text-4xl font-bold bg-linear-to-r from-[#FFC636] to-amber-500 bg-clip-text text-transparent mb-2">
                     {category.investment}
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-4">{category.title}</h3>
-                  <p className="text-gray-300 text-sm mb-6 leading-relaxed">{category.description}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{category.title}</h3>
+                  <p className="text-gray-600 text-sm mb-6 leading-relaxed">{category.description}</p>
                   
-                  <div className="space-y-3 border-t border-[#FFC636]/20 pt-6">
+                  <div className="space-y-3 border-t border-gray-200 pt-6">
                     {category.features.map((feature, i) => (
                       <div key={i} className="flex items-start gap-3">
                         <CheckCircleIcon className="h-5 w-5 text-[#FFC636] shrink-0 mt-0.5" />
-                        <span className="text-gray-300 text-sm">{feature}</span>
+                        <span className="text-gray-600 text-sm">{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -272,18 +272,18 @@ export default function GoldenVisaPage() {
 
       {/* Requirements Section */}
       <section id="requirements" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Golden Visa Requirements</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Golden Visa Requirements</h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            <h3 className="text-2xl font-bold text-white mb-6">Required Documentation</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Required Documentation</h3>
             <div className="space-y-4">
               {requirements.map((req, idx) => (
                 <div key={idx} className="flex gap-4">
                   <DocumentCheckIcon className="h-6 w-6 text-[#FFC636] shrink-0 mt-1" />
                   <div>
-                    <h4 className="font-bold text-white">{req.title}</h4>
-                    <p className="text-gray-400 text-sm">{req.detail}</p>
+                    <h4 className="font-bold text-gray-900">{req.title}</h4>
+                    <p className="text-gray-600 text-sm">{req.detail}</p>
                   </div>
                 </div>
               ))}
@@ -291,7 +291,7 @@ export default function GoldenVisaPage() {
           </div>
 
           <div>
-            <h3 className="text-2xl font-bold text-white mb-6">Property Requirements</h3>
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">Property Requirements</h3>
             <div className="space-y-4">
               {[
                 { title: 'Minimum Investment', detail: 'AED 2M for Golden Visa, AED 750K for 2-year visa' },
@@ -303,8 +303,8 @@ export default function GoldenVisaPage() {
                 <div key={idx} className="flex gap-4">
                   <BuildingOfficeIcon className="h-6 w-6 text-[#FFC636] shrink-0 mt-1" />
                   <div>
-                    <h4 className="font-bold text-white">{req.title}</h4>
-                    <p className="text-gray-400 text-sm">{req.detail}</p>
+                    <h4 className="font-bold text-gray-900">{req.title}</h4>
+                    <p className="text-gray-600 text-sm">{req.detail}</p>
                   </div>
                 </div>
               ))}
@@ -314,26 +314,26 @@ export default function GoldenVisaPage() {
       </section>
 
       {/* Processing Options Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Processing Timeline & Pricing</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Processing Timeline & Pricing</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {processingOptions.map((option, idx) => (
               <div 
                 key={idx}
-                className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-[#FFC636]/20 rounded-2xl p-8 hover:border-[#FFC636]/50 transition-all"
+                className="bg-white border border-gray-200 rounded-2xl p-8 hover:border-gray-300 transition-all"
               >
                 <div className="text-lg font-bold text-[#FFC636] mb-2">{option.days}</div>
-                <h3 className="text-2xl font-bold text-white mb-4">{option.title}</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{option.title}</h3>
                 <div className="text-4xl font-bold bg-linear-to-r from-[#FFC636] to-amber-500 bg-clip-text text-transparent mb-6">
                   {option.price}
                 </div>
-                <ul className="space-y-3 border-t border-[#FFC636]/20 pt-6">
+                <ul className="space-y-3 border-t border-gray-200 pt-6">
                   {option.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <div className="h-2 w-2 bg-[#FFC636] rounded-full mt-2"></div>
-                      <span className="text-gray-300 text-sm">{feature}</span>
+                      <span className="text-gray-600 text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -341,7 +341,7 @@ export default function GoldenVisaPage() {
             ))}
           </div>
 
-          <p className="text-gray-400 text-sm text-center mt-8">
+          <p className="text-gray-600 text-sm text-center mt-8">
             * AED 2,000 refundable security deposit required. Refunded in case of application rejection.
           </p>
         </div>
@@ -349,8 +349,8 @@ export default function GoldenVisaPage() {
 
       {/* Process Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-white mb-4 text-center">fäm Properties Advantage</h2>
-        <p className="text-xl text-gray-300 text-center mb-12">White-glove service from property selection to visa stamping</p>
+        <h2 className="text-4xl font-bold text-gray-900 mb-4 text-center">fäm Properties Advantage</h2>
+        <p className="text-xl text-gray-600 text-center mb-12">White-glove service from property selection to visa stamping</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {processSteps.map((step, idx) => (
@@ -361,8 +361,8 @@ export default function GoldenVisaPage() {
                 </div>
               </div>
               <div className="pt-1">
-                <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
               </div>
             </div>
           ))}
@@ -370,18 +370,18 @@ export default function GoldenVisaPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Frequently Asked Questions</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Frequently Asked Questions</h2>
 
           <div className="space-y-6">
             {faqs.map((faq, idx) => (
-              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-[#FFC636]/20 rounded-2xl p-6 hover:border-[#FFC636]/50 transition-all">
-                <h3 className="text-lg font-bold text-white mb-3 flex items-start gap-3">
+              <div key={idx} className="bg-white border border-gray-200 rounded-2xl p-6 hover:border-gray-300 transition-all">
+                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-start gap-3">
                   <SparklesIcon className="h-6 w-6 text-[#FFC636] shrink-0 mt-0.5" />
                   {faq.question}
                 </h3>
-                <p className="text-gray-300 ml-9">{faq.answer}</p>
+                <p className="text-gray-600 ml-9">{faq.answer}</p>
               </div>
             ))}
           </div>
@@ -389,7 +389,7 @@ export default function GoldenVisaPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_11.jpg"
@@ -400,10 +400,10 @@ export default function GoldenVisaPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Start Your Golden Visa Journey Today
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             Let fäm Properties guide you through every step of securing your UAE Golden Visa. Book your free consultation with our expert advisors today.
           </p>
 
@@ -416,13 +416,13 @@ export default function GoldenVisaPage() {
             </Link>
             <Link 
               href="/contact" 
-              className="px-8 py-4 border-2 border-[#FFC636] text-[#FFC636]/40 font-bold rounded-lg hover:bg-[#FFC636]/10 transition-all duration-300"
+              className="px-8 py-4 border-2 border-gray-800 text-gray-800 font-bold rounded-lg hover:bg-gray-100 transition-all duration-300"
             >
               Contact Us
             </Link>
           </div>
 
-          <p className="text-gray-400 text-sm mt-8">
+          <p className="text-gray-600 text-sm mt-8">
             10-year residency with property investment starting from AED 750,000
           </p>
         </div>

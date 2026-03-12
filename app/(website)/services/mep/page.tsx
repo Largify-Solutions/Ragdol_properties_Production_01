@@ -132,7 +132,7 @@ const stats = [
 
 export default function MEPPage() {
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
@@ -148,10 +148,10 @@ export default function MEPPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               MEP <span className="bg-linear-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">Services</span>
             </h1>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Fully integrated mechanical, electrical, and plumbing solutions delivering precision engineering, seamless integration, and exceptional performance.
             </p>
             <div className="flex gap-4 flex-wrap">
@@ -170,20 +170,20 @@ export default function MEPPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               Integrated MEP <span className="bg-linear-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">Excellence</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-4 leading-relaxed">
+            <p className="text-gray-600 text-lg mb-4 leading-relaxed">
               Our Mechanical, Electrical, and Plumbing division delivers fully integrated building services critical to the performance and longevity of any development. We combine technical expertise, cutting-edge technology, and a commitment to quality.
             </p>
-            <p className="text-gray-400 text-base leading-relaxed mb-8">
+            <p className="text-gray-600 text-base leading-relaxed mb-8">
               Whether for residential towers, commercial spaces, or mixed-use developments, our MEP services ensure that every property operates at its best. We focus on precision engineering, seamless integration, and compliance with international codes to enhance performance, reduce operational costs, and support long-term sustainability.
             </p>
             <div className="space-y-3">
               {['Mechanical Systems', 'Electrical Systems', 'Plumbing Solutions'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   <CheckCircleIcon className="h-6 w-6 text-blue-400 shrink-0" />
-                  <span className="text-gray-200">{item}</span>
+                  <span className="text-gray-700">{item}</span>
                 </div>
               ))}
             </div>
@@ -201,11 +201,11 @@ export default function MEPPage() {
       </section>
 
       {/* Core Services Section */}
-      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">MEP Solutions</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">Comprehensive mechanical, electrical, and plumbing services across all building types</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">MEP Solutions</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Comprehensive mechanical, electrical, and plumbing services across all building types</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -214,13 +214,13 @@ export default function MEPPage() {
               return (
                 <div 
                   key={idx}
-                  className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-blue-400/20 rounded-2xl p-6 hover:border-blue-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-400/10"
+                  className="group bg-white border border-blue-400/20 rounded-2xl p-6 hover:border-blue-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-400/10"
                 >
                   <div className="w-12 h-12 bg-linear-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">{service.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
                 </div>
               )
             })}
@@ -232,16 +232,16 @@ export default function MEPPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-blue-400/20 rounded-2xl p-8 text-center hover:border-blue-400/50 transition-all">
+            <div key={idx} className="bg-white border border-blue-400/20 rounded-2xl p-8 text-center hover:border-blue-400/50 transition-all">
               <div className="text-4xl font-bold bg-linear-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
-              <p className="text-gray-300">{stat.label}</p>
+              <p className="text-gray-600">{stat.label}</p>
             </div>
           ))}
         </div>
 
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Why Choose fäm MEP Services?</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Why Choose fäm MEP Services?</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {benefits.map((benefit, idx) => {
@@ -250,8 +250,8 @@ export default function MEPPage() {
               <div key={idx} className="flex gap-4">
                 <Icon className="h-6 w-6 text-blue-400 shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
-                  <p className="text-gray-400">{benefit.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                  <p className="text-gray-600">{benefit.description}</p>
                 </div>
               </div>
             )
@@ -260,9 +260,9 @@ export default function MEPPage() {
       </section>
 
       {/* MEP Systems Overview */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Our MEP Expertise</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Our MEP Expertise</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -279,13 +279,13 @@ export default function MEPPage() {
                 items: ['Water Supply', 'Drainage Systems', 'Sanitary Systems', 'High-Capacity Design']
               }
             ].map((category, idx) => (
-              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-blue-400/20 rounded-2xl p-8 hover:border-blue-400/50 transition-all">
-                <h3 className="text-2xl font-bold text-white mb-6">{category.title}</h3>
+              <div key={idx} className="bg-white border border-blue-400/20 rounded-2xl p-8 hover:border-blue-400/50 transition-all">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">{category.title}</h3>
                 <ul className="space-y-3">
                   {category.items.map((item, i) => (
                     <li key={i} className="flex items-center gap-3">
                       <div className="h-2 w-2 bg-linear-to-r from-blue-400 to-indigo-500 rounded-full"></div>
-                      <span className="text-gray-300">{item}</span>
+                      <span className="text-gray-600">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -299,8 +299,8 @@ export default function MEPPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">MEP Project Process</h2>
-            <p className="text-xl text-gray-300">Our systematic approach to integrated building systems</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">MEP Project Process</h2>
+            <p className="text-xl text-gray-600">Our systematic approach to integrated building systems</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -312,8 +312,8 @@ export default function MEPPage() {
                   </div>
                 </div>
                 <div className="pt-1">
-                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -322,9 +322,9 @@ export default function MEPPage() {
       </section>
 
       {/* Gallery Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Integrated Systems in Action</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Integrated Systems in Action</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
@@ -350,7 +350,7 @@ export default function MEPPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_9.jpg"
@@ -361,10 +361,10 @@ export default function MEPPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Integrated MEP Solutions for Excellence
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             Partner with fäm Properties for comprehensive MEP services that combine technical expertise, cutting-edge technology, and unwavering quality commitment.
           </p>
 
@@ -383,7 +383,7 @@ export default function MEPPage() {
             </Link>
           </div>
 
-          <p className="text-gray-400 text-sm mt-8">
+          <p className="text-gray-600 text-sm mt-8">
             500+ projects completed with 30% average cost savings and 99% system uptime
           </p>
         </div>

@@ -81,23 +81,23 @@ export default function PropertySalesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-950 to-white">
+    <div className="min-h-screen bg-white">
       {/* Premium Hero Section */}
       <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
         {/* Golden gradient background */}
         <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-amber-900/20 via-transparent to-amber-800/10 -z-10"></div>
-        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-50 rounded-full blur-3xl -z-10"></div>
         
         <div className="container-custom mx-auto">
-          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400/10 border border-amber-400/30 rounded-full mb-8 text-amber-300 hover:bg-amber-400/20 transition-all">
+          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-full mb-8 text-amber-700 hover:bg-amber-100 transition-all">
             <ArrowRightIcon className="h-4 w-4 rotate-180" />
             Back to Services
           </Link>
           
-          <h1 className="text-5xl md:text-6xl font-black text-white mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
             Property Sales <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Services</span>
           </h1>
-          <p className="text-xl text-gray-300 max-w-2xl">
+          <p className="text-xl text-gray-600 max-w-2xl">
             Expert off-plan sales management for developers—delivered with precision and professionalism.
           </p>
         </div>
@@ -108,13 +108,13 @@ export default function PropertySalesPage() {
         {/* Overview Section */}
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
-            <h2 className="text-4xl font-black text-white mb-6">
+            <h2 className="text-4xl font-black text-gray-900 mb-6">
               Seamless Property Sales <span className="text-amber-400">Excellence</span>
             </h2>
-            <p className="text-gray-400 text-lg leading-relaxed mb-6">
+            <p className="text-gray-600 text-lg leading-relaxed mb-6">
               At Ragdol Properties, we specialize in managing off-plan property sales for developers—and when we say "delivered," we mean it. Our mission is to facilitate seamless property sales while ensuring our clients achieve maximum returns on their investments.
             </p>
-            <p className="text-gray-400 text-lg leading-relaxed mb-8">
+            <p className="text-gray-600 text-lg leading-relaxed mb-8">
               With nearly two decades of experience in Dubai's real estate market, we've fine-tuned a process that covers every angle, from initial planning to final handover.
             </p>
             <Link
@@ -139,10 +139,10 @@ export default function PropertySalesPage() {
         {/* Key Features Grid */}
         <div className="mb-24">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-white mb-4">
+            <h2 className="text-4xl font-black text-gray-900 mb-4">
               What We <span className="text-amber-400">Deliver</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Our comprehensive approach ensures every aspect of your sales success
             </p>
           </div>
@@ -151,12 +151,12 @@ export default function PropertySalesPage() {
             {highlights.map((item, idx) => {
               const Icon = item.icon
               return (
-                <div key={idx} className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-amber-400/20 rounded-2xl p-8 hover:border-amber-400/50 transition-all duration-300">
+                <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-8 hover:border-gray-300 transition-all duration-300">
                   <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-3">{item.title}</h3>
-                  <p className="text-gray-400 leading-relaxed">{item.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-3">{item.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{item.description}</p>
                 </div>
               )
             })}
@@ -166,10 +166,10 @@ export default function PropertySalesPage() {
         {/* Process Section */}
         <div className="mb-24">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-white mb-4">
+            <h2 className="text-4xl font-black text-gray-900 mb-4">
               Our <span className="text-amber-400">Process</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               A proven methodology refined over nearly two decades in Dubai's real estate market
             </p>
           </div>
@@ -183,8 +183,8 @@ export default function PropertySalesPage() {
                   </div>
                 </div>
                 <div className="flex-1 pt-2">
-                  <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400 leading-relaxed">{step.description}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -194,10 +194,10 @@ export default function PropertySalesPage() {
         {/* Project Gallery */}
         <div className="mb-24">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-black text-white mb-4">
+            <h2 className="text-3xl font-black text-gray-900 mb-4">
               Featured <span className="text-amber-400">Projects</span>
             </h2>
-            <p className="text-gray-400">Successful developments we've brought to market</p>
+            <p className="text-gray-600">Successful developments we've brought to market</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -214,8 +214,8 @@ export default function PropertySalesPage() {
                   className="object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-slate-900/95 via-slate-900/40 to-transparent group-hover:from-slate-900/98 transition-all duration-300 flex flex-col justify-end p-6">
-                  <h3 className="text-xl font-bold text-white">{property.title}</h3>
-                  <p className="text-amber-300 font-bold text-lg">{property.price}</p>
+                  <h3 className="text-xl font-bold text-gray-900">{property.title}</h3>
+                  <p className="text-amber-700 font-bold text-lg">{property.price}</p>
                 </div>
               </div>
             ))}
@@ -223,29 +223,29 @@ export default function PropertySalesPage() {
         </div>
 
         {/* Philosophy Section */}
-        <div className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-amber-400/20 rounded-3xl p-12 md:p-16 mb-24">
+        <div className="bg-white border border-gray-200 rounded-3xl p-12 md:p-16 mb-24">
           <div className="max-w-3xl">
-            <h2 className="text-3xl font-black text-white mb-8">
+            <h2 className="text-3xl font-black text-gray-900 mb-8">
               Our <span className="text-amber-400">Philosophy</span>
             </h2>
-            <p className="text-gray-300 text-lg leading-relaxed mb-6">
+            <p className="text-gray-600 text-lg leading-relaxed mb-6">
               We don't just sell properties—we build legacies. This is what drives every decision we make and every strategy we execute.
             </p>
-            <p className="text-gray-400 text-lg leading-relaxed">
+            <p className="text-gray-600 text-lg leading-relaxed">
               When it comes to sales strategy, we don't just push units—we position them. We plan unit releases carefully, optimize pricing, and execute through the region's most dynamic and experienced salesforce. This is the Ragdol Properties difference.
             </p>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="relative overflow-hidden rounded-3xl p-12 md:p-20 bg-linear-to-br from-slate-800 via-slate-900 to-slate-950 border border-amber-500/30">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
+        <div className="relative overflow-hidden rounded-3xl p-12 md:p-20 bg-gray-50 border border-gray-200">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-50 rounded-full blur-3xl -z-10"></div>
           
           <div className="relative z-10 max-w-3xl">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-6">
               Ready to Maximize Your <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Sales Potential?</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-8">
+            <p className="text-gray-600 text-lg mb-8">
               Let Ragdol Properties manage your off-plan sales with expertise and precision.
             </p>
             <Link

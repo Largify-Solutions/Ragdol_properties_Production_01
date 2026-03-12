@@ -132,7 +132,7 @@ const stats = [
 
 export default function RentalServicesPage() {
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
@@ -148,10 +148,10 @@ export default function RentalServicesPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               Property Rental <span className="bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Services</span>
             </h1>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Maximize your rental yields while keeping occupancy rates high. From pricing optimization to 24/7 tenant support, we manage your property like a business.
             </p>
             <div className="flex gap-4 flex-wrap">
@@ -170,20 +170,20 @@ export default function RentalServicesPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               Rental Management <span className="bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Excellence</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-4 leading-relaxed">
+            <p className="text-gray-600 text-lg mb-4 leading-relaxed">
               At fäm Properties, we manage rental properties with one clear focus: maximizing your rental yields while keeping occupancy rates high. Whether you own a single unit or a full portfolio, our solutions deliver consistent income with minimal hassle.
             </p>
-            <p className="text-gray-400 text-base leading-relaxed mb-8">
+            <p className="text-gray-600 text-base leading-relaxed mb-8">
               We begin by helping you set the right rental price—one that's competitive but optimized for returns. Once your property is ready, we handle everything from professional marketing to tenant screening, lease management, rent collection, and 24/7 support. Thanks to our in-house maintenance team and transparent reporting, your property becomes a reliable, long-term income stream.
             </p>
             <div className="space-y-3">
               {['Yield Optimization', 'Expert Management', 'Full Support'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   <CheckCircleIcon className="h-6 w-6 text-orange-400 shrink-0" />
-                  <span className="text-gray-200">{item}</span>
+                  <span className="text-gray-700">{item}</span>
                 </div>
               ))}
             </div>
@@ -201,15 +201,15 @@ export default function RentalServicesPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, idx) => (
-              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-orange-400/20 rounded-2xl p-8 text-center hover:border-orange-400/50 transition-all">
+              <div key={idx} className="bg-white border border-orange-400/20 rounded-2xl p-8 text-center hover:border-orange-400/50 transition-all">
                 <div className="text-4xl font-bold bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent mb-2">
                   {stat.value}
                 </div>
-                <p className="text-gray-300">{stat.label}</p>
+                <p className="text-gray-600">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -219,8 +219,8 @@ export default function RentalServicesPage() {
       {/* Core Services Section */}
       <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">Rental Management Services</h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">Comprehensive solutions covering the entire rental property lifecycle</p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Rental Management Services</h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Comprehensive solutions covering the entire rental property lifecycle</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -229,13 +229,13 @@ export default function RentalServicesPage() {
             return (
               <div 
                 key={idx}
-                className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-orange-400/20 rounded-2xl p-6 hover:border-orange-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-orange-400/10"
+                className="group bg-white border border-orange-400/20 rounded-2xl p-6 hover:border-orange-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-orange-400/10"
               >
                 <div className="w-12 h-12 bg-linear-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Icon className="h-6 w-6 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                <p className="text-gray-300 text-sm leading-relaxed">{service.description}</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
               </div>
             )
           })}
@@ -243,9 +243,9 @@ export default function RentalServicesPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Why Choose fäm Rental Services?</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Why Choose fäm Rental Services?</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {benefits.map((benefit, idx) => {
@@ -254,8 +254,8 @@ export default function RentalServicesPage() {
                 <div key={idx} className="flex gap-4">
                   <Icon className="h-6 w-6 text-orange-400 shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
-                    <p className="text-gray-400">{benefit.description}</p>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                    <p className="text-gray-600">{benefit.description}</p>
                   </div>
                 </div>
               )
@@ -267,8 +267,8 @@ export default function RentalServicesPage() {
       {/* Process Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">Our Rental Management Process</h2>
-          <p className="text-xl text-gray-300">From assessment to ongoing management</p>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Rental Management Process</h2>
+          <p className="text-xl text-gray-600">From assessment to ongoing management</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -280,8 +280,8 @@ export default function RentalServicesPage() {
                 </div>
               </div>
               <div className="pt-1">
-                <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
               </div>
             </div>
           ))}
@@ -289,9 +289,9 @@ export default function RentalServicesPage() {
       </section>
 
       {/* Gallery Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">Professional Rental Management</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Professional Rental Management</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
@@ -317,7 +317,7 @@ export default function RentalServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_10.jpg"
@@ -328,10 +328,10 @@ export default function RentalServicesPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Turn Your Property into Reliable Income
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             Let fäm Properties manage your rental property with expertise, transparency, and hands-on care. Maximize yields, minimize hassle.
           </p>
 
@@ -350,7 +350,7 @@ export default function RentalServicesPage() {
             </Link>
           </div>
 
-          <p className="text-gray-400 text-sm mt-8">
+          <p className="text-gray-600 text-sm mt-8">
             3500+ properties managed with 95% average occupancy rate and 12% average yield increase
           </p>
         </div>

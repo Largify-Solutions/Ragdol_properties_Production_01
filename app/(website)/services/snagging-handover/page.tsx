@@ -73,15 +73,15 @@ export default function SnaggingHandoverPage() {
   const [activeTab, setActiveTab] = useState('overview')
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#0d0d0d', color: '#f5f5f5' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#ffffff', color: '#111111' }}>
       {/* Hero Section */}
-      <div className="relative py-20" style={{ backgroundColor: '#141414' }}>
+      <div className="relative py-20" style={{ backgroundColor: '#f9fafb' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-secondary mb-6">
               Snagging & Handover Services
             </h1>
-            <p className="text-xl md:text-2xl mb-8" style={{ color: '#f5f5f5', opacity: 0.8 }}>
+            <p className="text-xl md:text-2xl mb-8" style={{ color: '#4B5563', opacity: 1 }}>
               Professional property inspection and handover services in Dubai
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -93,7 +93,7 @@ export default function SnaggingHandoverPage() {
               </button>
               <button
                 className="px-8 py-4 border-2 rounded-lg font-semibold transition-colors"
-                style={{ borderColor: '#d4af37', color: '#d4af37' }}
+                style={{ borderColor: '#374151', color: '#374151' }}
               >
                 Learn More
               </button>
@@ -103,7 +103,7 @@ export default function SnaggingHandoverPage() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="border-b" style={{ borderColor: '#d4af37', backgroundColor: '#141414' }}>
+      <div className="border-b" style={{ borderColor: '#e5e7eb', backgroundColor: '#f9fafb' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-8">
             {['overview', 'services', 'process', 'benefits', 'contact'].map((tab) => (
@@ -113,7 +113,7 @@ export default function SnaggingHandoverPage() {
                 className={`py-4 px-1 border-b-2 font-medium text-sm capitalize transition-colors ${
                   activeTab === tab
                     ? 'border-[#d4af37] text-[#d4af37]'
-                    : 'border-transparent text-[#f5f5f5] hover:text-[#d4af37]'
+                    : 'border-transparent text-gray-600 hover:text-[#FFC636]'
                 }`}
               >
                 {tab}
@@ -132,7 +132,7 @@ export default function SnaggingHandoverPage() {
               <h2 className="text-3xl font-bold text-secondary mb-6">
                 Expert Snagging & Property Handover Services
               </h2>
-              <p className="text-lg max-w-3xl mx-auto" style={{ color: '#f5f5f5', opacity: 0.8 }}>
+              <p className="text-lg max-w-3xl mx-auto" style={{ color: '#4B5563', opacity: 1 }}>
                 Our professional snagging inspection services ensure you receive your property in perfect condition.
                 We identify defects, coordinate repairs, and facilitate smooth property handover.
               </p>
@@ -142,19 +142,19 @@ export default function SnaggingHandoverPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2" style={{ color: '#d4af37' }}>1000+</div>
-                <div style={{ color: '#f5f5f5', opacity: 0.8 }}>Inspections Completed</div>
+                <div style={{ color: '#4B5563', opacity: 1 }}>Inspections Completed</div>
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2" style={{ color: '#d4af37' }}>95%</div>
-                <div style={{ color: '#f5f5f5', opacity: 0.8 }}>Issues Resolved</div>
+                <div style={{ color: '#4B5563', opacity: 1 }}>Issues Resolved</div>
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2" style={{ color: '#d4af37' }}>48hrs</div>
-                <div style={{ color: '#f5f5f5', opacity: 0.8 }}>Average Response</div>
+                <div style={{ color: '#4B5563', opacity: 1 }}>Average Response</div>
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2" style={{ color: '#d4af37' }}>10+</div>
-                <div style={{ color: '#f5f5f5', opacity: 0.8 }}>Years Experience</div>
+                <div style={{ color: '#4B5563', opacity: 1 }}>Years Experience</div>
               </div>
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function SnaggingHandoverPage() {
                 <div
                   key={index}
                   className="p-6 rounded-lg border"
-                  style={{ borderColor: '#d4af37', backgroundColor: '#141414' }}
+                  style={{ borderColor: '#e5e7eb', backgroundColor: '#f9fafb' }}
                 >
                   <div className="flex items-center mb-4">
                     <service.icon className="h-8 w-8 mr-3" style={{ color: '#d4af37' }} />
@@ -178,14 +178,14 @@ export default function SnaggingHandoverPage() {
                       {service.title}
                     </h3>
                   </div>
-                  <p className="mb-4" style={{ color: '#f5f5f5', opacity: 0.8 }}>
+                  <p className="mb-4" style={{ color: '#4B5563', opacity: 1 }}>
                     {service.description}
                   </p>
                   <ul className="space-y-2">
                     {service.features.map((feature, idx) => (
                       <li key={idx} className="flex items-center">
                         <CheckCircleIcon className="h-5 w-5 mr-2" style={{ color: '#d4af37' }} />
-                        <span style={{ color: '#f5f5f5', opacity: 0.8 }}>{feature}</span>
+                        <span style={{ color: '#4B5563', opacity: 1 }}>{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -213,7 +213,7 @@ export default function SnaggingHandoverPage() {
                     <h3 className="text-xl font-semibold text-secondary mb-2">
                       {item.title}
                     </h3>
-                    <p style={{ color: '#f5f5f5', opacity: 0.8 }}>{item.description}</p>
+                    <p style={{ color: '#4B5563', opacity: 1 }}>{item.description}</p>
                   </div>
                 </div>
               ))}
@@ -231,10 +231,10 @@ export default function SnaggingHandoverPage() {
                 <div
                   key={index}
                   className="flex items-center p-4 rounded-lg"
-                  style={{ backgroundColor: '#141414' }}
+                  style={{ backgroundColor: '#f9fafb' }}
                 >
                   <CheckCircleIcon className="h-6 w-6 mr-3 shrink-0" style={{ color: '#d4af37' }} />
-                  <span style={{ color: '#f5f5f5' }}>{benefit}</span>
+                  <span style={{ color: '#111827' }}>{benefit}</span>
                 </div>
               ))}
             </div>
@@ -249,62 +249,62 @@ export default function SnaggingHandoverPage() {
             <form className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#f5f5f5' }}>
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#111827' }}>
                     Full Name
                   </label>
                   <input
                     type="text"
                     className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent"
                     style={{
-                      borderColor: '#d4af37',
-                      backgroundColor: '#262626',
-                      color: '#f5f5f5'
+                      borderColor: '#d1d5db',
+                      backgroundColor: '#ffffff',
+                      color: '#111827'
                     }}
                     placeholder="Your full name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: '#f5f5f5' }}>
+                  <label className="block text-sm font-medium mb-2" style={{ color: '#111827' }}>
                     Email Address
                   </label>
                   <input
                     type="email"
                     className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent"
                     style={{
-                      borderColor: '#d4af37',
-                      backgroundColor: '#262626',
-                      color: '#f5f5f5'
+                      borderColor: '#d1d5db',
+                      backgroundColor: '#ffffff',
+                      color: '#111827'
                     }}
                     placeholder="your@email.com"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: '#f5f5f5' }}>
+                <label className="block text-sm font-medium mb-2" style={{ color: '#111827' }}>
                   Phone Number
                 </label>
                 <input
                   type="tel"
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent"
                   style={{
-                    borderColor: '#d4af37',
-                    backgroundColor: '#262626',
-                    color: '#f5f5f5'
+                    borderColor: '#d1d5db',
+                    backgroundColor: '#ffffff',
+                    color: '#111827'
                   }}
                   placeholder="+971 XX XXX XXXX"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: '#f5f5f5' }}>
+                <label className="block text-sm font-medium mb-2" style={{ color: '#111827' }}>
                   Property Details
                 </label>
                 <textarea
                   rows={4}
                   className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent"
                   style={{
-                    borderColor: '#d4af37',
-                    backgroundColor: '#262626',
-                    color: '#f5f5f5'
+                    borderColor: '#d1d5db',
+                    backgroundColor: '#ffffff',
+                    color: '#111827'
                   }}
                   placeholder="Property location, developer, handover date, specific concerns..."
                 />
@@ -322,12 +322,12 @@ export default function SnaggingHandoverPage() {
       </div>
 
       {/* CTA Section */}
-      <div className="py-16" style={{ backgroundColor: '#141414' }}>
+      <div className="py-16" style={{ backgroundColor: '#f9fafb' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4" style={{ color: '#f5f5f5' }}>
+          <h2 className="text-3xl font-bold mb-4" style={{ color: '#111827' }}>
             Don't Accept Defects in Your New Property
           </h2>
-          <p className="text-lg mb-8" style={{ color: '#f5f5f5', opacity: 0.8 }}>
+          <p className="text-lg mb-8" style={{ color: '#4B5563', opacity: 1 }}>
             Protect your investment with our professional snagging inspection services.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -339,7 +339,7 @@ export default function SnaggingHandoverPage() {
             </button>
             <button
               className="px-8 py-4 border-2 rounded-lg font-semibold transition-colors"
-              style={{ borderColor: '#d4af37', color: '#d4af37' }}
+              style={{ borderColor: '#374151', color: '#374151' }}
             >
               Call Now: +971 XX XXX XXXX
             </button>

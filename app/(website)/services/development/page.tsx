@@ -134,7 +134,7 @@ const stats = [
 
 export default function DevelopmentPage() {
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
@@ -150,11 +150,11 @@ export default function DevelopmentPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               Real Estate <span className="bg-linear-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Development</span>
             </h1>
             <p className="text-2xl font-semibold text-purple-200 mb-4">Nordic by fäm</p>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Luxury and ultra-luxury villas and boutique buildings that set new standards in design, quality, and exclusivity. Creating spaces that inspire, innovate, and reflect the highest level of sophistication.
             </p>
             <div className="flex gap-4 flex-wrap">
@@ -173,20 +173,20 @@ export default function DevelopmentPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
               More Than Buildings—<span className="bg-linear-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">Lifestyle Destinations</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-4 leading-relaxed">
+            <p className="text-gray-600 text-lg mb-4 leading-relaxed">
               At Nordic by fäm, we specialize in the development of luxury and ultra-luxury villas and boutique buildings that set new standards in design, quality, and exclusivity. As a division of fäm Properties, Nordic is committed to delivering exceptional real estate experiences that elevate living standards and offer long-term value to investors and homeowners alike.
             </p>
-            <p className="text-gray-400 text-base leading-relaxed mb-8">
+            <p className="text-gray-600 text-base leading-relaxed mb-8">
               Our approach to real estate development goes beyond just building structures—it's about creating spaces that inspire, innovate, and reflect the highest level of sophistication. From prime locations to state-of-the-art designs, Nordic by fäm brings to life meticulously crafted properties that cater to discerning tastes and the most prestigious lifestyles.
             </p>
             <div className="space-y-3">
               {['World-Class Architecture', 'Premium Material Selection', 'Bespoke Customization'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   <CheckCircleIcon className="h-6 w-6 text-purple-400 shrink-0" />
-                  <span className="text-gray-200">{item}</span>
+                  <span className="text-gray-700">{item}</span>
                 </div>
               ))}
             </div>
@@ -204,11 +204,11 @@ export default function DevelopmentPage() {
       </section>
 
       {/* Core Services Section */}
-      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section id="details" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">What Sets Nordic by fäm Apart</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">Our specialized approach to luxury development ensures every project exceeds expectations</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">What Sets Nordic by fäm Apart</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Our specialized approach to luxury development ensures every project exceeds expectations</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -217,13 +217,13 @@ export default function DevelopmentPage() {
               return (
                 <div 
                   key={idx}
-                  className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-purple-400/20 rounded-2xl p-6 hover:border-purple-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-400/10"
+                  className="group bg-white border border-purple-400/20 rounded-2xl p-6 hover:border-purple-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-purple-400/10"
                 >
                   <div className="w-12 h-12 bg-linear-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{service.title}</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">{service.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{service.description}</p>
                 </div>
               )
             })}
@@ -235,16 +235,16 @@ export default function DevelopmentPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-purple-400/20 rounded-2xl p-8 text-center hover:border-purple-400/50 transition-all">
+            <div key={idx} className="bg-white border border-purple-400/20 rounded-2xl p-8 text-center hover:border-purple-400/50 transition-all">
               <div className="text-4xl font-bold bg-linear-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
-              <p className="text-gray-300">{stat.label}</p>
+              <p className="text-gray-600">{stat.label}</p>
             </div>
           ))}
         </div>
 
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Why Choose Nordic by fäm?</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Why Choose Nordic by fäm?</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {benefits.map((benefit, idx) => {
@@ -253,8 +253,8 @@ export default function DevelopmentPage() {
               <div key={idx} className="flex gap-4">
                 <Icon className="h-6 w-6 text-purple-400 shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
-                  <p className="text-gray-400">{benefit.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
+                  <p className="text-gray-600">{benefit.description}</p>
                 </div>
               </div>
             )
@@ -263,11 +263,11 @@ export default function DevelopmentPage() {
       </section>
 
       {/* Process Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Development Process</h2>
-            <p className="text-xl text-gray-300">From concept to completion—our systematic approach to excellence</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Development Process</h2>
+            <p className="text-xl text-gray-600">From concept to completion—our systematic approach to excellence</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -279,8 +279,8 @@ export default function DevelopmentPage() {
                   </div>
                 </div>
                 <div className="pt-1">
-                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{step.description}</p>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
                 </div>
               </div>
             ))}
@@ -290,7 +290,7 @@ export default function DevelopmentPage() {
 
       {/* Gallery Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Nordic by fäm Projects</h2>
+        <h2 className="text-4xl font-bold text-gray-900 mb-12 text-center">Nordic by fäm Projects</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
@@ -315,7 +315,7 @@ export default function DevelopmentPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section id="contact" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_5.jpg"
@@ -326,10 +326,10 @@ export default function DevelopmentPage() {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-bold text-white mb-6">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
             Ready to Invest in Luxury?
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-600 mb-8">
             With Nordic by fäm, you're not just investing in a property—you're securing a lifestyle. Discover developments designed for those who appreciate the finest things in life.
           </p>
 
@@ -348,7 +348,7 @@ export default function DevelopmentPage() {
             </Link>
           </div>
 
-          <p className="text-gray-400 text-sm mt-8">
+          <p className="text-gray-600 text-sm mt-8">
             Discover the Nordic by fäm difference in luxury real estate development
           </p>
         </div>

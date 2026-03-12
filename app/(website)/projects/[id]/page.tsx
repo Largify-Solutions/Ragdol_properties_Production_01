@@ -141,7 +141,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             {/* Project Hero */}
             <div className="card-custom overflow-hidden">
               <div className="relative">
-                <div className="aspect-[16/9] relative overflow-hidden bg-muted">
+                <div className="aspect-video relative overflow-hidden bg-muted">
                   <Image
                     src={project.hero_image_url || project.images?.[0] || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQ1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='}
                     alt={project.name}
@@ -294,49 +294,74 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               </div>
             )}
 
-            {/* Download Resources Section */}
+            {/* Resources & Downloads Section */}
             {(() => {
-              const docs: { name: string; url: string }[] = []
-              const urlFields: [string, string | null | undefined][] = [
-                ['Brochure (English)', project.brochure_en_url],
-                ['Brochure (Arabic)', project.brochure_ar_url],
-                ['Fact Sheet', project.fact_sheet_url],
-                ['Floor Plans', project.floor_plans_url],
-                ['Masterplan', project.masterplan_url],
-                ['Material Board', project.material_board_url],
-                ['One Pager', project.one_pager_url],
-                ['Payment Plan', project.payment_plan_url],
-                ['Brochure', project.brochure_url],
+              const standardResources: { name: string; icon: React.ReactNode; url: string | null | undefined }[] = [
+                { name: 'Brochure (English)', icon: <DocumentTextIcon className="w-5 h-5" />, url: project.brochure_en_url || project.brochure_url },
+                { name: 'Brochure (Arabic)', icon: <DocumentTextIcon className="w-5 h-5" />, url: project.brochure_ar_url },
+                { name: 'Floor Plans', icon: <DocumentTextIcon className="w-5 h-5" />, url: project.floor_plans_url },
+                { name: 'Fact Sheet', icon: <DocumentTextIcon className="w-5 h-5" />, url: project.fact_sheet_url },
+                { name: 'Masterplan', icon: <DocumentTextIcon className="w-5 h-5" />, url: project.masterplan_url },
+                { name: 'Payment Plan', icon: <DocumentTextIcon className="w-5 h-5" />, url: project.payment_plan_url },
+                { name: 'Material Board', icon: <DocumentTextIcon className="w-5 h-5" />, url: project.material_board_url },
+                { name: 'One Pager', icon: <DocumentTextIcon className="w-5 h-5" />, url: project.one_pager_url },
               ]
-              urlFields.forEach(([name, url]) => {
-                if (url && !docs.find(d => d.url === url)) docs.push({ name, url })
-              })
+              const extraDocs: { name: string; url: string }[] = []
               if (Array.isArray(project.documents)) {
                 ;(project.documents as { name: string; url: string }[]).forEach(d => {
-                  if (d?.url && !docs.find(x => x.url === d.url)) docs.push(d)
+                  if (d?.url && !standardResources.find(r => r.url === d.url)) extraDocs.push(d)
                 })
               }
-              if (docs.length === 0) return null
+              const requestBase = `/contact?project=${encodeURIComponent(project.name || id)}&request=`
               return (
                 <div className="card-custom">
                   <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                    <DocumentTextIcon className="w-6 h-6 text-primary" />
-                    Download Resources
+                    <ArrowDownTrayIcon className="w-6 h-6 text-primary" />
+                    Resources & Downloads
                   </h2>
-                  <p className="text-muted-foreground text-sm mb-6">Access all project documents and materials. Click any item to download or view.</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {docs.map((doc, i) => (
+                  <p className="text-muted-foreground text-sm mb-6">Download project documents or request any resource from our team.</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {standardResources.map((res, i) =>
+                      res.url ? (
+                        <a
+                          key={i}
+                          href={res.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex items-center gap-3 p-4 bg-muted/50 hover:bg-primary border border-border hover:border-primary rounded-xl transition-all duration-200"
+                        >
+                          <div className="w-10 h-10 bg-primary/10 group-hover:bg-white/20 rounded-lg flex items-center justify-center shrink-0 text-primary group-hover:text-white">
+                            {res.icon}
+                          </div>
+                          <span className="flex-1 font-semibold text-sm text-foreground group-hover:text-white">{res.name}</span>
+                          <ArrowDownTrayIcon className="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-white" />
+                        </a>
+                      ) : (
+                        <a
+                          key={i}
+                          href={`${requestBase}${encodeURIComponent(res.name)}`}
+                          className="group flex items-center gap-3 p-4 bg-muted/30 border border-dashed border-border hover:border-primary hover:bg-primary/5 rounded-xl transition-all duration-200"
+                        >
+                          <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center shrink-0 text-muted-foreground group-hover:text-primary">
+                            {res.icon}
+                          </div>
+                          <span className="flex-1 font-semibold text-sm text-muted-foreground group-hover:text-primary">{res.name}</span>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground group-hover:text-primary border border-current rounded px-1.5 py-0.5 shrink-0">Request</span>
+                        </a>
+                      )
+                    )}
+                    {extraDocs.map((doc, i) => (
                       <a
-                        key={i}
+                        key={`extra-${i}`}
                         href={doc.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="group flex items-center gap-3 p-4 bg-muted/50 hover:bg-primary border border-border hover:border-primary rounded-xl transition-all duration-200"
                       >
-                        <div className="w-10 h-10 bg-primary/10 group-hover:bg-white/20 rounded-lg flex items-center justify-center shrink-0">
-                          <DocumentTextIcon className="w-5 h-5 text-primary group-hover:text-white" />
+                        <div className="w-10 h-10 bg-primary/10 group-hover:bg-white/20 rounded-lg flex items-center justify-center shrink-0 text-primary group-hover:text-white">
+                          <DocumentTextIcon className="w-5 h-5" />
                         </div>
-                        <span className="flex-1 font-semibold text-sm text-foreground group-hover:text-white truncate">{doc.name}</span>
+                        <span className="flex-1 font-semibold text-sm text-foreground group-hover:text-white">{doc.name}</span>
                         <ArrowDownTrayIcon className="w-4 h-4 shrink-0 text-muted-foreground group-hover:text-white" />
                       </a>
                     ))}
@@ -399,7 +424,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {mockFloorPlans.map((plan, index) => (
                   <div key={index} className="border border-border rounded-lg overflow-hidden">
-                    <div className="relative aspect-[4/3] bg-muted">
+                    <div className="relative aspect-4/3 bg-muted">
                       <Image
                         src={plan.image}
                         alt={`${plan.beds} Bed ${plan.type}`}
@@ -593,50 +618,55 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
             {/* Quick Actions */}
             <div className="card-custom">
-              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                {(() => {
-                  const docs: { name: string; url: string }[] = []
-                  // From the documents JSONB array
-                  if (project.documents && Array.isArray(project.documents)) {
-                    ;(project.documents as { name: string; url: string }[]).forEach(d => {
-                      if (d?.url) docs.push(d)
-                    })
-                  }
-                  // From individual URL fields
-                  const fields: [string, string | null | undefined][] = [
-                    ['Download Brochure', (project as any).brochure_url],
-                    ['Brochure (English)', (project as any).brochure_en_url],
-                    ['Brochure (Arabic)', (project as any).brochure_ar_url],
-                    ['Fact Sheet', (project as any).fact_sheet_url],
-                    ['Floor Plans', (project as any).floor_plans_url],
-                    ['Masterplan', (project as any).masterplan_url],
-                    ['Material Board', (project as any).material_board_url],
-                    ['One Pager', (project as any).one_pager_url],
-                    ['Payment Plan', (project as any).payment_plan_url],
-                  ]
-                  fields.forEach(([name, url]) => {
-                    if (url && !docs.find(d => d.url === url)) docs.push({ name, url })
-                  })
-                  return docs.length > 0 ? docs.map((doc, i) => (
+              <h3 className="text-lg font-semibold mb-1">Resources</h3>
+              <p className="text-muted-foreground text-xs mb-4">Download or request project documents</p>
+              <div className="space-y-2">
+                {([
+                  { name: 'Brochure', url: project.brochure_en_url || project.brochure_url },
+                  { name: 'Brochure (Arabic)', url: project.brochure_ar_url },
+                  { name: 'Floor Plans', url: project.floor_plans_url },
+                  { name: 'Fact Sheet', url: project.fact_sheet_url },
+                  { name: 'Masterplan', url: project.masterplan_url },
+                  { name: 'Payment Plan', url: project.payment_plan_url },
+                ] as { name: string; url: string | null | undefined }[]).map((res, i) =>
+                  res.url ? (
                     <a
                       key={i}
-                      href={doc.url}
+                      href={res.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full btn-primary py-3 px-4 flex items-center gap-2 justify-center"
                     >
-                      <DocumentTextIcon className="w-4 h-4 shrink-0" />
-                      {doc.name}
+                      <ArrowDownTrayIcon className="w-4 h-4 shrink-0" />
+                      {res.name}
                     </a>
-                  )) : null
-                })()}
-                <button className="w-full btn-outline py-3 px-4">
-                  Schedule Site Visit
-                </button>
-                <button className="w-full btn-outline py-3 px-4">
-                  Request Callback
-                </button>
+                  ) : (
+                    <a
+                      key={i}
+                      href={`/contact?project=${encodeURIComponent(project.name || id)}&request=${encodeURIComponent(res.name)}`}
+                      className="w-full btn-outline py-3 px-4 flex items-center gap-2 justify-center"
+                    >
+                      <DocumentTextIcon className="w-4 h-4 shrink-0" />
+                      Request {res.name}
+                    </a>
+                  )
+                )}
+                <div className="pt-1 space-y-2">
+                  <a
+                    href={`/contact?project=${encodeURIComponent(project.name || id)}&type=site-visit`}
+                    className="w-full btn-outline py-3 px-4 flex items-center gap-2 justify-center"
+                  >
+                    <CalendarDaysIcon className="w-4 h-4 shrink-0" />
+                    Schedule Site Visit
+                  </a>
+                  <a
+                    href={`/contact?project=${encodeURIComponent(project.name || id)}&type=callback`}
+                    className="w-full btn-outline py-3 px-4 flex items-center gap-2 justify-center"
+                  >
+                    <PhoneIcon className="w-4 h-4 shrink-0" />
+                    Request Callback
+                  </a>
+                </div>
               </div>
             </div>
 
