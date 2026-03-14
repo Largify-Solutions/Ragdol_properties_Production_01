@@ -242,18 +242,18 @@ export default function ServicesPage() {
       {/* Premium Hero Section */}
       <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
         {/* Golden gradient background */}
-        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-amber-900/20 via-transparent to-amber-800/10 -z-10"></div>
-        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
-        <div className="absolute top-40 left-0 w-64 h-64 bg-[#FFC636]/5 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[#FFC636]/10 via-transparent to-primary/5 -z-10"></div>
+        <div className="absolute top-20 right-0 w-96 h-96 bg-[#FFC636]/15 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-40 left-0 w-64 h-64 bg-[#FFC636]/10 rounded-full blur-3xl -z-10"></div>
         
         <div className="container-custom mx-auto text-center">
-          <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-[#FFC636] rounded-full mb-8">
-            <span className="text-sm font-black text-amber-900 tracking-widest uppercase">Our Expertise</span>
+          <div className="inline-block px-6 py-2 bg-[#FFC636]/15 rounded-full mb-8">
+            <span className="text-sm font-black text-[#FFC636] tracking-widest uppercase">Our Expertise</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-white mb-6 leading-tight">
-            <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent"> Premium Real Estate Services</span>
+          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 leading-tight">
+            <span className="bg-linear-to-r from-[#FFC636] to-primary bg-clip-text text-transparent"> Premium Real Estate Services</span>
           </h1>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
             Experience excellence with Ragdoll Properties' comprehensive suite of real estate solutions
           </p>
         </div>
@@ -266,12 +266,12 @@ export default function ServicesPage() {
             const Icon = service.icon
             return (
               <Link key={service.id} href={service.href}>
-                <div className="group relative h-full bg-white border-2 border-amber-700/50 rounded-3xl p-8 hover:border-amber-700 transition-all duration-500 cursor-pointer overflow-hidden shadow-sm hover:shadow-lg">
+                <div className="group relative h-full bg-white border-2 border-[#FFC636]/30 rounded-3xl p-8 hover:border-[#FFC636] transition-all duration-500 cursor-pointer overflow-hidden shadow-sm hover:shadow-lg">
                   {/* Golden gradient overlay on hover */}
                   <div className={`absolute inset-0 bg-linear-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 -z-10`}></div>
                   
                   {/* Golden accent bar */}
-                  <div className="absolute top-0 left-0 h-1 w-0 group-hover:w-full bg-linear-to-r from-amber-400 to-[#FFC636] transition-all duration-500"></div>
+                  <div className="absolute top-0 left-0 h-1 w-0 group-hover:w-full bg-linear-to-r from-[#FFC636] to-primary transition-all duration-500"></div>
                   
                   {/* Icon Container */}
                   <div className={`w-16 h-16 bg-linear-to-br ${service.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl`}>
@@ -279,7 +279,7 @@ export default function ServicesPage() {
                   </div>
                   
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-amber-700 transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#FFC636] transition-colors">
                     {service.title}
                   </h3>
                   
@@ -289,7 +289,7 @@ export default function ServicesPage() {
                   </p>
                   
                   {/* Learn More Link */}
-                  <div className="flex items-center text-amber-700 font-semibold text-sm group-hover:text-amber-800 transition-colors">
+                  <div className="flex items-center text-[#FFC636] font-semibold text-sm group-hover:text-primary transition-colors">
                     <span>Learn More</span>
                     <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-2 transition-transform" />
                   </div>
@@ -301,7 +301,7 @@ export default function ServicesPage() {
       </div>
 
       {/* Why Choose Ragdoll Properties Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-transparent to-amber-50/5">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-transparent to-[#FFC636]/5">
         <div className="container-custom mx-auto">
           <div className="text-center mb-16">
             <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-[#FFC636] rounded-full mb-6">
@@ -332,7 +332,7 @@ export default function ServicesPage() {
             ].map((item, idx) => {
               const Icon = item.icon
               return (
-                <div key={idx} className="group bg-white border-2 border-amber-700/50 rounded-2xl p-8 hover:border-amber-700 transition-all duration-300 shadow-sm hover:shadow-md">
+                <div key={idx} className="group bg-white border-2 border-[#FFC636]/30 rounded-2xl p-8 hover:border-[#FFC636] transition-all duration-300 shadow-sm hover:shadow-md">
                   <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
@@ -346,16 +346,16 @@ export default function ServicesPage() {
       </section>
 
       {/* Premium Property Gallery Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gray-900">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="container-custom mx-auto">
           <div className="text-center mb-16">
-            <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-[#FFC636] rounded-full mb-6">
-              <span className="text-sm font-black text-amber-900 tracking-widest uppercase">Featured Portfolio</span>
+            <div className="inline-block px-6 py-2 bg-[#FFC636]/15 rounded-full mb-6">
+              <span className="text-sm font-black text-[#FFC636] tracking-widest uppercase">Featured Portfolio</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-              Premium Property <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Showcase</span>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">
+              Premium Property <span className="bg-linear-to-r from-[#FFC636] to-primary bg-clip-text text-transparent">Showcase</span>
             </h2>
-            <p className="text-gray-400 text-lg">Explore our curated selection of luxury developments</p>
+            <p className="text-slate-600 text-lg">Explore our curated selection of luxury developments</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -426,7 +426,7 @@ export default function ServicesPage() {
       {/* CTA Section - Premium */}
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="container-custom mx-auto">
-          <div className="relative overflow-hidden rounded-4xl p-12 md:p-20 bg-white border-2 border-amber-700/60 shadow-lg">
+          <div className="relative overflow-hidden rounded-4xl p-12 md:p-20 bg-white border-2 border-[#FFC636]/40 shadow-lg">
             {/* Golden glow effects */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC636]/5 rounded-full blur-3xl -z-10"></div>

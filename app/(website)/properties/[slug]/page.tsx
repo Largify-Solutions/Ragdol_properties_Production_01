@@ -9,6 +9,7 @@ import PropertySlider from '@/components/property/PropertySlider'
 import PropertyAgents from '@/components/property/PropertyAgents'
 import MortgageCalculator from '@/components/shared/MortgageCalculator'
 import DownloadInterestForm, { DownloadInterestData } from '@/components/forms/DownloadInterestForm'
+import DocumentDownloadModal from '@/components/property/DocumentDownloadModal'
 import { useState, useEffect, use } from 'react'
 import dynamic from 'next/dynamic'
 import {
@@ -52,6 +53,25 @@ type Property = Database['public']['Tables']['properties']['Row'] & {
   }
   project?: Database['public']['Tables']['projects']['Row']
   documents?: { name: string; url: string }[]
+  // Additional fields from admin form
+  property_age?: number
+  floor_number?: number
+  total_floors?: number
+  furnished?: boolean
+  price_per_sqft?: number
+  built_up_area?: number
+  plot_size?: number
+  parking_spaces?: number
+  district?: string
+  neighborhood?: string
+  landmark?: string
+  amenities?: string[]
+  original_price?: number
+  video_url?: string
+  virtual_tour_url?: string
+  premium?: boolean
+  urgent?: boolean
+  verified?: boolean
 }
 
 type RelatedProperty = Database['public']['Tables']['properties']['Row']
@@ -266,16 +286,19 @@ async function getRelatedProperties(currentPropertyId: string): Promise<RelatedP
 
 interface PropertyPageProps {
   params: Promise<{
-    id: string
+    slug: string
   }>
 }
 
 export default function PropertyPage({ params }: PropertyPageProps) {
-  const { id } = use(params)
+  const { slug } = use(params)
 
   // Form state
   const [showFloorPlanForm, setShowFloorPlanForm] = useState(false)
   const [showBrochureForm, setShowBrochureForm] = useState(false)
+  const [showDocumentModal, setShowDocumentModal] = useState(false)
+  const [currentDownloadType, setCurrentDownloadType] = useState<'floor_plan' | 'brochure'>('floor_plan')
+  const [submittedEmail, setSubmittedEmail] = useState('')
 
   // Property data state
   const [property, setProperty] = useState<Property | null>(null)
@@ -286,7 +309,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch(`/api/properties/${id}`)
+        const res = await fetch(`/api/properties/slug/${slug}`)
         if (res.status === 404) {
           setNotFoundState(true)
           setLoading(false)
@@ -317,7 +340,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
         if (relatedRes.ok) {
           const relatedJson = await relatedRes.json()
           setRelatedProperties(
-            (relatedJson.data || []).filter((p: RelatedProperty) => p.id !== id).slice(0, 3)
+            (relatedJson.data || []).filter((p: RelatedProperty) => p.id !== data.id).slice(0, 3)
           )
         }
       } catch (err) {
@@ -327,7 +350,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
       }
     }
     loadData()
-  }, [id])
+  }, [slug])
 
   const formatPrice = (price: number, currency: string = 'AED') => {
     return `${currency} ${price.toLocaleString()}`
@@ -341,6 +364,13 @@ export default function PropertyPage({ params }: PropertyPageProps) {
     })
   }
 
+  const getWhatsAppUrl = (phone: string | null): string => {
+    if (!phone) return '#'
+    const cleanedNumber = phone.replace(/\D/g, '')
+    const finalNumber = cleanedNumber.startsWith('0') ? cleanedNumber.substring(1) : cleanedNumber
+    return `https://wa.me/971${finalNumber}`
+  }
+
   const handleDownloadInterest = async (data: DownloadInterestData, downloadType: 'floor_plan' | 'brochure') => {
     try {
       const response = await fetch('/api/download-interests', {
@@ -350,7 +380,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
         },
         body: JSON.stringify({
           ...data,
-          property_id: id,
+          property_id: property?.id,
           download_type: downloadType,
         }),
       })
@@ -359,8 +389,16 @@ export default function PropertyPage({ params }: PropertyPageProps) {
         throw new Error('Failed to submit form')
       }
 
-      // In a real app, you would trigger the actual download here
-      alert(`${downloadType === 'floor_plan' ? 'Floor plan' : 'Brochure'} download link sent to your email!`)
+      // Close the form
+      setShowFloorPlanForm(false)
+      setShowBrochureForm(false)
+
+      // Store submitted email and download type
+      setSubmittedEmail(data.email)
+      setCurrentDownloadType(downloadType)
+
+      // Show document modal with available documents
+      setShowDocumentModal(true)
     } catch (error) {
       console.error('Error submitting download interest:', error)
       alert('Failed to submit form. Please try again.')
@@ -373,6 +411,46 @@ export default function PropertyPage({ params }: PropertyPageProps) {
 
   const handleBrochureSubmit = (data: DownloadInterestData) => {
     return handleDownloadInterest(data, 'brochure')
+  }
+
+  // Extract documents from property meta_data
+  const getPropertyDocuments = () => {
+    if (!property) return []
+    
+    const docs: { name: string; url: string }[] = []
+    const metaData = (property as any).meta_data as Record<string, any> | null | undefined
+
+    // Add documents array
+    if (Array.isArray(metaData?.documents)) {
+      metaData.documents.forEach((d: any) => {
+        if (d?.url) docs.push(d)
+      })
+    }
+
+    // Add individual URL fields
+    const urlFields: [string, string | null | undefined][] = [
+      ['Floor Plan', metaData?.floorplans?.[0] || undefined],
+      ['Brochure', metaData?.brochure_url],
+      ['Fact Sheet', metaData?.fact_sheet_url],
+      ['Material Board', metaData?.material_board_url],
+    ]
+
+    urlFields.forEach(([name, url]) => {
+      if (url && !docs.find(d => d.url === url)) {
+        docs.push({ name, url })
+      }
+    })
+
+    // Add brochures array
+    if (Array.isArray(metaData?.brochures)) {
+      metaData.brochures.forEach((url: string, idx: number) => {
+        if (url && !docs.find(d => d.url === url)) {
+          docs.push({ name: `Brochure ${idx + 1}`, url })
+        }
+      })
+    }
+
+    return docs
   }
 
   if (notFoundState) return notFound()
@@ -388,7 +466,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   return (
     <div className="w-full min-h-screen bg-slate-50/50">
       {/* Breadcrumbs & Navigation */}
-      <div className="bg-white border-b border-slate-100 sticky top-20 z-30">
+      <div className="bg-white border-b border-slate-100 sticky top-20 z-40">
         <div className="container-custom py-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <nav className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
@@ -563,6 +641,205 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                   </div>
                 </div>
 
+                {/* Additional Property Specifications */}
+                <div className="space-y-6 pt-10 border-t border-slate-100">
+                  <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                    <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                      <ChartBarIcon className="w-5 h-5" />
+                    </span>
+                    Property Specifications
+                  </h2>
+                  
+                  {/* Status Badges */}
+                  {(property.premium || property.urgent || property.verified) && (
+                    <div className="flex flex-wrap gap-3 pb-6">
+                      {property.premium && (
+                        <span className="px-4 py-2 bg-yellow-50 text-yellow-700 text-xs font-black uppercase tracking-widest rounded-full border border-yellow-200 flex items-center gap-2">
+                          <SparklesIcon className="w-4 h-4" />
+                          Premium Property
+                        </span>
+                      )}
+                      {property.urgent && (
+                        <span className="px-4 py-2 bg-red-50 text-red-700 text-xs font-black uppercase tracking-widest rounded-full border border-red-200">
+                          🔴 Urgent Listing
+                        </span>
+                      )}
+                      {property.verified && (
+                        <span className="px-4 py-2 bg-green-50 text-green-700 text-xs font-black uppercase tracking-widest rounded-full border border-green-200 flex items-center gap-2">
+                          <CheckCircleIcon className="w-4 h-4" />
+                          Verified Listing
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Building & Construction Details */}
+                  {(property.year_built || property.property_age || property.floor_number || property.total_floors) && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Building Details</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {property.year_built && (
+                          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Year Built</div>
+                            <div className="text-xl font-black text-slate-900">{property.year_built}</div>
+                          </div>
+                        )}
+                        {property.property_age && (
+                          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Age</div>
+                            <div className="text-xl font-black text-slate-900">{property.property_age} yrs</div>
+                          </div>
+                        )}
+                        {property.floor_number && (
+                          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Floor</div>
+                            <div className="text-xl font-black text-slate-900">{property.floor_number}</div>
+                          </div>
+                        )}
+                        {property.total_floors && (
+                          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Total Floors</div>
+                            <div className="text-xl font-black text-slate-900">{property.total_floors}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Area & Dimensions */}
+                  {(property.price_per_sqft || property.built_up_area || property.plot_size || property.parking_spaces || property.furnished) && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Dimensions & Features</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                        {property.price_per_sqft && (
+                          <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Price Per SqFt</span>
+                            <span className="text-sm font-black text-slate-900">{property.currency || 'AED'} {property.price_per_sqft?.toLocaleString()}</span>
+                          </div>
+                        )}
+                        {property.built_up_area && (
+                          <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Built Up Area</span>
+                            <span className="text-sm font-black text-slate-900">{property.built_up_area?.toLocaleString()} sqft</span>
+                          </div>
+                        )}
+                        {property.plot_size && (
+                          <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Plot Size</span>
+                            <span className="text-sm font-black text-slate-900">{property.plot_size?.toLocaleString()} sqft</span>
+                          </div>
+                        )}
+                        {property.parking_spaces && (
+                          <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Parking Spaces</span>
+                            <span className="text-sm font-black text-slate-900">{property.parking_spaces}</span>
+                          </div>
+                        )}
+                        {property.furnished !== undefined && (
+                          <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Furnished</span>
+                            <span className="text-sm font-black text-slate-900 capitalize">{property.furnished ? 'Yes' : 'No'}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Location Details */}
+                  {(property.district || property.neighborhood || property.landmark) && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Location Details</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                        {property.district && (
+                          <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">District</span>
+                            <span className="text-sm font-black text-slate-900">{property.district}</span>
+                          </div>
+                        )}
+                        {property.neighborhood && (
+                          <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Neighborhood</span>
+                            <span className="text-sm font-black text-slate-900">{property.neighborhood}</span>
+                          </div>
+                        )}
+                        {property.landmark && (
+                          <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Landmark</span>
+                            <span className="text-sm font-black text-slate-900">{property.landmark}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Amenities */}
+                  {property.amenities && property.amenities.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Amenities</h3>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        {property.amenities.map((amenity, index) => (
+                          <div key={index} className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <CheckCircleIcon className="w-4 h-4 text-primary shrink-0" />
+                            <span className="text-sm font-bold text-slate-700">{amenity}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pricing Information */}
+                  {property.original_price && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Pricing</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+                        <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                          <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Original Price</span>
+                          <span className="text-sm font-black text-slate-900">{formatPrice(property.original_price, property.currency || 'AED')}</span>
+                        </div>
+                        {property.original_price > property.price && (
+                          <div className="flex items-center justify-between py-4 border-b border-slate-50">
+                            <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Discount</span>
+                            <span className="text-sm font-black text-green-600">
+                              {((1 - property.price / property.original_price) * 100).toFixed(1)}% Off
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Media */}
+                  {(property.video_url || property.virtual_tour_url) && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Media</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {property.video_url && (
+                          <a
+                            href={property.video_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-4 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-2xl transition-all duration-300 flex items-center gap-3"
+                          >
+                            <PhotoIcon className="w-5 h-5" />
+                            <span className="font-bold text-sm">Watch Property Video</span>
+                          </a>
+                        )}
+                        {property.virtual_tour_url && (
+                          <a
+                            href={property.virtual_tour_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-4 bg-slate-50 hover:bg-primary hover:text-white border border-slate-200 hover:border-primary rounded-2xl transition-all duration-300 flex items-center gap-3"
+                          >
+                            <PhotoIcon className="w-5 h-5" />
+                            <span className="font-bold text-sm">Virtual Tour 360°</span>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Map Location */}
                 <div className="space-y-6 pt-10 border-t border-slate-100">
                   <h2 className="text-2xl font-black text-slate-900 flex items-center gap-3">
@@ -683,7 +960,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
 
           {/* Sidebar */}
           <aside className="lg:col-span-4 space-y-8">
-            <div className="sticky top-32 space-y-8">
+            <div className="sticky top-32 z-30 space-y-8">
               {/* Agent Card */}
               {property.agent && (
                 <div className="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
@@ -725,11 +1002,27 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                     </div>
 
                     <div className="space-y-3">
-                      <button className="btn-primary w-full! rounded-2xl! py-4! flex items-center justify-center gap-3 shadow-lg shadow-primary/20">
+                      <button
+                        onClick={() => {
+                          const whatsappUrl = getWhatsAppUrl(property.agent?.agent_details?.whatsapp || null)
+                          if (whatsappUrl !== '#') {
+                            window.open(whatsappUrl, '_blank')
+                          }
+                        }}
+                        className="btn-primary w-full! rounded-2xl! py-4! flex items-center justify-center gap-3 shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
+                      >
                         <PhoneIcon className="w-5 h-5" />
                         Call Agent
                       </button>
-                      <button className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-green-500/20">
+                      <button
+                        onClick={() => {
+                          const whatsappUrl = getWhatsAppUrl(property.agent?.agent_details?.whatsapp || null)
+                          if (whatsappUrl !== '#') {
+                            window.open(whatsappUrl, '_blank')
+                          }
+                        }}
+                        className="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-green-500/20"
+                      >
                         <ChatBubbleLeftRightIcon className="w-5 h-5" />
                         WhatsApp
                       </button>
@@ -841,6 +1134,15 @@ export default function PropertyPage({ params }: PropertyPageProps) {
         onSubmit={handleBrochureSubmit}
         downloadType="brochure"
         propertyTitle={property.title}
+      />
+
+      <DocumentDownloadModal
+        isOpen={showDocumentModal}
+        onClose={() => setShowDocumentModal(false)}
+        documents={getPropertyDocuments()}
+        propertyTitle={property.title}
+        downloadType={currentDownloadType}
+        userEmail={submittedEmail}
       />
     </div>
   )

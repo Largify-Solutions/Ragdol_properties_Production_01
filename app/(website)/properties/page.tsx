@@ -993,6 +993,14 @@ function FloorPlanForm({
   );
 }
 
+// Helper function for WhatsApp URL formatting
+function getWhatsAppUrl(whatsapp: string | null): string {
+  if (!whatsapp) return '#';
+  const cleanedNumber = whatsapp.replace(/\D/g, '');
+  const finalNumber = cleanedNumber.startsWith('0') ? cleanedNumber.substring(1) : cleanedNumber;
+  return `https://wa.me/971${finalNumber}`;
+}
+
 // Agent Popup Modal Component - COMPLETED
 function AgentPopupModal({
   agentData,
@@ -1004,13 +1012,6 @@ function AgentPopupModal({
   onClose: () => void;
 }) {
   if (!isOpen || !agentData) return null;
-
-  const getWhatsAppUrl = (whatsapp: string | null): string => {
-    if (!whatsapp) return '#';
-    const cleanedNumber = whatsapp.replace(/\D/g, '');
-    const finalNumber = cleanedNumber.startsWith('0') ? cleanedNumber.substring(1) : cleanedNumber;
-    return `https://wa.me/971${finalNumber}`;
-  };
 
   const formatAgentDate = (dateString: string): string => {
     try {
@@ -1036,49 +1037,51 @@ function AgentPopupModal({
         </button>
 
         <div className="p-0">
-          <div className="relative h-64 md:h-80 bg-linear-to-r from-primary/20 to-secondary/20">
-            {agentData?.profile_image ? (
-              <img
-                src={agentData.profile_image}
-                alt={agentData.title || "Agent"}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/5">
-                <div className="text-6xl font-bold text-primary opacity-50">
-                  {agentData?.title ? agentData.title.substring(0, 2).toUpperCase() : 'AG'}
-                </div>
-              </div>
-            )}
-            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
-            
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <div className="flex flex-col md:flex-row md:items-end justify-between">
-                <div>
-                  <h2 className="text-3xl md:text-4xl font-serif text-white mb-2">
-                    {agentData?.title || "Real Estate Agent"}
-                  </h2>
-                  <p className="text-white/80 text-lg">{agentData?.brokerage || "Property Specialist"}</p>
-                </div>
-                <div className="flex items-center gap-3 mt-4 md:mt-0">
-                  {agentData?.verified && (
-                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#FFC636] text-white text-sm font-bold rounded-full">
-                      <CheckBadgeIcon className="w-4 h-4" />
-                      Verified Agent
-                    </span>
-                  )}
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary text-secondary text-sm font-bold rounded-full">
-                    <BriefcaseIcon className="w-4 h-4" />
-                    {agentData?.experience_years || 5}+ Years
-                  </span>
-                </div>
-              </div>
+          {/* Header with Agent Name */}
+          <div className="bg-linear-to-r from-primary/10 to-secondary/10 p-6 md:p-8 border-b border-slate-200">
+            <h2 className="text-3xl md:text-4xl font-serif text-secondary mb-2">
+              {agentData?.title || "Real Estate Agent"}
+            </h2>
+            <p className="text-slate-600 text-lg mb-4">{agentData?.brokerage || "Property Specialist"}</p>
+            <div className="flex items-center gap-3">
+              {agentData?.verified && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#FFC636] text-white text-sm font-bold rounded-full">
+                  <CheckBadgeIcon className="w-4 h-4" />
+                  Verified Agent
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary text-secondary text-sm font-bold rounded-full">
+                <BriefcaseIcon className="w-4 h-4" />
+                {agentData?.experience_years || 5}+ Years
+              </span>
             </div>
           </div>
 
           <div className="p-6 md:p-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-1 space-y-6">
+                {/* Profile Image Card */}
+                <div className="bg-white rounded-xl overflow-hidden border border-slate-200 shadow-md">
+                  <div className="aspect-square bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+                    {agentData?.profile_image ? (
+                      <img
+                        src={agentData.profile_image}
+                        alt={agentData.title || "Agent"}
+                        className="w-full h-full object-contain p-4"
+                      />
+                    ) : (
+                      <div className="text-7xl font-bold text-primary opacity-30">
+                        {agentData?.title ? agentData.title.substring(0, 2).toUpperCase() : 'AG'}
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4 border-t border-slate-200">
+                    <p className="text-center text-sm text-slate-600">
+                      <span className="font-semibold text-slate-700">License:</span> {agentData?.license_no || 'N/A'}
+                    </p>
+                  </div>
+                </div>
+
                 <div className="bg-slate-50 rounded-xl p-6">
                   <h3 className="text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                     <PhoneIcon className="w-5 h-5 text-primary" />
@@ -2169,8 +2172,10 @@ function ViewDetailsModal({
                         <div className="space-y-3">
                           <button
                             onClick={() => {
-                              const phone = agentData?.whatsapp || "03291082882";
-                              window.location.href = `tel:${phone}`;
+                              const whatsappUrl = getWhatsAppUrl(agentData?.whatsapp || null);
+                              if (whatsappUrl !== '#') {
+                                window.open(whatsappUrl, "_blank");
+                              }
                             }}
                             className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20"
                           >
@@ -2315,7 +2320,7 @@ async function fetchAllPropertiesFromAgentCollection() {
   try {
     const { data: propertiesData, error } = await supabase
       .from('agent_properties')
-      .select('id,title,slug,description,short_description,type,status,property_status,price,currency,beds,baths,sqft,images,image_url,features,amenities,address,city,area,coords,featured,agent_id,furnishing,parking_spaces,video_url,category_id,project_id,developer_id,created_at,updated_at')
+      .select('id,title,description,type,status,price,beds,bathrooms,sqft,images,features,amenities,address,city,area,featured,agent_id,views_count,created_at,updated_at')
       .eq('published', true)
       .order('created_at', { ascending: false })
       .limit(500);
