@@ -3,27 +3,33 @@
 import { useState, useEffect } from 'react'
 import { Cog6ToothIcon, XMarkIcon, GlobeAltIcon, CurrencyDollarIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
+import {
+  clearSavedLanguageCode,
+  getSavedLanguageCode,
+  normalizeLanguageCode,
+  persistLanguageCode,
+  type SupportedLanguage
+} from '@/lib/i18n'
 
 export default function FloatingTools() {
   const { t, i18n } = useTranslation()
   const [isToolsOpen, setIsToolsOpen] = useState(false)
   const [selectedArea, setSelectedArea] = useState('All Areas')
-  const [selectedLanguage, setSelectedLanguage] = useState('English')
+  const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>('en')
   const [selectedCurrency, setSelectedCurrency] = useState('AED')
 
   useEffect(() => {
     // Load saved preferences from localStorage
     const savedArea = localStorage.getItem('selectedArea')
-    const savedLanguage = localStorage.getItem('selectedLanguage') || 'English'
+    const savedLanguage = getSavedLanguageCode()
     const savedCurrency = localStorage.getItem('selectedCurrency')
 
     if (savedArea) setSelectedArea(savedArea)
     setSelectedLanguage(savedLanguage)
 
     // Set initial language
-    const langCode = savedLanguage.toLowerCase().substring(0, 2)
-    if (i18n.language !== langCode) {
-      i18n.changeLanguage(langCode)
+    if (normalizeLanguageCode(i18n.language) !== savedLanguage) {
+      i18n.changeLanguage(savedLanguage)
     }
 
     if (savedCurrency) setSelectedCurrency(savedCurrency)
@@ -64,11 +70,10 @@ export default function FloatingTools() {
     localStorage.setItem('selectedArea', area)
   }
 
-  const handleLanguageChange = (language: string) => {
-    setSelectedLanguage(language)
-    const langCode = language.toLowerCase().substring(0, 2)
-    i18n.changeLanguage(langCode)
-    localStorage.setItem('selectedLanguage', language)
+  const handleLanguageChange = (languageCode: SupportedLanguage) => {
+    setSelectedLanguage(languageCode)
+    i18n.changeLanguage(languageCode)
+    persistLanguageCode(languageCode)
     // Note: HTML lang and dir attributes are handled by DynamicHtml component
   }
 
@@ -143,16 +148,16 @@ export default function FloatingTools() {
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
-                      onClick={() => handleLanguageChange(lang.name)}
+                      onClick={() => handleLanguageChange(lang.code as SupportedLanguage)}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm transition-all ${
-                        selectedLanguage === lang.name
+                        selectedLanguage === lang.code
                           ? 'border-primary bg-primary/5 text-primary'
                           : 'border-gray-300 hover:border-gray-400'
                       }`}
                     >
                       <span className="text-lg">{lang.flag}</span>
                       <span className="font-medium">{lang.name}</span>
-                      {selectedLanguage === lang.name && (
+                      {selectedLanguage === lang.code && (
                         <div className="ml-auto w-2 h-2 bg-primary rounded-full"></div>
                       )}
                     </button>
@@ -193,13 +198,13 @@ export default function FloatingTools() {
                   onClick={() => {
                     // Reset to defaults
                     setSelectedArea('All Areas')
-                    setSelectedLanguage('English')
+                    setSelectedLanguage('en')
                     setSelectedCurrency('AED')
                     i18n.changeLanguage('en')
                     document.documentElement.lang = 'en'
                     document.documentElement.dir = 'ltr'
                     localStorage.removeItem('selectedArea')
-                    localStorage.removeItem('selectedLanguage')
+                    clearSavedLanguageCode()
                     localStorage.removeItem('selectedCurrency')
                   }}
                   className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"

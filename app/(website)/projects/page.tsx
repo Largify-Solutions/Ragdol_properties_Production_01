@@ -35,6 +35,7 @@ import {
   StarIcon,
   Square3Stack3DIcon,
   PlayCircleIcon,
+  ArrowDownTrayIcon,
   GlobeAltIcon,
   Squares2X2Icon, // NEW: Added for gallery icon
 } from "@heroicons/react/24/outline";
@@ -82,6 +83,15 @@ interface Project {
   max_price: number;
   sold_units: number;
   brochure_url?: string;
+  brochure_en_url?: string;
+  brochure_ar_url?: string;
+  floor_plans_url?: string;
+  fact_sheet_url?: string;
+  masterplan_url?: string;
+  payment_plan_url?: string;
+  material_board_url?: string;
+  one_pager_url?: string;
+  documents?: { name: string; url: string }[];
   video_url?: string;
   featured: boolean;
   published: boolean;
@@ -279,7 +289,7 @@ const RequestInfoForm = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-secondary/80 backdrop-blur-sm mt-20">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-secondary/80 backdrop-blur-sm mt-20">
       <div className="bg-white w-full max-w-2xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-fadeIn">
         <div className="relative h-15">
           <div className="absolute inset-0 bg-secondary/60 flex items-center justify-center">
@@ -399,6 +409,129 @@ const RequestInfoForm = ({
             </form>
           )}
         </div>
+      </div>
+    </div>
+  );
+};
+
+const DocumentRequestForm = ({
+  project,
+  documentName,
+  documentUrl,
+  onClose,
+}: {
+  project: Project;
+  documentName: string;
+  documentUrl: string;
+  onClose: () => void;
+}) => {
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email.trim() || !phone.trim()) {
+      setError("Please enter your email and phone number.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const fallbackName = email.includes("@") ? email.split("@")[0] : "Document Request";
+
+      const { error: insertError } = await supabase
+        .from("request_information")
+        .insert({
+          project_id: project.id,
+          project_name: project.name,
+          developer: project.developer || "",
+          name: fallbackName,
+          email,
+          phone,
+          message: `Document requested: ${documentName} | URL: ${documentUrl}`,
+          status: "new",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+
+      if (insertError) throw insertError;
+
+      window.open(documentUrl, "_blank", "noopener,noreferrer");
+      onClose();
+    } catch (err) {
+      console.error("Error creating document request:", err);
+      setError("Unable to process request. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+        <div className="px-8 py-6 bg-linear-to-r from-primary to-primary/80 text-white">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="text-2xl font-black">Document Access</h3>
+              <p className="text-white/85 text-sm mt-1">{documentName}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-10 h-10 rounded-full bg-white/20 hover:bg-white hover:text-primary text-white transition-all flex items-center justify-center"
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-8 space-y-5">
+          <p className="text-slate-600 text-sm">
+            Please enter your contact details to open this project document.
+          </p>
+
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+971 50 123 4567"
+              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none"
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full py-3.5 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all disabled:opacity-60"
+          >
+            {isSubmitting ? "Processing..." : "Submit & Open Document"}
+          </button>
+        </form>
       </div>
     </div>
   );
@@ -692,6 +825,12 @@ function ProjectsPageContent() {
     isOpen: boolean;
     project: Project | null;
   }>({ isOpen: false, project: null }); // NEW: Request Info Modal
+  const [documentRequestModal, setDocumentRequestModal] = useState<{
+    isOpen: boolean;
+    project: Project | null;
+    documentName: string;
+    documentUrl: string;
+  }>({ isOpen: false, project: null, documentName: "", documentUrl: "" });
   const [selectedImageIndex, setSelectedImageIndex] = useState<{
     [key: string]: number;
   }>({});
@@ -753,6 +892,15 @@ function ProjectsPageContent() {
           max_price: data.max_price || 0,
           sold_units: data.sold_units || 0,
           brochure_url: data.brochure_url || "",
+          brochure_en_url: data.brochure_en_url || "",
+          brochure_ar_url: data.brochure_ar_url || "",
+          floor_plans_url: data.floor_plans_url || "",
+          fact_sheet_url: data.fact_sheet_url || "",
+          masterplan_url: data.masterplan_url || "",
+          payment_plan_url: data.payment_plan_url || "",
+          material_board_url: data.material_board_url || "",
+          one_pager_url: data.one_pager_url || "",
+          documents: Array.isArray(data.documents) ? data.documents : [],
           video_url: data.video_url || "",
           featured: data.featured || false,
           published: data.published || false,
@@ -840,6 +988,15 @@ function ProjectsPageContent() {
           max_price: data.max_price || 0,
           sold_units: data.sold_units || 0,
           brochure_url: data.brochure_url || "",
+          brochure_en_url: data.brochure_en_url || "",
+          brochure_ar_url: data.brochure_ar_url || "",
+          floor_plans_url: data.floor_plans_url || "",
+          fact_sheet_url: data.fact_sheet_url || "",
+          masterplan_url: data.masterplan_url || "",
+          payment_plan_url: data.payment_plan_url || "",
+          material_board_url: data.material_board_url || "",
+          one_pager_url: data.one_pager_url || "",
+          documents: Array.isArray(data.documents) ? data.documents : [],
           video_url: data.video_url || "",
           featured: data.featured || false,
           published: data.published || false,
@@ -1390,6 +1547,23 @@ function ProjectsPageContent() {
         <RequestInfoForm
           project={requestInfoModal.project}
           onClose={() => setRequestInfoModal({ isOpen: false, project: null })}
+        />
+      )}
+
+      {/* Document Request Modal */}
+      {documentRequestModal.isOpen && documentRequestModal.project && documentRequestModal.documentUrl && (
+        <DocumentRequestForm
+          project={documentRequestModal.project}
+          documentName={documentRequestModal.documentName}
+          documentUrl={documentRequestModal.documentUrl}
+          onClose={() =>
+            setDocumentRequestModal({
+              isOpen: false,
+              project: null,
+              documentName: "",
+              documentUrl: "",
+            })
+          }
         />
       )}
 
@@ -1963,6 +2137,94 @@ function ProjectsPageContent() {
                           {formatNumber(detailsModal.project.max_price)}
                         </span>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Documents Card */}
+                  <div className="bg-white rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative">
+                    <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
+                    <div className="space-y-5">
+                      <div>
+                        <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                          <ArrowDownTrayIcon className="w-5 h-5 text-primary" />
+                          Project Documents
+                        </h3>
+                        <p className="text-sm text-slate-500 mt-1">
+                          Download available resources or request missing documents.
+                        </p>
+                      </div>
+
+                      {(() => {
+                        const activeProject = detailsModal.project
+                        if (!activeProject) return null
+
+                        const resources: { name: string; url?: string | null }[] = [
+                          { name: "Brochure (English)", url: activeProject.brochure_en_url || activeProject.brochure_url },
+                          { name: "Brochure (Arabic)", url: activeProject.brochure_ar_url },
+                          { name: "Floor Plans", url: activeProject.floor_plans_url },
+                          { name: "Fact Sheet", url: activeProject.fact_sheet_url },
+                          { name: "Masterplan", url: activeProject.masterplan_url },
+                          { name: "Payment Plan", url: activeProject.payment_plan_url },
+                          { name: "Material Board", url: activeProject.material_board_url },
+                          { name: "One Pager", url: activeProject.one_pager_url },
+                        ]
+
+                        if (Array.isArray(activeProject.documents)) {
+                          activeProject.documents.forEach((doc) => {
+                            if (doc?.url && !resources.find((r) => r.url === doc.url)) {
+                              resources.push({ name: doc.name || "Additional Document", url: doc.url })
+                            }
+                          })
+                        }
+
+                        return (
+                          <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+                            {resources.map((res, idx) => {
+                              const requestUrl = `/contact?project=${encodeURIComponent(activeProject.name || "Project")}&request=${encodeURIComponent(res.name)}`
+
+                              return res.url ? (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() =>
+                                    setDocumentRequestModal({
+                                      isOpen: true,
+                                      project: activeProject,
+                                      documentName: res.name,
+                                      documentUrl: res.url as string,
+                                    })
+                                  }
+                                  className="group w-full flex items-center gap-3 px-4 py-3 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-primary hover:border-primary transition-all"
+                                >
+                                  <div className="h-9 w-9 rounded-xl bg-primary/10 group-hover:bg-white/20 flex items-center justify-center shrink-0">
+                                    <DocumentTextIcon className="w-4 h-4 text-primary group-hover:text-white" />
+                                  </div>
+                                  <span className="text-sm font-bold text-slate-800 group-hover:text-white flex-1 truncate">
+                                    {res.name}
+                                  </span>
+                                  <ArrowDownTrayIcon className="w-4 h-4 text-slate-500 group-hover:text-white shrink-0" />
+                                </button>
+                              ) : (
+                                <a
+                                  key={idx}
+                                  href={requestUrl}
+                                  className="group w-full flex items-center gap-3 px-4 py-3 rounded-2xl border border-dashed border-slate-300 bg-white hover:bg-primary/5 hover:border-primary transition-all"
+                                >
+                                  <div className="h-9 w-9 rounded-xl bg-slate-100 group-hover:bg-primary/10 flex items-center justify-center shrink-0">
+                                    <DocumentTextIcon className="w-4 h-4 text-slate-500 group-hover:text-primary" />
+                                  </div>
+                                  <span className="text-sm font-bold text-slate-600 group-hover:text-primary flex-1 truncate">
+                                    Request {res.name}
+                                  </span>
+                                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 group-hover:text-primary border border-current rounded px-1.5 py-0.5 shrink-0">
+                                    Request
+                                  </span>
+                                </a>
+                              )
+                            })}
+                          </div>
+                        )
+                      })()}
                     </div>
                   </div>
                 </div>

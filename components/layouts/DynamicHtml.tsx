@@ -1,40 +1,39 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import i18n from '../../lib/i18n'
+import i18n, { getLanguageDirection, getSavedLanguageCode, normalizeLanguageCode } from '../../lib/i18n'
 
 interface DynamicHtmlProps {
   children: React.ReactNode
 }
 
 export default function DynamicHtml({ children }: DynamicHtmlProps) {
-  const [lang, setLang] = useState('en')
-  const [dir, setDir] = useState('ltr')
+  const [lang, setLang] = useState<'en' | 'fr' | 'ar'>('en')
+  const [dir, setDir] = useState<'ltr' | 'rtl'>('ltr')
 
   useEffect(() => {
-    // Get saved language from localStorage or default to 'en'
-    const savedLanguage = localStorage.getItem('selectedLanguage') || 'English'
-    const langCode = savedLanguage.toLowerCase().substring(0, 2)
+    const savedLanguageCode = getSavedLanguageCode()
 
     // Set initial language and direction
-    setLang(langCode)
-    setDir(langCode === 'ar' ? 'rtl' : 'ltr')
+    setLang(savedLanguageCode)
+    setDir(getLanguageDirection(savedLanguageCode))
 
     // Update document attributes
-    document.documentElement.lang = langCode
-    document.documentElement.dir = langCode === 'ar' ? 'rtl' : 'ltr'
+    document.documentElement.lang = savedLanguageCode
+    document.documentElement.dir = getLanguageDirection(savedLanguageCode)
 
     // Change i18n language if different
-    if (i18n.language !== langCode) {
-      i18n.changeLanguage(langCode)
+    if (normalizeLanguageCode(i18n.language) !== savedLanguageCode) {
+      i18n.changeLanguage(savedLanguageCode)
     }
 
     // Listen for language changes
     const handleLanguageChange = (lng: string) => {
-      setLang(lng)
-      setDir(lng === 'ar' ? 'rtl' : 'ltr')
-      document.documentElement.lang = lng
-      document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr'
+      const normalizedLanguage = normalizeLanguageCode(lng)
+      setLang(normalizedLanguage)
+      setDir(getLanguageDirection(normalizedLanguage))
+      document.documentElement.lang = normalizedLanguage
+      document.documentElement.dir = getLanguageDirection(normalizedLanguage)
     }
 
     i18n.on('languageChanged', handleLanguageChange)

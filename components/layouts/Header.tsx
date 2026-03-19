@@ -20,84 +20,6 @@ import {
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
-const dubaiAreas = [
-  {
-    name: "Dubai Marina",
-    image:
-      "https://images.unsplash.com/photo-1582672060674-bc2bd808a8b5?w=400&q=80",
-  },
-  {
-    name: "Downtown Dubai",
-    image:
-      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&q=80",
-  },
-  {
-    name: "Palm Jumeirah",
-    image:
-      "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=400&q=80",
-  },
-  {
-    name: "Business Bay",
-    image:
-      "https://images.unsplash.com/photo-1549944850-84e00be4203b?w=400&q=80",
-  },
-  {
-    name: "Jumeirah",
-    image:
-      "https://images.unsplash.com/photo-1528702748617-c64d49f918af?w=400&q=80",
-  },
-  {
-    name: "Dubai Hills Estate",
-    image:
-      "https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400&q=80",
-  },
-  {
-    name: "Dubai Creek Harbour",
-    image:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&q=80",
-  },
-  {
-    name: "Emirates Hills",
-    image:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80",
-  },
-  {
-    name: "Arabian Ranches",
-    image:
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80",
-  },
-  {
-    name: "Dubai South",
-    image:
-      "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400&q=80",
-  },
-  {
-    name: "Al Barsha",
-    image:
-      "https://images.unsplash.com/photo-1540518614846-7eded433c457?w=400&q=80",
-  },
-  {
-    name: "Dubai Silicon Oasis",
-    image:
-      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&q=80",
-  },
-  {
-    name: "Deira",
-    image:
-      "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=400&q=80",
-  },
-  {
-    name: "Jumeirah Beach Residence",
-    image:
-      "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&q=80",
-  },
-  {
-    name: "Dubai Islands",
-    image:
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&q=80",
-  },
-];
-
 interface NavSubItem {
   label: string;
   href: string;
@@ -231,16 +153,6 @@ export default function Header() {
         },
       ],
     },
-    {
-      label: "Popular Areas",
-      href: "/properties?action=buy",
-      subItems: dubaiAreas.map((area) => ({
-        label: area.name,
-        href: `/properties?action=buy&area=${area.name
-          .toLowerCase()
-          .replace(/\s+/g, "-")}`,
-      })),
-    },
   ],
 },
 
@@ -283,16 +195,6 @@ export default function Header() {
             },
           ],
         },
-        {
-          label: "Popular Areas",
-          href: "/properties?action=rent",
-          subItems: dubaiAreas.map((area) => ({
-            label: area.name,
-            href: `/properties?action=rent&area=${area.name
-              .toLowerCase()
-              .replace(/\s+/g, "-")}`,
-          })),
-        },
       ],
     },
 
@@ -321,23 +223,6 @@ export default function Header() {
         { label: "Studios", href: "/properties?category=luxe&type=studio" },
         { label: "Plots", href: "/properties?category=luxe&type=plot" },
         { label: "Furnished Studios", href: "/properties?category=luxe&type=furnished-studio" },
-      ],
-    },
-    
-    {
-      label: "Popular Areas",
-      href: "/properties?category=luxe",
-      subItems: [
-        { label: "Dubai Marina", href: "/properties?category=luxe&area=dubai-marina" },
-        { label: "Palm Jumeirah", href: "/properties?category=luxe&area=palm-jumeirah" },
-        { label: "Downtown Dubai", href: "/properties?category=luxe&area=downtown-dubai" },
-        { label: "Emirates Hills", href: "/properties?category=luxe&area=emirates-hills" },
-        { label: "Arabian Ranches", href: "/properties?category=luxe&area=arabian-ranches" },
-        { label: "Dubai Hills Estate", href: "/properties?category=luxe&area=dubai-hills-estate" },
-        { label: "Business Bay", href: "/properties?category=luxe&area=business-bay" },
-        { label: "Jumeirah", href: "/properties?category=luxe&area=jumeirah" },
-        { label: "Dubai Creek Harbour", href: "/properties?category=luxe&area=dubai-creek-harbour" },
-        { label: "Al Barsha", href: "/properties?category=luxe&area=al-barsha" },
       ],
     },
     
@@ -602,11 +487,11 @@ export default function Header() {
                     onMouseEnter={() => { if (closeTimerRef.current) clearTimeout(closeTimerRef.current); }}
                     onMouseLeave={scheduleCloseAll}
                     className={cn(
-                      "bg-white shadow-2xl transition-all duration-300 z-50 top-full",
+                      "bg-white shadow-2xl transition-all duration-300 z-50 border border-slate-100",
                       // Compact dropdown only for Services
                       item.label === "Services"
                         ? "absolute right-0 w-64 py-4 rounded-xl mt-2"
-                        : "fixed left-0 right-0 w-screen py-12",
+                        : "fixed left-1/2 -translate-x-1/2 top-[88px] w-[min(1120px,94vw)] rounded-3xl p-8",
                       (item.label === "Buy" && isBuyOpen) ||
                         (item.label === "Rent" && isRentOpen) ||
                         (item.label === "Luxe" && isLuxeOpen) ||
@@ -622,7 +507,11 @@ export default function Header() {
                       className={cn(
                         item.label === "Services"
                           ? "px-4"
-                          : "container-custom mx-auto grid grid-cols-12 gap-12"
+                          : item.items?.length === 1
+                            ? "max-w-md mx-auto grid grid-cols-1 gap-5"
+                            : item.items?.length === 2
+                              ? "max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-5"
+                              : "max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
                       )}
                     >
                       {/* Compact dropdown only for Services */}
@@ -643,21 +532,15 @@ export default function Header() {
                         </div>
                       ) : (
                         // Full mega menu for Buy, Rent, Luxe, Commercial
-                        item.items?.map((navItem, index) => {
-                          const isAreaList = navItem.label === "Popular Areas";
-
+                        item.items?.map((navItem) => {
                           return (
                             <div
                               key={navItem.label}
-                              className={cn(
-                                isAreaList ? "col-span-6" : 
-                                item.label === "More" ? "col-span-4" :
-                                "col-span-3"
-                              )}
+                              className="rounded-2xl border border-slate-100 bg-slate-50/60 p-5 hover:bg-white hover:shadow-sm transition-all"
                             >
                               <Link
                                 href={navItem.href}
-                                className="block text-lg font-bold text-secondary hover:text-primary transition-all border-b border-slate-100 pb-3 mb-6"
+                                className="block text-base font-bold text-secondary hover:text-primary transition-all border-b border-slate-200 pb-3 mb-4"
                                 onClick={() => {
                                   if (item.label === "Buy") setIsBuyOpen(false);
                                   else if (item.label === "Rent")
@@ -673,22 +556,13 @@ export default function Header() {
                                 {navItem.label}
                               </Link>
                               {navItem.subItems && (
-                                <div
-                                  className={cn(
-                                    isAreaList
-                                      ? "grid grid-cols-3 gap-x-6 gap-y-4"
-                                      : "space-y-3"
-                                  )}
-                                >
-                                  {navItem.subItems.map((subItem, subIndex) => {
-                                    const areaInfo = dubaiAreas.find(
-                                      (a) => a.name === subItem.label
-                                    );
+                                <div className="space-y-1.5">
+                                  {navItem.subItems.map((subItem) => {
                                     return (
                                       <Link
                                         key={subItem.label}
                                         href={subItem.href}
-                                        className="group flex items-center gap-3 transition-all p-1 rounded-xl hover:bg-slate-50"
+                                        className="group flex items-center gap-2 transition-all px-2.5 py-2 rounded-lg hover:bg-slate-100"
                                         onClick={() => {
                                           if (item.label === "Buy")
                                             setIsBuyOpen(false);
@@ -702,22 +576,8 @@ export default function Header() {
                                             setIsMoreOpen(false);
                                         }}
                                       >
-                                        {areaInfo && isAreaList && (
-                                          <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-slate-100 shadow-sm">
-                                            <img
-                                              src={areaInfo.image}
-                                              alt={subItem.label}
-                                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                            />
-                                          </div>
-                                        )}
-                                        <span
-                                          className={cn(
-                                            isAreaList
-                                              ? "text-xs font-bold text-secondary group-hover:text-primary leading-tight"
-                                              : "text-sm text-slate-600 hover:text-primary font-medium"
-                                          )}
-                                        >
+                                        <span className="w-1.5 h-1.5 rounded-full bg-primary/60 shrink-0 group-hover:bg-primary" />
+                                        <span className="text-sm text-slate-600 group-hover:text-primary font-medium">
                                           {subItem.label}
                                         </span>
                                       </Link>
@@ -914,22 +774,6 @@ export default function Header() {
                   >
                     Landmarks
                   </Link>
-
-                  <div className="text-xs font-bold text-slate-600 px-4 mt-3">
-                    Popular Areas
-                  </div>
-                  {dubaiAreas.slice(0, 8).map((area) => (
-                    <Link
-                      key={area.name}
-                      href={`/properties?action=buy&area=${area.name
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")}`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
-                    >
-                      {area.name}
-                    </Link>
-                  ))}
                 </div>
               </div>
 
@@ -984,22 +828,6 @@ export default function Header() {
                   >
                     Studios
                   </Link>
-
-                  <div className="text-xs font-bold text-slate-600 px-4 mt-3">
-                    Popular Areas
-                  </div>
-                  {dubaiAreas.slice(0, 8).map((area) => (
-                    <Link
-                      key={area.name}
-                      href={`/properties?action=rent&area=${area.name
-                        .toLowerCase()
-                        .replace(/\s+/g, "-")}`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
-                    >
-                      {area.name}
-                    </Link>
-                  ))}
                 </div>
               </div>
 
@@ -1048,37 +876,6 @@ export default function Header() {
                     Golf Communities
                   </Link>
 
-                  <div className="text-xs font-bold text-slate-600 px-4 mt-3">
-                    Premium Areas
-                  </div>
-                  <Link
-                    href="/properties?category=luxe&area=dubai-marina"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
-                  >
-                    Dubai Marina
-                  </Link>
-                  <Link
-                    href="/properties?category=luxe&area=palm-jumeirah"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
-                  >
-                    Palm Jumeirah
-                  </Link>
-                  <Link
-                    href="/properties?category=luxe&area=downtown-dubai"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
-                  >
-                    Downtown Dubai
-                  </Link>
-                  <Link
-                    href="/properties?category=luxe&area=emirates-hills"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
-                  >
-                    Emirates Hills
-                  </Link>
                 </div>
               </div>
 
