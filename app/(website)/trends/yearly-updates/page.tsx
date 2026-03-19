@@ -69,7 +69,7 @@ export default function YearlyUpdatesPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Yearly Market <span className="text-emerald-600">Reports</span>
+            Yearly Market <span className="text-[#8A6508]">Reports</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Comprehensive annual market analysis, year-over-year comparisons, and strategic insights
@@ -88,16 +88,16 @@ export default function YearlyUpdatesPage() {
                   </div>
 
                   <div className="bg-white rounded-xl p-4 shadow-sm">
-                    <p className="text-xs text-emerald-600 font-semibold mb-1">GROWTH</p>
-                    <p className="text-3xl font-bold text-emerald-700">{report.growth}</p>
+                    <p className="text-xs text-[#8A6508] font-semibold mb-1">GROWTH</p>
+                    <p className="text-3xl font-bold text-[#6E4F05]">{report.growth}</p>
                   </div>
                   <div className="bg-white rounded-xl p-4 shadow-sm">
-                    <p className="text-xs text-blue-600 font-semibold mb-1">TRANSACTIONS</p>
-                    <p className="text-2xl font-bold text-blue-700">{report.transactions}</p>
+                    <p className="text-xs text-[#8A6508] font-semibold mb-1">TRANSACTIONS</p>
+                    <p className="text-2xl font-bold text-[#6E4F05]">{report.transactions}</p>
                   </div>
                   <div className="bg-white rounded-xl p-4 shadow-sm">
-                    <p className="text-xs text-purple-600 font-semibold mb-1">INVESTMENT</p>
-                    <p className="text-2xl font-bold text-purple-700">{report.investment}</p>
+                    <p className="text-xs text-[#8A6508] font-semibold mb-1">INVESTMENT</p>
+                    <p className="text-2xl font-bold text-[#6E4F05]">{report.investment}</p>
                   </div>
                 </div>
               </div>
@@ -107,14 +107,14 @@ export default function YearlyUpdatesPage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   {report.highlights.map((highlight, i) => (
                     <div key={i} className="flex gap-3 items-start">
-                      <span className="text-emerald-600 font-bold text-lg flex-shrink-0">✓</span>
+                      <span className="text-[#8A6508] font-bold text-lg shrink-0">✓</span>
                       <p className="text-slate-700">{highlight}</p>
                     </div>
                   ))}
                 </div>
 
                 <div className="mt-6 pt-6 border-t border-slate-200">
-                  <button className="px-6 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm">
+                  <button className="px-6 py-2 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] transition-colors text-sm">
                     Download Full Report
                   </button>
                 </div>
@@ -141,14 +141,14 @@ export default function YearlyUpdatesPage() {
                 {yearlyReports.map((report, idx) => (
                   <tr key={idx} className="border-b border-slate-200 hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4 font-bold text-slate-900">{report.year}</td>
-                    <td className="px-6 py-4 text-emerald-600 font-bold">{report.growth}</td>
-                    <td className="px-6 py-4 text-blue-600 font-bold">{report.transactions}</td>
-                    <td className="px-6 py-4 text-purple-600 font-bold">{report.investment}</td>
+                    <td className="px-6 py-4 text-[#8A6508] font-bold">{report.growth}</td>
+                    <td className="px-6 py-4 text-[#6E4F05] font-bold">{report.transactions}</td>
+                    <td className="px-6 py-4 text-[#5C4204] font-bold">{report.investment}</td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full font-semibold text-sm ${
-                        parseFloat(report.growth) > 7 ? 'bg-emerald-100 text-emerald-700' :
-                        parseFloat(report.growth) > 5 ? 'bg-blue-100 text-blue-700' :
-                        'bg-[#FFC636]/15 text-[#FFC636]'
+                        parseFloat(report.growth) > 7 ? 'bg-[#8A6508]/15 text-[#6E4F05]' :
+                        parseFloat(report.growth) > 5 ? 'bg-[#8A6508]/10 text-[#8A6508]' :
+                        'bg-[#5C4204]/10 text-[#5C4204]'
                       }`}>
                         {parseFloat(report.growth) > 7 ? 'Strong' : parseFloat(report.growth) > 5 ? 'Moderate' : 'Steady'}
                       </span>
@@ -163,17 +163,17 @@ export default function YearlyUpdatesPage() {
         {/* Related Links */}
         <div className="grid md:grid-cols-3 gap-6">
           <Link href="/trends/monthly-updates" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg transition-all text-center">
-            <ChartBarIcon className="w-8 h-8 mx-auto mb-3 text-blue-600" />
+            <ChartBarIcon className="w-8 h-8 mx-auto mb-3 text-[#8A6508]" />
             <p className="font-bold text-slate-900">Monthly Updates</p>
             <p className="text-sm text-slate-600 mt-1">Latest monthly data</p>
           </Link>
           <Link href="/trends/quarterly-updates" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg transition-all text-center">
-            <ChartBarIcon className="w-8 h-8 mx-auto mb-3 text-purple-600" />
+            <ChartBarIcon className="w-8 h-8 mx-auto mb-3 text-[#8A6508]" />
             <p className="font-bold text-slate-900">Quarterly Updates</p>
             <p className="text-sm text-slate-600 mt-1">3-month analysis</p>
           </Link>
           <Link href="/trends/market-insights" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg transition-all text-center">
-            <ChartBarIcon className="w-8 h-8 mx-auto mb-3 text-emerald-600" />
+            <ChartBarIcon className="w-8 h-8 mx-auto mb-3 text-[#8A6508]" />
             <p className="font-bold text-slate-900">Market Insights</p>
             <p className="text-sm text-slate-600 mt-1">Current overview</p>
           </Link>

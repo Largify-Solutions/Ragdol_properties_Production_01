@@ -148,7 +148,7 @@ export default function InvestmentAnalysisPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Investment <span className="text-emerald-600">Analysis</span>
+            Investment <span className="text-[#8A6508]">Analysis</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Expert guidance on investment strategies, best performing areas, and ROI calculations to maximize your property investment
@@ -168,11 +168,11 @@ export default function InvestmentAnalysisPage() {
                   onClick={() => setActiveStrategy(strategy.id as any)}
                   className={`p-6 rounded-2xl border-2 transition-all text-left ${
                     activeStrategy === strategy.id
-                      ? 'border-emerald-600 bg-emerald-50'
-                      : 'border-slate-200 bg-white hover:border-emerald-600'
+                      ? 'border-[#8A6508] bg-[#8A6508]/10'
+                      : 'border-slate-200 bg-white hover:border-[#8A6508]'
                   }`}
                 >
-                  <Icon className={`w-8 h-8 mb-3 ${activeStrategy === strategy.id ? 'text-emerald-600' : 'text-slate-600'}`} />
+                  <Icon className={`w-8 h-8 mb-3 ${activeStrategy === strategy.id ? 'text-[#8A6508]' : 'text-slate-600'}`} />
                   <h3 className="font-bold text-lg text-slate-900 mb-1">{strategy.title}</h3>
                   <p className="text-sm text-slate-600">{strategy.description}</p>
                 </button>
@@ -187,7 +187,7 @@ export default function InvestmentAnalysisPage() {
               <div className="space-y-4">
                 {currentStrategy.advantages.map((adv, idx) => (
                   <div key={idx} className="flex gap-3 items-start">
-                    <CheckCircleIcon className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <CheckCircleIcon className="w-6 h-6 text-[#8A6508] flex-shrink-0 mt-0.5" />
                     <p className="text-slate-700">{adv}</p>
                   </div>
                 ))}
@@ -197,7 +197,7 @@ export default function InvestmentAnalysisPage() {
             <div className="space-y-6">
               <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
                 <h3 className="font-semibold text-slate-600 text-sm mb-2">EXPECTED RETURN</h3>
-                <p className="text-3xl font-bold text-emerald-600 mb-4">{currentStrategy.expectedReturn}</p>
+                <p className="text-3xl font-bold text-[#8A6508] mb-4">{currentStrategy.expectedReturn}</p>
 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center pb-3 border-b border-slate-200">
@@ -207,9 +207,9 @@ export default function InvestmentAnalysisPage() {
                   <div className="flex justify-between items-center pb-3 border-b border-slate-200">
                     <span className="text-slate-600">Risk Level</span>
                     <span className={`font-bold px-3 py-1 rounded-full text-sm ${
-                      currentStrategy.riskLevel.includes('Low') ? 'bg-emerald-100 text-emerald-700' :
+                      currentStrategy.riskLevel.includes('Low') ? 'bg-[#8A6508]/15 text-[#6E4F05]' :
                       currentStrategy.riskLevel.includes('High') ? 'bg-red-100 text-red-700' :
-                      'bg-[#FFC636]/15 text-[#FFC636]'
+                      'bg-[#8A6508]/10 text-[#8A6508]'
                     }`}>
                       {currentStrategy.riskLevel}
                     </span>
@@ -222,7 +222,7 @@ export default function InvestmentAnalysisPage() {
                 <div className="space-y-2">
                   {currentStrategy.targetAreas.map((area, idx) => (
                     <div key={idx} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50">
-                      <span className="w-2 h-2 bg-emerald-600 rounded-full"></span>
+                      <span className="w-2 h-2 bg-[#8A6508] rounded-full"></span>
                       <span className="text-slate-700">{area}</span>
                     </div>
                   ))}
@@ -243,14 +243,14 @@ export default function InvestmentAnalysisPage() {
                   <h3 className="text-xl font-bold text-slate-900 mb-2">{area.name}</h3>
                   <div className="flex items-baseline gap-2 mb-3">
                     <span className="text-2xl font-bold text-slate-900">{area.avgPrice}</span>
-                    <span className="text-emerald-600 font-semibold text-sm">{area.growth}</span>
+                    <span className="text-[#8A6508] font-semibold text-sm">{area.growth}</span>
                   </div>
                   <p className="text-slate-600 text-sm">Rental Yield: <span className="font-bold text-slate-900">{area.yield}</span></p>
                 </div>
 
                 <div className="mb-4 flex flex-wrap gap-2">
                   {area.highlights.map((h, i) => (
-                    <span key={i} className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium">
+                    <span key={i} className="px-3 py-1 bg-[#8A6508]/10 text-[#6E4F05] rounded-full text-xs font-medium">
                       {h}
                     </span>
                   ))}
@@ -281,7 +281,7 @@ export default function InvestmentAnalysisPage() {
 
                 <Link
                   href={`/properties?area=${area.name.toLowerCase().replace(/\s/g, '-')}`}
-                  className="block w-full text-center px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm"
+                  className="block w-full text-center px-4 py-2 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] transition-colors text-sm"
                 >
                   View Properties
                 </Link>
@@ -299,8 +299,8 @@ export default function InvestmentAnalysisPage() {
               {investmentChecklist.map((item, idx) => (
                 <div key={idx} className="flex gap-4 items-start">
                   <div className="flex-shrink-0 mt-1">
-                    <div className="flex items-center justify-center h-6 w-6 rounded-full bg-emerald-100">
-                      <CheckCircleIcon className="h-4 w-4 text-emerald-600" />
+                    <div className="flex items-center justify-center h-6 w-6 rounded-full bg-[#8A6508]/15">
+                      <CheckCircleIcon className="h-4 w-4 text-[#8A6508]" />
                     </div>
                   </div>
                   <p className="text-slate-700 font-medium">{item}</p>
@@ -311,14 +311,14 @@ export default function InvestmentAnalysisPage() {
         </div>
 
         {/* ROI Calculator CTA */}
-        <div className="bg-linear-to-r from-blue-600 to-emerald-600 rounded-2xl p-12 text-white text-center">
+        <div className="bg-linear-to-r from-[#8A6508] to-[#5C4204] rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Calculate Your Investment Returns</h2>
           <p className="text-lg mb-8 opacity-90">
             Use our advanced ROI calculator to project your investment returns based on purchase price, rental income, and market appreciation
           </p>
           <Link
             href="/trends/calculator"
-            className="inline-block px-8 py-4 bg-white text-blue-600 font-bold rounded-lg hover:bg-slate-100 transition-colors"
+            className="inline-block px-8 py-4 bg-white text-[#5C4204] font-bold rounded-lg hover:bg-slate-100 transition-colors"
           >
             Open ROI Calculator
           </Link>

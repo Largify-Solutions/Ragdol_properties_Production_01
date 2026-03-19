@@ -32,7 +32,7 @@ const services = [
     description: "Expertly managing off-plan sales for developers—delivered with precision.",
     icon: BuildingOffice2Icon,
     href: "/services/property-sales",
-    color: "from-amber-400 to-amber-600",
+    color: "from-[#B8860B] to-[#8A6508]",
     details: "At Ragdoll Properties, we specialize in managing off-plan property sales for developers—and when we say 'delivered,' we mean it. Our mission is to facilitate seamless property sales while ensuring our clients achieve maximum returns on their investments."
   },
   {
@@ -41,7 +41,7 @@ const services = [
     description: "Full-range specialized fit-out solutions for premium properties.",
     icon: CogIcon,
     href: "/services/fitout",
-    color: "from-amber-300 to-[#FFC636]",
+    color: "from-[#A8790A] to-[#7A5806]",
     details: "We provide a full range of specialized fit-out solutions, including aluminium and façade works, glazing, metal works, joinery, glass installations, and premium finishing."
   },
   {
@@ -50,7 +50,7 @@ const services = [
     description: "End-to-end real estate development services and analysis.",
     icon: Square3Stack3DIcon,
     href: "/services/360-solutions",
-    color: "from-[#FFC636] to-amber-500",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "We provide end-to-end real estate development services, beginning with development structuring, investment analysis, ROI feasibility, and strategic market analysis."
   },
   {
@@ -59,7 +59,7 @@ const services = [
     description: "Expert assistance in reselling properties at optimal prices.",
     icon: ArrowTrendingUpIcon,
     href: "/services/property-resale",
-    color: "from-amber-400 to-orange-500",
+    color: "from-[#A8790A] to-[#6E4F05]",
     details: "Assisting clients in reselling their properties at competitive prices with expert market positioning and comprehensive marketing strategies."
   },
   {
@@ -68,7 +68,7 @@ const services = [
     description: "Comprehensive property management to enhance value.",
     icon: HomeIcon,
     href: "/services/property-management",
-    color: "from-[#FFC636] to-amber-600",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "Offering full-service property management to maintain and enhance property value through proactive maintenance and professional tenant relations."
   },
   {
@@ -77,7 +77,7 @@ const services = [
     description: "Streamlined legal property transfers and transactions.",
     icon: DocumentCheckIcon,
     href: "/services/conveyancing",
-    color: "from-amber-500 to-orange-600",
+    color: "from-[#8C6A0A] to-[#5C4204]",
     details: "We streamline property sales and help investors secure Golden Visas, offering services like property valuation, gifting, registration, and company setup."
   },
   {
@@ -86,7 +86,7 @@ const services = [
     description: "Expert financing solutions through premier banking partners.",
     icon: BanknotesIcon,
     href: "/services/mortgage-advisory",
-    color: "from-[#FFC636] to-amber-600",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "Offering expert advice and brokerage services for property financing with access to competitive rates and flexible solutions."
   },
   {
@@ -95,7 +95,7 @@ const services = [
     description: "Master agency services for seamless transactions.",
     icon: UserGroupIcon,
     href: "/services/property-master-agency",
-    color: "from-amber-400 to-[#FFC636]",
+    color: "from-[#A8790A] to-[#7A5806]",
     details: "Acting as a master agency to streamline and manage property transactions across multiple channels and market segments."
   },
   {
@@ -104,7 +104,7 @@ const services = [
     description: "Visionary architecture and design excellence.",
     icon: WrenchIcon,
     href: "/services/development",
-    color: "from-amber-500 to-[#FFC636]",
+    color: "from-[#8C6A0A] to-[#6E4F05]",
     details: "Delivering architecture and design excellence through seamless development management, blending minimalism with luxurious aesthetics."
   },
   {
@@ -113,7 +113,7 @@ const services = [
     description: "Expert oversight from inception to handover.",
     icon: CheckCircleIcon,
     href: "/services/development-management",
-    color: "from-[#FFC636] to-amber-500",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "Managing the entire development process from inception to handover with meticulous attention to detail and timeline compliance."
   },
   {
@@ -122,7 +122,7 @@ const services = [
     description: "Strategic investment in high-potential projects.",
     icon: CreditCardIcon,
     href: "/services/private-equity",
-    color: "from-amber-500 to-orange-600",
+    color: "from-[#8C6A0A] to-[#5C4204]",
     details: "Investing in high-potential real estate projects to maximize returns through strategic partnership and portfolio diversification."
   },
   {
@@ -131,7 +131,7 @@ const services = [
     description: "Short-term rental property expertise.",
     icon: StarIcon,
     href: "/services/holiday-homes",
-    color: "from-[#FFC636] to-amber-600",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "Managing short-term rental properties to provide exceptional guest experiences and optimize occupancy and revenue."
   },
   {
@@ -140,7 +140,7 @@ const services = [
     description: "Technology-driven renovation solutions.",
     icon: BeakerIcon,
     href: "/services/rentech",
-    color: "from-amber-400 to-[#FFC636]",
+    color: "from-[#A8790A] to-[#7A5806]",
     details: "Utilizing the latest technologies to renovate and enhance properties with innovative solutions and modern techniques."
   },
   {
@@ -149,7 +149,7 @@ const services = [
     description: "Technology for enhanced real estate operations.",
     icon: CogIcon,
     href: "/services/proptech",
-    color: "from-[#FFC636] to-amber-600",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "Leveraging technology to improve real estate transactions and management with digital platforms and smart solutions."
   },
   {
@@ -158,7 +158,7 @@ const services = [
     description: "Comprehensive architectural design services.",
     icon: SparklesIcon,
     href: "/services/interior-design",
-    color: "from-amber-500 to-[#FFC636]",
+    color: "from-[#8C6A0A] to-[#6E4F05]",
     details: "Comprehensive design services covering architecture and interior design with specialized expertise in FF&E selection."
   },
   {
@@ -167,7 +167,7 @@ const services = [
     description: "Complete project lifecycle management.",
     icon: WrenchIcon,
     href: "/services/construction-pm",
-    color: "from-[#FFC636] to-amber-600",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "Expertise covering the full spectrum of project life-cycle management ensuring smooth progress from inception to completion."
   },
   {
@@ -176,7 +176,7 @@ const services = [
     description: "Thorough engineered inspections.",
     icon: MagnifyingGlassIcon,
     href: "/services/snagging",
-    color: "from-amber-400 to-orange-600",
+    color: "from-[#A8790A] to-[#5C4204]",
     details: "Conducting thorough engineered inspections to identify and address any issues before handover."
   },
   {
@@ -185,7 +185,7 @@ const services = [
     description: "Seamless property transition services.",
     icon: LockClosedIcon,
     href: "/services/handover",
-    color: "from-[#FFC636] to-amber-600",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "Ensuring a smooth transition of completed properties to owners and tenants with comprehensive handover support."
   },
   {
@@ -194,7 +194,7 @@ const services = [
     description: "Precision mechanical, electrical & plumbing.",
     icon: BoltIcon,
     href: "/services/mep",
-    color: "from-amber-500 to-[#FFC636]",
+    color: "from-[#8C6A0A] to-[#6E4F05]",
     details: "Complete spectrum of MEP services ensuring seamless integration and optimal performance in every project."
   },
   {
@@ -203,7 +203,7 @@ const services = [
     description: "UAE Golden Visa investment guidance.",
     icon: StarIcon,
     href: "/services/golden-visa",
-    color: "from-[#FFC636] to-amber-600",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "Secure your UAE Golden Visa through smart Dubai property investment. Our experts guide you through every step."
   },
   {
@@ -212,7 +212,7 @@ const services = [
     description: "Professional real estate education.",
     icon: AcademicCapIcon,
     href: "/services/training-academy",
-    color: "from-amber-400 to-[#FFC636]",
+    color: "from-[#A8790A] to-[#7A5806]",
     details: "Providing comprehensive training for real estate professionals with industry expertise and certification programs."
   },
   {
@@ -221,7 +221,7 @@ const services = [
     description: "Optimized property rental management.",
     icon: HomeIcon,
     href: "/services/rental-services",
-    color: "from-[#FFC636] to-amber-600",
+    color: "from-[#B8860B] to-[#7A5806]",
     details: "Managing rental properties to optimize rental yields and occupancy rates with professional tenant management."
   },
   {
@@ -230,7 +230,7 @@ const services = [
     description: "Comprehensive base-build development.",
     icon: BuildingOffice2Icon,
     href: "/services/construction",
-    color: "from-amber-500 to-orange-600",
+    color: "from-[#8C6A0A] to-[#5C4204]",
     details: "Complete construction capabilities spanning enabling works through specialized features like swimming pools and landscaping."
   }
 ]
@@ -240,20 +240,20 @@ export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Premium Hero Section */}
-      <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8 bg-linear-to-br from-[#E7C77A] via-[#D4AF37] to-[#B8860B]/70">
         {/* Golden gradient background */}
-        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[#FFC636]/10 via-transparent to-primary/5 -z-10"></div>
-        <div className="absolute top-20 right-0 w-96 h-96 bg-[#FFC636]/15 rounded-full blur-3xl -z-10"></div>
-        <div className="absolute top-40 left-0 w-64 h-64 bg-[#FFC636]/10 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[#8A6508]/18 via-transparent to-[#5C4204]/18 -z-10"></div>
+        <div className="absolute top-20 right-0 w-96 h-96 bg-[#8A6508]/20 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-40 left-0 w-64 h-64 bg-[#5C4204]/16 rounded-full blur-3xl -z-10"></div>
         
         <div className="container-custom mx-auto text-center">
-          <div className="inline-block px-6 py-2 bg-[#FFC636]/15 rounded-full mb-8">
-            <span className="text-sm font-black text-[#FFC636] tracking-widest uppercase">Our Expertise</span>
+          <div className="inline-block px-6 py-2 bg-[#D4AF37]/20 border border-[#B8860B]/30 rounded-full mb-8">
+            <span className="text-sm font-black text-[#7A5806] tracking-widest uppercase">Our Expertise</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 leading-tight">
-            <span className="bg-linear-to-r from-[#FFC636] to-primary bg-clip-text text-transparent"> Premium Real Estate Services</span>
+          <h1 className="text-5xl md:text-6xl font-black text-[#5C4204] mb-6 leading-tight">
+            <span className="text-[#7A5806]">Premium Real Estate Services</span>
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+          <p className="text-xl text-[#5C4204] max-w-2xl mx-auto">
             Experience excellence with Ragdoll Properties' comprehensive suite of real estate solutions
           </p>
         </div>
@@ -266,20 +266,20 @@ export default function ServicesPage() {
             const Icon = service.icon
             return (
               <Link key={service.id} href={service.href}>
-                <div className="group relative h-full bg-white border-2 border-[#FFC636]/30 rounded-3xl p-8 hover:border-[#FFC636] transition-all duration-500 cursor-pointer overflow-hidden shadow-sm hover:shadow-lg">
+                <div className="group relative h-full bg-white border-2 border-[#B8860B]/30 rounded-3xl p-8 hover:border-[#8A6508] transition-all duration-500 cursor-pointer overflow-hidden shadow-sm hover:shadow-lg">
                   {/* Golden gradient overlay on hover */}
                   <div className={`absolute inset-0 bg-linear-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 -z-10`}></div>
                   
                   {/* Golden accent bar */}
-                  <div className="absolute top-0 left-0 h-1 w-0 group-hover:w-full bg-linear-to-r from-[#FFC636] to-primary transition-all duration-500"></div>
+                  <div className="absolute top-0 left-0 h-1 w-0 group-hover:w-full bg-linear-to-r from-[#B8860B] to-[#5C4204] transition-all duration-500"></div>
                   
                   {/* Icon Container */}
-                  <div className={`w-16 h-16 bg-linear-to-br ${service.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl`}>
-                    <Icon className="h-8 w-8 text-white" />
+                  <div className="w-16 h-16 bg-linear-to-br from-[#F6E7C0] to-[#D2B377] border border-[#B8860B]/35 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
+                    <Icon className="h-8 w-8 text-[#5C4204]" />
                   </div>
                   
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#FFC636] transition-colors">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#8A6508] transition-colors">
                     {service.title}
                   </h3>
                   
@@ -289,7 +289,7 @@ export default function ServicesPage() {
                   </p>
                   
                   {/* Learn More Link */}
-                  <div className="flex items-center text-[#FFC636] font-semibold text-sm group-hover:text-primary transition-colors">
+                  <div className="flex items-center text-[#8A6508] font-semibold text-sm group-hover:text-[#5C4204] transition-colors">
                     <span>Learn More</span>
                     <ArrowRightIcon className="h-4 w-4 ml-2 group-hover:translate-x-2 transition-transform" />
                   </div>
@@ -301,14 +301,14 @@ export default function ServicesPage() {
       </div>
 
       {/* Why Choose Ragdoll Properties Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-transparent to-[#FFC636]/5">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-transparent to-[#B8860B]/6">
         <div className="container-custom mx-auto">
           <div className="text-center mb-16">
-            <div className="inline-block px-6 py-2 bg-linear-to-r from-amber-400 to-[#FFC636] rounded-full mb-6">
-              <span className="text-sm font-black text-amber-900 tracking-widest uppercase">Why Choose Us</span>
+            <div className="inline-block px-6 py-2 bg-linear-to-r from-[#A8790A] to-[#7A5806] rounded-full mb-6">
+              <span className="text-sm font-black text-[#F6E7C0] tracking-widest uppercase">Why Choose Us</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-              <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent"> The Ragdoll Properties Difference</span>
+              <span className="bg-linear-to-r from-[#B8860B] to-[#5C4204] bg-clip-text text-transparent"> The Ragdoll Properties Difference</span>
             </h2>
           </div>
 
@@ -332,9 +332,9 @@ export default function ServicesPage() {
             ].map((item, idx) => {
               const Icon = item.icon
               return (
-                <div key={idx} className="group bg-white border-2 border-[#FFC636]/30 rounded-2xl p-8 hover:border-[#FFC636] transition-all duration-300 shadow-sm hover:shadow-md">
-                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <Icon className="h-6 w-6 text-white" />
+                <div key={idx} className="group bg-white border-2 border-[#B8860B]/30 rounded-2xl p-8 hover:border-[#8A6508] transition-all duration-300 shadow-sm hover:shadow-md">
+                  <div className="w-12 h-12 bg-linear-to-br from-[#F6E7C0] to-[#D2B377] border border-[#B8860B]/35 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <Icon className="h-6 w-6 text-[#5C4204]" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
                   <p className="text-gray-600 leading-relaxed">{item.description}</p>
@@ -349,11 +349,11 @@ export default function ServicesPage() {
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="container-custom mx-auto">
           <div className="text-center mb-16">
-            <div className="inline-block px-6 py-2 bg-[#FFC636]/15 rounded-full mb-6">
-              <span className="text-sm font-black text-[#FFC636] tracking-widest uppercase">Featured Portfolio</span>
+            <div className="inline-block px-6 py-2 bg-[#B8860B]/15 rounded-full mb-6">
+              <span className="text-sm font-black text-[#8A6508] tracking-widest uppercase">Featured Portfolio</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">
-              Premium Property <span className="bg-linear-to-r from-[#FFC636] to-primary bg-clip-text text-transparent">Showcase</span>
+              Premium Property <span className="bg-linear-to-r from-[#B8860B] to-[#5C4204] bg-clip-text text-transparent">Showcase</span>
             </h2>
             <p className="text-slate-600 text-lg">Explore our curated selection of luxury developments</p>
           </div>
@@ -412,9 +412,9 @@ export default function ServicesPage() {
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-slate-900/95 via-slate-900/40 to-transparent group-hover:from-slate-900/98 transition-all duration-300 flex flex-col justify-end p-6">
                   <h3 className="text-xl font-bold text-white mb-1">{project.title}</h3>
-                  <p className="text-amber-300 font-semibold text-sm mb-3">{project.desc}</p>
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-white/70 group-hover:text-amber-300 transition-colors">
-                    {project.label} <ArrowRightIcon className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  <p className="text-[#D2B377] font-semibold text-sm mb-3">{project.desc}</p>
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-white/70 group-hover:text-[#D2B377] transition-colors">
+                    {project.label} <ArrowRightIcon className="h-3 w-3 text-[#D2B377] group-hover:text-[#F6E7C0] group-hover:translate-x-1 transition-transform" />
                   </span>
                 </div>
               </Link>
@@ -426,24 +426,24 @@ export default function ServicesPage() {
       {/* CTA Section - Premium */}
       <section className="py-24 px-4 sm:px-6 lg:px-8">
         <div className="container-custom mx-auto">
-          <div className="relative overflow-hidden rounded-4xl p-12 md:p-20 bg-white border-2 border-[#FFC636]/40 shadow-lg">
+          <div className="relative overflow-hidden rounded-4xl p-12 md:p-20 bg-white border-2 border-[#B8860B]/40 shadow-lg">
             {/* Golden glow effects */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl -z-10"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC636]/5 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute top-0 right-0 w-80 h-80 bg-[#8A6508]/12 rounded-full blur-3xl -z-10"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#B8860B]/6 rounded-full blur-3xl -z-10"></div>
             
             <div className="relative z-10 max-w-3xl">
               <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
-                Ready to Experience <span className="bg-linear-to-r from-amber-600 to-[#FFC636] bg-clip-text text-transparent">Excellence?</span>
+                Ready to Experience <span className="bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent">Excellence?</span>
               </h2>
               <p className="text-xl text-gray-600 mb-12 leading-relaxed">
                 Connect with our specialist team today for a confidential consultation about your property needs.
               </p>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-3 px-10 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:from-amber-300 hover:to-[#FFC636] transition-all duration-300 shadow-xl shadow-amber-500/20 hover:shadow-2xl hover:shadow-amber-500/30 group"
+                className="inline-flex items-center gap-3 px-10 py-4 bg-linear-to-r from-[#8A6508] to-[#5C4204] text-white font-bold rounded-xl hover:from-[#7A5806] hover:to-[#4B3504] transition-all duration-300 shadow-xl shadow-[#5C4204]/25 hover:shadow-2xl hover:shadow-[#5C4204]/40 group"
               >
                 Schedule Consultation
-                <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
+                <ArrowRightIcon className="h-5 w-5 text-[#D2B377] group-hover:text-[#F6E7C0] group-hover:translate-x-2 transition-transform" />
               </Link>
             </div>
           </div>

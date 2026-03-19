@@ -49,14 +49,14 @@ export default function DubaiPopulationPage() {
     { group: '55+', population: 4 }
   ]
 
-  const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899']
+  const COLORS = ['#8A6508', '#3b82f6', '#6E4F05', '#8b5cf6', '#ef4444', '#ec4899']
 
   const populationImpact = [
     {
       title: 'Housing Demand',
       description: 'Growing population drives continuous demand for residential properties and rental units',
       impact: 'High',
-      color: 'bg-emerald-100 text-emerald-700'
+      color: 'bg-[#8A6508]/15 text-[#6E4F05]'
     },
     {
       title: 'Commercial Growth',
@@ -74,7 +74,7 @@ export default function DubaiPopulationPage() {
       title: 'Investment Appeal',
       description: 'Growing population base makes Dubai increasingly attractive to real estate investors',
       impact: 'High',
-      color: 'bg-amber-100 text-amber-700'
+      color: 'bg-[#8A6508]/10 text-[#8A6508]'
     }
   ]
 
@@ -88,7 +88,7 @@ export default function DubaiPopulationPage() {
             Population & Demographics
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Dubai <span className="text-emerald-600">Population</span>
+            Dubai <span className="text-[#8A6508]">Population</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Understanding Dubai's population growth, demographics, and its impact on real estate market dynamics
@@ -100,7 +100,7 @@ export default function DubaiPopulationPage() {
           <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <p className="text-sm text-slate-600 font-semibold mb-2">CURRENT POPULATION</p>
             <p className="text-3xl font-bold text-slate-900">3.7M+</p>
-            <p className="text-xs text-emerald-600 font-semibold mt-2">+5.2% yearly growth</p>
+            <p className="text-xs text-[#8A6508] font-semibold mt-2">+5.2% yearly growth</p>
           </div>
           <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <p className="text-sm text-slate-600 font-semibold mb-2">EXPAT PERCENTAGE</p>
@@ -115,7 +115,7 @@ export default function DubaiPopulationPage() {
           <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
             <p className="text-sm text-slate-600 font-semibold mb-2">MEDIAN AGE</p>
             <p className="text-3xl font-bold text-slate-900">32 yrs</p>
-            <p className="text-xs text-amber-600 font-semibold mt-2">Working-age demographics</p>
+            <p className="text-xs text-[#8A6508] font-semibold mt-2">Working-age demographics</p>
           </div>
         </div>
 
@@ -129,7 +129,7 @@ export default function DubaiPopulationPage() {
               <YAxis />
               <Tooltip formatter={(value) => `${value}M`} />
               <Legend />
-              <Line type="monotone" dataKey="total" stroke="#10b981" strokeWidth={2} name="Total Population" />
+              <Line type="monotone" dataKey="total" stroke="#8A6508" strokeWidth={2} name="Total Population" />
               <Line type="monotone" dataKey="expats" stroke="#3b82f6" strokeWidth={2} name="Expat Population" />
               <Line type="monotone" dataKey="uae" stroke="#f59e0b" strokeWidth={2} name="UAE Nationals" />
             </LineChart>
@@ -178,7 +178,7 @@ export default function DubaiPopulationPage() {
                 <XAxis dataKey="group" />
                 <YAxis />
                 <Tooltip formatter={(value) => `${value}%`} />
-                <Bar dataKey="population" fill="#10b981" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="population" fill="#8A6508" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -201,22 +201,22 @@ export default function DubaiPopulationPage() {
         </div>
 
         {/* Key Insights */}
-        <div className="bg-linear-to-r from-blue-600 to-emerald-600 rounded-2xl p-12 text-white mb-16">
+        <div className="bg-linear-to-r from-[#8A6508] to-[#5C4204] rounded-2xl p-12 text-white mb-16">
           <h2 className="text-3xl font-bold mb-6">Population Growth Opportunities for Investors</h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-xl font-bold mb-4">Short-term (1-3 years)</h3>
               <ul className="space-y-3 text-lg">
                 <li className="flex gap-3">
-                  <span className="text-emerald-300">✓</span>
+                  <span className="text-[#D2B377]">✓</span>
                   <span>Increased rental demand in affordable segments</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-emerald-300">✓</span>
+                  <span className="text-[#D2B377]">✓</span>
                   <span>Rising commercial property prices</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-emerald-300">✓</span>
+                  <span className="text-[#D2B377]">✓</span>
                   <span>Strong residential market fundamentals</span>
                 </li>
               </ul>
@@ -225,15 +225,15 @@ export default function DubaiPopulationPage() {
               <h3 className="text-xl font-bold mb-4">Long-term (5+ years)</h3>
               <ul className="space-y-3 text-lg">
                 <li className="flex gap-3">
-                  <span className="text-emerald-300">✓</span>
+                  <span className="text-[#D2B377]">✓</span>
                   <span>Sustained appreciation across all segments</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-emerald-300">✓</span>
+                  <span className="text-[#D2B377]">✓</span>
                   <span>Infrastructure development in emerging areas</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-emerald-300">✓</span>
+                  <span className="text-[#D2B377]">✓</span>
                   <span>Diversification into new communities</span>
                 </li>
               </ul>

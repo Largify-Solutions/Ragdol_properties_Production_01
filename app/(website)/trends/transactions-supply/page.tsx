@@ -42,7 +42,7 @@ export default function TransactionSupplyPage() {
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Transactions & <span className="text-emerald-600">Supply</span>
+            Transactions & <span className="text-[#8A6508]">Supply</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Live listing volumes, supply breakdown, and market distribution from our Dubai property database.
@@ -57,7 +57,7 @@ export default function TransactionSupplyPage() {
         {/* Key Metrics */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500" />
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8A6508]" />
           </div>
         ) : stats ? (
           <>
@@ -65,7 +65,7 @@ export default function TransactionSupplyPage() {
               <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
                 <p className="text-sm text-slate-600 font-semibold mb-2">TOTAL LISTINGS</p>
                 <p className="text-3xl font-bold text-slate-900">{stats.summary.totalListings.toLocaleString()}</p>
-                <p className="text-xs text-emerald-600 font-semibold mt-2">Live count</p>
+                <p className="text-xs text-[#8A6508] font-semibold mt-2">Live count</p>
               </div>
               <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
                 <p className="text-sm text-slate-600 font-semibold mb-2">FOR SALE</p>
@@ -88,7 +88,7 @@ export default function TransactionSupplyPage() {
               <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
                 <p className="text-sm text-slate-600 font-semibold mb-2">OFF-PLAN / NEW</p>
                 <p className="text-3xl font-bold text-slate-900">{stats.summary.offPlan.toLocaleString()}</p>
-                <p className="text-xs text-amber-600 font-semibold mt-2">
+                <p className="text-xs text-[#8A6508] font-semibold mt-2">
                   {stats.summary.totalListings > 0
                     ? `${Math.round((stats.summary.offPlan / stats.summary.totalListings) * 100)}% of total`
                     : '—'}
@@ -107,7 +107,7 @@ export default function TransactionSupplyPage() {
                   <YAxis allowDecimals={false} />
                   <Tooltip formatter={(value: number) => value.toLocaleString()} />
                   <Legend />
-                  <Bar dataKey="saleCount" fill="#10b981" name="Sale Listings" />
+                  <Bar dataKey="saleCount" fill="#8A6508" name="Sale Listings" />
                   <Bar dataKey="rentCount" fill="#3b82f6" name="Rent Listings" />
                 </BarChart>
               </ResponsiveContainer>
@@ -142,7 +142,7 @@ export default function TransactionSupplyPage() {
                       </div>
                       <div className="w-full bg-slate-200 rounded-full h-3">
                         <div
-                          className="bg-linear-to-r from-emerald-500 to-blue-500 h-3 rounded-full"
+                          className="bg-linear-to-r from-[#8A6508] to-[#5C4204] h-3 rounded-full"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -154,7 +154,7 @@ export default function TransactionSupplyPage() {
             </div>
 
             {/* Supply Status Summary */}
-            <div className="bg-linear-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white">
+            <div className="bg-linear-to-r from-[#8A6508] to-[#5C4204] rounded-2xl p-12 text-white">
               <h2 className="text-3xl font-bold mb-8">Supply Snapshot</h2>
               <div className="grid md:grid-cols-3 gap-8">
                 <div>

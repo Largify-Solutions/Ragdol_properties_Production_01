@@ -155,7 +155,7 @@ export default function NewDevelopmentsPage() {
             New Launches & Coming Soon
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Latest <span className="text-emerald-600">Developments</span>
+            Latest <span className="text-[#8A6508]">Developments</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Discover Dubai's newest real estate projects with exclusive pre-launch offers, priority booking, and early-bird discounts
@@ -174,8 +174,8 @@ export default function NewDevelopmentsPage() {
               onClick={() => setSelectedCategory(cat.id as any)}
               className={`px-6 py-3 rounded-lg font-semibold transition-all ${
                 selectedCategory === cat.id
-                  ? 'bg-emerald-600 text-white shadow-lg'
-                  : 'bg-white border border-slate-200 text-slate-700 hover:border-emerald-600'
+                  ? 'bg-[#8A6508] text-white shadow-lg'
+                  : 'bg-white border border-slate-200 text-slate-700 hover:border-[#8A6508]'
               }`}
             >
               {cat.label}
@@ -196,10 +196,10 @@ export default function NewDevelopmentsPage() {
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="text-xl font-bold text-slate-900 flex-1">{dev.name}</h3>
                     <span className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ml-2 ${
-                      dev.status === 'Launched' ? 'bg-emerald-100 text-emerald-700' :
+                      dev.status === 'Launched' ? 'bg-[#8A6508]/15 text-[#6E4F05]' :
                       dev.status === 'Available' ? 'bg-blue-100 text-blue-700' :
                       dev.status === 'Pre-Launch' ? 'bg-purple-100 text-purple-700' :
-                      'bg-amber-100 text-amber-700'
+                      'bg-[#8A6508]/10 text-[#8A6508]'
                     }`}>
                       {dev.status}
                     </span>
@@ -226,7 +226,7 @@ export default function NewDevelopmentsPage() {
                   </div>
                   <div>
                     <p className="text-xs text-slate-600 font-semibold mb-1">START FROM</p>
-                    <p className="text-sm font-bold text-emerald-600">{dev.startPrice}</p>
+                    <p className="text-sm font-bold text-[#8A6508]">{dev.startPrice}</p>
                   </div>
                 </div>
               </div>
@@ -235,9 +235,9 @@ export default function NewDevelopmentsPage() {
               <div className="p-6">
                 {/* Discount Banner */}
                 {dev.preLaunchDiscount && (
-                  <div className="bg-linear-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-4 mb-4">
-                    <p className="text-xs text-amber-600 font-semibold mb-1">LIMITED TIME OFFER</p>
-                    <p className="text-lg font-bold text-amber-700">{dev.preLaunchDiscount} Early Bird Discount</p>
+                  <div className="bg-linear-to-r from-[#8A6508]/10 to-[#5C4204]/10 border border-[#8A6508]/30 rounded-xl p-4 mb-4">
+                    <p className="text-xs text-[#8A6508] font-semibold mb-1">LIMITED TIME OFFER</p>
+                    <p className="text-lg font-bold text-[#6E4F05]">{dev.preLaunchDiscount} Early Bird Discount</p>
                   </div>
                 )}
 
@@ -261,7 +261,7 @@ export default function NewDevelopmentsPage() {
 
                 {/* CTA */}
                 <div className="flex gap-2 pt-4 border-t border-slate-200">
-                  <button className="flex-1 px-4 py-3 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2">
+                  <button className="flex-1 px-4 py-3 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] transition-colors flex items-center justify-center gap-2">
                     <CheckCircleIcon className="w-5 h-5" />
                     Reserve Now
                   </button>
@@ -309,7 +309,7 @@ export default function NewDevelopmentsPage() {
             ].map((advantage, idx) => (
               <div key={idx} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg transition-all">
                 <div className="flex items-start gap-3 mb-3">
-                  <SparklesIcon className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-1" />
+                  <SparklesIcon className="w-6 h-6 text-[#8A6508] shrink-0 mt-1" />
                   <h3 className="text-lg font-bold text-slate-900">{advantage.title}</h3>
                 </div>
                 <p className="text-slate-600">{advantage.description}</p>
@@ -319,13 +319,13 @@ export default function NewDevelopmentsPage() {
         </div>
 
         {/* Contact CTA */}
-        <div className="bg-linear-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
+        <div className="bg-linear-to-r from-[#8A6508] to-[#5C4204] rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Schedule a Site Visit</h2>
           <p className="text-lg mb-8 opacity-90">
             Visit our showrooms or arrange a virtual tour of new developments. Our investment consultants are ready to assist you with personalized recommendations.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-white text-emerald-600 font-bold rounded-lg hover:bg-slate-100 transition-colors">
+            <button className="px-8 py-4 bg-white text-[#5C4204] font-bold rounded-lg hover:bg-slate-100 transition-colors">
               Book Site Visit
             </button>
             <Link

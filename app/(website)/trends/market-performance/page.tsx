@@ -45,12 +45,12 @@ export default function MarketPerformancePage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full mb-4 font-semibold">
+          <div className="inline-flex items-center gap-2 bg-[#8A6508]/15 text-[#6E4F05] px-4 py-2 rounded-full mb-4 font-semibold">
             <ArrowTrendingUpIcon className="w-5 h-5" />
             Performance Metrics
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Market <span className="text-emerald-600">Performance</span>
+            Market <span className="text-[#8A6508]">Performance</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Detailed analysis of Dubai's real estate market performance based on live listing data
@@ -70,7 +70,7 @@ export default function MarketPerformancePage() {
           ].map((metric, idx) => (
             <div key={idx} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
               <p className="text-xs text-slate-600 font-semibold mb-2 uppercase">{metric.segment}</p>
-              <p className="text-2xl font-bold text-emerald-600 mb-1">{metric.value}</p>
+              <p className="text-2xl font-bold text-[#8A6508] mb-1">{metric.value}</p>
               <p className="text-sm text-slate-700">{metric.label}</p>
             </div>
           ))}
@@ -87,7 +87,7 @@ export default function MarketPerformancePage() {
                 <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="saleCount" fill="#10b981" name="For Sale" />
+                <Bar dataKey="saleCount" fill="#8A6508" name="For Sale" />
                 <Bar dataKey="rentCount" fill="#3b82f6" name="For Rent" />
               </BarChart>
             </ResponsiveContainer>
@@ -130,7 +130,7 @@ export default function MarketPerformancePage() {
                     <tr key={idx} className="border-b border-slate-200 hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 font-bold text-slate-900">{area.name}</td>
                       <td className="px-6 py-4 text-slate-700">{area.count.toLocaleString()}</td>
-                      <td className="px-6 py-4 text-emerald-600 font-bold">{fmtPrice(area.avgPrice)}</td>
+                      <td className="px-6 py-4 text-[#8A6508] font-bold">{fmtPrice(area.avgPrice)}</td>
                       <td className="px-6 py-4 text-blue-600 font-bold">
                         {area.avgPricePerSqft ? `AED ${area.avgPricePerSqft.toLocaleString()}` : 'N/A'}
                       </td>
@@ -146,23 +146,23 @@ export default function MarketPerformancePage() {
         </div>
 
         {/* Market Outlook */}
-        <div className="bg-linear-to-r from-blue-600 to-emerald-600 rounded-2xl p-12 text-white">
+        <div className="bg-linear-to-r from-[#8A6508] to-[#5C4204] rounded-2xl p-12 text-white">
           <h2 className="text-3xl font-bold mb-6">2025–2026 Market Outlook</h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-xl font-bold mb-4">Positive Indicators</h3>
               <ul className="space-y-3 text-lg">
-                <li className="flex gap-3"><span className="text-emerald-300">✓</span><span>Strong population and expat growth</span></li>
-                <li className="flex gap-3"><span className="text-emerald-300">✓</span><span>New mega projects and developments</span></li>
-                <li className="flex gap-3"><span className="text-emerald-300">✓</span><span>International investor confidence</span></li>
+                <li className="flex gap-3"><span className="text-[#D2B377]">✓</span><span>Strong population and expat growth</span></li>
+                <li className="flex gap-3"><span className="text-[#D2B377]">✓</span><span>New mega projects and developments</span></li>
+                <li className="flex gap-3"><span className="text-[#D2B377]">✓</span><span>International investor confidence</span></li>
               </ul>
             </div>
             <div>
               <h3 className="text-xl font-bold mb-4">Growth Areas</h3>
               <ul className="space-y-3 text-lg">
-                <li className="flex gap-3"><span className="text-emerald-300">✓</span><span>Emerging locations (JVC, Ras Al Khor)</span></li>
-                <li className="flex gap-3"><span className="text-emerald-300">✓</span><span>Mixed-use developments</span></li>
-                <li className="flex gap-3"><span className="text-emerald-300">✓</span><span>Sustainable and smart properties</span></li>
+                <li className="flex gap-3"><span className="text-[#D2B377]">✓</span><span>Emerging locations (JVC, Ras Al Khor)</span></li>
+                <li className="flex gap-3"><span className="text-[#D2B377]">✓</span><span>Mixed-use developments</span></li>
+                <li className="flex gap-3"><span className="text-[#D2B377]">✓</span><span>Sustainable and smart properties</span></li>
               </ul>
             </div>
           </div>

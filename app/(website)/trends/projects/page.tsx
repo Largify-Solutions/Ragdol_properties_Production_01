@@ -68,12 +68,12 @@ export default function ProjectsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-[#f8f4ea] py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Featured <span className="text-emerald-600">Projects</span>
+            Featured <span className="text-[#8A6508]">Projects</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Explore Dubai's most exciting real estate development projects with investment opportunities
@@ -91,7 +91,7 @@ export default function ProjectsPage() {
                     <p className="text-sm text-slate-600">{project.developer}</p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ml-2 ${
-                    project.status === 'Ongoing' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                    project.status === 'Ongoing' ? 'bg-[#8A6508]/15 text-[#6E4F05]' : 'bg-[#5C4204]/10 text-[#5C4204]'
                   }`}>
                     {project.status}
                   </span>
@@ -113,15 +113,15 @@ export default function ProjectsPage() {
                     <span className="text-slate-700">{project.completion}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CurrencyDollarIcon className="w-4 h-4 text-emerald-600" />
-                    <span className="text-emerald-600 font-semibold">{project.price.split('-')[0]}</span>
+                    <CurrencyDollarIcon className="w-4 h-4 text-[#8A6508]" />
+                    <span className="text-[#8A6508] font-semibold">{project.price.split('-')[0]}</span>
                   </div>
                 </div>
 
                 <div className="flex gap-2">
                   <Link
                     href={`/properties?project=${project.name.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="flex-1 px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-center text-sm"
+                    className="flex-1 px-4 py-2 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] transition-colors text-center text-sm"
                   >
                     View Properties
                   </Link>
@@ -139,22 +139,22 @@ export default function ProjectsPage() {
           <h2 className="text-3xl font-bold text-slate-900 mb-8">Project Statistics</h2>
           <div className="grid md:grid-cols-4 gap-6">
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm text-center">
-              <p className="text-4xl font-bold text-emerald-600 mb-2">12</p>
+              <p className="text-4xl font-bold text-[#8A6508] mb-2">12</p>
               <p className="text-slate-700 font-semibold">Major Projects</p>
               <p className="text-xs text-slate-600 mt-2">Featured & tracked</p>
             </div>
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm text-center">
-              <p className="text-4xl font-bold text-blue-600 mb-2">18.5K+</p>
+              <p className="text-4xl font-bold text-[#6E4F05] mb-2">18.5K+</p>
               <p className="text-slate-700 font-semibold">Total Units</p>
               <p className="text-xs text-slate-600 mt-2">Across projects</p>
             </div>
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm text-center">
-              <p className="text-4xl font-bold text-purple-600 mb-2">AED 52B+</p>
+              <p className="text-4xl font-bold text-[#5C4204] mb-2">AED 52B+</p>
               <p className="text-slate-700 font-semibold">Investment Value</p>
               <p className="text-xs text-slate-600 mt-2">Total projects</p>
             </div>
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm text-center">
-              <p className="text-4xl font-bold text-amber-600 mb-2">2025-28</p>
+              <p className="text-4xl font-bold text-[#7A5806] mb-2">2025-28</p>
               <p className="text-slate-700 font-semibold">Completion Range</p>
               <p className="text-xs text-slate-600 mt-2">Next 2-4 years</p>
             </div>
@@ -188,14 +188,14 @@ export default function ProjectsPage() {
         </div>
 
         {/* Call to Action */}
-        <div className="bg-linear-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
+        <div className="bg-linear-to-r from-[#8A6508] to-[#5C4204] rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Find Your Investment Project</h2>
           <p className="text-lg mb-8 opacity-90">
             Browse all projects and connect with developers for pre-launch offers and exclusive opportunities
           </p>
           <Link
             href="/trends/dubai-projects-map"
-            className="inline-block px-8 py-4 bg-white text-emerald-600 font-bold rounded-lg hover:bg-slate-100 transition-colors"
+            className="inline-block px-8 py-4 bg-white text-[#5C4204] font-bold rounded-lg hover:bg-slate-100 transition-colors"
           >
             Explore All Projects
           </Link>
