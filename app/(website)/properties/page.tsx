@@ -174,12 +174,14 @@ type NormalizedProperty = Property & {
 // Full Screen Gallery Component 
 const FullScreenGallery = ({ 
   property, 
-  onClose 
+  onClose,
+  initialIndex = 0,
 }: { 
   property: NormalizedProperty; 
-  onClose: () => void 
+  onClose: () => void;
+  initialIndex?: number;
 }) => {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [isZoomed, setIsZoomed] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
@@ -257,6 +259,14 @@ const FullScreenGallery = ({
   }
   
   const propertyMedia = getPropertyMedia();
+
+  useEffect(() => {
+    const safeIndex = Math.min(Math.max(initialIndex, 0), Math.max(propertyMedia.length - 1, 0));
+    setCurrentIndex(safeIndex);
+    setIsVideoPlaying(false);
+    setIsZoomed(false);
+    setImageLoaded(false);
+  }, [initialIndex, property.id, propertyMedia.length]);
   
   const handlePrev = () => {
     setCurrentIndex(prev => prev === 0 ? propertyMedia.length - 1 : prev - 1)
@@ -1407,6 +1417,7 @@ function ViewDetailsModal({
   const [agentPopupData, setAgentPopupData] = useState<AgentData | null>(null);
   const [agentPopupLoading, setAgentPopupLoading] = useState(false);
   const [showFullScreenGallery, setShowFullScreenGallery] = useState(false);
+  const [galleryInitialIndex, setGalleryInitialIndex] = useState(0);
 
   // Fetch agent data
   useEffect(() => {
@@ -1605,6 +1616,11 @@ function ViewDetailsModal({
   };
 
   const propertyImages = getPropertyImages();
+  const hasVideoMedia = Boolean(
+    property.video_url &&
+      (/youtube\.com|youtu\.be|vimeo\.com|\.(mp4|webm|ogg|mov|avi|wmv|flv|mkv)(\?.*)?$/i.test(property.video_url))
+  );
+  const totalMediaItems = propertyImages.length + (hasVideoMedia ? 1 : 0);
 
   const calculateMortgage = () => {
     const price = property.price || 0;
@@ -1665,6 +1681,7 @@ function ViewDetailsModal({
       {showFullScreenGallery && (
         <FullScreenGallery 
           property={property} 
+          initialIndex={galleryInitialIndex}
           onClose={() => setShowFullScreenGallery(false)} 
         />
       )}
@@ -1722,7 +1739,10 @@ function ViewDetailsModal({
                     src={propertyImages[currentImageIndex]}
                     alt={property.title || "Property Image"}
                     className="w-full h-full object-cover cursor-pointer"
-                    onClick={() => setShowFullScreenGallery(true)}
+                    onClick={() => {
+                      setGalleryInitialIndex(currentImageIndex);
+                      setShowFullScreenGallery(true);
+                    }}
                     onError={(e) => {
                       e.currentTarget.src =
                         "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&auto=format&fit=crop";
@@ -1731,7 +1751,10 @@ function ViewDetailsModal({
 
                   {/* Open Gallery Button */}
                   <button
-                    onClick={() => setShowFullScreenGallery(true)}
+                    onClick={() => {
+                      setGalleryInitialIndex(currentImageIndex);
+                      setShowFullScreenGallery(true);
+                    }}
                     className="absolute bottom-6 right-6 bg-black/70 hover:bg-black/90 text-white px-5 py-3 rounded-xl flex items-center gap-2 transition-colors backdrop-blur-sm shadow-lg z-10"
                   >
                     <ArrowsPointingOutIcon className="h-5 w-5" />
@@ -1756,7 +1779,7 @@ function ViewDetailsModal({
 
                     <div className="absolute top-2 right-4 px-3 py-1 bg-black/50 text-white text-sm rounded-full flex items-center gap-1 z-20">
                       <PhotoIcon className="w-4 h-4" />
-                      {currentImageIndex + 1} / {propertyImages.length}
+                      {currentImageIndex + 1} / {totalMediaItems}
                     </div>
                   </div>
 
@@ -1781,7 +1804,7 @@ function ViewDetailsModal({
                 </div>
 
                 {/* Thumbnails */}
-                {propertyImages.length > 1 && (
+                {(propertyImages.length > 1 || hasVideoMedia) && (
                   <div className="p-4">
                     <div className="flex gap-4 overflow-x-auto pb-2">
                       {propertyImages.map((img, idx) => (
@@ -1801,6 +1824,22 @@ function ViewDetailsModal({
                           />
                         </button>
                       ))}
+
+                      {hasVideoMedia && (
+                        <button
+                          onClick={() => {
+                            setGalleryInitialIndex(propertyImages.length);
+                            setShowFullScreenGallery(true);
+                          }}
+                          className="shrink-0 min-w-24 h-20 rounded-xl overflow-hidden border-2 border-primary/40 hover:border-primary bg-slate-900 text-white px-3 transition-all"
+                          aria-label="Open video"
+                        >
+                          <div className="w-full h-full flex items-center justify-center gap-2">
+                            <VideoCameraIcon className="w-5 h-5 text-primary" />
+                            <span className="text-sm font-bold uppercase tracking-wide">Video</span>
+                          </div>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
@@ -2936,6 +2975,20 @@ function PropertiesPageContent() {
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const offset = (Math.max(page, 1) - 1) * limit;
   const paginatedProperties = filteredProperties.slice(offset, offset + limit);
+  const shouldShowFallbackProperties = total === 0 && allProperties.length > 0;
+  const fallbackProperties = allProperties
+    .slice()
+    .sort((a, b) => {
+      if (Boolean(b.featured) !== Boolean(a.featured)) {
+        return Number(Boolean(b.featured)) - Number(Boolean(a.featured));
+      }
+      const dateA = a.submitted_at || a.created_at || '0';
+      const dateB = b.submitted_at || b.created_at || '0';
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    })
+    .slice(0, Math.min(6, limit));
+  const visibleProperties = shouldShowFallbackProperties ? fallbackProperties : paginatedProperties;
+  const displayedCount = shouldShowFallbackProperties ? visibleProperties.length : total;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US').format(price);
@@ -2994,7 +3047,7 @@ function PropertiesPageContent() {
 
             <div className="flex flex-wrap justify-center gap-3 pt-4 animate-slide-up [animation-delay:300ms]">
               <span className="px-6 py-2 bg-white/10 backdrop-blur-md text-white rounded-full border border-white/10 text-sm font-bold">
-                {total} Properties Found
+                {displayedCount} Properties Found
               </span>
               {formState.search && (
                 <span className="px-6 py-2 bg-primary/20 backdrop-blur-md text-primary rounded-full border border-primary/30 text-sm font-bold">
@@ -3352,7 +3405,7 @@ function PropertiesPageContent() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-10 gap-4 sm:gap-6 bg-white p-4 sm:p-4 rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm">
               <div className="flex items-center gap-4 pl-4">
                 <span className="text-slate-400 font-bold text-sm uppercase tracking-widest">
-                  {total} Properties Found
+                  {displayedCount} Properties Found
                 </span>
               </div>
 
@@ -3361,14 +3414,22 @@ function PropertiesPageContent() {
               </div>
             </div>
 
-            {filteredProperties.length > 0 ? (
+            {visibleProperties.length > 0 ? (
               <>
+                {shouldShowFallbackProperties && (
+                  <div className="mb-6 rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4">
+                    <p className="text-sm font-semibold text-slate-800">
+                      No exact matches for your current filters. Showing {visibleProperties.length} available properties instead.
+                    </p>
+                  </div>
+                )}
+
                 <div className={`grid gap-8 ${
                   viewMode === 'grid'
                     ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
                     : 'grid-cols-1'
                 }`}>
-                  {paginatedProperties.map((property, i) => (
+                  {visibleProperties.map((property, i) => (
                     <div key={`${property.collection}-${property.id}`} className="animate-slide-up" style={{ animationDelay: `${i * 50}ms` }}>
                       <div className="relative group">
                         <PropertyCard
@@ -3439,7 +3500,7 @@ function PropertiesPageContent() {
                   ))}
                 </div>
 
-                {totalPages > 1 && (
+                {!shouldShowFallbackProperties && totalPages > 1 && (
                   <div className="mt-16 flex items-center justify-center gap-2">
                     {page > 1 && (
                       <button

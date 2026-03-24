@@ -11,7 +11,8 @@ export default function QuarterlyUpdatesPage() {
       transactions: '64000+',
       investment: 'AED 210B',
       summary: 'Strong year-end performance with record transactions and investment activity',
-      details: ['Holiday season boost', 'Investor confidence', 'New project launches', 'Luxury segment surge']
+      details: ['Holiday season boost', 'Investor confidence', 'New project launches', 'Luxury segment surge'],
+      reportUrl: '/trends/market-insights?report=q4-2024'
     },
     {
       quarter: 'Q3 2024',
@@ -19,7 +20,8 @@ export default function QuarterlyUpdatesPage() {
       transactions: '52300+',
       investment: 'AED 165B',
       summary: 'Summer recovery with back-to-school and expatriate activity',
-      details: ['Back-to-school demand', 'Expatriate influx', 'Commercial growth', 'JVC expansion']
+      details: ['Back-to-school demand', 'Expatriate influx', 'Commercial growth', 'JVC expansion'],
+      reportUrl: '/trends/market-insights?report=q3-2024'
     },
     {
       quarter: 'Q2 2024',
@@ -27,7 +29,8 @@ export default function QuarterlyUpdatesPage() {
       transactions: '50100+',
       investment: 'AED 155B',
       summary: 'Steady growth with balanced buyer and investor activity',
-      details: ['Summer planning', 'Affordable segment', 'New developments', 'Rental demand']
+      details: ['Summer planning', 'Affordable segment', 'New developments', 'Rental demand'],
+      reportUrl: '/trends/market-insights?report=q2-2024'
     },
     {
       quarter: 'Q1 2024',
@@ -35,12 +38,15 @@ export default function QuarterlyUpdatesPage() {
       transactions: '49500+',
       investment: 'AED 158B',
       summary: 'Strong start to the year with New Year buying activity',
-      details: ['New Year momentum', 'Resolution buying', 'Investment interest', 'Market confidence']
+      details: ['New Year momentum', 'Resolution buying', 'Investment interest', 'Market confidence'],
+      reportUrl: '/trends/market-insights?report=q1-2024'
     }
   ]
 
+  const reportButtonClasses = 'inline-flex items-center px-6 py-2 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] active:bg-[#5C4204] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A6508]/40 transition-colors text-sm'
+
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-[#EEF2FA] py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -55,7 +61,7 @@ export default function QuarterlyUpdatesPage() {
         {/* Quarterly Reports */}
         <div className="space-y-6 mb-16">
           {quarterlyReports.map((report, idx) => (
-            <div key={idx} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all p-8">
+            <div key={idx} className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:border-[#8A6508]/30 transition-all p-8">
               <div className="grid md:grid-cols-5 gap-6 items-start">
                 <div className="md:col-span-2">
                   <h3 className="text-2xl font-bold text-slate-900 mb-3">{report.quarter}</h3>
@@ -86,9 +92,9 @@ export default function QuarterlyUpdatesPage() {
               </div>
 
               <div className="mt-6 pt-6 border-t border-slate-200">
-                <button className="px-6 py-2 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] transition-colors text-sm">
+                <Link href={report.reportUrl} className={reportButtonClasses}>
                   Read Full Report
-                </button>
+                </Link>
               </div>
             </div>
           ))}

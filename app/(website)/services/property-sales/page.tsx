@@ -202,9 +202,21 @@ export default function PropertySalesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { img: "/CREEK_PALACE_DCH_EMAAR_1.jpg", title: "Luxury Development", price: "AED 5.2M" },
-              { img: "/CREEK_PALACE_DCH_EMAAR_6.jpg", title: "Mixed-Use Project", price: "AED 3.8M" },
-              { img: "/CREEK_PALACE_DCH_EMAAR_12.jpg", title: "Waterfront Complex", price: "AED 6.1M" }
+              {
+                img: "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200",
+                title: "Luxury Development",
+                price: "AED 5.2M"
+              },
+              {
+                img: "https://images.pexels.com/photos/439391/pexels-photo-439391.jpeg?auto=compress&cs=tinysrgb&w=1200",
+                title: "Mixed-Use Project",
+                price: "AED 3.8M"
+              },
+              {
+                img: "https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=1200",
+                title: "Waterfront Complex",
+                price: "AED 6.1M"
+              }
             ].map((property, idx) => (
               <div key={idx} className="relative h-72 rounded-3xl overflow-hidden shadow-2xl group cursor-pointer">
                 <Image
@@ -214,8 +226,8 @@ export default function PropertySalesPage() {
                   className="object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-slate-900/95 via-slate-900/40 to-transparent group-hover:from-slate-900/98 transition-all duration-300 flex flex-col justify-end p-6">
-                  <h3 className="text-xl font-bold text-gray-900">{property.title}</h3>
-                  <p className="text-amber-700 font-bold text-lg">{property.price}</p>
+                  <h3 className="text-xl font-bold text-white">{property.title}</h3>
+                  <p className="text-[#F6C461] font-bold text-lg">{property.price}</p>
                 </div>
               </div>
             ))}

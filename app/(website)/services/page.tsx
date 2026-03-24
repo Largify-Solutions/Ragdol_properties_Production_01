@@ -240,20 +240,26 @@ export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Premium Hero Section */}
-      <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8 bg-linear-to-br from-[#E7C77A] via-[#D4AF37] to-[#B8860B]/70">
-        {/* Golden gradient background */}
-        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[#8A6508]/18 via-transparent to-[#5C4204]/18 -z-10"></div>
-        <div className="absolute top-20 right-0 w-96 h-96 bg-[#8A6508]/20 rounded-full blur-3xl -z-10"></div>
-        <div className="absolute top-40 left-0 w-64 h-64 bg-[#5C4204]/16 rounded-full blur-3xl -z-10"></div>
-        
-        <div className="container-custom mx-auto text-center">
-          <div className="inline-block px-6 py-2 bg-[#D4AF37]/20 border border-[#B8860B]/30 rounded-full mb-8">
-            <span className="text-sm font-black text-[#7A5806] tracking-widest uppercase">Our Expertise</span>
+      <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
+        <Image
+          src="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1800"
+          alt=""
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-linear-to-br from-[#2A1D05]/75 via-[#5C4204]/60 to-[#8A6508]/55"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-[#D4AF37]/20 via-transparent to-[#D4AF37]/5"></div>
+
+        <div className="container-custom mx-auto text-center relative z-10">
+          <div className="inline-block px-6 py-2 bg-white/10 border border-[#F6E7C0]/35 rounded-full mb-8 backdrop-blur-sm">
+            <span className="text-sm font-black text-[#F6E7C0] tracking-widest uppercase">Our Expertise</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-black text-[#5C4204] mb-6 leading-tight">
-            <span className="text-[#7A5806]">Premium Real Estate Services</span>
+          <h1 className="text-5xl md:text-6xl font-black text-white mb-6 leading-tight">
+            <span className="text-[#F6E7C0]">Premium Real Estate Services</span>
           </h1>
-          <p className="text-xl text-[#5C4204] max-w-2xl mx-auto">
+          <p className="text-xl text-white/90 max-w-2xl mx-auto">
             Experience excellence with Ragdoll Properties' comprehensive suite of real estate solutions
           </p>
         </div>
