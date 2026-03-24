@@ -8,6 +8,7 @@ import HeroSearch from "@/components/shared/HeroSearch";
 import HeroImageSlider from "@/components/shared/HeroImageSlider";
 import AgentSlider from "@/components/agent/AgentSlider";
 import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 import { useState, useRef, useEffect, useCallback } from "react";
 import {
   BuildingOffice2Icon,
@@ -1087,7 +1088,9 @@ async function fetchBlogPosts() {
 }
 
 export default function HomePage() {
-  const { t } = useTranslation();
+  const { t: rawT } = useTranslation();
+  const [isHydrated, setIsHydrated] = useState(false);
+  const t = isHydrated ? rawT : i18n.getFixedT("en");
 
   // State for Supabase data
   const [featuredProperties, setFeaturedProperties] = useState<UIProperty[]>(
@@ -1101,6 +1104,10 @@ export default function HomePage() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Video controls state
   const [videoStates, setVideoStates] = useState<{
