@@ -2690,7 +2690,17 @@ function PropertiesPageContent() {
 
     // Filter by property type
     if (formState.type) {
-      filtered = filtered.filter(p => p.type?.toLowerCase() === formState.type.toLowerCase());
+      if (formState.type === 'furnished-studio') {
+        filtered = filtered.filter(
+          p => p.type?.toLowerCase() === 'studio' && p.furnished === true
+        );
+      } else if (formState.type === 'unfurnished-studio') {
+        filtered = filtered.filter(
+          p => p.type?.toLowerCase() === 'studio' && (p.furnished === false || p.furnished === null)
+        );
+      } else {
+        filtered = filtered.filter(p => p.type?.toLowerCase() === formState.type.toLowerCase());
+      }
       console.log('🔍 After type filter:', filtered.length);
     }
 
@@ -2896,6 +2906,38 @@ function PropertiesPageContent() {
     router.replace(`/properties?${params.toString()}`, { scroll: false });
   };
 
+  const getTypeTitleLabel = (type: string) => {
+    const typeLabels: Record<string, string> = {
+      apartment: 'Apartments',
+      villa: 'Villas',
+      townhouse: 'Townhouses',
+      penthouse: 'Penthouses',
+      studio: 'Studios',
+      'furnished-studio': 'Furnished Studios',
+      'unfurnished-studio': 'Unfurnished Studios',
+      plot: 'Plots',
+      commercial: 'Commercial Properties'
+    };
+
+    return typeLabels[type] || type.charAt(0).toUpperCase() + type.slice(1) + 's';
+  };
+
+  const getTypeDescriptionLabel = (type: string) => {
+    const typeLabels: Record<string, string> = {
+      apartment: 'apartments',
+      villa: 'villas',
+      townhouse: 'townhouses',
+      penthouse: 'penthouses',
+      studio: 'studios',
+      'furnished-studio': 'furnished studios',
+      'unfurnished-studio': 'unfurnished studios',
+      plot: 'plots',
+      commercial: 'commercial properties'
+    };
+
+    return typeLabels[type] || type + 's';
+  };
+
   const getPageTitle = () => {
     let title = '';
 
@@ -2912,16 +2954,7 @@ function PropertiesPageContent() {
     }
 
     if (formState.type) {
-      const typeLabels: Record<string, string> = {
-        apartment: 'Apartments',
-        villa: 'Villas',
-        townhouse: 'Townhouses',
-        penthouse: 'Penthouses',
-        studio: 'Studios',
-        plot: 'Plots',
-        commercial: 'Commercial Properties'
-      };
-      title = typeLabels[formState.type] || formState.type.charAt(0).toUpperCase() + formState.type.slice(1) + 's';
+      title = getTypeTitleLabel(formState.type);
     }
 
     title += formState.area ? ` in ${formState.area}` : ' in Dubai';
@@ -2945,16 +2978,7 @@ function PropertiesPageContent() {
     }
 
     if (formState.type) {
-      const typeLabels: Record<string, string> = {
-        apartment: 'apartments',
-        villa: 'villas',
-        townhouse: 'townhouses',
-        penthouse: 'penthouses',
-        studio: 'studios',
-        plot: 'plots',
-        commercial: 'commercial properties'
-      };
-      desc += typeLabels[formState.type] || formState.type + 's';
+      desc += getTypeDescriptionLabel(formState.type);
     } else {
       desc += 'properties';
     }
@@ -3071,7 +3095,7 @@ function PropertiesPageContent() {
               )}
               {formState.type && (
                 <span className="px-6 py-2 bg-purple-500/20 backdrop-blur-md text-purple-400 rounded-full border border-purple-500/30 text-sm font-bold">
-                  🏢 {formState.type.charAt(0).toUpperCase() + formState.type.slice(1)}
+                  🏢 {getTypeTitleLabel(formState.type)}
                 </span>
               )}
               {formState.category && (
@@ -3214,6 +3238,7 @@ function PropertiesPageContent() {
                       <option value="warehouse">Warehouses</option>
                       <option value="building">Commercial Buildings</option>
                       <option value="furnished-studio">Furnished Studios</option>
+                      <option value="unfurnished-studio">Unfurnished Studios</option>
                     </select>
                   </div>
 

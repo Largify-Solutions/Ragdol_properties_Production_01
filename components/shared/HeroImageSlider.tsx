@@ -190,9 +190,9 @@ export default function HeroImageSlider() {
         )}
 
         {/* Colour overlay for text contrast */}
-        <div className="absolute inset-0 z-10" style={{ background: overlay }} />
+        <div className="absolute inset-0 z-10 pointer-events-none" style={{ background: overlay }} />
         {/* Bottom vignette */}
-        <div className="absolute inset-0 z-10 bg-linear-to-t from-black/60 via-transparent to-black/20" />
+        <div className="absolute inset-0 z-10 pointer-events-none bg-linear-to-t from-black/60 via-transparent to-black/20" />
       </div>
 
       {/* ── Slider controls (slider mode + more than 1 slide) ── */}

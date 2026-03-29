@@ -139,7 +139,7 @@ export default function ToolsPage() {
                   <div className="space-y-2 mb-6">
                     {tool.features.slice(0, 3).map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-sm text-slate-700">
-                        <CheckCircleIcon className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                        <CheckCircleIcon className="w-4 h-4 text-emerald-600 shrink-0" />
                         <span>{feature}</span>
                       </div>
                     ))}
@@ -192,7 +192,7 @@ export default function ToolsPage() {
             ].map((guide, idx) => (
               <Link
                 key={idx}
-                href="#"
+                href="/guides"
                 className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg transition-all"
               >
                 <div className="text-4xl mb-3">{guide.icon}</div>

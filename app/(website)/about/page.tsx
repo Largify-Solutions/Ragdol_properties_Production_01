@@ -3,8 +3,9 @@
 import { BuildingOfficeIcon, UsersIcon, TrophyIcon, ShieldCheckIcon, HeartIcon, GlobeAltIcon, SparklesIcon, ChartBarIcon, HomeIcon, CurrencyDollarIcon, KeyIcon, BuildingLibraryIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase-browser'
+import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
 
 interface AgentWithProfile {
   id: string;
@@ -173,65 +174,69 @@ export default function AboutPage() {
   const [loadingPartners, setLoadingPartners] = useState(true);
   const [partnersError, setPartnersError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        console.log("📦 Loading data for About page...");
-        
-        const [agents, partners] = await Promise.all([
-          fetchTopAgents(),
-          fetchFeaturedPartners()
-        ]);
-        
-        console.log(`👥 Agents loaded: ${agents.length}`);
-        console.log(`🤝 Partners loaded: ${partners.length}`);
-        
-        setTopAgents(agents);
-        setFeaturedPartners(partners);
-        
-        if (partners.length === 0) {
-          setPartnersError("No active partners found. Please add partners to the database.");
-        }
-      } catch (error) {
-        console.error("Error loading data:", error);
-        setPartnersError("Failed to load partners. Using demo data.");
-        
-        // Set demo partners
-        setFeaturedPartners([
-          {
-            id: "demo-1",
-            name: "Largify Solutions",
-            description: "Leading mortgage services provider for premium properties.",
-            logo: "https://images.pexels.com/photos/12437056/pexels-photo-12437056.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-            category: "Mortgage Services",
-            website: "https://twitter.com",
-            featured: false,
-            active: true,
-            order: 3,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            id: "demo-2",
-            name: "Dubai Bank",
-            description: "Premium banking and financial services for international clients.",
-            logo: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w-300&h=200&fit=crop",
-            category: "Banking",
-            website: "https://dubaibank.com",
-            featured: true,
-            active: true,
-            order: 1,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          }
-        ]);
-      } finally {
-        setLoadingPartners(false);
+  const loadData = useCallback(async () => {
+    try {
+      console.log("📦 Loading data for About page...");
+
+      const [agents, partners] = await Promise.all([
+        fetchTopAgents(),
+        fetchFeaturedPartners()
+      ]);
+
+      console.log(`👥 Agents loaded: ${agents.length}`);
+      console.log(`🤝 Partners loaded: ${partners.length}`);
+
+      setTopAgents(agents);
+      setFeaturedPartners(partners);
+
+      if (partners.length === 0) {
+        setPartnersError("No active partners found. Please add partners to the database.");
       }
-    };
-    
-    loadData();
+    } catch (error) {
+      console.error("Error loading data:", error);
+      setPartnersError("Failed to load partners. Using demo data.");
+
+      // Set demo partners
+      setFeaturedPartners([
+        {
+          id: "demo-1",
+          name: "Largify Solutions",
+          description: "Leading mortgage services provider for premium properties.",
+          logo: "https://images.pexels.com/photos/12437056/pexels-photo-12437056.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          category: "Mortgage Services",
+          website: "https://twitter.com",
+          featured: false,
+          active: true,
+          order: 3,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        {
+          id: "demo-2",
+          name: "Dubai Bank",
+          description: "Premium banking and financial services for international clients.",
+          logo: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w-300&h=200&fit=crop",
+          category: "Banking",
+          website: "https://dubaibank.com",
+          featured: true,
+          active: true,
+          order: 1,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+      ]);
+    } finally {
+      setLoadingPartners(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  useRealtimeMulti([
+    { table: 'partners', onChange: () => loadData() },
+  ]);
 
   const stats = [
     { label: 'Properties Sold', value: '5,000+', icon: HomeIcon, description: 'Prime Dubai real estate transactions' },
@@ -653,13 +658,39 @@ export default function AboutPage() {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 items-center">
-            {['Emaar', 'Damac', 'Dubai Properties', 'Meraas', 'Nakheel', 'Deyaar'].map((developer) => (
-              <div key={developer} className="h-16 flex items-center justify-center p-4 bg-white rounded-lg border border-slate-100 hover:shadow-md transition-shadow">
-                <div className="text-lg font-bold text-slate-700 opacity-70 hover:opacity-100 transition-opacity">
-                  {developer}
-                </div>
+            {loadingPartners ? (
+              <div className="col-span-full text-center text-slate-500">
+                Loading partner logos...
               </div>
-            ))}
+            ) : featuredPartners.length > 0 ? (
+              featuredPartners.slice(0, 6).map((partner) => (
+                <div
+                  key={partner.id}
+                  className="h-16 flex items-center justify-center p-4 bg-white rounded-lg border border-slate-100 hover:shadow-md transition-shadow"
+                >
+                  <div className="relative w-full h-full max-w-[140px]">
+                    <Image
+                      src={partner.logo}
+                      alt={`${partner.name} Logo`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 140px"
+                      onError={(e) => {
+                        e.currentTarget.src = "https://via.placeholder.com/150x100";
+                      }}
+                    />
+                  </div>
+                </div>
+              ))
+            ) : (
+              ['Emaar', 'Damac', 'Dubai Properties', 'Meraas', 'Nakheel', 'Deyaar'].map((developer) => (
+                <div key={developer} className="h-16 flex items-center justify-center p-4 bg-white rounded-lg border border-slate-100 hover:shadow-md transition-shadow">
+                  <div className="text-lg font-bold text-slate-700 opacity-70 hover:opacity-100 transition-opacity">
+                    {developer}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>

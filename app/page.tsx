@@ -781,7 +781,7 @@ async function fetchTopAgents(): Promise<AgentWithProfile[]> {
   }
 }
 
-// 7. Testimonials - MAX 3 (Client Requirement: "Use 3 only to have them landscape")
+// 7. Testimonials - MAX 5 (Show 5 in a single row on large screens)
 async function fetchTestimonials() {
   try {
     const cached = getCachedData('testimonials');
@@ -792,7 +792,7 @@ async function fetchTestimonials() {
       .select('*')
       .eq('is_active', true)
       .order('created_at', { ascending: false })
-      .limit(3);
+      .limit(5);
 
     if (error) {
       console.error("Supabase error fetching testimonials:", error.message);
@@ -1488,43 +1488,42 @@ export default function HomePage() {
 </section>
 
       {/* Trusted Partners Section - MAX 4 */}
-      <section className="py-16 sm:py-24 ">
+      <section className="py-16 sm:py-24 bg-white">
         <div className="container-custom">
           <div className="text-center mb-12 sm:mb-16 px-4 sm:px-0">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-secondary tracking-tight mb-4 sm:mb-6">
-              <span className="text-secondary">Trusted</span>{" "}
-              <span className="text-primary">Partners</span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-secondary tracking-tight mb-3 sm:mb-4">
+              Trusted <span className="text-primary">Partners</span>
             </h2>
 
-            <p className="text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
               {t("homepage.collaborateWithDevelopers")}
             </p>
-            <Link href="/partners" className="btn-outline mt-3">
+            <Link href="/partners" className="btn-outline mt-4">
               View All partners
             </Link>
           </div>
 
           {/* CHANGED: grid-cols-2 sm:grid-cols-3 md:grid-cols-6 (was grid-cols-1 sm:grid-cols-2 md:grid-cols-4) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 sm:gap-8 md:gap-12 px-4 sm:px-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6 md:gap-8 px-4 sm:px-0">
             {trustedPartners.length > 0 ? (
               // CHANGED: slice(0, 6) (was slice(0, 4))
               trustedPartners.slice(0, 6).map((partner, index) => (
                 <div
                   key={partner.id || index}
-                  className="group flex flex-col items-center gap-3"
+                  className="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-white px-4 py-4 shadow-sm transition-all hover:border-primary/60 hover:shadow-md"
                 >
-                  <div className="h-16 sm:h-20 flex items-center justify-center mx-auto">
+                  <div className="h-12 sm:h-14 flex items-center justify-center mx-auto">
                     <img
                       src={partner.logo}
                       alt={`${partner.name} Logo`}
-                      className="max-h-full w-auto max-w-[120px]"
+                      className="max-h-full w-auto max-w-[120px] opacity-90 transition-opacity group-hover:opacity-100"
                       onError={(e) => {
                         e.currentTarget.src =
                           "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop";
                       }}
                     />
                   </div>
-                  <h3 className="text-sm font-bold text-secondary group-hover:text-primary text-center">
+                  <h3 className="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-primary text-center">
                     {partner.name}
                   </h3>
                 </div>
@@ -1540,15 +1539,18 @@ export default function HomePage() {
                   { name: "Dubai Properties", src: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" },
                   { name: "Meraas", src: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" },
                 ].map((p, i) => (
-                  <div key={i} className="group flex flex-col items-center gap-3">
-                    <div className="h-16 sm:h-20 flex items-center justify-center mx-auto">
+                  <div
+                    key={i}
+                    className="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-primary/30 bg-white px-4 py-4 shadow-sm transition-all hover:border-primary/60 hover:shadow-md"
+                  >
+                    <div className="h-12 sm:h-14 flex items-center justify-center mx-auto">
                       <img
                         src={p.src}
                         alt={`${p.name} Logo`}
-                        className="max-h-full w-auto max-w-[120px]"
+                        className="max-h-full w-auto max-w-[120px] opacity-90 transition-opacity group-hover:opacity-100"
                       />
                     </div>
-                    <h3 className="text-sm font-bold text-secondary group-hover:text-primary text-center">
+                    <h3 className="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-primary text-center">
                       {p.name}
                     </h3>
                   </div>
@@ -1903,7 +1905,7 @@ export default function HomePage() {
 
 
 
-      {/* testimonials Section - MAX 3 */}
+      {/* testimonials Section - MAX 5 */}
 
       <section className="py-24 bg-white">
         <div className="container-custom">
@@ -1924,9 +1926,9 @@ export default function HomePage() {
           </div>
 
           {/* Grid layout - same functionality */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {testimonials.length > 0 ? (
-              testimonials.slice(0, 3).map((testimonial, index) => (
+              testimonials.slice(0, 5).map((testimonial, index) => (
                 <div
                   key={testimonial.id || index}
                   className="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow duration-300"
@@ -1986,7 +1988,7 @@ export default function HomePage() {
                 </div>
               ))
             ) : (
-              <div className="col-span-3 text-center py-12">
+              <div className="col-span-full text-center py-12">
                 <p className="text-slate-400">No testimonials available at the moment</p>
               </div>
             )}

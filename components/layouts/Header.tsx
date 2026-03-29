@@ -234,40 +234,40 @@ export default function Header() {
   items: [
     {
       label: "All Commercial",
-      href: "/properties?category=commercial",
+      href: "/properties?action=buy&category=commercial",
       subItems: [
-        { label: "All Commercial Properties", href: "/properties?category=commercial" },
+        { label: "All Commercial Properties", href: "/properties?action=buy&category=commercial" },
         { label: "For Rent", href: "/properties?category=commercial&action=rent" },
-        { label: "For Sale", href: "/properties?category=commercial&action=buy" },
+        { label: "For Sale", href: "/properties?action=buy&category=commercial" },
       ],
     },
     {
       label: "Commercial Types",
-      href: "/properties?category=commercial",
+      href: "/properties?action=buy&category=commercial",
       subItems: [
-        { label: "All Types", href: "/properties?category=commercial" },
-        { label: "Offices", href: "/properties?category=commercial&type=office" },
-        { label: "Retail / Shops", href: "/properties?category=commercial&type=shop" },
-        { label: "Warehouses", href: "/properties?category=commercial&type=warehouse" },
-        { label: "Industrial", href: "/properties?category=commercial&type=industrial" },
-        { label: "Commercial Buildings", href: "/properties?category=commercial&type=building" },
-        { label: "Commercial Plots", href: "/properties?category=commercial&type=plot" },
+        { label: "All Types", href: "/properties?action=buy&category=commercial" },
+        { label: "Offices", href: "/properties?action=buy&category=commercial&type=office" },
+        { label: "Retail / Shops", href: "/properties?action=buy&category=commercial&type=shop" },
+        { label: "Warehouses", href: "/properties?action=buy&category=commercial&type=warehouse" },
+        { label: "Industrial", href: "/properties?action=buy&category=commercial&type=industrial" },
+        { label: "Commercial Buildings", href: "/properties?action=buy&category=commercial&type=building" },
+        { label: "Commercial Plots", href: "/properties?action=buy&category=commercial&type=plot" },
       ],
     },
     {
       label: "Business Districts",
-      href: "/properties?category=commercial",
+      href: "/properties?action=buy&category=commercial",
       subItems: [
-        { label: "Business Bay", href: "/properties?category=commercial&area=business-bay" },
-        { label: "DIFC", href: "/properties?category=commercial&area=difc" },
-        { label: "Dubai Silicon Oasis", href: "/properties?category=commercial&area=dubai-silicon-oasis" },
-        { label: "Deira", href: "/properties?category=commercial&area=deira" },
-        { label: "Dubai South", href: "/properties?category=commercial&area=dubai-south" },
-        { label: "Dubai Marina", href: "/properties?category=commercial&area=dubai-marina" },
-        { label: "Downtown Dubai", href: "/properties?category=commercial&area=downtown-dubai" },
-        { label: "Jumeirah", href: "/properties?category=commercial&area=jumeirah" },
-        { label: "Al Barsha", href: "/properties?category=commercial&area=al-barsha" },
-        { label: "Dubai Creek Harbour", href: "/properties?category=commercial&area=dubai-creek-harbour" },
+        { label: "Business Bay", href: "/properties?action=buy&category=commercial&area=business-bay" },
+        { label: "DIFC", href: "/properties?action=buy&category=commercial&area=difc" },
+        { label: "Dubai Silicon Oasis", href: "/properties?action=buy&category=commercial&area=dubai-silicon-oasis" },
+        { label: "Deira", href: "/properties?action=buy&category=commercial&area=deira" },
+        { label: "Dubai South", href: "/properties?action=buy&category=commercial&area=dubai-south" },
+        { label: "Dubai Marina", href: "/properties?action=buy&category=commercial&area=dubai-marina" },
+        { label: "Downtown Dubai", href: "/properties?action=buy&category=commercial&area=downtown-dubai" },
+        { label: "Jumeirah", href: "/properties?action=buy&category=commercial&area=jumeirah" },
+        { label: "Al Barsha", href: "/properties?action=buy&category=commercial&area=al-barsha" },
+        { label: "Dubai Creek Harbour", href: "/properties?action=buy&category=commercial&area=dubai-creek-harbour" },
       ],
     },
    
@@ -435,7 +435,7 @@ export default function Header() {
       <img 
         src="/ragdol.png" 
         alt="Ragdoll Properties Logo" 
-        className="h-10 w-auto rounded-xl group-hover:opacity-90 transition-opacity"
+        className="h-12 w-auto rounded-xl group-hover:opacity-90 transition-opacity"
       />
     </Link>
         {/* Desktop Navigation */}
@@ -889,35 +889,35 @@ export default function Header() {
                     Commercial Types
                   </div>
                   <Link
-                    href="/properties?action=buy&type=commercial"
+                    href="/properties?action=buy&category=commercial"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
                     All Commercial
                   </Link>
                   <Link
-                    href="/properties?action=buy&type=commercial&subtype=office"
+                    href="/properties?action=buy&category=commercial&type=office"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
                     Office Spaces
                   </Link>
                   <Link
-                    href="/properties?action=buy&type=commercial&subtype=retail"
+                    href="/properties?action=buy&category=commercial&type=retail"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
                     Retail Shops
                   </Link>
                   <Link
-                    href="/properties?action=buy&type=commercial&subtype=warehouse"
+                    href="/properties?action=buy&category=commercial&type=warehouse"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
                     Warehouses
                   </Link>
                   <Link
-                    href="/properties?action=buy&type=commercial&subtype=coworking"
+                    href="/properties?action=buy&category=commercial&type=coworking"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
@@ -928,28 +928,28 @@ export default function Header() {
                     Business Districts
                   </div>
                   <Link
-                    href="/properties?action=buy&type=commercial&area=business-bay"
+                    href="/properties?action=buy&category=commercial&area=business-bay"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
                     Business Bay
                   </Link>
                   <Link
-                    href="/properties?action=buy&type=commercial&area=difc"
+                    href="/properties?action=buy&category=commercial&area=difc"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
                     DIFC
                   </Link>
                   <Link
-                    href="/properties?action=buy&type=commercial&area=dubai-silicon-oasis"
+                    href="/properties?action=buy&category=commercial&area=dubai-silicon-oasis"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
                     Dubai Silicon Oasis
                   </Link>
                   <Link
-                    href="/properties?action=buy&type=commercial&area=deira"
+                    href="/properties?action=buy&category=commercial&area=deira"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block py-2 px-6 text-sm text-slate-600 hover:text-primary transition-colors rounded-lg hover:bg-slate-50"
                   >
@@ -975,7 +975,7 @@ export default function Header() {
                     <ChevronDownIcon className="h-4 w-4 text-slate-400 -rotate-90" />
                   </Link>
                   <Link
-                    href="/services/consultation"
+                    href="/contact"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-slate-50 transition-all"
                   >
@@ -985,7 +985,7 @@ export default function Header() {
                     <ChevronDownIcon className="h-4 w-4 text-slate-400 -rotate-90" />
                   </Link>
                   <Link
-                    href="/services/investment"
+                    href="/services/private-equity"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-slate-50 transition-all"
                   >

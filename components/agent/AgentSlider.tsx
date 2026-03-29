@@ -503,7 +503,7 @@ export default function AgentSlider({ agents, showCount = 4 }: AgentSliderProps)
             key={agent.id}
             className={`slide-item h-full`}
           >
-            <div className="card-custom group p-8 text-center">
+            <div className="card-custom group p-8 text-center border border-black/80 rounded-3xl">
               <div className="relative mb-6 inline-block">
                 <div className="w-32 h-32 mx-auto rounded-full overflow-hidden ring-4 ring-slate-50 group-hover:ring-primary/20 transition-all duration-500">
                   <img

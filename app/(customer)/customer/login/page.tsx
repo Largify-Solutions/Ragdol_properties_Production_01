@@ -338,7 +338,7 @@ export default function CustomerLogin() {
         <div className="container-custom">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Why Choose <span className="text-gradient">Ragdoll Properties PROPERTIES</span>
+              Why Choose <span className="text-gradient">Ragdoll Properties</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Experience the difference with Dubai's premier real estate platform
