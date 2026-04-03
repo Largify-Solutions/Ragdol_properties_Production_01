@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   HomeIcon,
   MapPinIcon,
@@ -33,74 +33,26 @@ interface SalesData {
   averagePrice: number;
   totalValue: number;
 }
+const FALLBACK_IMG =
+  'https://images.pexels.com/photos/1396134/pexels-photo-1396134.jpeg?auto=compress&cs=tinysrgb&w=900';
 
-const salesDataTable: SalesData[] = [
-  {
-    propertyType: 'Residential Apartment',
-    location: 'Dubai Marina',
-    unitsSold: 12,
-    averagePrice: 2100000,
-    totalValue: 25200000,
-  },
-  {
-    propertyType: 'Luxury Villa',
-    location: 'Palm Jumeirah',
-    unitsSold: 5,
-    averagePrice: 14500000,
-    totalValue: 72500000,
-  },
-  {
-    propertyType: 'Townhouse',
-    location: 'Arabian Ranches',
-    unitsSold: 7,
-    averagePrice: 3800000,
-    totalValue: 26600000,
-  },
-  {
-    propertyType: 'Commercial Office',
-    location: 'Business Bay',
-    unitsSold: 4,
-    averagePrice: 5000000,
-    totalValue: 20000000,
-  },
-  {
-    propertyType: 'Off-Plan Apartment',
-    location: 'JVC',
-    unitsSold: 15,
-    averagePrice: 950000,
-    totalValue: 14250000,
-  },
-];
+const formatAedShort = (value: number) => {
+  if (value >= 1_000_000_000) return `AED ${(value / 1_000_000_000).toFixed(1)}B`;
+  if (value >= 1_000_000) return `AED ${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `AED ${(value / 1_000).toFixed(1)}K`;
+  return `AED ${value.toLocaleString()}`;
+};
 
-const topLocations = [
-  {
-    name: 'Palm Jumeirah',
-    description: 'Continued strong demand for waterfront villas.',
-    icon: '🏝️',
-  },
-  {
-    name: 'Dubai Marina',
-    description: 'High turnover in luxury apartments for expat investors.',
-    icon: '🌊',
-  },
-  {
-    name: 'Jumeirah Village Circle (JVC)',
-    description: 'Surge in off-plan property sales due to affordability and investor-friendly payment plans.',
-    icon: '🏘️',
-  },
-];
+const normalizeLocation = (prop: any) =>
+  prop.location || prop.address || prop.area || prop.city || 'Dubai';
 
-const buyerDemographics = [
-  { segment: 'Local UAE Nationals', percentage: 35 },
-  { segment: 'International Buyers (UK, India, Russia, China)', percentage: 55 },
-  { segment: 'Corporate Investments', percentage: 10 },
-];
+const normalizeType = (prop: any) => prop.type || prop.category || 'Property';
 
-const transactionTrends = [
-  'Increase in off-plan sales due to flexible post-handover payment plans.',
-  'High interest from international investors after new residency reforms.',
-  'Strong resale market in established communities like Dubai Marina and Business Bay.',
-];
+const normalizeStatus = (prop: any) => {
+  const status = (prop.status || prop.property_status || '').toLowerCase();
+  if (status.includes('complete') || status.includes('sold')) return 'completed';
+  return 'ongoing';
+};
 
 export default function ProjectSalesPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -120,15 +72,15 @@ export default function ProjectSalesPage() {
       // Transform properties to projects format
       const transformedProjects = (data.properties || []).map((prop: any) => ({
         id: prop.id,
-        name: prop.title,
-        location: prop.location,
-        price: prop.price,
-        currency: prop.currency,
-        beds: prop.beds,
-        sqft: prop.sqft,
-        image: prop.image,
-        status: prop.status || 'ongoing',
-        type: prop.type,
+        name: prop.title || prop.name || 'Untitled Property',
+        location: normalizeLocation(prop),
+        price: prop.price || 0,
+        currency: prop.currency || 'AED',
+        beds: prop.beds || prop.bedrooms || undefined,
+        sqft: prop.sqft || prop.built_up_area || undefined,
+        image: prop.image || prop.image_url || (Array.isArray(prop.images) ? prop.images[0] : undefined) || FALLBACK_IMG,
+        status: normalizeStatus(prop),
+        type: normalizeType(prop),
         featured: prop.featured,
       }));
       setProjects(transformedProjects);
@@ -146,6 +98,127 @@ export default function ProjectSalesPage() {
     return matchesSearch && matchesStatus;
   });
 
+  const summary = useMemo(() => {
+    const totalListings = projects.length;
+    const totalValue = projects.reduce((sum, p) => sum + (p.price || 0), 0);
+    const avgPrice = totalListings ? totalValue / totalListings : 0;
+
+    const typeSet = new Set(projects.map(p => p.type || 'Property'));
+
+    const locationAgg = new Map<string, { count: number; totalValue: number }>();
+    projects.forEach(p => {
+      const key = p.location || 'Dubai';
+      const entry = locationAgg.get(key) || { count: 0, totalValue: 0 };
+      entry.count += 1;
+      entry.totalValue += p.price || 0;
+      locationAgg.set(key, entry);
+    });
+
+    let topLocation = 'Dubai';
+    let topLocationValue = 0;
+    locationAgg.forEach((value, key) => {
+      if (value.totalValue > topLocationValue) {
+        topLocationValue = value.totalValue;
+        topLocation = key;
+      }
+    });
+
+    return {
+      totalListings,
+      totalValue,
+      avgPrice,
+      typeCount: typeSet.size,
+      topLocation,
+      topLocationValue,
+    };
+  }, [projects]);
+
+  const salesDataTable = useMemo<SalesData[]>(() => {
+    if (!projects.length) return [];
+
+    const groupMap = new Map<string, SalesData>();
+    projects.forEach((p) => {
+      const propertyType = p.type || 'Property';
+      const location = p.location || 'Dubai';
+      const key = `${propertyType}__${location}`;
+      const entry = groupMap.get(key) || {
+        propertyType,
+        location,
+        unitsSold: 0,
+        averagePrice: 0,
+        totalValue: 0,
+      };
+
+      entry.unitsSold += 1;
+      entry.totalValue += p.price || 0;
+      groupMap.set(key, entry);
+    });
+
+    const rows = Array.from(groupMap.values()).map((row) => ({
+      ...row,
+      averagePrice: row.unitsSold ? row.totalValue / row.unitsSold : 0,
+    }));
+
+    return rows.sort((a, b) => b.totalValue - a.totalValue).slice(0, 6);
+  }, [projects]);
+
+  const topLocations = useMemo(() => {
+    if (!projects.length) return [];
+
+    const agg = new Map<string, { count: number; totalValue: number }>();
+    projects.forEach((p) => {
+      const key = p.location || 'Dubai';
+      const entry = agg.get(key) || { count: 0, totalValue: 0 };
+      entry.count += 1;
+      entry.totalValue += p.price || 0;
+      agg.set(key, entry);
+    });
+
+    const icons = ['📍', '🏝️', '🏙️'];
+    return Array.from(agg.entries())
+      .sort((a, b) => b[1].totalValue - a[1].totalValue)
+      .slice(0, 3)
+      .map(([name, data], idx) => ({
+        name,
+        icon: icons[idx % icons.length],
+        description: `${formatAedShort(data.totalValue)} across ${data.count} listings`,
+      }));
+  }, [projects]);
+
+  const propertyMix = useMemo(() => {
+    if (!projects.length) return [];
+
+    const typeAgg = new Map<string, number>();
+    projects.forEach((p) => {
+      const key = p.type || 'Property';
+      typeAgg.set(key, (typeAgg.get(key) || 0) + 1);
+    });
+
+    const total = projects.length || 1;
+    return Array.from(typeAgg.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([segment, count]) => ({
+        segment,
+        percentage: Math.round((count / total) * 100),
+      }));
+  }, [projects]);
+
+  const transactionTrends = useMemo(() => {
+    if (!projects.length) return [];
+
+    const highestPrice = projects.reduce((max, p) => Math.max(max, p.price || 0), 0);
+    const avgListing = summary.avgPrice;
+    const topType = propertyMix[0]?.segment || 'Property';
+    const topLocation = summary.topLocation || 'Dubai';
+
+    return [
+      `Top listing value in ${topLocation} with ${formatAedShort(summary.topLocationValue)} total value.`,
+      `Average listing price is ${formatAedShort(avgListing)} across active properties.`,
+      `Most common property type is ${topType} with peak listing at ${formatAedShort(highestPrice)}.`,
+    ];
+  }, [projects, propertyMix, summary]);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -155,7 +228,7 @@ export default function ProjectSalesPage() {
             <BuildingOffice2Icon className="w-10 h-10" style={{ color: '#c5a059' }} />
             <h1 className="text-4xl font-bold" style={{ color: '#c5a059' }}>Dubai Sales Transactions</h1>
           </div>
-          <p className="text-gray-600 text-lg">Examine Dubai's property prices over the years. Discover market trends with our real-time data to help you make your next move.</p>
+          <p className="text-gray-600 text-lg">Explore live listings and pricing snapshots generated from current properties in Dubai.</p>
         </div>
       </div>
 
@@ -164,41 +237,41 @@ export default function ProjectSalesPage() {
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-[#FFC636]">
-            <p className="text-gray-600 text-sm font-medium">Total Transactions</p>
-            <p className="text-4xl font-bold text-[#FFC636] mt-2">43</p>
-            <p className="text-gray-500 text-sm mt-2">Jan 1 - Jun 30, 2025</p>
+            <p className="text-gray-600 text-sm font-medium">Total Listings</p>
+            <p className="text-4xl font-bold text-[#FFC636] mt-2">{summary.totalListings}</p>
+            <p className="text-gray-500 text-sm mt-2">Live inventory</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-[#FFC636]">
-            <p className="text-gray-600 text-sm font-medium">Total Sales Value</p>
-            <p className="text-4xl font-bold text-[#FFC636] mt-2">158.6M</p>
+            <p className="text-gray-600 text-sm font-medium">Total Listing Value</p>
+            <p className="text-4xl font-bold text-[#FFC636] mt-2">{formatAedShort(summary.totalValue)}</p>
             <p className="text-gray-500 text-sm mt-2">AED</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-[#FFC636]">
             <p className="text-gray-600 text-sm font-medium">Property Types</p>
-            <p className="text-4xl font-bold text-[#FFC636] mt-2">5</p>
-            <p className="text-gray-500 text-sm mt-2">Diverse portfolio</p>
+            <p className="text-4xl font-bold text-[#FFC636] mt-2">{summary.typeCount}</p>
+            <p className="text-gray-500 text-sm mt-2">Active listings mix</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-[#FFC636]">
             <p className="text-gray-600 text-sm font-medium">Top Location</p>
-            <p className="text-2xl font-bold text-[#FFC636] mt-2">Palm Jumeirah</p>
-            <p className="text-gray-500 text-sm mt-2">72.5M AED sales</p>
+            <p className="text-2xl font-bold text-[#FFC636] mt-2">{summary.topLocation}</p>
+            <p className="text-gray-500 text-sm mt-2">{formatAedShort(summary.topLocationValue)} listings</p>
           </div>
         </div>
 
         {/* Sales Highlights Table */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-12 overflow-x-auto border-t-4 border-[#FFC636]">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Key Sales Highlights</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Key Sales Highlights (Live Listings)</h2>
           <table className="w-full">
             <thead>
               <tr className="border-b-2 border-[#FFC636]/30">
                 <th className="text-left py-3 px-4 font-semibold text-[#FFC636]">Property Type</th>
                 <th className="text-left py-3 px-4 font-semibold text-[#FFC636]">Location</th>
-                <th className="text-center py-3 px-4 font-semibold text-[#FFC636]">Units Sold</th>
-                <th className="text-right py-3 px-4 font-semibold text-[#FFC636]">Avg Price (AED)</th>
-                <th className="text-right py-3 px-4 font-semibold text-[#FFC636]">Total Value (AED)</th>
+                <th className="text-center py-3 px-4 font-semibold text-[#FFC636]">Listings</th>
+                <th className="text-right py-3 px-4 font-semibold text-[#FFC636]">Avg Price</th>
+                <th className="text-right py-3 px-4 font-semibold text-[#FFC636]">Total Value</th>
               </tr>
             </thead>
             <tbody>
@@ -207,8 +280,8 @@ export default function ProjectSalesPage() {
                   <td className="py-4 px-4 text-gray-900 font-medium">{row.propertyType}</td>
                   <td className="py-4 px-4 text-gray-700">{row.location}</td>
                   <td className="py-4 px-4 text-center text-gray-900 font-semibold">{row.unitsSold}</td>
-                  <td className="py-4 px-4 text-right text-gray-900">{(row.averagePrice / 1000000).toFixed(2)}M</td>
-                  <td className="py-4 px-4 text-right font-semibold text-[#FFC636]">{(row.totalValue / 1000000).toFixed(2)}M</td>
+                  <td className="py-4 px-4 text-right text-gray-900">{formatAedShort(row.averagePrice)}</td>
+                  <td className="py-4 px-4 text-right font-semibold text-[#FFC636]">{formatAedShort(row.totalValue)}</td>
                 </tr>
               ))}
             </tbody>
@@ -237,7 +310,7 @@ export default function ProjectSalesPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Top Performing Locations</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {topLocations.map((location, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-shadow">
+              <div key={index} className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#FFC636] hover:shadow-xl transition-shadow">
                 <div className="text-4xl mb-4">{location.icon}</div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{location.name}</h3>
                 <p className="text-gray-600 leading-relaxed">{location.description}</p>
@@ -250,10 +323,10 @@ export default function ProjectSalesPage() {
         <div className="bg-white rounded-xl shadow-lg p-8 mb-12 border-t-4 border-[#FFC636]">
           <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2">
             <UsersIcon className="w-8 h-8 text-[#FFC636]" />
-            Buyer Demographics
+            Property Mix (Live Listings)
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {buyerDemographics.map((demo, index) => (
+            {propertyMix.map((demo, index) => (
               <div key={index} className="text-center">
                 <div className="relative inline-flex items-center justify-center mb-4">
                   <svg className="w-24 h-24 transform -rotate-90">
@@ -289,7 +362,7 @@ export default function ProjectSalesPage() {
         <div className="bg-linear-to-r from-[#FFC636]/10 to-[#FFC636]/15 rounded-xl p-8 mb-12 border-l-4 border-[#FFC636]">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <ArrowTrendingUpIcon className="w-8 h-8 text-[#FFC636]" />
-            Transaction Trends
+            Transaction Trends (Listings Based)
           </h2>
           <div className="space-y-4">
             {transactionTrends.map((trend, index) => (
@@ -365,9 +438,9 @@ function ProjectCard({ project }: ProjectCardProps) {
         <div className="bg-linear-to-r from-[#FFC636]/10 to-[#FFC636]/15 rounded-lg p-3 mb-4">
           <p className="text-xs text-gray-600 mb-1">Starting Price</p>
           <p className="text-2xl font-bold text-[#FFC636]">
-            {(project.price / 1000000).toFixed(1)}M
+            {formatAedShort(project.price || 0)}
           </p>
-          <p className="text-xs text-gray-500">{project.currency}</p>
+          <p className="text-xs text-gray-500">{project.currency || 'AED'}</p>
         </div>
 
         {/* Details */}

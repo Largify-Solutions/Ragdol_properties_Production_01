@@ -521,7 +521,7 @@ export default function AreaGuidesPage() {
                     {/* Action Buttons */}
                     <div className="flex items-center gap-4 pt-6 border-t border-slate-100">
                       <Link
-                        href={`/properties`}
+                        href={`/properties?area=${encodeURIComponent(area.name)}`}
                         className="flex-1 py-3 bg-primary text-secondary font-bold rounded-xl hover:bg-secondary hover:text-white transition-all duration-300 text-center shadow-lg hover:shadow-xl"
                       >
                         View Properties

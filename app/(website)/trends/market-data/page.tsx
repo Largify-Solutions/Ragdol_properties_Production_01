@@ -92,12 +92,12 @@ export default function MarketDataPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Market <span className="text-emerald-600">Data</span>
+            Market <span className="text-primary">Data</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Comprehensive market data, statistics, and reports to understand Dubai's real estate landscape
@@ -134,8 +134,8 @@ export default function MarketDataPage() {
               >
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex-1">
-                    <div className="p-3 bg-linear-to-br from-emerald-100 to-blue-100 rounded-xl w-fit mb-4 group-hover:scale-110 transition-transform">
-                      <Icon className="w-6 h-6 text-emerald-600" />
+                    <div className="p-3 bg-primary/10 rounded-xl w-fit mb-4 group-hover:scale-110 transition-transform">
+                      <Icon className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="text-lg font-bold text-slate-900 mb-2">{category.title}</h3>
                     <p className="text-sm text-slate-600 mb-4">{category.description}</p>
@@ -146,7 +146,7 @@ export default function MarketDataPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-xs text-slate-600 font-semibold mb-1">KEY STAT</p>
-                      <p className="text-lg font-bold text-emerald-600">{category.stats}</p>
+                      <p className="text-lg font-bold text-primary">{category.stats}</p>
                     </div>
                     <div>
                       <p className="text-xs text-slate-600 font-semibold mb-1">METRIC</p>
@@ -155,7 +155,7 @@ export default function MarketDataPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 text-sm font-semibold text-emerald-600 group-hover:text-emerald-700 flex items-center gap-1">
+                <div className="mt-4 text-sm font-semibold text-primary group-hover:text-primary/90 flex items-center gap-1">
                   View Data
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </div>
@@ -172,19 +172,19 @@ export default function MarketDataPage() {
               <h3 className="text-xl font-bold text-slate-900 mb-4">Official Authorities</h3>
               <ul className="space-y-3 text-slate-700">
                 <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-emerald-600 rounded-full"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full"></span>
                   Dubai Land Department (DLD)
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-emerald-600 rounded-full"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full"></span>
                   Real Estate Regulatory Agency (RERA)
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-emerald-600 rounded-full"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full"></span>
                   UAE Statistics Center
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-emerald-600 rounded-full"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full"></span>
                   Dubai Municipality
                 </li>
               </ul>
@@ -194,19 +194,19 @@ export default function MarketDataPage() {
               <h3 className="text-xl font-bold text-slate-900 mb-4">Market Research</h3>
               <ul className="space-y-3 text-slate-700">
                 <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full"></span>
                   Knight Frank Analysis
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full"></span>
                   JLL Market Reports
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full"></span>
                   CBRE Research
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                  <span className="w-2 h-2 bg-primary rounded-full"></span>
                   Colliers International
                 </li>
               </ul>
@@ -215,12 +215,12 @@ export default function MarketDataPage() {
         </div>
 
         {/* Export Data CTA */}
-        <div className="mt-16 bg-linear-to-r from-purple-600 to-emerald-600 rounded-2xl p-12 text-white text-center">
+        <div className="mt-16 bg-linear-to-r from-[#c5a059] to-[#996515] rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Export Market Data</h2>
           <p className="text-lg mb-8 opacity-90">
             Download comprehensive market reports, data sheets, and analysis in PDF or Excel format
           </p>
-          <button className="px-8 py-4 bg-white text-emerald-600 font-bold rounded-lg hover:bg-slate-100 transition-colors">
+          <button className="px-8 py-4 bg-white text-primary font-bold rounded-lg hover:bg-slate-100 transition-colors">
             Download Reports
           </button>
         </div>

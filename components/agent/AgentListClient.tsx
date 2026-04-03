@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
+import AgentSlider from '@/components/agent/AgentSlider'
 import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
 import { 
   StarIcon as StarSolid, 
@@ -307,6 +308,17 @@ export default function AgentListClient() {
     return matchesSearch && matchesFilter
   })
 
+  const topAgents = useMemo(() => {
+    if (agents.length === 0) return []
+    return [...agents]
+      .sort((a, b) => {
+        const ratingDelta = (b.rating || 0) - (a.rating || 0)
+        if (ratingDelta !== 0) return ratingDelta
+        return (b.experience_years || 0) - (a.experience_years || 0)
+      })
+      .slice(0, 4)
+  }, [agents])
+
   // Helper function to get initials
   const getInitials = (name: string): string => {
     if (!name) return 'AG'
@@ -495,8 +507,32 @@ export default function AgentListClient() {
           </div>
         </section>
 
+        {/* Top Agents */}
+        {topAgents.length > 0 && (
+          <section className="py-16 bg-white">
+            <div className="container-custom">
+              <div className="text-center mb-8">
+                <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
+                  EXPERT PROFESSIONALS
+                </h2>
+                <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight">
+                  Meet Our Top Agents
+                </h3>
+              </div>
+
+              <AgentSlider agents={topAgents} showCount={4} />
+
+              <div className="text-center mt-6">
+                <a href="#all-agents" className="btn-outline">
+                  View All Agents
+                </a>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Agents Grid */}
-        <section className="py-20">
+        <section id="all-agents" className="py-20">
           <div className="container-custom">
             <div className="flex items-center justify-between mb-12">
               <div>

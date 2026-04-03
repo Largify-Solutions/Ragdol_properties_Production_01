@@ -6,7 +6,6 @@ import ListingCard from "@/components/property/ListingCard";
 import PropertySlider from "@/components/property/PropertySlider";
 import HeroSearch from "@/components/shared/HeroSearch";
 import HeroImageSlider from "@/components/shared/HeroImageSlider";
-import AgentSlider from "@/components/agent/AgentSlider";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -1853,48 +1852,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Top Agents Section - MAX 4 */}
-      <section className="py-24 bg-slate-50">
-        <div className="container-custom">
-          <div className="text-center mb-8">
-            <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
-              EXPERT PROFESSIONALS
-            </h2>
-            <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight">
-              Meet Our Top Agents
-            </h3>
-          </div>
-
-          {topAgents.length > 0 ? (
-            <>
-              <AgentSlider agents={topAgents.slice(0, 4)} />
-
-              {/* View All Agents Button - Center aligned */}
-              <div className="text-center mt-2 pt-2 border-t border-white">
-                <Link
-                  href="/agents"
-                  className="inline-flex items-center justify-center  gap- 3 bg-primary text-white font-bold py-4 px-8 rounded-4xl hover:bg-primary/90 transition-colors duration-300 shadow-lg hover:shadow-xl"
-                >
-                  <span>View All Agents</span>
-                </Link>
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-slate-400 mb-8">Our expert agents will be available soon</p>
-
-              {/* View All Agents Button (even when no agents) */}
-              <Link
-                href="/agents"
-                className="inline-flex items-center justify-center gap-3 bg-primary text-white font-bold py-4 px-8 rounded-xl hover:bg-primary/90 transition-colors duration-300 shadow-lg hover:shadow-xl"
-              >
-                <span>View All Agents</span>
-                <ArrowRightIcon className="h-5 w-5" />
-              </Link>
-            </div>
-          )}
-        </div>
-      </section>
 
 
 

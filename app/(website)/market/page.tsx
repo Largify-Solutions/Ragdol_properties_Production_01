@@ -85,16 +85,16 @@ export default function MarketInsightsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-[#f5f5f5]">
+    <div className="min-h-screen bg-white text-slate-900">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-br from-[#d4af37]/10 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Market <span className="text-[#d4af37]">Insights</span>
+              Market <span className="text-primary">Insights</span>
             </h1>
-            <p className="text-xl md:text-2xl text-[#a3a3a3] max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
               Stay informed with the latest real estate market trends, pricing data,
               and investment opportunities in Pakistan.
             </p>
@@ -108,11 +108,11 @@ export default function MarketInsightsPage() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {marketStats.map((stat, index) => (
-            <div key={index} className="bg-[#141414] rounded-lg border border-[#333333] p-6">
+            <div key={index} className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <stat.icon className="h-8 w-8 text-[#d4af37]" />
+                <stat.icon className="h-8 w-8 text-primary" />
                 <div className={`flex items-center space-x-1 text-sm ${
-                  stat.trend === 'up' ? 'text-[#FFC636]' : 'text-red-400'
+                  stat.trend === 'up' ? 'text-primary' : 'text-rose-600'
                 }`}>
                   {stat.trend === 'up' ? (
                     <ArrowTrendingUpIcon className="h-4 w-4" />
@@ -123,24 +123,24 @@ export default function MarketInsightsPage() {
                 </div>
               </div>
               <div className="text-2xl font-bold mb-2">{stat.value}</div>
-              <div className="text-[#a3a3a3] text-sm">{stat.title}</div>
+              <div className="text-slate-600 text-sm">{stat.title}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* City Insights */}
-      <div className="bg-[#141414] py-16">
+      <div className="bg-slate-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">City Insights</h2>
 
           <div className="grid md:grid-cols-3 gap-8">
             {cityInsights.map((city, index) => (
-              <div key={index} className="bg-[#262626] rounded-lg border border-[#333333] p-6">
+              <div key={index} className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold">{city.city}</h3>
                   <div className={`flex items-center space-x-1 text-sm ${
-                    city.trend === 'up' ? 'text-[#FFC636]' : 'text-red-400'
+                    city.trend === 'up' ? 'text-primary' : 'text-rose-600'
                   }`}>
                     <ArrowTrendingUpIcon className="h-4 w-4" />
                     <span>{city.growth}</span>
@@ -148,19 +148,19 @@ export default function MarketInsightsPage() {
                 </div>
 
                 <div className="mb-4">
-                  <div className="text-[#d4af37] font-semibold">{city.avgPrice}</div>
-                  <div className="text-[#a3a3a3] text-sm">Average Property Price</div>
+                  <div className="text-primary font-semibold">{city.avgPrice}</div>
+                  <div className="text-slate-600 text-sm">Average Property Price</div>
                 </div>
 
-                <p className="text-[#a3a3a3] text-sm mb-4">{city.description}</p>
+                <p className="text-slate-600 text-sm mb-4">{city.description}</p>
 
                 <div>
-                  <div className="text-[#f5f5f5] font-medium mb-2">Hot Areas:</div>
+                  <div className="text-slate-900 font-medium mb-2">Hot Areas:</div>
                   <div className="flex flex-wrap gap-2">
                     {city.hotAreas.map((area, idx) => (
                       <span
                         key={idx}
-                        className="bg-[#d4af37]/20 text-[#d4af37] px-2 py-1 rounded text-xs"
+                        className="bg-primary/10 text-primary px-2 py-1 rounded text-xs"
                       >
                         {area}
                       </span>
@@ -180,18 +180,18 @@ export default function MarketInsightsPage() {
 
           <div className="grid md:grid-cols-2 gap-8">
             {marketTrends.map((trend, index) => (
-              <div key={index} className="bg-[#141414] rounded-lg border border-[#333333] p-6">
+              <div key={index} className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="text-lg font-semibold">{trend.title}</h3>
                   <span className={`px-2 py-1 rounded text-xs ${
                     trend.impact === 'High'
-                      ? 'bg-red-900/20 text-red-400'
-                      : 'bg-[#FFC636]/20 text-[#FFC636]'
+                      ? 'bg-primary/15 text-primary'
+                      : 'bg-slate-100 text-slate-700'
                   }`}>
                     {trend.impact} Impact
                   </span>
                 </div>
-                <p className="text-[#a3a3a3]">{trend.description}</p>
+                <p className="text-slate-600">{trend.description}</p>
               </div>
             ))}
           </div>
@@ -199,37 +199,37 @@ export default function MarketInsightsPage() {
       </div>
 
       {/* Investment Opportunities */}
-      <div className="bg-[#141414] py-16">
+      <div className="bg-slate-50 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Investment Opportunities</h2>
-            <p className="text-[#a3a3a3] text-lg max-w-2xl mx-auto">
+            <p className="text-slate-600 text-lg max-w-2xl mx-auto">
               Discover high-potential areas and emerging markets for real estate investment
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-[#262626] rounded-lg border border-[#333333] p-6">
+            <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
               <h3 className="text-xl font-bold mb-4">Emerging Markets</h3>
-              <ul className="space-y-2 text-[#a3a3a3]">
+              <ul className="space-y-2 text-slate-600">
                 <li>• Rawalpindi - Growing IT sector</li>
                 <li>• Faisalabad - Industrial expansion</li>
                 <li>• Multan - Commercial development</li>
               </ul>
             </div>
 
-            <div className="bg-[#262626] rounded-lg border border-[#333333] p-6">
+            <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
               <h3 className="text-xl font-bold mb-4">High-Growth Areas</h3>
-              <ul className="space-y-2 text-[#a3a3a3]">
+              <ul className="space-y-2 text-slate-600">
                 <li>• DHA Developments</li>
                 <li>• Bahria Town expansions</li>
                 <li>• Smart city projects</li>
               </ul>
             </div>
 
-            <div className="bg-[#262626] rounded-lg border border-[#333333] p-6">
+            <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-sm">
               <h3 className="text-xl font-bold mb-4">Investment Types</h3>
-              <ul className="space-y-2 text-[#a3a3a3]">
+              <ul className="space-y-2 text-slate-600">
                 <li>• Residential plots</li>
                 <li>• Commercial spaces</li>
                 <li>• Rental properties</li>
@@ -243,7 +243,7 @@ export default function MarketInsightsPage() {
       <div className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
-          <p className="text-[#a3a3a3] text-lg mb-8">
+          <p className="text-slate-600 text-lg mb-8">
             Get the latest market insights and investment opportunities delivered to your inbox.
           </p>
 
@@ -252,9 +252,9 @@ export default function MarketInsightsPage() {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-[#262626] border border-[#333333] rounded-lg text-[#f5f5f5] placeholder-[#737373] focus:ring-2 focus:ring-[#d4af37] focus:border-transparent"
+                className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
-              <button className="bg-[#d4af37] hover:bg-[#b8941f] text-[#1a1a1a] font-semibold px-6 py-3 rounded-lg transition-colors">
+              <button className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
                 Subscribe
               </button>
             </div>

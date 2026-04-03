@@ -56,12 +56,12 @@ export default function MonthlyUpdatesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Monthly Market <span className="text-emerald-600">Updates</span>
+            Monthly Market <span className="text-primary">Updates</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Latest monthly market reports, transaction data, and market trends for Dubai real estate
@@ -79,7 +79,7 @@ export default function MonthlyUpdatesPage() {
                     <CalendarIcon className="w-4 h-4" /> Monthly Report
                   </p>
                 </div>
-                <span className="text-3xl font-bold text-emerald-600">{report.growth}</span>
+                <span className="text-3xl font-bold text-primary">{report.growth}</span>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-4 pb-4 border-b border-slate-200">
@@ -97,7 +97,7 @@ export default function MonthlyUpdatesPage() {
                 <p className="text-xs text-slate-600 font-semibold mb-2">KEY HIGHLIGHTS</p>
                 <div className="flex flex-wrap gap-2">
                   {report.highlights.map((h, i) => (
-                    <span key={i} className="px-2 py-1 bg-emerald-50 text-emerald-700 text-xs font-medium rounded-full">
+                    <span key={i} className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
                       {h}
                     </span>
                   ))}
@@ -106,7 +106,7 @@ export default function MonthlyUpdatesPage() {
 
               <a
                 href={report.report}
-                className="block w-full text-center px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm"
+                className="block w-full text-center px-4 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors text-sm"
               >
                 Download Report
               </a>
@@ -127,7 +127,7 @@ export default function MonthlyUpdatesPage() {
             <p className="text-sm text-slate-600 mt-1">Annual comprehensive reports</p>
           </Link>
           <Link href="/trends/market-insights" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-lg transition-all text-center">
-            <ChartBarIcon className="w-8 h-8 mx-auto mb-3 text-blue-600" />
+            <ChartBarIcon className="w-8 h-8 mx-auto mb-3 text-primary" />
             <p className="font-bold text-slate-900">Market Insights</p>
             <p className="text-sm text-slate-600 mt-1">Current market overview</p>
           </Link>

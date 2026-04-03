@@ -675,13 +675,50 @@ export default function Header() {
               )}
             </div>
           ) : (
-            // Sign In Button
-            <Link
-              href="/customer/login"
-              className="h-10 w-10 rounded-full font-bold text-sm transition-all bg-primary text-white hover:bg-secondary hover:scale-110 flex items-center justify-center shadow-lg hover:shadow-xl"
-            >
-              <UserIcon className="h-5 w-5" />
-            </Link>
+            // Account Dropdown
+            <div className="relative" data-profile-dropdown>
+              <button
+                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg font-bold text-xs transition-all bg-primary text-white hover:bg-secondary group"
+                title="Account"
+              >
+                <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center group-hover:bg-white/30">
+                  <UserIcon className="h-4 w-4" />
+                </div>
+                <span className="hidden sm:inline text-[11px]">Account</span>
+                <ChevronDownIcon className={cn(
+                  "h-4 w-4 transition-transform",
+                  isProfileDropdownOpen && "rotate-180"
+                )} />
+              </button>
+
+              {isProfileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl z-50 border border-slate-100 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-slate-100">
+                    <p className="text-sm font-semibold text-secondary">Login</p>
+                    <p className="text-xs text-slate-500">Choose account type</p>
+                  </div>
+                  <nav className="py-2">
+                    <Link
+                      href="/customer/login"
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary hover:bg-primary/10 hover:text-primary transition-all"
+                    >
+                      <UserIcon className="h-4 w-4" />
+                      Customer Login
+                    </Link>
+                    <Link
+                      href="/admin/login"
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-secondary hover:bg-primary/10 hover:text-primary transition-all"
+                    >
+                      <StarIcon className="h-4 w-4" />
+                      Agent Login
+                    </Link>
+                  </nav>
+                </div>
+              )}
+            </div>
           )}
 
           {/* Mobile Menu Toggle */}
@@ -1171,14 +1208,24 @@ export default function Header() {
                   </button>
                 </>
               ) : (
-                <Link
-                  href="/customer/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full py-4 bg-secondary text-white text-center font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-primary hover:text-secondary transition-all shadow-lg"
-                >
-                  <UserIcon className="h-5 w-5" />
-                  Sign In
-                </Link>
+                <>
+                  <Link
+                    href="/customer/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full py-4 bg-secondary text-white text-center font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-primary hover:text-secondary transition-all shadow-lg"
+                  >
+                    <UserIcon className="h-5 w-5" />
+                    Customer Login
+                  </Link>
+                  <Link
+                    href="/admin/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full py-4 bg-primary text-white text-center font-bold rounded-2xl flex items-center justify-center gap-3 hover:bg-secondary transition-all shadow-lg"
+                  >
+                    <StarIcon className="h-5 w-5" />
+                    Agent Login
+                  </Link>
+                </>
               )}
             </div>
           </nav>

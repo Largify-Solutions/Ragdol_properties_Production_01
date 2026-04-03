@@ -86,17 +86,17 @@ export default function FitoutServicesPage() {
       {/* Premium Hero Section */}
       <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
         {/* Golden gradient background */}
-        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-amber-900/20 via-transparent to-amber-800/10 -z-10"></div>
-        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-50 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-primary/10 via-transparent to-primary/5 -z-10"></div>
+        <div className="absolute top-20 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10"></div>
         
         <div className="container-custom mx-auto">
-          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-full mb-8 text-amber-700 hover:bg-amber-100 transition-all">
+          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-8 text-primary hover:bg-primary/15 transition-all">
             <ArrowRightIcon className="h-4 w-4 rotate-180" />
             Back to Services
           </Link>
           
           <h1 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
-            Fitout <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Services</span>
+            Fitout <span className="text-gradient">Services</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl">
             End-to-end interior and exterior solutions crafted to the highest standards of craftsmanship and design.
@@ -110,7 +110,7 @@ export default function FitoutServicesPage() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
             <h2 className="text-4xl font-black text-gray-900 mb-6">
-              Premium Fitout <span className="text-amber-400">Excellence</span>
+              Premium Fitout <span className="text-primary">Excellence</span>
             </h2>
             <p className="text-gray-600 text-lg leading-relaxed mb-6">
               At Ragdol Properties, we understand that the finishing touches define the quality and value of a property. Our dedicated Fitout Services division delivers end-to-end interior and exterior solutions tailored to meet the highest standards of craftsmanship and design.
@@ -120,7 +120,7 @@ export default function FitoutServicesPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+              className="btn-primary gap-3"
             >
               Get Started Today
               <ArrowRightIcon className="h-5 w-5" />
@@ -141,7 +141,7 @@ export default function FitoutServicesPage() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Our Fitout <span className="text-amber-400">Solutions</span>
+              Our Fitout <span className="text-primary">Solutions</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Comprehensive specialized services covering every aspect of premium fitout work
@@ -152,8 +152,8 @@ export default function FitoutServicesPage() {
             {services.map((item, idx) => {
               const Icon = item.icon
               return (
-                <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-8 hover:border-gray-300 transition-all duration-300">
-                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-8 hover:border-primary/40 transition-all duration-300">
+                  <div className="w-12 h-12 bg-linear-to-br from-[#c5a059] to-[#996515] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-3">{item.title}</h3>
@@ -167,7 +167,7 @@ export default function FitoutServicesPage() {
         {/* Expertise Section */}
         <div className="bg-white border border-gray-200 rounded-3xl p-12 md:p-16 mb-24">
           <h2 className="text-3xl font-black text-gray-900 mb-8">
-            Our <span className="text-amber-400">Approach</span>
+            Our <span className="text-primary">Approach</span>
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed mb-8">
             We combine technical expertise with premium materials and strict project management to deliver on time and within budget. Our fitout team works seamlessly with property owners, architects, and designers to ensure each project aligns with its vision while maximizing property value and tenant satisfaction.
@@ -175,15 +175,15 @@ export default function FitoutServicesPage() {
           
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl p-6">
-              <div className="text-4xl font-black text-amber-400 mb-2">20+</div>
+              <div className="text-4xl font-black text-primary mb-2">20+</div>
               <p className="text-gray-600 font-bold">Years of Experience</p>
             </div>
             <div className="bg-white rounded-xl p-6">
-              <div className="text-4xl font-black text-amber-400 mb-2">1000+</div>
+              <div className="text-4xl font-black text-primary mb-2">1000+</div>
               <p className="text-gray-600 font-bold">Projects Completed</p>
             </div>
             <div className="bg-white rounded-xl p-6">
-              <div className="text-4xl font-black text-amber-400 mb-2">100%</div>
+              <div className="text-4xl font-black text-primary mb-2">100%</div>
               <p className="text-gray-600 font-bold">Client Satisfaction</p>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function FitoutServicesPage() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Our <span className="text-amber-400">Process</span>
+              Our <span className="text-primary">Process</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               A systematic approach to deliver exceptional fitout results
@@ -204,7 +204,7 @@ export default function FitoutServicesPage() {
             {processSteps.map((step, idx) => (
               <div key={idx} className="flex gap-8 items-start">
                 <div className="shrink-0">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-amber-400 to-[#FFC636] text-slate-900 font-black text-xl">
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-[#c5a059] to-[#996515] text-white font-black text-xl">
                     {step.number}
                   </div>
                 </div>
@@ -221,7 +221,7 @@ export default function FitoutServicesPage() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
             <h2 className="text-3xl font-black text-gray-900 mb-6">
-              Why Choose Ragdol <span className="text-amber-400">Fitout Services?</span>
+              Why Choose Ragdol <span className="text-primary">Fitout Services?</span>
             </h2>
             <ul className="space-y-4">
               {[
@@ -233,7 +233,7 @@ export default function FitoutServicesPage() {
                 "Comprehensive warranties on all work"
               ].map((item, idx) => (
                 <li key={idx} className="flex items-start gap-4">
-                  <CheckCircleIcon className="h-6 w-6 text-amber-400 shrink-0 mt-1" />
+                  <CheckCircleIcon className="h-6 w-6 text-primary shrink-0 mt-1" />
                   <span className="text-gray-600 text-lg">{item}</span>
                 </li>
               ))}
@@ -251,19 +251,19 @@ export default function FitoutServicesPage() {
         </div>
 
         {/* CTA Section */}
-        <div className="relative overflow-hidden rounded-3xl p-12 md:p-20 bg-gray-50 border border-gray-200">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-50 rounded-full blur-3xl -z-10"></div>
+        <div className="relative overflow-hidden rounded-3xl p-12 md:p-20 bg-white border border-gray-200">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl -z-10"></div>
           
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-6">
-              Ready to Transform Your <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Property?</span>
+              Ready to Transform Your <span className="text-gradient">Property?</span>
             </h2>
             <p className="text-gray-600 text-lg mb-8">
               Let our fitout experts create a premium finish that maximizes your property's value and appeal.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all group"
+              className="btn-primary gap-3 group"
             >
               Schedule Consultation
               <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-2 transition-transform" />

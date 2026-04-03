@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import GoogleDubaiMap from '@/components/map/GoogleDubaiMap'
 import { 
   CheckCircleIcon, 
   ArrowRightIcon,
@@ -119,7 +120,7 @@ export default function InvestmentMapPage() {
   }, [])
 
   return (
-    <div className="bg-linear-to-br from-slate-950 to-white">
+    <div className="bg-white">
       {/* Hero Section */}
       <section className="relative py-16 overflow-hidden">
         <div className="absolute inset-0">
@@ -136,7 +137,7 @@ export default function InvestmentMapPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Dubai Investment <span className="bg-linear-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Map</span>
+              Dubai Investment <span className="text-gradient">Map</span>
             </h1>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
               Interactive map showing real-time property data, average prices, landmarks, and investment opportunities across Dubai's top neighborhoods.
@@ -151,25 +152,28 @@ export default function InvestmentMapPage() {
           {/* Map Container */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
             {/* Map Area */}
-            <div className="lg:col-span-2 rounded-2xl overflow-hidden border-2 border-cyan-400/20 bg-slate-800/50">
-              <div className="aspect-video relative bg-linear-to-br from-slate-800 to-slate-900 flex items-center justify-center">
-                <div className="text-center">
-                  <MapPinIcon className="h-16 w-16 text-cyan-400 mx-auto mb-4 opacity-50" />
-                  <p className="text-gray-400 text-lg mb-4">Interactive Map Viewer</p>
-                  <p className="text-gray-500 text-sm max-w-md mx-auto mb-6">
-                    Click on any area below to view detailed statistics, or scroll through the area list to explore investment opportunities.
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {dubaiAreas.map((area) => (
-                      <button
-                        key={area.name}
-                        onClick={() => setSelectedArea(area)}
-                        className="px-3 py-1 text-xs rounded-full bg-cyan-400/20 text-cyan-300 border border-cyan-400/50 hover:border-cyan-400 hover:bg-cyan-400/30 transition-all"
-                      >
-                        {area.name}
-                      </button>
-                    ))}
-                  </div>
+            <div className="lg:col-span-2 rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-sm">
+              <div className="aspect-video">
+                <GoogleDubaiMap
+                  className="border-0 rounded-none shadow-none"
+                  heightClassName="h-full"
+                  query={selectedArea ? `${selectedArea.name}, Dubai, UAE` : 'Dubai, UAE'}
+                />
+              </div>
+              <div className="border-t border-slate-200 p-4">
+                <p className="text-slate-600 text-sm mb-3">
+                  Click on any area below to view detailed statistics, or scroll through the area list to explore investment opportunities.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {dubaiAreas.map((area) => (
+                    <button
+                      key={area.name}
+                      onClick={() => setSelectedArea(area)}
+                      className="px-3 py-1 text-xs rounded-full bg-primary/10 text-primary border border-primary/30 hover:border-primary/60 hover:bg-primary/15 transition-all"
+                    >
+                      {area.name}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -177,63 +181,65 @@ export default function InvestmentMapPage() {
             {/* Right Sidebar - Selected Area Stats */}
             <div className="rounded-2xl overflow-hidden">
               {selectedArea ? (
-                <div className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-cyan-400/20 rounded-2xl p-8 h-full">
-                  <h3 className="text-2xl font-bold text-white mb-6">{selectedArea.name}</h3>
+                <div className="bg-white border border-slate-200 rounded-2xl p-8 h-full shadow-sm">
+                  <h3 className="text-2xl font-bold text-slate-900 mb-6">{selectedArea.name}</h3>
                   
                   <div className="space-y-6">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <CurrencyDollarIcon className="h-5 w-5 text-cyan-400" />
-                        <p className="text-sm text-gray-400">Average Price per Sqft</p>
+                        <CurrencyDollarIcon className="h-5 w-5 text-primary" />
+                        <p className="text-sm text-slate-600">Average Price per Sqft</p>
                       </div>
-                      <p className="text-3xl font-bold text-white">
+                      <p className="text-3xl font-bold text-slate-900">
                         AED {selectedArea.avgPriceSqft.toLocaleString()}
                       </p>
                     </div>
 
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <BuildingOffice2Icon className="h-5 w-5 text-cyan-400" />
-                        <p className="text-sm text-gray-400">Units Under Construction</p>
+                        <BuildingOffice2Icon className="h-5 w-5 text-primary" />
+                        <p className="text-sm text-slate-600">Units Under Construction</p>
                       </div>
-                      <p className="text-3xl font-bold text-white">
+                      <p className="text-3xl font-bold text-slate-900">
                         {selectedArea.unitsUnderConstruction}
                       </p>
                     </div>
 
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <ChartBarIcon className="h-5 w-5 text-cyan-400" />
-                        <p className="text-sm text-gray-400">Sales Volume</p>
+                        <ChartBarIcon className="h-5 w-5 text-primary" />
+                        <p className="text-sm text-slate-600">Sales Volume</p>
                       </div>
-                      <p className="text-3xl font-bold text-white">
+                      <p className="text-3xl font-bold text-slate-900">
                         {selectedArea.salesVolume}
                       </p>
                     </div>
 
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <SparklesIcon className="h-5 w-5 text-cyan-400" />
-                        <p className="text-sm text-gray-400">Total Properties</p>
+                        <SparklesIcon className="h-5 w-5 text-primary" />
+                        <p className="text-sm text-slate-600">Total Properties</p>
                       </div>
-                      <p className="text-3xl font-bold text-white">
+                      <p className="text-3xl font-bold text-slate-900">
                         {selectedArea.totalProperties.toLocaleString()}
                       </p>
                     </div>
 
                     <Link
                       href={`/properties?area=${selectedArea.name.replace(/\s+/g, '-').toLowerCase()}`}
-                      className="w-full mt-8 px-6 py-3 bg-linear-to-r from-cyan-400 to-blue-500 text-white font-bold rounded-lg hover:shadow-xl hover:shadow-cyan-500/50 transition-all text-center"
+                      className="btn-primary w-full mt-8 text-center"
                     >
                       View Properties <ArrowRightIcon className="inline h-4 w-4 ml-2" />
                     </Link>
                   </div>
                 </div>
               ) : (
-                <div className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-cyan-400/20 rounded-2xl p-8 h-full flex items-center justify-center">
+                <div className="bg-white border border-slate-200 rounded-2xl p-8 h-full flex items-center justify-center shadow-sm">
                   <div className="text-center">
-                    <MapPinIcon className="h-12 w-12 text-cyan-400/50 mx-auto mb-4" />
-                    <p className="text-gray-400">Select an area to view detailed statistics</p>
+                    <div className="h-12 w-12 text-primary/50 mx-auto mb-4 flex items-center justify-center">
+                      <MapPinIcon className="h-10 w-10" />
+                    </div>
+                    <p className="text-slate-500">Select an area to view detailed statistics</p>
                   </div>
                 </div>
               )}
@@ -248,27 +254,27 @@ export default function InvestmentMapPage() {
                 onClick={() => setSelectedArea(area)}
                 className={`rounded-2xl p-6 transition-all duration-300 text-left ${
                   selectedArea?.name === area.name
-                    ? 'bg-linear-to-br from-cyan-400/30 to-blue-500/30 border-2 border-cyan-400 shadow-xl shadow-cyan-400/20'
-                    : 'bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-cyan-400/20 hover:border-cyan-400/50'
+                    ? 'bg-primary/10 border-2 border-primary shadow-xl shadow-primary/20'
+                    : 'bg-white border border-slate-200 hover:border-primary/50'
                 }`}
               >
-                <h3 className="text-lg font-bold text-white mb-4">{area.name}</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-4">{area.name}</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Price/Sqft</span>
-                    <span className="text-cyan-400 font-semibold">AED {area.avgPriceSqft.toLocaleString()}</span>
+                    <span className="text-slate-600">Price/Sqft</span>
+                    <span className={selectedArea?.name === area.name ? 'text-primary font-semibold' : 'text-slate-900 font-semibold'}>AED {area.avgPriceSqft.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Under Construction</span>
-                    <span className="text-cyan-400 font-semibold">{area.unitsUnderConstruction}</span>
+                    <span className="text-slate-600">Under Construction</span>
+                    <span className={selectedArea?.name === area.name ? 'text-primary font-semibold' : 'text-slate-900 font-semibold'}>{area.unitsUnderConstruction}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Sales Volume</span>
-                    <span className="text-cyan-400 font-semibold">{area.salesVolume}</span>
+                    <span className="text-slate-600">Sales Volume</span>
+                    <span className={selectedArea?.name === area.name ? 'text-primary font-semibold' : 'text-slate-900 font-semibold'}>{area.salesVolume}</span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-cyan-400/20">
-                    <span className="text-gray-400">Total Properties</span>
-                    <span className="text-cyan-400 font-semibold">{area.totalProperties.toLocaleString()}</span>
+                  <div className="flex justify-between pt-2 border-t border-slate-200">
+                    <span className="text-slate-600">Total Properties</span>
+                    <span className={selectedArea?.name === area.name ? 'text-primary font-semibold' : 'text-slate-900 font-semibold'}>{area.totalProperties.toLocaleString()}</span>
                   </div>
                 </div>
               </button>
@@ -278,9 +284,9 @@ export default function InvestmentMapPage() {
       </section>
 
       {/* Information Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/30">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white mb-12 text-center">How to Use This Map</h2>
+          <h2 className="text-4xl font-bold text-slate-900 mb-12 text-center">How to Use This Map</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
@@ -301,10 +307,10 @@ export default function InvestmentMapPage() {
                 description: 'Click "View Properties" to see all available properties in your selected area'
               }
             ].map((item, idx) => (
-              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-cyan-400/20 rounded-2xl p-6 hover:border-cyan-400/50 transition-all">
-                <CheckCircleIcon className="h-8 w-8 text-cyan-400 mb-4" />
-                <h3 className="text-lg font-bold text-white mb-2">{item.title}</h3>
-                <p className="text-gray-400 text-sm">{item.description}</p>
+              <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:border-primary/50 transition-all">
+                <CheckCircleIcon className="h-8 w-8 text-primary mb-4" />
+                <h3 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
+                <p className="text-slate-600 text-sm">{item.description}</p>
               </div>
             ))}
           </div>
@@ -313,7 +319,7 @@ export default function InvestmentMapPage() {
 
       {/* Stats Overview */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-white mb-12 text-center">Dubai Market Overview</h2>
+        <h2 className="text-4xl font-bold text-slate-900 mb-12 text-center">Dubai Market Overview</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
@@ -324,10 +330,10 @@ export default function InvestmentMapPage() {
           ].map((stat, idx) => {
             const Icon = stat.icon
             return (
-              <div key={idx} className="bg-linear-to-br from-slate-800/50 to-slate-900/50 border border-cyan-400/20 rounded-2xl p-6 hover:border-cyan-400/50 transition-all">
-                <Icon className="h-8 w-8 text-cyan-400 mb-4" />
-                <p className="text-gray-400 text-sm mb-2">{stat.label}</p>
-                <p className="text-3xl font-bold text-white">{stat.value}</p>
+              <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:border-primary/50 transition-all">
+                <Icon className="h-8 w-8 text-primary mb-4" />
+                <p className="text-slate-600 text-sm mb-2">{stat.label}</p>
+                <p className="text-3xl font-bold text-slate-900">{stat.value}</p>
               </div>
             )
           })}
@@ -335,7 +341,7 @@ export default function InvestmentMapPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-slate-900/80 to-slate-800/80 overflow-hidden">
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-r from-[#c5a059] to-[#996515] overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <Image
             src="/CREEK_PALACE_DCH_EMAAR_15.jpg"
@@ -349,20 +355,20 @@ export default function InvestmentMapPage() {
           <h2 className="text-5xl font-bold text-white mb-6">
             Ready to Invest in Dubai Real Estate?
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-white/90 mb-8">
             Use our interactive map to explore opportunities, then connect with our expert advisors for personalized investment guidance.
           </p>
 
           <div className="flex gap-4 flex-wrap justify-center">
             <Link 
-              href="tel:+971" 
-              className="px-8 py-4 bg-linear-to-r from-cyan-400 to-blue-500 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300"
+              href="/contact"
+              className="px-8 py-4 bg-white text-primary font-bold rounded-lg hover:bg-white/90 transition-all duration-300"
             >
               Get Investment Advice
             </Link>
             <Link 
-              href="/properties" 
-              className="px-8 py-4 border-2 border-cyan-400 text-cyan-300 font-bold rounded-lg hover:bg-cyan-400/10 transition-all duration-300"
+              href="/properties"
+              className="px-8 py-4 border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-all duration-300"
             >
               Browse Properties
             </Link>
