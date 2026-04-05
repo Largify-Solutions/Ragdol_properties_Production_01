@@ -149,16 +149,16 @@ export default function MEPPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              MEP <span className="bg-linear-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">Services</span>
+              MEP <span className="bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent">Services</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Fully integrated mechanical, electrical, and plumbing solutions delivering precision engineering, seamless integration, and exceptional performance.
             </p>
             <div className="flex gap-4 flex-wrap">
-              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-blue-400 to-indigo-500 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-blue-500/50 transition-all duration-300">
+              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#5C4204] text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-[#8A6508]/50 transition-all duration-300">
                 Get MEP Consultation
               </Link>
-              <Link href="#details" className="px-8 py-4 border-2 border-blue-400/50 text-blue-300 font-bold rounded-lg hover:bg-blue-400/10 transition-all duration-300">
+              <Link href="#details" className="px-8 py-4 border-2 border-[#8A6508]/50 text-[#8A6508] font-bold rounded-lg hover:bg-[#8A6508]/10 transition-all duration-300">
                 Learn More <ArrowRightIcon className="inline h-5 w-5 ml-2" />
               </Link>
             </div>
@@ -171,7 +171,7 @@ export default function MEPPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Integrated MEP <span className="bg-linear-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">Excellence</span>
+              Integrated MEP <span className="bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent">Excellence</span>
             </h2>
             <p className="text-gray-600 text-lg mb-4 leading-relaxed">
               Our Mechanical, Electrical, and Plumbing division delivers fully integrated building services critical to the performance and longevity of any development. We combine technical expertise, cutting-edge technology, and a commitment to quality.
@@ -182,7 +182,7 @@ export default function MEPPage() {
             <div className="space-y-3">
               {['Mechanical Systems', 'Electrical Systems', 'Plumbing Solutions'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
-                  <CheckCircleIcon className="h-6 w-6 text-blue-400 shrink-0" />
+                  <CheckCircleIcon className="h-6 w-6 text-[#8A6508] shrink-0" />
                   <span className="text-gray-700">{item}</span>
                 </div>
               ))}
@@ -214,9 +214,9 @@ export default function MEPPage() {
               return (
                 <div 
                   key={idx}
-                  className="group bg-white border border-blue-400/20 rounded-2xl p-6 hover:border-blue-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-400/10"
+                  className="group bg-white border border-[#8A6508]/20 rounded-2xl p-6 hover:border-[#8A6508]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#8A6508]/10"
                 >
-                  <div className="w-12 h-12 bg-linear-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-[#8A6508] to-[#5C4204] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
@@ -232,8 +232,8 @@ export default function MEPPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-white border border-blue-400/20 rounded-2xl p-8 text-center hover:border-blue-400/50 transition-all">
-              <div className="text-4xl font-bold bg-linear-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent mb-2">
+            <div key={idx} className="bg-white border border-[#8A6508]/20 rounded-2xl p-8 text-center hover:border-[#8A6508]/50 transition-all">
+              <div className="text-4xl font-bold bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
               <p className="text-gray-600">{stat.label}</p>
@@ -248,7 +248,7 @@ export default function MEPPage() {
             const Icon = benefit.icon
             return (
               <div key={idx} className="flex gap-4">
-                <Icon className="h-6 w-6 text-blue-400 shrink-0 mt-1" />
+                <Icon className="h-6 w-6 text-[#8A6508] shrink-0 mt-1" />
                 <div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
                   <p className="text-gray-600">{benefit.description}</p>
@@ -279,12 +279,12 @@ export default function MEPPage() {
                 items: ['Water Supply', 'Drainage Systems', 'Sanitary Systems', 'High-Capacity Design']
               }
             ].map((category, idx) => (
-              <div key={idx} className="bg-white border border-blue-400/20 rounded-2xl p-8 hover:border-blue-400/50 transition-all">
+              <div key={idx} className="bg-white border border-[#8A6508]/20 rounded-2xl p-8 hover:border-[#8A6508]/50 transition-all">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">{category.title}</h3>
                 <ul className="space-y-3">
                   {category.items.map((item, i) => (
                     <li key={i} className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-linear-to-r from-blue-400 to-indigo-500 rounded-full"></div>
+                      <div className="h-2 w-2 bg-linear-to-r from-[#8A6508] to-[#5C4204] rounded-full"></div>
                       <span className="text-gray-600">{item}</span>
                     </li>
                   ))}
@@ -307,7 +307,7 @@ export default function MEPPage() {
             {processSteps.map((step, idx) => (
               <div key={idx} className="flex gap-6">
                 <div className="shrink-0">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-blue-400 to-indigo-500 text-white font-bold text-lg">
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-[#8A6508] to-[#5C4204] text-white font-bold text-lg">
                     {step.number}
                   </div>
                 </div>
@@ -371,13 +371,13 @@ export default function MEPPage() {
           <div className="flex gap-4 flex-wrap justify-center">
             <Link 
               href="tel:+971" 
-              className="px-8 py-4 bg-linear-to-r from-blue-400 to-indigo-500 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-blue-500/50 transition-all duration-300"
+              className="px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#5C4204] text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-[#8A6508]/50 transition-all duration-300"
             >
               Get MEP Consultation
             </Link>
             <Link 
               href="/contact" 
-              className="px-8 py-4 border-2 border-blue-400 text-blue-300 font-bold rounded-lg hover:bg-blue-400/10 transition-all duration-300"
+              className="px-8 py-4 border-2 border-[#8A6508] text-[#8A6508] font-bold rounded-lg hover:bg-[#8A6508]/10 transition-all duration-300"
             >
               Contact Our Team
             </Link>

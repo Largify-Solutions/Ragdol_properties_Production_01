@@ -261,10 +261,13 @@ export default function NewDevelopmentsPage() {
 
                 {/* CTA */}
                 <div className="flex gap-2 pt-4 border-t border-slate-200">
-                  <button className="flex-1 px-4 py-3 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] transition-colors flex items-center justify-center gap-2">
+                  <Link
+                    href={`/contact?type=reserve-now&source=new-developments&project=${encodeURIComponent(dev.name)}&area=${encodeURIComponent(dev.area)}`}
+                    className="flex-1 px-4 py-3 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] transition-colors flex items-center justify-center gap-2"
+                  >
                     <CheckCircleIcon className="w-5 h-5" />
                     Reserve Now
-                  </button>
+                  </Link>
                   <Link
                     href={`/properties?project=${dev.name.toLowerCase().replace(/\s+/g, '-')}`}
                     className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-colors text-center"
@@ -325,9 +328,12 @@ export default function NewDevelopmentsPage() {
             Visit our showrooms or arrange a virtual tour of new developments. Our investment consultants are ready to assist you with personalized recommendations.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-white text-[#5C4204] font-bold rounded-lg hover:bg-slate-100 transition-colors">
+            <Link
+              href="/contact?type=site-visit&source=new-developments"
+              className="px-8 py-4 bg-white text-[#5C4204] font-bold rounded-lg hover:bg-slate-100 transition-colors"
+            >
               Book Site Visit
-            </button>
+            </Link>
             <Link
               href="/contact"
               className="px-8 py-4 border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-colors"

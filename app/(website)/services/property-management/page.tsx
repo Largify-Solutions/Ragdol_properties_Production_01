@@ -113,17 +113,17 @@ export default function PropertyManagementPage() {
       {/* Premium Hero Section */}
       <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
         {/* Golden gradient background */}
-        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-amber-900/20 via-transparent to-amber-800/10 -z-10"></div>
-        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-50 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[#8A6508]/20 via-transparent to-[#5C4204]/10 -z-10"></div>
+        <div className="absolute top-20 right-0 w-96 h-96 bg-[#8A6508] rounded-full blur-3xl -z-10"></div>
         
         <div className="container-custom mx-auto">
-          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-full mb-8 text-amber-700 hover:bg-amber-100 transition-all">
+          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-[#F8F1E0] border border-[#8A6508]/30 rounded-full mb-8 text-[#5C4204] hover:bg-[#EEDDB3] transition-all">
             <ArrowRightIcon className="h-4 w-4 rotate-180" />
             Back to Services
           </Link>
           
           <h1 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
-            Property Management <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Services</span>
+            Property Management <span className="bg-linear-to-r from-[#8A6508] to-[#8A6508] bg-clip-text text-transparent">Services</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl">
             Comprehensive property management and snagging services designed to enhance value, functionality, and investor returns.
@@ -137,7 +137,7 @@ export default function PropertyManagementPage() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
             <h2 className="text-4xl font-black text-gray-900 mb-6">
-              Professional Property <span className="text-amber-400">Management</span>
+              Professional Property <span className="text-[#8A6508]">Management</span>
             </h2>
             <p className="text-gray-600 text-lg leading-relaxed mb-6">
               At Ragdol Properties, we provide a comprehensive range of property management and snagging services designed to enhance the value and functionality of real estate assets in Dubai.
@@ -147,7 +147,7 @@ export default function PropertyManagementPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#8A6508] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8A6508]/30 transition-all"
             >
               Get Your Free Assessment
               <ArrowRightIcon className="h-5 w-5" />
@@ -168,7 +168,7 @@ export default function PropertyManagementPage() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Our <span className="text-amber-400">Services</span>
+              Our <span className="text-[#8A6508]">Services</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Comprehensive solutions covering every aspect of property management and optimization
@@ -180,7 +180,7 @@ export default function PropertyManagementPage() {
               const Icon = item.icon
               return (
                 <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-8 hover:border-gray-300 transition-all duration-300">
-                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-[#8A6508] to-[#8A6508] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-3">{item.title}</h3>
@@ -195,7 +195,7 @@ export default function PropertyManagementPage() {
         {/* Snagging Services Section */}
         <div className="bg-white border border-gray-200 rounded-3xl p-12 md:p-16 mb-24">
           <h2 className="text-3xl font-black text-gray-900 mb-8">
-            Snagging & <span className="text-amber-400">Inspection Services</span>
+            Snagging & <span className="text-[#8A6508]">Inspection Services</span>
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed mb-12">
             Understanding the critical importance of property condition at the time of handover, Ragdol Properties offers specialized snagging and inspection services. These services are designed to identify and address any defects or issues before the property is occupied or sold, providing peace of mind to property owners and buyers.
@@ -204,16 +204,16 @@ export default function PropertyManagementPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {snagServices.map((step, idx) => (
               <div key={idx} className="bg-white rounded-xl p-6 border border-gray-200">
-                <div className="text-3xl font-black text-amber-400 mb-4">{step.number}</div>
+                <div className="text-3xl font-black text-[#8A6508] mb-4">{step.number}</div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{step.description}</p>
               </div>
             ))}
           </div>
 
-          <div className="mt-12 p-8 bg-white rounded-xl border border-amber-300/30">
+          <div className="mt-12 p-8 bg-white rounded-xl border border-[#8A6508]/30">
             <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <ShieldCheckIcon className="h-6 w-6 text-amber-400" />
+              <ShieldCheckIcon className="h-6 w-6 text-[#8A6508]" />
               Our "Snag It" Proprietary App
             </h3>
             <p className="text-gray-600 leading-relaxed">
@@ -226,14 +226,14 @@ export default function PropertyManagementPage() {
         <div className="mb-24">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Why Choose Ragdol <span className="text-amber-400">Property Management?</span>
+              Why Choose Ragdol <span className="text-[#8A6508]">Property Management?</span>
             </h2>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {benefits.map((benefit, idx) => (
               <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-8 hover:border-gray-300 transition-all duration-300">
-                <CheckCircleIcon className="h-8 w-8 text-amber-400 mb-4 group-hover:scale-110 transition-transform" />
+                <CheckCircleIcon className="h-8 w-8 text-[#8A6508] mb-4 group-hover:scale-110 transition-transform" />
                 <h3 className="text-lg font-bold text-gray-900 mb-3">{benefit.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
               </div>
@@ -245,7 +245,7 @@ export default function PropertyManagementPage() {
         <div className="mb-24">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-black text-gray-900 mb-4">
-              Managed <span className="text-amber-400">Properties</span>
+              Managed <span className="text-[#8A6508]">Properties</span>
             </h2>
             <p className="text-gray-600">Premium portfolios we maintain and optimize across Dubai</p>
           </div>
@@ -265,7 +265,7 @@ export default function PropertyManagementPage() {
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-slate-900/95 via-slate-900/40 to-transparent group-hover:from-slate-900/98 transition-all duration-300 flex flex-col justify-end p-6">
                   <h3 className="text-xl font-bold text-gray-900">{property.title}</h3>
-                  <p className="text-amber-700 font-semibold text-sm">{property.desc}</p>
+                  <p className="text-[#8A6508] font-semibold text-sm">{property.desc}</p>
                 </div>
               </div>
             ))}
@@ -276,7 +276,7 @@ export default function PropertyManagementPage() {
         <div className="grid md:grid-cols-2 gap-12 mb-24">
           <div>
             <h2 className="text-3xl font-black text-gray-900 mb-8">
-              Advanced Property <span className="text-amber-400">Management Platform</span>
+              Advanced Property <span className="text-[#8A6508]">Management Platform</span>
             </h2>
             
             <div className="space-y-6">
@@ -299,7 +299,7 @@ export default function PropertyManagementPage() {
                 }
               ].map((feature, idx) => (
                 <div key={idx} className="flex gap-4">
-                  <BoltIcon className="h-6 w-6 text-amber-400 shrink-0 mt-1" />
+                  <BoltIcon className="h-6 w-6 text-[#8A6508] shrink-0 mt-1" />
                   <div>
                     <h3 className="font-bold text-gray-900 mb-1">{feature.title}</h3>
                     <p className="text-gray-600 text-sm">{feature.desc}</p>
@@ -322,19 +322,19 @@ export default function PropertyManagementPage() {
 
         {/* CTA Section */}
         <div className="relative overflow-hidden rounded-3xl p-12 md:p-20 bg-gray-50 border border-gray-200">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-50 rounded-full blur-3xl -z-10"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC636]/5 rounded-full blur-3xl -z-10"></div>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#8A6508] rounded-full blur-3xl -z-10"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#8A6508]/5 rounded-full blur-3xl -z-10"></div>
           
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-6">
-              Ready to Optimize Your <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Property Portfolio?</span>
+              Ready to Optimize Your <span className="bg-linear-to-r from-[#8A6508] to-[#8A6508] bg-clip-text text-transparent">Property Portfolio?</span>
             </h2>
             <p className="text-gray-600 text-lg mb-8">
               Let our expert team handle all aspects of property management while you enjoy steady returns and peace of mind.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all group"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#8A6508] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8A6508]/30 transition-all group"
             >
               Schedule Free Consultation
               <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-2 transition-transform" />

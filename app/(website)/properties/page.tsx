@@ -892,7 +892,7 @@ function FloorPlanForm({
           </div>
 
           {/* Property Info */}
-          <div className="p-6 bg-blue-50 border-b border-blue-100">
+          <div className="p-6 bg-[#F8F1E0] border-b border-[#E8D6AD]">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="font-bold text-gray-900 text-lg">
@@ -901,7 +901,7 @@ function FloorPlanForm({
                 <p className="text-gray-600">{property.location}</p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-black text-blue-600">
+                <div className="text-2xl font-black text-[#8A6508]">
                   AED {formatPrice(property.price || 0)}{property.status === 'rent' ? '/year' : ''}
                 </div>
                 <div className="text-gray-600">
@@ -919,7 +919,7 @@ function FloorPlanForm({
             <div className="space-y-8">
               <div>
                 <h4 className="text-xl font-black text-gray-900 mb-6 pb-2 border-b border-gray-200">
-                  <span className="text-blue-600">1.</span> Personal Information
+                  <span className="text-[#8A6508]">1.</span> Personal Information
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -932,7 +932,7 @@ function FloorPlanForm({
                       value={formData.fullName}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent"
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -946,7 +946,7 @@ function FloorPlanForm({
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent"
                       placeholder="Enter your email"
                     />
                   </div>
@@ -960,7 +960,7 @@ function FloorPlanForm({
                       value={formData.phoneNumber}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent"
                       placeholder="+971 XX XXX XXXX"
                     />
                   </div>
@@ -979,7 +979,7 @@ function FloorPlanForm({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex-1 px-8 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                    className="flex-1 px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#5C4204] text-white font-bold rounded-xl hover:shadow-xl hover:shadow-[#8A6508]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                   >
                     {loading ? (
                       <>

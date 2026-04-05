@@ -58,32 +58,32 @@ export default function MarketInsightsPage() {
       value: stats ? fmt(stats.summary.totalListings) : '...',
       change: 'Live count',
       icon: ChartBarIcon,
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-50'
+      color: 'text-[#8A6508]',
+      bgColor: 'bg-[#F8F1E0]'
     },
     {
       label: 'Average Listing Price',
       value: stats ? fmtPrice(stats.summary.avgPrice) : '...',
       change: 'Avg across all listings',
       icon: CurrencyDollarIcon,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      color: 'text-[#7A5806]',
+      bgColor: 'bg-[#F5EBD1]'
     },
     {
       label: 'Active Projects',
       value: stats ? String(stats.summary.totalProjects) : '...',
       change: 'Published developments',
       icon: BuildingOffice2Icon,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      color: 'text-[#6A4C05]',
+      bgColor: 'bg-[#F3E7C8]'
     },
     {
       label: 'Avg Price / Sq.Ft',
       value: stats ? `AED ${stats.summary.avgPricePerSqft.toLocaleString()}` : '...',
       change: 'Across listed properties',
       icon: HomeIcon,
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-50'
+      color: 'text-[#5C4204]',
+      bgColor: 'bg-[#F9F2E3]'
     }
   ]
 
@@ -136,12 +136,12 @@ export default function MarketInsightsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-blue-50 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 to-amber-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-            Market <span className="text-emerald-600">Insights</span>
+            Market <span className="text-[#8A6508]">Insights</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             Comprehensive analysis of Dubai's real estate market with data-driven insights to guide your investment decisions
@@ -164,7 +164,7 @@ export default function MarketInsightsPage() {
                 </div>
                 <p className="text-sm font-medium text-slate-600 mb-2">{metric.label}</p>
                 <h3 className="text-2xl font-bold text-slate-900 mb-1">{metric.value}</h3>
-                <p className="text-sm text-emerald-600 font-semibold">{metric.change}</p>
+                <p className="text-sm text-[#8A6508] font-semibold">{metric.change}</p>
               </div>
             )
           })}
@@ -178,7 +178,7 @@ export default function MarketInsightsPage() {
               onClick={() => setActiveTab(tab as any)}
               className={`px-6 py-4 font-semibold capitalize transition-all ${
                 activeTab === tab
-                  ? 'text-emerald-600 border-b-2 border-emerald-600'
+                  ? 'text-[#8A6508] border-b-2 border-[#8A6508]'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -197,8 +197,8 @@ export default function MarketInsightsPage() {
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="text-xl font-bold text-slate-900 flex-1">{trend.title}</h3>
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ml-2 ${
-                    trend.impact === 'High' ? 'bg-emerald-100 text-emerald-700' :
-                    trend.impact === 'Medium-High' ? 'bg-blue-100 text-blue-700' :
+                    trend.impact === 'High' ? 'bg-[#F3E7C8] text-[#6B4E06]' :
+                    trend.impact === 'Medium-High' ? 'bg-[#EFE1BD] text-[#7A5806]' :
                     'bg-slate-100 text-slate-700'
                   }`}>
                     {trend.impact} Impact
@@ -207,7 +207,7 @@ export default function MarketInsightsPage() {
                 <p className="text-slate-600 mb-4">{trend.description}</p>
                 <div className="flex items-center justify-between pt-4 border-t border-slate-200">
                   <span className="text-sm font-medium text-slate-600">{trend.timeline}</span>
-                  <ArrowTrendingUpIcon className="w-5 h-5 text-emerald-600" />
+                  <ArrowTrendingUpIcon className="w-5 h-5 text-[#8A6508]" />
                 </div>
               </div>
             ))}
@@ -222,10 +222,10 @@ export default function MarketInsightsPage() {
                 {stats && (
                   <div className="space-y-4">
                     {[
-                      { label: 'For Sale', count: stats.summary.forSale, color: 'bg-emerald-600' },
-                      { label: 'For Rent', count: stats.summary.forRent, color: 'bg-blue-600' },
-                      { label: 'Off-Plan', count: stats.summary.offPlan, color: 'bg-purple-600' },
-                      { label: 'Ready', count: stats.summary.ready, color: 'bg-amber-600' },
+                      { label: 'For Sale', count: stats.summary.forSale, color: 'bg-[#8A6508]' },
+                      { label: 'For Rent', count: stats.summary.forRent, color: 'bg-[#7A5806]' },
+                      { label: 'Off-Plan', count: stats.summary.offPlan, color: 'bg-[#6A4C05]' },
+                      { label: 'Ready', count: stats.summary.ready, color: 'bg-[#5C4204]' },
                     ].map(item => {
                       const pct = stats.summary.totalListings > 0
                         ? Math.round((item.count / stats.summary.totalListings) * 100)
@@ -260,7 +260,7 @@ export default function MarketInsightsPage() {
                           <span className="text-sm font-bold text-slate-900">{t.count}</span>
                         </div>
                         <div className="w-full bg-slate-100 rounded-full h-2">
-                          <div className="bg-emerald-600 h-2 rounded-full" style={{ width: `${pct}%` }}></div>
+                          <div className="bg-[#8A6508] h-2 rounded-full" style={{ width: `${pct}%` }}></div>
                         </div>
                       </div>
                     )
@@ -300,7 +300,7 @@ export default function MarketInsightsPage() {
                     <h3 className="text-lg font-bold text-slate-900 mb-1">{area.name}</h3>
                     <p className="text-sm text-slate-600">{area.properties} listings</p>
                   </div>
-                  <MapPinIcon className="w-5 h-5 text-emerald-600 mt-1" />
+                  <MapPinIcon className="w-5 h-5 text-[#8A6508] mt-1" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-4">
@@ -316,7 +316,7 @@ export default function MarketInsightsPage() {
 
                 <Link
                   href={`/properties?area=${encodeURIComponent(area.name)}`}
-                  className="inline-flex items-center gap-2 text-emerald-600 font-semibold hover:text-emerald-700 transition-colors"
+                  className="inline-flex items-center gap-2 text-[#8A6508] font-semibold hover:text-[#5C4204] transition-colors"
                 >
                   View Listings
                   <ArrowTrendingUpIcon className="w-4 h-4" />
@@ -329,7 +329,7 @@ export default function MarketInsightsPage() {
         )}
 
         {/* CTA Section */}
-        <div className="bg-linear-to-r from-emerald-600 to-blue-600 rounded-2xl p-12 text-white text-center">
+        <div className="bg-linear-to-r from-[#8A6508] to-[#5C4204] rounded-2xl p-12 text-white text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to Invest?</h2>
           <p className="text-lg mb-8 opacity-90">
             Explore our complete investment analysis tools and find the perfect property for your portfolio
@@ -337,7 +337,7 @@ export default function MarketInsightsPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/trends/investment-analysis"
-              className="px-8 py-4 bg-white text-emerald-600 font-bold rounded-lg hover:bg-slate-100 transition-colors"
+              className="px-8 py-4 bg-white text-[#5C4204] font-bold rounded-lg hover:bg-amber-50 transition-colors"
             >
               Investment Guide
             </Link>

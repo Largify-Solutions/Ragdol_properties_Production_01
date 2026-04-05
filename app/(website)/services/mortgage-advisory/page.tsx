@@ -127,17 +127,17 @@ export default function MortgageAdvisoryPage() {
       {/* Premium Hero Section */}
       <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
         {/* Golden gradient background */}
-        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-amber-900/20 via-transparent to-amber-800/10 -z-10"></div>
-        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-50 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[#8A6508]/20 via-transparent to-[#5C4204]/10 -z-10"></div>
+        <div className="absolute top-20 right-0 w-96 h-96 bg-[#8A6508] rounded-full blur-3xl -z-10"></div>
         
         <div className="container-custom mx-auto">
-          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-full mb-8 text-amber-700 hover:bg-amber-100 transition-all">
+          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-[#F8F1E0] border border-[#8A6508]/30 rounded-full mb-8 text-[#5C4204] hover:bg-[#EEDDB3] transition-all">
             <ArrowRightIcon className="h-4 w-4 rotate-180" />
             Back to Services
           </Link>
           
           <h1 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
-            Mortgage Advisory & <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Brokerage</span>
+            Mortgage Advisory & <span className="bg-linear-to-r from-[#8A6508] to-[#8A6508] bg-clip-text text-transparent">Brokerage</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl">
             Expert financing solutions connecting you with the best mortgage options from 40+ leading banks.
@@ -151,7 +151,7 @@ export default function MortgageAdvisoryPage() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
             <h2 className="text-4xl font-black text-gray-900 mb-6">
-              Smart <span className="text-amber-400">Financing Solutions</span>
+              Smart <span className="text-[#8A6508]">Financing Solutions</span>
             </h2>
             <p className="text-gray-600 text-lg leading-relaxed mb-6">
               Our Mortgage Advisory and Brokerage service is all about helping you finance your property in the smartest, most cost-effective way possible.
@@ -161,7 +161,7 @@ export default function MortgageAdvisoryPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#8A6508] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8A6508]/30 transition-all"
             >
               Get Mortgage Pre-Approval
               <ArrowRightIcon className="h-5 w-5" />
@@ -182,7 +182,7 @@ export default function MortgageAdvisoryPage() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Our <span className="text-amber-400">Services</span>
+              Our <span className="text-[#8A6508]">Services</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Comprehensive mortgage advisory and brokerage solutions for all property financing needs
@@ -194,7 +194,7 @@ export default function MortgageAdvisoryPage() {
               const Icon = item.icon
               return (
                 <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-gray-300 transition-all duration-300">
-                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-[#8A6508] to-[#8A6508] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-base font-bold text-gray-900 mb-2">{item.title}</h3>
@@ -209,7 +209,7 @@ export default function MortgageAdvisoryPage() {
         {/* Why Choose Section */}
         <div className="bg-white border border-gray-200 rounded-3xl p-12 md:p-16 mb-24">
           <h2 className="text-3xl font-black text-gray-900 mb-8">
-            Why Choose Ragdol <span className="text-amber-400">Mortgage Advisory?</span>
+            Why Choose Ragdol <span className="text-[#8A6508]">Mortgage Advisory?</span>
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed mb-12">
             Our team of experienced mortgage advisors works closely with a wide network of banks and financial institutions in the UAE and beyond. We don't just connect you with lenders—we take the time to understand your financial situation and tailor solutions that truly fit your needs.
@@ -217,17 +217,17 @@ export default function MortgageAdvisoryPage() {
           
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <div className="text-3xl font-black text-amber-400 mb-4">40+</div>
+              <div className="text-3xl font-black text-[#8A6508] mb-4">40+</div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">Bank Partners</h3>
               <p className="text-gray-600 text-sm">Access to leading UAE and international lenders</p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <div className="text-3xl font-black text-amber-400 mb-4">AED 500B+</div>
+              <div className="text-3xl font-black text-[#8A6508] mb-4">AED 500B+</div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">Financed</h3>
               <p className="text-gray-600 text-sm">Over 500 billion AED in mortgages successfully arranged</p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <div className="text-3xl font-black text-amber-400 mb-4">10,000+</div>
+              <div className="text-3xl font-black text-[#8A6508] mb-4">10,000+</div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">Clients</h3>
               <p className="text-gray-600 text-sm">Thousands of satisfied clients across UAE and globally</p>
             </div>
@@ -238,7 +238,7 @@ export default function MortgageAdvisoryPage() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
             <h2 className="text-3xl font-black text-gray-900 mb-8">
-              Flexible Loan <span className="text-amber-400">Options</span>
+              Flexible Loan <span className="text-[#8A6508]">Options</span>
             </h2>
             
             <div className="space-y-6">
@@ -265,7 +265,7 @@ export default function MortgageAdvisoryPage() {
                 }
               ].map((type, idx) => (
                 <div key={idx} className="flex gap-4">
-                  <CheckCircleIcon className="h-6 w-6 text-amber-400 shrink-0 mt-1" />
+                  <CheckCircleIcon className="h-6 w-6 text-[#8A6508] shrink-0 mt-1" />
                   <div>
                     <h3 className="font-bold text-gray-900 mb-1">{type.title}</h3>
                     <p className="text-gray-600 text-sm">{type.desc}</p>
@@ -290,7 +290,7 @@ export default function MortgageAdvisoryPage() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Our <span className="text-amber-400">Process</span>
+              Our <span className="text-[#8A6508]">Process</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               A straightforward methodology ensuring you get the right mortgage at the best rates
@@ -301,7 +301,7 @@ export default function MortgageAdvisoryPage() {
             {processSteps.map((step, idx) => (
               <div key={idx} className="flex gap-8 items-start">
                 <div className="shrink-0">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-amber-400 to-[#FFC636] text-slate-900 font-black text-xl">
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-[#8A6508] to-[#8A6508] text-white font-black text-xl">
                     {step.number}
                   </div>
                 </div>
@@ -318,14 +318,14 @@ export default function MortgageAdvisoryPage() {
         <div className="mb-24">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Key <span className="text-amber-400">Benefits</span>
+              Key <span className="text-[#8A6508]">Benefits</span>
             </h2>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {benefits.map((benefit, idx) => (
               <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-8 hover:border-gray-300 transition-all duration-300">
-                <CheckCircleIcon className="h-8 w-8 text-amber-400 mb-4 group-hover:scale-110 transition-transform" />
+                <CheckCircleIcon className="h-8 w-8 text-[#8A6508] mb-4 group-hover:scale-110 transition-transform" />
                 <h3 className="text-lg font-bold text-gray-900 mb-3">{benefit.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
               </div>
@@ -337,7 +337,7 @@ export default function MortgageAdvisoryPage() {
         <div className="mb-24">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-black text-gray-900 mb-4">
-              Properties We've <span className="text-amber-400">Financed</span>
+              Properties We've <span className="text-[#8A6508]">Financed</span>
             </h2>
             <p className="text-gray-600">Portfolio of properties successfully financed through our advisory</p>
           </div>
@@ -357,7 +357,7 @@ export default function MortgageAdvisoryPage() {
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-slate-900/95 via-slate-900/40 to-transparent group-hover:from-slate-900/98 transition-all duration-300 flex flex-col justify-end p-6">
                   <h3 className="text-xl font-bold text-gray-900">{property.title}</h3>
-                  <p className="text-amber-700 font-semibold text-sm">{property.type}</p>
+                  <p className="text-[#8A6508] font-semibold text-sm">{property.type}</p>
                 </div>
               </div>
             ))}
@@ -366,19 +366,19 @@ export default function MortgageAdvisoryPage() {
 
         {/* CTA Section */}
         <div className="relative overflow-hidden rounded-3xl p-12 md:p-20 bg-gray-50 border border-gray-200">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-50 rounded-full blur-3xl -z-10"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC636]/5 rounded-full blur-3xl -z-10"></div>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#8A6508] rounded-full blur-3xl -z-10"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#8A6508]/5 rounded-full blur-3xl -z-10"></div>
           
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-6">
-              Ready to Secure Your <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Perfect Mortgage?</span>
+              Ready to Secure Your <span className="bg-linear-to-r from-[#8A6508] to-[#8A6508] bg-clip-text text-transparent">Perfect Mortgage?</span>
             </h2>
             <p className="text-gray-600 text-lg mb-8">
               Get instant access to competitive rates from 40+ lenders with personalized advisory support.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all group"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#8A6508] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8A6508]/30 transition-all group"
             >
               Get Free Mortgage Consultation
               <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-2 transition-transform" />

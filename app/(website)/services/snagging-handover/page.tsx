@@ -113,7 +113,7 @@ export default function SnaggingHandoverPage() {
                 className={`py-4 px-1 border-b-2 font-medium text-sm capitalize transition-colors ${
                   activeTab === tab
                     ? 'border-[#d4af37] text-[#d4af37]'
-                    : 'border-transparent text-gray-600 hover:text-[#FFC636]'
+                    : 'border-transparent text-gray-600 hover:text-[#8A6508]'
                 }`}
               >
                 {tab}

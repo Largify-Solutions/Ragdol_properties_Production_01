@@ -149,16 +149,16 @@ export default function RentalServicesPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Property Rental <span className="bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Services</span>
+              Property Rental <span className="bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent">Services</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Maximize your rental yields while keeping occupancy rates high. From pricing optimization to 24/7 tenant support, we manage your property like a business.
             </p>
             <div className="flex gap-4 flex-wrap">
-              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-orange-400 to-red-500 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-orange-500/50 transition-all duration-300">
+              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#5C4204] text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-[#8A6508]/50 transition-all duration-300">
                 Start Rental Management
               </Link>
-              <Link href="#details" className="px-8 py-4 border-2 border-orange-400/50 text-orange-300 font-bold rounded-lg hover:bg-orange-400/10 transition-all duration-300">
+              <Link href="#details" className="px-8 py-4 border-2 border-[#8A6508]/50 text-[#8A6508] font-bold rounded-lg hover:bg-[#8A6508]/10 transition-all duration-300">
                 Learn More <ArrowRightIcon className="inline h-5 w-5 ml-2" />
               </Link>
             </div>
@@ -171,7 +171,7 @@ export default function RentalServicesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Rental Management <span className="bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">Excellence</span>
+              Rental Management <span className="bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent">Excellence</span>
             </h2>
             <p className="text-gray-600 text-lg mb-4 leading-relaxed">
               At fäm Properties, we manage rental properties with one clear focus: maximizing your rental yields while keeping occupancy rates high. Whether you own a single unit or a full portfolio, our solutions deliver consistent income with minimal hassle.
@@ -182,7 +182,7 @@ export default function RentalServicesPage() {
             <div className="space-y-3">
               {['Yield Optimization', 'Expert Management', 'Full Support'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
-                  <CheckCircleIcon className="h-6 w-6 text-orange-400 shrink-0" />
+                  <CheckCircleIcon className="h-6 w-6 text-[#8A6508] shrink-0" />
                   <span className="text-gray-700">{item}</span>
                 </div>
               ))}
@@ -205,8 +205,8 @@ export default function RentalServicesPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, idx) => (
-              <div key={idx} className="bg-white border border-orange-400/20 rounded-2xl p-8 text-center hover:border-orange-400/50 transition-all">
-                <div className="text-4xl font-bold bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent mb-2">
+              <div key={idx} className="bg-white border border-[#8A6508]/20 rounded-2xl p-8 text-center hover:border-[#8A6508]/50 transition-all">
+                <div className="text-4xl font-bold bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent mb-2">
                   {stat.value}
                 </div>
                 <p className="text-gray-600">{stat.label}</p>
@@ -229,9 +229,9 @@ export default function RentalServicesPage() {
             return (
               <div 
                 key={idx}
-                className="group bg-white border border-orange-400/20 rounded-2xl p-6 hover:border-orange-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-orange-400/10"
+                className="group bg-white border border-[#8A6508]/20 rounded-2xl p-6 hover:border-[#8A6508]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#8A6508]/10"
               >
-                <div className="w-12 h-12 bg-linear-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 bg-linear-to-br from-[#8A6508] to-[#5C4204] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Icon className="h-6 w-6 text-white" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
@@ -252,7 +252,7 @@ export default function RentalServicesPage() {
               const Icon = benefit.icon
               return (
                 <div key={idx} className="flex gap-4">
-                  <Icon className="h-6 w-6 text-orange-400 shrink-0 mt-1" />
+                  <Icon className="h-6 w-6 text-[#8A6508] shrink-0 mt-1" />
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
                     <p className="text-gray-600">{benefit.description}</p>
@@ -275,7 +275,7 @@ export default function RentalServicesPage() {
           {processSteps.map((step, idx) => (
             <div key={idx} className="flex gap-6">
               <div className="shrink-0">
-                <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-orange-400 to-red-500 text-white font-bold text-lg">
+                <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-[#8A6508] to-[#5C4204] text-white font-bold text-lg">
                   {step.number}
                 </div>
               </div>
@@ -338,13 +338,13 @@ export default function RentalServicesPage() {
           <div className="flex gap-4 flex-wrap justify-center">
             <Link 
               href="tel:+971" 
-              className="px-8 py-4 bg-linear-to-r from-orange-400 to-red-500 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-orange-500/50 transition-all duration-300"
+              className="px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#5C4204] text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-[#8A6508]/50 transition-all duration-300"
             >
               Start Rental Management
             </Link>
             <Link 
               href="/contact" 
-              className="px-8 py-4 border-2 border-orange-400 text-orange-300 font-bold rounded-lg hover:bg-orange-400/10 transition-all duration-300"
+              className="px-8 py-4 border-2 border-[#8A6508] text-[#8A6508] font-bold rounded-lg hover:bg-[#8A6508]/10 transition-all duration-300"
             >
               Get Consultation
             </Link>

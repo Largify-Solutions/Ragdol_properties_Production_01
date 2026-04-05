@@ -28,7 +28,6 @@ import {
 // Supabase imports
 import { supabase } from '@/lib/supabase-browser'
 import Head from 'next/head'
-import Header from '../layouts/Header'
 import AgentProperties from '@/components/AgentProperties'
 
 
@@ -413,8 +412,7 @@ export default function AgentListClient() {
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-slate-50/50">
-        <Header />
-        <section className="relative pt-32 pb-20 bg-secondary overflow-hidden">
+        <section className="relative pt-20 pb-20 bg-secondary overflow-hidden">
           <div className="container-custom relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl font-serif text-white mb-6">
@@ -438,11 +436,33 @@ export default function AgentListClient() {
   }
 
   return (
-    <>
-      <Header />
-      <div className="w-full min-h-screen bg-slate-50/50">
+    <div className="w-full min-h-screen bg-slate-50/50">
+      {/* Top Agents */}
+      {topAgents.length > 0 && (
+        <section className="py-16 bg-white" id="top-agents">
+          <div className="container-custom">
+            <div className="text-center mb-8">
+              <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
+                EXPERT PROFESSIONALS
+              </h2>
+              <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight">
+                Meet Our Top Agents
+              </h3>
+            </div>
+
+            <AgentSlider agents={topAgents} showCount={4} />
+
+            <div className="text-center mt-6">
+              <a href="#all-agents" className="btn-outline">
+                View All Agents
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
+
         {/* Search & Filter Header */}
-        <section className="relative pt-32 pb-20 bg-secondary overflow-hidden">
+        <section className="relative pt-20 pb-20 bg-secondary overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
           </div>
@@ -507,30 +527,6 @@ export default function AgentListClient() {
           </div>
         </section>
 
-        {/* Top Agents */}
-        {topAgents.length > 0 && (
-          <section className="py-16 bg-white">
-            <div className="container-custom">
-              <div className="text-center mb-8">
-                <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
-                  EXPERT PROFESSIONALS
-                </h2>
-                <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight">
-                  Meet Our Top Agents
-                </h3>
-              </div>
-
-              <AgentSlider agents={topAgents} showCount={4} />
-
-              <div className="text-center mt-6">
-                <a href="#all-agents" className="btn-outline">
-                  View All Agents
-                </a>
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* Agents Grid */}
         <section id="all-agents" className="py-20">
           <div className="container-custom">
@@ -576,7 +572,7 @@ export default function AgentListClient() {
                               const parent = img.parentElement
                               if (parent) {
                                 parent.innerHTML = `
-                                  <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                                  <div class="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/5">
                                     <div class="text-4xl font-bold text-primary opacity-50">
                                       ${initials}
                                     </div>
@@ -586,7 +582,7 @@ export default function AgentListClient() {
                             }}
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                          <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/5">
                             <div className="text-4xl font-bold text-primary opacity-50">
                               {initials}
                             </div>
@@ -594,7 +590,7 @@ export default function AgentListClient() {
                         )}
                         
                         {/* Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
+                        <div className="absolute inset-0 bg-linear-to-t from-secondary/80 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
 
                         {/* Experience Badge */}
                         <div className="absolute top-4 right-4 bg-primary text-secondary text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
@@ -878,7 +874,7 @@ export default function AgentListClient() {
             {/* Modal Content */}
             <div className="p-0">
               {/* ✅ FIXED: Header with Full Face Image */}
-              <div className="relative bg-gradient-to-r from-primary/20 to-secondary/20">
+              <div className="relative bg-linear-to-r from-primary/20 to-secondary/20">
                 {getProfileImage(selectedAgent) ? (
                   <img
                     src={getProfileImage(selectedAgent)}
@@ -886,7 +882,7 @@ export default function AgentListClient() {
                     className="w-full h-full object-cover object-center "
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                  <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/5">
                     <div className="text-6xl font-bold text-primary opacity-50">
                       {getInitials(selectedAgent.title)}
                     </div>
@@ -894,7 +890,7 @@ export default function AgentListClient() {
                 )}
                 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
 
                 {/* Agent Title */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -1065,7 +1061,7 @@ export default function AgentListClient() {
                   {/* Right Column - Detailed Information */}
                   <div className="lg:col-span-2 space-y-8">
                     {/* Rating & Reviews */}
-                    <div className="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-xl p-6">
+                    <div className="bg-linear-to-r from-primary/5 to-secondary/5 rounded-xl p-6">
                       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                         <div>
                          
@@ -1235,6 +1231,6 @@ export default function AgentListClient() {
           onClose={closeAgentProperties}
         />
       )}
-    </>
+    </div>
   )
 }

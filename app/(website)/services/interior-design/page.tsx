@@ -150,16 +150,16 @@ export default function InteriorDesignPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Interior <span className="bg-linear-to-r from-rose-400 to-pink-500 bg-clip-text text-transparent">Design Services</span>
+              Interior <span className="bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent">Design Services</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Bespoke interior designs that elevate aesthetics and functionality. Transform your space into a stunning reflection of your personal style with expert design and flawless execution.
             </p>
             <div className="flex gap-4 flex-wrap">
-              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-rose-400 to-pink-500 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-rose-500/50 transition-all duration-300">
+              <Link href="#contact" className="px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#5C4204] text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-[#8A6508]/50 transition-all duration-300">
                 Start Your Project
               </Link>
-              <Link href="#details" className="px-8 py-4 border-2 border-rose-400/50 text-rose-300 font-bold rounded-lg hover:bg-rose-400/10 transition-all duration-300">
+              <Link href="#details" className="px-8 py-4 border-2 border-[#8A6508]/50 text-[#8A6508] font-bold rounded-lg hover:bg-[#8A6508]/10 transition-all duration-300">
                 Learn More <ArrowRightIcon className="inline h-5 w-5 ml-2" />
               </Link>
             </div>
@@ -172,7 +172,7 @@ export default function InteriorDesignPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Design That Reflects <span className="bg-linear-to-r from-rose-400 to-pink-500 bg-clip-text text-transparent">Your Essence</span>
+              Design That Reflects <span className="bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent">Your Essence</span>
             </h2>
             <p className="text-gray-600 text-lg mb-4 leading-relaxed">
               Our Interior Design service is dedicated to creating bespoke designs that elevate both the aesthetics and functionality of your property. We understand that your home or commercial space is more than just a place—it's a reflection of your personal style, values, and lifestyle.
@@ -183,7 +183,7 @@ export default function InteriorDesignPage() {
             <div className="space-y-3">
               {['Personalized Design', 'Expert Execution', 'Timeless Aesthetics'].map((item, idx) => (
                 <div key={idx} className="flex items-center gap-3">
-                  <CheckCircleIcon className="h-6 w-6 text-rose-400 shrink-0" />
+                  <CheckCircleIcon className="h-6 w-6 text-[#8A6508] shrink-0" />
                   <span className="text-gray-700">{item}</span>
                 </div>
               ))}
@@ -215,9 +215,9 @@ export default function InteriorDesignPage() {
               return (
                 <div 
                   key={idx}
-                  className="group bg-white border border-rose-400/20 rounded-2xl p-6 hover:border-rose-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-rose-400/10"
+                  className="group bg-white border border-[#8A6508]/20 rounded-2xl p-6 hover:border-[#8A6508]/50 transition-all duration-300 hover:shadow-xl hover:shadow-[#8A6508]/10"
                 >
-                  <div className="w-12 h-12 bg-linear-to-br from-rose-400 to-pink-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-[#8A6508] to-[#5C4204] rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2">{service.title}</h3>
@@ -233,8 +233,8 @@ export default function InteriorDesignPage() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-white border border-rose-400/20 rounded-2xl p-8 text-center hover:border-rose-400/50 transition-all">
-              <div className="text-4xl font-bold bg-linear-to-r from-rose-400 to-pink-500 bg-clip-text text-transparent mb-2">
+            <div key={idx} className="bg-white border border-[#8A6508]/20 rounded-2xl p-8 text-center hover:border-[#8A6508]/50 transition-all">
+              <div className="text-4xl font-bold bg-linear-to-r from-[#8A6508] to-[#5C4204] bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
               <p className="text-gray-600">{stat.label}</p>
@@ -249,7 +249,7 @@ export default function InteriorDesignPage() {
             const Icon = benefit.icon
             return (
               <div key={idx} className="flex gap-4">
-                <Icon className="h-6 w-6 text-rose-400 shrink-0 mt-1" />
+                <Icon className="h-6 w-6 text-[#8A6508] shrink-0 mt-1" />
                 <div>
                   <h3 className="text-lg font-bold text-gray-900 mb-2">{benefit.title}</h3>
                   <p className="text-gray-600">{benefit.description}</p>
@@ -272,7 +272,7 @@ export default function InteriorDesignPage() {
             {processSteps.map((step, idx) => (
               <div key={idx} className="flex gap-6">
                 <div className="shrink-0">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-rose-400 to-pink-500 text-white font-bold text-lg">
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-[#8A6508] to-[#5C4204] text-white font-bold text-lg">
                     {step.number}
                   </div>
                 </div>
@@ -334,13 +334,13 @@ export default function InteriorDesignPage() {
           <div className="flex gap-4 flex-wrap justify-center">
             <Link 
               href="tel:+971" 
-              className="px-8 py-4 bg-linear-to-r from-rose-400 to-pink-500 text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-rose-500/50 transition-all duration-300"
+              className="px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#5C4204] text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-[#8A6508]/50 transition-all duration-300"
             >
               Schedule Consultation
             </Link>
             <Link 
               href="/contact" 
-              className="px-8 py-4 border-2 border-rose-400 text-rose-300 font-bold rounded-lg hover:bg-rose-400/10 transition-all duration-300"
+              className="px-8 py-4 border-2 border-[#8A6508] text-[#8A6508] font-bold rounded-lg hover:bg-[#8A6508]/10 transition-all duration-300"
             >
               View Portfolio
             </Link>

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { StarIcon as StarSolidIcon, UserCircleIcon, CalendarIcon, BuildingOfficeIcon, CheckBadgeIcon } from '@heroicons/react/24/solid'
-import { StarIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
+import { StarIcon as StarSolidIcon, UserCircleIcon, CheckBadgeIcon } from '@heroicons/react/24/solid'
+import { StarIcon, ShieldCheckIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -499,9 +499,9 @@ export default function TestimonialsPage() {
       <div className="flex items-center gap-0.5">
         {[...Array(5)].map((_, i) => (
           i < Math.floor(rating) ? (
-            <StarSolidIcon key={i} className="h-5 w-5 text-amber-500" />
+            <StarSolidIcon key={i} className="h-4 w-4 text-[#FFC636]" />
           ) : (
-            <StarIcon key={i} className="h-5 w-5 text-amber-200" />
+            <StarIcon key={i} className="h-4 w-4 text-slate-300" />
           )
         ))}
       </div>
@@ -582,9 +582,12 @@ export default function TestimonialsPage() {
       <section className="py-24 bg-white">
         <div className="container-custom">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif text-secondary mb-6">
-              What Our <span className="text-primary">Clients</span> Say
+            <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
+              CLIENT STORIES
             </h2>
+            <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight mb-6">
+              What Our Clients Say
+            </h3>
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
               Authentic feedback from clients who have trusted Ragdoll Properties Properties with their real estate journey
             </p>
@@ -609,137 +612,43 @@ export default function TestimonialsPage() {
             </div>
           ) : testimonials.length > 0 ? (
             <>
-              {/* Featured Testimonials (if any) */}
-              {testimonials.filter(t => t.featured).length > 0 && (
-                <div className="mb-16">
-                  <h3 className="text-2xl font-bold text-slate-800 mb-8 text-center">Featured Testimonials</h3>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {testimonials
-                      .filter(t => t.featured)
-                      .slice(0, 2)
-                      .map((testimonial) => (
-                        <div key={testimonial.id} className="group">
-                          <div className="bg-white rounded-3xl overflow-hidden shadow-xl shadow-slate-200/50 border-2 border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20">
-                            <div className="p-8">
-                              <div className="flex items-start gap-6 mb-6">
-                                <div className="relative">
-                                  <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-primary/10">
-                                    <Image
-                                      src={testimonial.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=random`}
-                                      alt={testimonial.name}
-                                      width={64}
-                                      height={64}
-                                      className="object-cover"
-                                    />
-                                  </div>
-                                  <StarSolidIcon className="absolute -top-2 -right-2 h-5 w-5 text-amber-500" />
-                                </div>
-                                
-                                <div className="flex-1">
-                                  <h3 className="text-xl font-bold text-slate-800 mb-1">{testimonial.name}</h3>
-                                  <div className="flex items-center gap-2 text-slate-600 text-sm mb-3">
-                                    <BuildingOfficeIcon className="h-4 w-4" />
-                                    <span className="font-medium">{testimonial.position}</span>
-                                    {testimonial.company && (
-                                      <>
-                                        <span className="text-slate-400">•</span>
-                                        <span>{testimonial.company}</span>
-                                      </>
-                                    )}
-                                  </div>
-                                  <div className="mb-4">
-                                    {renderStars(testimonial.rating)}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <div className="pl-2 border-l-4 border-primary/20">
-                                <p className="text-slate-700 text-lg italic leading-relaxed">
-                                  "{testimonial.message}"
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              {/* All Testimonials Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {testimonials.map((testimonial) => (
-                  <div key={testimonial.id} className="group">
-                    <div className={`h-full bg-white rounded-2xl overflow-hidden shadow-lg shadow-slate-200/50 border ${testimonial.featured ? 'border-primary/30' : 'border-slate-100'} transition-all duration-500 hover:shadow-2xl hover:shadow-slate-200/70 hover:-translate-y-2`}>
-                      <div className="p-6">
-                        {/* Client Info Header */}
-                        <div className="flex items-start gap-4 mb-4">
-                          <div className="relative shrink-0">
-                            <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100">
-                              <Image
-                                src={testimonial.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=random`}
-                                alt={testimonial.name}
-                                width={48}
-                                height={48}
-                                className="object-cover"
-                              />
-                            </div>
-                            {testimonial.featured && (
-                              <StarSolidIcon className="absolute -top-1 -right-1 h-4 w-4 text-amber-500" />
-                            )}
-                          </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-slate-800 truncate">{testimonial.name}</h3>
-                            <div className="flex items-center gap-2 text-slate-600 text-sm mt-1">
-                              {testimonial.position && (
-                                <span className="font-medium truncate">{testimonial.position}</span>
-                              )}
-                              {testimonial.company && (
-                                <>
-                                  <span className="text-slate-400">•</span>
-                                  <span className="truncate">{testimonial.company}</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Rating */}
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-2">
-                            {renderStars(testimonial.rating)}
-                            <span className="text-sm font-bold text-slate-700">
-                              {testimonial.rating}.0
-                            </span>
-                          </div>
-                          <span className="text-xs text-slate-500">
+                  <div
+                    key={testimonial.id}
+                    className="h-full bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow duration-300 flex flex-col"
+                  >
+                    <div className="text-black rounded-2xl w-14 h-14 mb-5 bg-primary flex items-center justify-center">
+                      <ChatBubbleLeftRightIcon className="h-7 w-7 text-white" />
+                    </div>
+
+                    <p className="text-slate-700 italic text-lg leading-relaxed mb-8 flex-1">
+                      "{testimonial.message}"
+                    </p>
+
+                    <div className="flex items-center gap-4 pt-6 border-t border-slate-100">
+                      <div className="relative shrink-0">
+                        <Image
+                          src={testimonial.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=random`}
+                          alt={testimonial.name}
+                          width={56}
+                          height={56}
+                          className="w-14 h-14 rounded-full object-cover"
+                        />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-slate-900 text-lg leading-tight truncate">
+                          {testimonial.name}
+                        </h4>
+                        <p className="text-primary font-medium text-xs uppercase tracking-wide mt-1 truncate">
+                          {testimonial.position || testimonial.company || 'Client'}
+                        </p>
+                        <div className="flex items-center justify-between mt-2 gap-2">
+                          {renderStars(testimonial.rating)}
+                          <span className="text-xs text-slate-500 whitespace-nowrap">
                             {formatTimestamp(testimonial.createdAt)}
                           </span>
-                        </div>
-                        
-                        {/* Message */}
-                        <div className="mb-4">
-                          <p className="text-slate-700 text-sm leading-relaxed line-clamp-4">
-                            "{testimonial.message}"
-                          </p>
-                        </div>
-                        
-                        {/* Verification Badge */}
-                        <div className="pt-4 border-t border-slate-100">
-                          <div className="flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-2 text-slate-500">
-                              <CheckBadgeIcon className="h-3 w-3 text-[#FFC636]" />
-                              <span>Verified</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-slate-400">
-                              <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M13 7H7v6h6V7z" />
-                                <path fillRule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z" clipRule="evenodd" />
-                              </svg>
-                  
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>

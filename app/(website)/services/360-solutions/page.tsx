@@ -107,17 +107,17 @@ export default function Solutions360Page() {
       {/* Premium Hero Section */}
       <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
         {/* Golden gradient background */}
-        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-amber-900/20 via-transparent to-amber-800/10 -z-10"></div>
-        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-50 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[#8A6508]/20 via-transparent to-[#5C4204]/10 -z-10"></div>
+        <div className="absolute top-20 right-0 w-96 h-96 bg-[#8A6508] rounded-full blur-3xl -z-10"></div>
         
         <div className="container-custom mx-auto">
-          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-full mb-8 text-amber-700 hover:bg-amber-100 transition-all">
+          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-[#F8F1E0] border border-[#8A6508]/30 rounded-full mb-8 text-[#5C4204] hover:bg-[#EEDDB3] transition-all">
             <ArrowRightIcon className="h-4 w-4 rotate-180" />
             Back to Services
           </Link>
           
           <h1 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
-            360 <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Solutions</span>
+            360 <span className="bg-linear-to-r from-[#8A6508] to-[#8A6508] bg-clip-text text-transparent">Solutions</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl">
             Fully integrated real estate development services from concept to completion with strategic insights and expert execution.
@@ -131,7 +131,7 @@ export default function Solutions360Page() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
             <h2 className="text-4xl font-black text-gray-900 mb-6">
-              Comprehensive Development <span className="text-amber-400">Expertise</span>
+              Comprehensive Development <span className="text-[#8A6508]">Expertise</span>
             </h2>
             <p className="text-gray-600 text-lg leading-relaxed mb-6">
               Our 360 Solutions division delivers a fully integrated approach to real estate development, designed to maximize the potential of every project from concept to completion.
@@ -141,7 +141,7 @@ export default function Solutions360Page() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#8A6508] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8A6508]/30 transition-all"
             >
               Start Your Project
               <ArrowRightIcon className="h-5 w-5" />
@@ -162,7 +162,7 @@ export default function Solutions360Page() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Our Integrated <span className="text-amber-400">Services</span>
+              Our Integrated <span className="text-[#8A6508]">Services</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               A comprehensive suite of services covering every aspect of real estate development planning and analysis
@@ -174,7 +174,7 @@ export default function Solutions360Page() {
               const Icon = item.icon
               return (
                 <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-8 hover:border-gray-300 transition-all duration-300">
-                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-[#8A6508] to-[#8A6508] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-3">{item.title}</h3>
@@ -189,7 +189,7 @@ export default function Solutions360Page() {
         {/* Philosophy Section */}
         <div className="bg-white border border-gray-200 rounded-3xl p-12 md:p-16 mb-24">
           <h2 className="text-3xl font-black text-gray-900 mb-8">
-            Our <span className="text-amber-400">Approach</span>
+            Our <span className="text-[#8A6508]">Approach</span>
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed mb-8">
             By integrating market intelligence, financial expertise, and practical execution, 360 Solutions helps stakeholders make confident, data-driven decisions and deliver projects that stand out in Dubai's competitive real estate landscape.
@@ -197,17 +197,17 @@ export default function Solutions360Page() {
           
           <div className="grid md:grid-cols-3 gap-6 mt-8">
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <StarIcon className="h-8 w-8 text-amber-400 mb-3" />
+              <StarIcon className="h-8 w-8 text-[#8A6508] mb-3" />
               <div className="text-2xl font-black text-gray-900 mb-2">Strategic</div>
               <p className="text-gray-600">Market-focused development planning</p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <ChartBarIcon className="h-8 w-8 text-amber-400 mb-3" />
+              <ChartBarIcon className="h-8 w-8 text-[#8A6508] mb-3" />
               <div className="text-2xl font-black text-gray-900 mb-2">Financial</div>
               <p className="text-gray-600">Comprehensive ROI modeling</p>
             </div>
             <div className="bg-white rounded-xl p-6 border border-gray-200">
-              <Cog8ToothIcon className="h-8 w-8 text-amber-400 mb-3" />
+              <Cog8ToothIcon className="h-8 w-8 text-[#8A6508] mb-3" />
               <div className="text-2xl font-black text-gray-900 mb-2">Operational</div>
               <p className="text-gray-600">Structured implementation support</p>
             </div>
@@ -218,7 +218,7 @@ export default function Solutions360Page() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Our <span className="text-amber-400">Process</span>
+              Our <span className="text-[#8A6508]">Process</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               A systematic methodology ensuring comprehensive analysis and actionable recommendations
@@ -229,7 +229,7 @@ export default function Solutions360Page() {
             {processSteps.map((step, idx) => (
               <div key={idx} className="flex gap-8 items-start">
                 <div className="shrink-0">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-amber-400 to-[#FFC636] text-slate-900 font-black text-xl">
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-[#8A6508] to-[#8A6508] text-white font-black text-xl">
                     {step.number}
                   </div>
                 </div>
@@ -246,14 +246,14 @@ export default function Solutions360Page() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Why Choose Ragdol <span className="text-amber-400">360 Solutions?</span>
+              Why Choose Ragdol <span className="text-[#8A6508]">360 Solutions?</span>
             </h2>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {benefits.map((benefit, idx) => (
               <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-8 hover:border-gray-300 transition-all duration-300">
-                <CheckCircleIcon className="h-8 w-8 text-amber-400 mb-4 group-hover:scale-110 transition-transform" />
+                <CheckCircleIcon className="h-8 w-8 text-[#8A6508] mb-4 group-hover:scale-110 transition-transform" />
                 <h3 className="text-lg font-bold text-gray-900 mb-3">{benefit.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{benefit.description}</p>
               </div>
@@ -265,7 +265,7 @@ export default function Solutions360Page() {
         <div className="mb-24">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-black text-gray-900 mb-4">
-              Project <span className="text-amber-400">Gallery</span>
+              Project <span className="text-[#8A6508]">Gallery</span>
             </h2>
             <p className="text-gray-600">Discover successful developments we've analyzed and strategized</p>
           </div>
@@ -285,7 +285,7 @@ export default function Solutions360Page() {
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-slate-900/95 via-slate-900/40 to-transparent group-hover:from-slate-900/98 transition-all duration-300 flex flex-col justify-end p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{project.title}</h3>
-                  <p className="text-amber-700 font-semibold text-sm">{project.desc}</p>
+                  <p className="text-[#8A6508] font-semibold text-sm">{project.desc}</p>
                 </div>
               </div>
             ))}
@@ -294,19 +294,19 @@ export default function Solutions360Page() {
 
         {/* CTA Section */}
         <div className="relative overflow-hidden rounded-3xl p-12 md:p-20 bg-gray-50 border border-gray-200">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-50 rounded-full blur-3xl -z-10"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#FFC636]/5 rounded-full blur-3xl -z-10"></div>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#8A6508] rounded-full blur-3xl -z-10"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#8A6508]/5 rounded-full blur-3xl -z-10"></div>
           
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-6">
-              Ready to Maximize Your <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Development Potential?</span>
+              Ready to Maximize Your <span className="bg-linear-to-r from-[#8A6508] to-[#8A6508] bg-clip-text text-transparent">Development Potential?</span>
             </h2>
             <p className="text-gray-600 text-lg mb-8">
               Let our 360 Solutions experts analyze your project and create a winning development strategy.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all group"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#8A6508] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8A6508]/30 transition-all group"
             >
               Request Consultation
               <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-2 transition-transform" />

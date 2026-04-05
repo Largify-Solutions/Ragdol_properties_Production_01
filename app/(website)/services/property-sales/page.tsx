@@ -85,17 +85,17 @@ export default function PropertySalesPage() {
       {/* Premium Hero Section */}
       <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
         {/* Golden gradient background */}
-        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-amber-900/20 via-transparent to-amber-800/10 -z-10"></div>
-        <div className="absolute top-20 right-0 w-96 h-96 bg-amber-50 rounded-full blur-3xl -z-10"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[#8A6508]/20 via-transparent to-[#5C4204]/10 -z-10"></div>
+        <div className="absolute top-20 right-0 w-96 h-96 bg-[#8A6508] rounded-full blur-3xl -z-10"></div>
         
         <div className="container-custom mx-auto">
-          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-full mb-8 text-amber-700 hover:bg-amber-100 transition-all">
+          <Link href="/services" className="inline-flex items-center gap-2 px-4 py-2 bg-[#F8F1E0] border border-[#8A6508]/30 rounded-full mb-8 text-[#5C4204] hover:bg-[#EEDDB3] transition-all">
             <ArrowRightIcon className="h-4 w-4 rotate-180" />
             Back to Services
           </Link>
           
           <h1 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
-            Property Sales <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Services</span>
+            Property Sales <span className="bg-linear-to-r from-[#8A6508] to-[#8A6508] bg-clip-text text-transparent">Services</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl">
             Expert off-plan sales management for developers—delivered with precision and professionalism.
@@ -109,7 +109,7 @@ export default function PropertySalesPage() {
         <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
           <div>
             <h2 className="text-4xl font-black text-gray-900 mb-6">
-              Seamless Property Sales <span className="text-amber-400">Excellence</span>
+              Seamless Property Sales <span className="text-[#8A6508]">Excellence</span>
             </h2>
             <p className="text-gray-600 text-lg leading-relaxed mb-6">
               At Ragdol Properties, we specialize in managing off-plan property sales for developers—and when we say "delivered," we mean it. Our mission is to facilitate seamless property sales while ensuring our clients achieve maximum returns on their investments.
@@ -119,7 +119,7 @@ export default function PropertySalesPage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#8A6508] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8A6508]/30 transition-all"
             >
               Get Started Today
               <ArrowRightIcon className="h-5 w-5" />
@@ -140,7 +140,7 @@ export default function PropertySalesPage() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              What We <span className="text-amber-400">Deliver</span>
+              What We <span className="text-[#8A6508]">Deliver</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               Our comprehensive approach ensures every aspect of your sales success
@@ -152,7 +152,7 @@ export default function PropertySalesPage() {
               const Icon = item.icon
               return (
                 <div key={idx} className="group bg-white border border-gray-200 rounded-2xl p-8 hover:border-gray-300 transition-all duration-300">
-                  <div className="w-12 h-12 bg-linear-to-br from-amber-400 to-[#FFC636] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-linear-to-br from-[#8A6508] to-[#8A6508] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-white" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-3">{item.title}</h3>
@@ -167,7 +167,7 @@ export default function PropertySalesPage() {
         <div className="mb-24">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-gray-900 mb-4">
-              Our <span className="text-amber-400">Process</span>
+              Our <span className="text-[#8A6508]">Process</span>
             </h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
               A proven methodology refined over nearly two decades in Dubai's real estate market
@@ -178,7 +178,7 @@ export default function PropertySalesPage() {
             {processSteps.map((step, idx) => (
               <div key={idx} className="flex gap-8 items-start">
                 <div className="shrink-0">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-amber-400 to-[#FFC636] text-slate-900 font-black text-xl">
+                  <div className="flex items-center justify-center h-16 w-16 rounded-full bg-linear-to-br from-[#8A6508] to-[#8A6508] text-white font-black text-xl">
                     {step.number}
                   </div>
                 </div>
@@ -195,7 +195,7 @@ export default function PropertySalesPage() {
         <div className="mb-24">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-black text-gray-900 mb-4">
-              Featured <span className="text-amber-400">Projects</span>
+              Featured <span className="text-[#8A6508]">Projects</span>
             </h2>
             <p className="text-gray-600">Successful developments we've brought to market</p>
           </div>
@@ -238,7 +238,7 @@ export default function PropertySalesPage() {
         <div className="bg-white border border-gray-200 rounded-3xl p-12 md:p-16 mb-24">
           <div className="max-w-3xl">
             <h2 className="text-3xl font-black text-gray-900 mb-8">
-              Our <span className="text-amber-400">Philosophy</span>
+              Our <span className="text-[#8A6508]">Philosophy</span>
             </h2>
             <p className="text-gray-600 text-lg leading-relaxed mb-6">
               We don't just sell properties—we build legacies. This is what drives every decision we make and every strategy we execute.
@@ -251,18 +251,18 @@ export default function PropertySalesPage() {
 
         {/* CTA Section */}
         <div className="relative overflow-hidden rounded-3xl p-12 md:p-20 bg-gray-50 border border-gray-200">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-50 rounded-full blur-3xl -z-10"></div>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#8A6508] rounded-full blur-3xl -z-10"></div>
           
           <div className="relative z-10 max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-6">
-              Ready to Maximize Your <span className="bg-linear-to-r from-amber-300 to-[#FFC636] bg-clip-text text-transparent">Sales Potential?</span>
+              Ready to Maximize Your <span className="bg-linear-to-r from-[#8A6508] to-[#8A6508] bg-clip-text text-transparent">Sales Potential?</span>
             </h2>
             <p className="text-gray-600 text-lg mb-8">
               Let Ragdol Properties manage your off-plan sales with expertise and precision.
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-amber-400 to-[#FFC636] text-slate-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all group"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-linear-to-r from-[#8A6508] to-[#8A6508] text-white font-bold rounded-xl hover:shadow-lg hover:shadow-[#8A6508]/30 transition-all group"
             >
               Schedule Consultation
               <ArrowRightIcon className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
