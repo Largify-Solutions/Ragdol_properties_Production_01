@@ -857,7 +857,6 @@ export default function AgentListClient() {
             </div>
           </div>
         </section>
-      </div>
 
       {/* ✅ FIXED: Agent Details Modal - Full Face Image */}
       {showModal && selectedAgent && (
