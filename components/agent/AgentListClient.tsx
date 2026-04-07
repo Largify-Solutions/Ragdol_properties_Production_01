@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import AgentSlider from '@/components/agent/AgentSlider'
+import dynamic from 'next/dynamic'
+import { useState, useEffect, useCallback } from 'react'
 import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
 import { 
   StarIcon as StarSolid, 
@@ -27,8 +27,19 @@ import {
 } from '@heroicons/react/24/outline'
 // Supabase imports
 import { supabase } from '@/lib/supabase-browser'
-import Head from 'next/head'
 import AgentProperties from '@/components/AgentProperties'
+
+const RealtimePropertiesMap = dynamic(
+  () => import('@/components/map/RealtimePropertiesMap'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[480px] rounded-2xl border border-slate-200 bg-white flex items-center justify-center">
+        <p className="text-slate-500 text-sm">Loading property map...</p>
+      </div>
+    ),
+  }
+)
 
 
 // Property interface definition
@@ -41,6 +52,18 @@ interface Property {
   location?: string
   agent_id: string
   property_type?: string
+}
+
+interface PropertyMapPoint {
+  id: string
+  title: string
+  price: number
+  status: string
+  type: string
+  location: string
+  lat: number
+  lng: number
+  updated_at: string
 }
 
 // Agent type definition
@@ -256,6 +279,106 @@ async function fetchRealAgents(): Promise<Agent[]> {
   }
 }
 
+const DUBAI_FALLBACK_COORDS: Record<string, { lat: number; lng: number }> = {
+  downtown: { lat: 25.1972, lng: 55.2744 },
+  'dubai marina': { lat: 25.0773, lng: 55.1336 },
+  'business bay': { lat: 25.1867, lng: 55.2647 },
+  'palm jumeirah': { lat: 25.1124, lng: 55.139 },
+  jvc: { lat: 25.0565, lng: 55.2102 },
+  jumeirah: { lat: 25.2146, lng: 55.2431 },
+  'dubai hills': { lat: 25.1048, lng: 55.2445 },
+  mirdif: { lat: 25.2201, lng: 55.4202 },
+  'al barsha': { lat: 25.1134, lng: 55.2 },
+  deira: { lat: 25.2697, lng: 55.3095 },
+}
+
+const isValidCoordinate = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value)
+
+function getCoordsFromProperty(
+  coords: unknown,
+  location?: string | null,
+  area?: string | null,
+  city?: string | null
+): { lat: number; lng: number } | null {
+  if (coords && typeof coords === 'object') {
+    const candidate = coords as {
+      lat?: unknown
+      lng?: unknown
+      latitude?: unknown
+      longitude?: unknown
+    }
+
+    const lat =
+      typeof candidate.lat === 'string'
+        ? Number(candidate.lat)
+        : typeof candidate.latitude === 'string'
+          ? Number(candidate.latitude)
+          : (candidate.lat ?? candidate.latitude)
+
+    const lng =
+      typeof candidate.lng === 'string'
+        ? Number(candidate.lng)
+        : typeof candidate.longitude === 'string'
+          ? Number(candidate.longitude)
+          : (candidate.lng ?? candidate.longitude)
+
+    if (isValidCoordinate(lat) && isValidCoordinate(lng)) {
+      return { lat, lng }
+    }
+  }
+
+  const lookupText = [location, area, city]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+
+  if (lookupText) {
+    for (const [key, value] of Object.entries(DUBAI_FALLBACK_COORDS)) {
+      if (lookupText.includes(key)) {
+        return value
+      }
+    }
+  }
+
+  return null
+}
+
+async function fetchRealtimePropertiesMapData(): Promise<PropertyMapPoint[]> {
+  try {
+    const { data, error } = await supabase
+      .from('properties')
+      .select('id,title,price,status,type,location,area,city,coords,updated_at,published')
+      .eq('published', true)
+      .limit(300)
+
+    if (error) throw error
+
+    return (data || [])
+      .map((item) => {
+        const parsedCoords = getCoordsFromProperty(item.coords, item.location, item.area, item.city)
+        if (!parsedCoords) return null
+
+        return {
+          id: item.id,
+          title: item.title || 'Property',
+          price: item.price || 0,
+          status: item.status || 'sale',
+          type: item.type || 'Residential',
+          location: item.location || item.area || item.city || 'Dubai',
+          lat: parsedCoords.lat,
+          lng: parsedCoords.lng,
+          updated_at: item.updated_at || new Date().toISOString(),
+        } satisfies PropertyMapPoint
+      })
+      .filter((item): item is PropertyMapPoint => item !== null)
+      .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+  } catch (error) {
+    console.error('Error fetching realtime map properties:', error)
+    return []
+  }
+}
+
 export default function AgentListClient() {
   const [agents, setAgents] = useState<Agent[]>([])
   const [filter, setFilter] = useState('all')
@@ -265,6 +388,8 @@ export default function AgentListClient() {
   const [showModal, setShowModal] = useState(false)
   const [showPropertiesModal, setShowPropertiesModal] = useState(false)
   const [selectedAgentForProperties, setSelectedAgentForProperties] = useState<Agent | null>(null)
+  const [mapProperties, setMapProperties] = useState<PropertyMapPoint[]>([])
+  const [mapLoading, setMapLoading] = useState(true)
 
   // Supabase se agents fetch karo (with loading spinner — for initial mount)
   const loadAgents = useCallback(async () => {
@@ -289,13 +414,27 @@ export default function AgentListClient() {
     }
   }, [])
 
+  const loadMapProperties = useCallback(async (withSpinner = false) => {
+    if (withSpinner) setMapLoading(true)
+    try {
+      const properties = await fetchRealtimePropertiesMapData()
+      setMapProperties(properties)
+    } catch (error) {
+      console.error('Failed to load properties map data:', error)
+    } finally {
+      if (withSpinner) setMapLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     loadAgents()
-  }, [loadAgents])
+    loadMapProperties(true)
+  }, [loadAgents, loadMapProperties])
 
-  // Real-time: silently refresh when agents table changes
+  // Real-time: silently refresh when agents/properties tables change
   useRealtimeMulti([
-    { table: 'agents', onChange: () => { refreshAgents() } }
+    { table: 'agents', onChange: () => { refreshAgents() } },
+    { table: 'properties', onChange: () => { loadMapProperties(false) } }
   ])
 
   // Filter and search agents
@@ -306,17 +445,6 @@ export default function AgentListClient() {
       (agent.specializations || []).some((s) => s.toLowerCase().includes(filter.toLowerCase()))
     return matchesSearch && matchesFilter
   })
-
-  const topAgents = useMemo(() => {
-    if (agents.length === 0) return []
-    return [...agents]
-      .sort((a, b) => {
-        const ratingDelta = (b.rating || 0) - (a.rating || 0)
-        if (ratingDelta !== 0) return ratingDelta
-        return (b.experience_years || 0) - (a.experience_years || 0)
-      })
-      .slice(0, 4)
-  }, [agents])
 
   // Helper function to get initials
   const getInitials = (name: string): string => {
@@ -437,29 +565,58 @@ export default function AgentListClient() {
 
   return (
     <div className="w-full min-h-screen bg-slate-50/50">
-      {/* Top Agents */}
-      {topAgents.length > 0 && (
-        <section className="py-16 bg-white" id="top-agents">
-          <div className="container-custom">
-            <div className="text-center mb-8">
-              <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
-                EXPERT PROFESSIONALS
-              </h2>
-              <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight">
-                Meet Our Top Agents
-              </h3>
-            </div>
-
-            <AgentSlider agents={topAgents} showCount={4} />
-
-            <div className="text-center mt-6">
-              <a href="#all-agents" className="btn-outline">
-                View All Agents
-              </a>
-            </div>
+      <section className="py-16 bg-slate-50 border-y border-slate-200" id="realtime-properties-map">
+        <div className="container-custom">
+          <div className="text-center mb-8">
+            <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
+              LIVE PROPERTY TRACKER
+            </h2>
+            <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight">
+              Real-Time Properties Map
+            </h3>
+            <p className="text-slate-600 mt-4 max-w-3xl mx-auto">
+              This map updates automatically when new properties are published or edited.
+            </p>
           </div>
-        </section>
-      )}
+
+          {mapLoading ? (
+            <div className="h-[480px] rounded-2xl border border-slate-200 bg-white flex items-center justify-center">
+              <p className="text-slate-500 text-sm">Loading property map...</p>
+            </div>
+          ) : mapProperties.length > 0 ? (
+            <RealtimePropertiesMap properties={mapProperties} />
+          ) : (
+            <div className="h-60 rounded-2xl border border-dashed border-slate-300 bg-white flex items-center justify-center">
+              <p className="text-slate-500 text-sm">No published properties with map coordinates found yet.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="py-16 bg-white border-b border-slate-200" id="dubai-projects-map-embed">
+        <div className="container-custom">
+          <div className="text-center mb-8">
+            <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
+              DUBAI PROJECTS MAP
+            </h2>
+            <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight">
+              Same Map Experience
+            </h3>
+            <p className="text-slate-600 mt-4 max-w-3xl mx-auto">
+              Embedded from the Dubai Projects Map page for a consistent experience across both pages.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <iframe
+              src="/trends/dubai-projects-map"
+              title="Dubai Projects Map"
+              className="w-full h-[900px] bg-white"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
 
         {/* Search & Filter Header */}
         <section className="relative pt-20 pb-20 bg-secondary overflow-hidden">

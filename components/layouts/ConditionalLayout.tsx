@@ -12,9 +12,15 @@ interface ConditionalLayoutProps {
 
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathname = usePathname()
-  const isAgentPortal = pathname?.startsWith('/agent')
-  const isAdminPortal = pathname?.startsWith('/admin')
-  const isCustomerPortal = pathname?.startsWith('/customer')
+
+  const isPortalRoute = (basePath: string) => {
+    if (!pathname) return false
+    return pathname === basePath || pathname.startsWith(`${basePath}/`)
+  }
+
+  const isAgentPortal = isPortalRoute('/agent')
+  const isAdminPortal = isPortalRoute('/admin')
+  const isCustomerPortal = isPortalRoute('/customer')
 
   const isPortal = isAgentPortal || isAdminPortal || isCustomerPortal
 

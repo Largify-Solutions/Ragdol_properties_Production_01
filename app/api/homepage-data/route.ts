@@ -75,8 +75,7 @@ export async function GET() {
         .from('testimonials')
         .select('id,name,role,company,content,avatar_url,rating,created_at')
         .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(3),
+        .order('created_at', { ascending: false }),
 
       // 8. Blog posts
       supabase

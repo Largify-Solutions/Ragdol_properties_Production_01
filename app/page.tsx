@@ -18,6 +18,8 @@ import {
   NewspaperIcon,
   StarIcon,
   ArrowRightIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolidIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
@@ -808,7 +810,7 @@ async function fetchTestimonials() {
           t.avatar_url ||
           `https://ui-avatars.com/api/?name=${encodeURIComponent(
             t.name || "Client"
-          )}&background=random`,
+          )}&background=996515&color=ffffff&bold=true`,
         rating: t.rating || 5,
         createdAt: t.created_at || new Date(),
       }));
@@ -1103,6 +1105,8 @@ export default function HomePage() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [testimonialSlideIndex, setTestimonialSlideIndex] = useState(0);
+  const [testimonialsPerView, setTestimonialsPerView] = useState(3);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -1191,7 +1195,7 @@ export default function HomePage() {
         name: t.name || "Anonymous",
         role: t.role || t.company || "Client",
         content: t.content || "Great service!",
-        avatar: t.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || "Client")}&background=random`,
+        avatar: t.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || "Client")}&background=996515&color=ffffff&bold=true`,
         rating: t.rating || 5,
         createdAt: t.created_at || new Date(),
       })))
@@ -1263,6 +1267,55 @@ export default function HomePage() {
       }
     });
   }, [videoStates]);
+
+  useEffect(() => {
+    const setResponsiveTestimonials = () => {
+      if (window.innerWidth < 640) {
+        setTestimonialsPerView(1)
+      } else if (window.innerWidth < 1024) {
+        setTestimonialsPerView(2)
+      } else if (window.innerWidth < 1280) {
+        setTestimonialsPerView(3)
+      } else if (window.innerWidth < 1536) {
+        setTestimonialsPerView(4)
+      } else {
+        setTestimonialsPerView(5)
+      }
+    }
+
+    setResponsiveTestimonials()
+    window.addEventListener('resize', setResponsiveTestimonials)
+
+    return () => window.removeEventListener('resize', setResponsiveTestimonials)
+  }, [])
+
+  const maxTestimonialIndex = Math.max(0, testimonials.length - testimonialsPerView)
+
+  useEffect(() => {
+    if (testimonialSlideIndex > maxTestimonialIndex) {
+      setTestimonialSlideIndex(maxTestimonialIndex)
+    }
+  }, [maxTestimonialIndex, testimonialSlideIndex])
+
+  const handlePrevTestimonials = () => {
+    setTestimonialSlideIndex((prev) => Math.max(0, prev - 1))
+  }
+
+  const handleNextTestimonials = () => {
+    setTestimonialSlideIndex((prev) => Math.min(maxTestimonialIndex, prev + 1))
+  }
+
+  useEffect(() => {
+    if (testimonials.length <= testimonialsPerView) return
+
+    const interval = setInterval(() => {
+      setTestimonialSlideIndex((prev) =>
+        prev >= maxTestimonialIndex ? 0 : prev + 1
+      )
+    }, 3500)
+
+    return () => clearInterval(interval)
+  }, [testimonials.length, testimonialsPerView, maxTestimonialIndex])
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -1868,7 +1921,7 @@ export default function HomePage() {
         <div className="container-custom">
           <div className="text-center mb-16">
             {/* HEADING - Screenshot ke hisaab se */}
-            <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
+            <h2 className="text-[#8B6914] font-bold tracking-[0.2em] uppercase text-sm mb-4">
               CLIENT STORIES
             </h2>
             <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight">
@@ -1876,22 +1929,45 @@ export default function HomePage() {
             </h3>
             {/* Link button agar existing code mein hai to rakho */}
             {testimonials.length > 0 && (
-              <Link href="/clients" className="btn-outline mt-6">
+              <Link href="/clients" className="inline-flex items-center justify-center mt-6 border-2 border-[#8B6914] text-[#8B6914] font-semibold px-6 py-3 rounded-2xl hover:bg-[#8B6914] hover:text-white transition-colors">
                 View All Clients
               </Link>
             )}
           </div>
 
-          {/* Grid layout - same functionality */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="flex items-center justify-end gap-2 mb-6">
+            <button
+              onClick={handlePrevTestimonials}
+              disabled={testimonialSlideIndex === 0}
+              className="h-10 w-10 rounded-full border border-[#8B6914]/40 text-[#8B6914] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#8B6914] hover:text-white transition-colors"
+            >
+              <ChevronLeftIcon className="h-5 w-5" />
+            </button>
+            <button
+              onClick={handleNextTestimonials}
+              disabled={testimonialSlideIndex >= maxTestimonialIndex}
+              className="h-10 w-10 rounded-full border border-[#8B6914]/40 text-[#8B6914] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#8B6914] hover:text-white transition-colors"
+            >
+              <ChevronRightIcon className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Slider layout - shows all testimonials via navigation */}
+          <div className="overflow-hidden">
+            <div
+              className="flex transition-transform duration-500 ease-out"
+              style={{ transform: `translateX(-${(testimonialSlideIndex * 100) / testimonialsPerView}%)` }}
+            >
             {testimonials.length > 0 ? (
-              testimonials.slice(0, 5).map((testimonial, index) => (
+              testimonials.map((testimonial, index) => (
                 <div
                   key={testimonial.id || index}
-                  className="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow duration-300"
+                  className="shrink-0 px-3"
+                  style={{ width: `${100 / testimonialsPerView}%` }}
                 >
+                  <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow duration-300 h-full">
                   {/* QUOTE SYMBOL - Screenshot style */}
-                  <div className="text-black rounded-2xl w-14 h-14 mb-4 bg-primary -mt-13 flex items-center justify-center">
+                  <div className="text-black rounded-2xl w-14 h-14 mb-4 bg-[#8B6914] -mt-13 flex items-center justify-center">
                     <ChatBubbleLeftRightIcon className="h-8 w-8 text-white" />
                   </div>
 
@@ -1911,7 +1987,7 @@ export default function HomePage() {
                         onError={(e) => {
                           e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
                             testimonial.name
-                          )}&background=random&bold=true`;
+                          )}&background=996515&color=ffffff&bold=true`;
                         }}
                       />
                     </div>
@@ -1921,7 +1997,7 @@ export default function HomePage() {
                       <h4 className="font-bold text-slate-900 text-lg">
                         {testimonial.name}
                       </h4>
-                      <p className="text-primary font-medium text-sm uppercase tracking-wide mt-1">
+                      <p className="text-[#8B6914] font-medium text-sm uppercase tracking-wide mt-1">
                         {testimonial.role}
                       </p>
 
@@ -1933,7 +2009,7 @@ export default function HomePage() {
                               key={i}
                               className={`h-4 w-4 ${
                                 i < testimonial.rating
-                                  ? "text-[#FFC636]"
+                                  ? "text-[#8B6914]"
                                   : "text-slate-300"
                               }`}
                             />
@@ -1942,13 +2018,15 @@ export default function HomePage() {
                       )}
                     </div>
                   </div>
+                  </div>
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-12">
+              <div className="w-full text-center py-12">
                 <p className="text-slate-400">No testimonials available at the moment</p>
               </div>
             )}
+            </div>
           </div>
         </div>
       </section>
