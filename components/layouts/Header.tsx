@@ -618,7 +618,7 @@ export default function Header() {
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg font-bold text-xs transition-all bg-primary text-white hover:bg-primary/90 hover:shadow-lg shadow-md active:scale-95"
             title="Get property valuation"
           >
-            <CalculatorIcon className="h-4 w-4" />
+            <CalculatorIcon className="h-5 w-5" />
             <span className="hidden sm:inline">Valuation</span>
           </button>
 

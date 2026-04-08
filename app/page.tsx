@@ -1699,6 +1699,101 @@ export default function HomePage() {
       </section>
       )}
 
+      {/* Real Time Agents Section */}
+      <section className="py-24 bg-slate-50">
+        <div className="container-custom">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <h2 className="text-primary font-bold tracking-[0.2em] uppercase text-sm mb-4">
+                Live Team Updates
+              </h2>
+              <h3 className="text-4xl md:text-5xl font-black text-secondary tracking-tight">
+                Real Time <span className="text-primary">Agents</span>
+              </h3>
+              <p className="text-slate-600 mt-4 max-w-2xl text-base">
+                Connect with active specialists and see updated performance snapshots instantly.
+              </p>
+            </div>
+            <Link href="/agents" className="btn-outline">
+              View All Agents
+            </Link>
+          </div>
+
+          {topAgents.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {topAgents.slice(0, 4).map((agent, index) => {
+                const displayName = agent.profiles?.full_name || agent.title || "Property Agent";
+                const avatar =
+                  agent.profile_image ||
+                  agent.profiles?.avatar_url ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=996515&color=ffffff&bold=true`;
+
+                return (
+                  <Link
+                    key={agent.id}
+                    href="/agents"
+                    className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-slide-up"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      <img
+                        src={avatar}
+                        alt={displayName}
+                        className="h-14 w-14 rounded-2xl object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=996515&color=ffffff&bold=true`;
+                        }}
+                      />
+                      <div>
+                        <h4 className="text-lg font-black text-slate-900 group-hover:text-primary transition-colors">
+                          {displayName}
+                        </h4>
+                        <p className="text-xs uppercase tracking-[0.18em] text-slate-500 font-semibold">
+                          {agent.office || "Dubai"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="rounded-xl bg-slate-50 px-3 py-2">
+                        <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500 font-semibold">
+                          Rating
+                        </p>
+                        <p className="text-base font-bold text-slate-900">
+                          {(agent.rating || 0).toFixed(1)}
+                        </p>
+                      </div>
+                      <div className="rounded-xl bg-slate-50 px-3 py-2">
+                        <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500 font-semibold">
+                          Experience
+                        </p>
+                        <p className="text-base font-bold text-slate-900">
+                          {agent.experience_years || 0}+ yrs
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-slate-600 font-medium">
+                        {(agent.review_count || 0).toLocaleString()} reviews
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-primary font-bold">
+                        Explore <ArrowRightIcon className="h-4 w-4" />
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
+              <h4 className="text-xl font-bold text-slate-800 mb-2">No agents available right now</h4>
+              <p className="text-slate-500">Approved agents will appear here in real time.</p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* New Projects Section - MAX 4 */}
   <section className="py-24 bg-white">
   <div className="container-custom">
