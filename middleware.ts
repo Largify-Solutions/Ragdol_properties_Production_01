@@ -34,9 +34,9 @@ export async function middleware(request: NextRequest) {
     pathname === '/customer/signup' ||
     pathname === '/login'
 
-  const isAdminPath = pathname.startsWith('/admin')
-  const isAgentPath = pathname.startsWith('/agent')
-  const isCustomerPath = pathname.startsWith('/customer')
+  const isAdminPath = pathname === '/admin' || pathname.startsWith('/admin/')
+  const isAgentPath = pathname === '/agent' || pathname.startsWith('/agent/')
+  const isCustomerPath = pathname === '/customer' || pathname.startsWith('/customer/')
   const isProtectedPath = (isAdminPath || isAgentPath || isCustomerPath) && !isLoginPage
 
   // Only run auth checks on protected paths
