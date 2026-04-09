@@ -491,11 +491,11 @@ export default function AgentListClient() {
         </section>
 
         {/* Agents Grid */}
-        <section id="all-agents" className="py-20">
+        <section id="all-agents" className="py-14 md:py-16">
           <div className="container-custom">
-            <div className="flex items-center justify-between mb-12">
+            <div className="flex items-center justify-between mb-8 md:mb-10">
               <div>
-                <h2 className="text-2xl font-serif text-secondary">
+                <h2 className="text-xl md:text-2xl font-serif text-secondary">
                   {filtered.length} {filtered.length === 1 ? 'Expert' : 'Experts'} Available
                 </h2>
                 <div className="w-20 h-1 bg-primary mt-2"></div>
@@ -511,7 +511,7 @@ export default function AgentListClient() {
             </div>
 
             {filtered.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4 auto-rows-fr">
                 {filtered.map((agent) => {
                   const profileImage = getProfileImage(agent)
                   const hasImage = profileImage && profileImage !== ''
@@ -520,10 +520,10 @@ export default function AgentListClient() {
                   return (
                     <div
                       key={agent.id}
-                      className="group bg-white rounded-2xl overflow-hidden border border-slate-200 hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+                      className="group flex h-full flex-col bg-white rounded-xl overflow-hidden border border-slate-200 hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:-translate-y-1"
                     >
                       {/* ✅ FIXED: Agent Image - Full Face */}
-                      <div className="relative h-80 overflow-hidden">
+                      <div className="relative w-full aspect-square min-h-[500px] overflow-hidden shrink-0 align-top">
                         {hasImage ? (
                           <img
                             src={profileImage}
@@ -556,13 +556,13 @@ export default function AgentListClient() {
                         <div className="absolute inset-0 bg-linear-to-t from-secondary/80 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
 
                         {/* Experience Badge */}
-                        <div className="absolute top-4 right-4 bg-primary text-secondary text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                        <div className="absolute top-2 right-2 bg-primary text-secondary text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg">
                           {agent.experience_years}+ Years Exp.
                         </div>
 
                         {/* Verification Badge */}
                         {agent.verified && (
-                          <div className="absolute top-4 left-4 bg-[#FFC636] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+                          <div className="absolute top-2 left-2 bg-[#FFC636] text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg flex items-center gap-1">
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                             </svg>
@@ -571,7 +571,7 @@ export default function AgentListClient() {
                         )}
 
                         {/* Quick Actions Overlay */}
-                        <div className="absolute bottom-4 left-0 right-0 px-4 translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
+                        <div className="absolute bottom-2 left-0 right-0 px-2.5 translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
                           <div className="flex gap-2">
                             <a
                               href={`tel:${agent.whatsapp || ''}`}
@@ -594,13 +594,13 @@ export default function AgentListClient() {
                       </div>
 
                       {/* Agent Info */}
-                      <div className="p-6">
-                        <div className="mb-4">
-                          <h3 className="text-xl font-serif text-secondary group-hover:text-primary transition-colors mb-1">
+                      <div className="flex flex-1 flex-col p-3 md:p-4">
+                        <div className="mb-2">
+                          <h3 className="text-base md:text-lg font-serif text-secondary group-hover:text-primary transition-colors mb-1 line-clamp-1">
                             {agent.title}
                           </h3>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm text-slate-500 font-medium">{agent.brokerage}</span>
+                            <span className="text-[11px] md:text-xs text-slate-500 font-medium line-clamp-1">{agent.brokerage}</span>
                             {agent.license_no && (
                               <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
                                 License: {agent.license_no}
@@ -609,131 +609,17 @@ export default function AgentListClient() {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2 mb-4">
-                          <div className="flex gap-0.5">
-                            {[...Array(5)].map((_, i) => (
-                              <StarSolid
-                                key={i}
-                                className={`w-4 h-4 ${i < Math.floor(agent.rating) ? 'text-primary' : 'text-slate-200'}`} />
-                            ))}
-                          </div>
-                          <span className="text-sm font-bold text-secondary">{agent.rating.toFixed(1)}</span>
-                          <span className="text-xs text-slate-400">({agent.review_count} reviews)</span>
-                        </div>
-
-                        {/* Agent Properties Section */}
-                        <div className="mb-6">
-                          <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">
-                            Recent Properties ({agent.properties?.length || 0})
-                          </div>
-                          
-                          {agent.properties && agent.properties.length > 0 ? (
-                            <div className="space-y-2">
-                              {agent.properties.slice(0, 3).map((property) => (
-                                <div 
-                                  key={property.id} 
-                                  className="group cursor-pointer p-2 bg-slate-50 rounded-lg hover:bg-primary/5 transition-colors border border-slate-100"
-                                >
-                                  <div className="flex items-center justify-between">
-                                    <div className="min-w-0 flex-1">
-                                      <div className="flex items-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${
-                                          property.status === 'sale' ? 'bg-[#FFC636]' : 
-                                          property.status === 'rent' ? 'bg-blue-500' : 
-                                          'bg-[#FFC636]'
-                                        }`}></div>
-                                        <span className="text-sm font-medium text-secondary truncate">
-                                          {property.title}
-                                        </span>
-                                      </div>
-                                      <div className="flex items-center gap-3 mt-1">
-                                        <span className="text-xs text-slate-500 capitalize">
-                                          {property.type?.replace('-', ' ')}
-                                        </span>
-                                        <span className="text-xs font-bold text-primary">
-                                          AED {property.price?.toLocaleString() || '0'}
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="ml-2 shrink-0">
-                                      <span className={`text-xs px-2 py-1 rounded-full ${
-                                        property.status === 'sale' 
-                                          ? 'bg-[#FFC636]/15 text-[#FFC636]' 
-                                          : property.status === 'rent'
-                                          ? 'bg-blue-100 text-blue-800'
-                                          : 'bg-[#FFC636]/15 text-[#FFC636]'
-                                      }`}>
-                                        {property.status === 'sale' ? 'Sale' : 
-                                         property.status === 'rent' ? 'Rent' : 
-                                         property.status}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                              
-                              {agent.properties.length > 3 && (
-                                <button
-                                  onClick={() => openAgentProperties(agent)}
-                                  className="w-full text-center text-xs text-primary font-semibold py-2 hover:underline flex items-center justify-center gap-1"
-                                >
-                                  <span>View all {agent.properties.length} properties</span>
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                  </svg>
-                                </button>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="p-3 bg-slate-50 rounded-lg text-center border border-dashed border-slate-200">
-                              <p className="text-xs text-slate-500">
-                                No properties listed yet
-                              </p>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 py-4 border-y border-slate-100 mb-6">
-                          <div>
-                            <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">Experience</div>
-                            <div className="text-lg font-bold text-secondary">{agent.experience_years} years</div>
-                          </div>
-                          <div>
-                            <div className="text-xs text-slate-400 uppercase tracking-wider mb-1">Specialty</div>
-                            <div className="text-sm font-bold text-secondary truncate">
-                              {agent.specializations?.[0] || 'Residential'}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Languages */}
-                        {agent.languages && agent.languages.length > 0 && (
-                          <div className="mb-6">
-                            <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">Languages</div>
-                            <div className="flex flex-wrap gap-2">
-                              {agent.languages.slice(0, 2).map((lang, idx) => (
-                                <span key={idx} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">
-                                  {lang}
-                                </span>
-                              ))}
-                              {agent.languages.length > 2 && (
-                                <span className="text-xs text-slate-500">+{agent.languages.length - 2} more</span>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="space-y-3">
+                        <div className="mt-auto space-y-1.5">
                           <button
                             onClick={() => openAgentModal(agent)}
-                            className="block w-full py-3 bg-secondary text-white text-center font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300"
+                            className="block w-full py-2 bg-secondary text-white text-center text-xs font-bold rounded-lg hover:bg-primary hover:text-secondary transition-all duration-300"
                           >
                             View Full Profile
                           </button>
                           
                           <button
                             onClick={() => openAgentProperties(agent)}
-                            className="block w-full py-2 bg-slate-100 text-secondary text-center font-bold rounded-xl hover:bg-primary hover:text-white transition-all duration-300"
+                            className="block w-full py-1.5 bg-slate-100 text-secondary text-center text-xs font-bold rounded-lg hover:bg-primary hover:text-white transition-all duration-300"
                           >
                             View All Properties
                           </button>
@@ -796,35 +682,10 @@ export default function AgentListClient() {
           </div>
         </section>
 
-        {/* Join Us CTA */}
-        <section className="py-20 bg-secondary relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 -skew-x-12 translate-x-1/2"></div>
-          <div className="container-custom relative z-10">
-            <div className="glass p-12 rounded-3xl border-white/10 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="max-w-2xl">
-                <h2 className="text-3xl md:text-4xl font-serif text-white mb-4">
-                  Are you a <span className="text-primary">Real Estate Professional?</span>
-                </h2>
-                <p className="text-slate-300 text-lg">
-                  Join Dubai's fastest-growing luxury real estate network.
-                  Get access to exclusive listings, premium tools, and a global client base.
-                </p>
-
-              </div>
-              <Link
-                href="/contact"
-                className="px-10 py-4 bg-primary text-secondary font-bold rounded-xl hover:bg-primary-light transition-all whitespace-nowrap"
-              >
-                Join Our Team
-              </Link>
-            </div>
-          </div>
-        </section>
-
-      {/* ✅ FIXED: Agent Details Modal - Full Face Image */}
+      {/* Agent Details Modal - Compact View */}
       {showModal && selectedAgent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm mt-20">
-          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
+          <div className="relative w-full max-w-3xl max-h-[88vh] overflow-y-auto bg-white rounded-2xl shadow-2xl">
             {/* Close Button */}
             <button
               onClick={closeAgentModal}
@@ -835,44 +696,43 @@ export default function AgentListClient() {
 
             {/* Modal Content */}
             <div className="p-0">
-              {/* ✅ FIXED: Header with Full Face Image */}
-              <div className="relative bg-linear-to-r from-primary/20 to-secondary/20">
-                {getProfileImage(selectedAgent) ? (
-                  <img
-                    src={getProfileImage(selectedAgent)}
-                    alt={selectedAgent.title}
-                    className="w-full h-full object-cover object-center "
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/5">
-                    <div className="text-6xl font-bold text-primary opacity-50">
-                      {getInitials(selectedAgent.title)}
-                    </div>
+              {/* Compact header with fixed image size */}
+              <div className="p-5 border-b border-slate-200 bg-slate-50">
+                <div className="flex items-start gap-4">
+                  <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0 border border-slate-200 bg-white">
+                    {getProfileImage(selectedAgent) ? (
+                      <img
+                        src={getProfileImage(selectedAgent)}
+                        alt={selectedAgent.title}
+                        className="w-full h-full object-cover object-center"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/5">
+                        <div className="text-2xl font-bold text-primary opacity-50">
+                          {getInitials(selectedAgent.title)}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
-
-                {/* Agent Title */}
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className="flex flex-col md:flex-row md:items-end justify-between">
-                    <div>
-                      <h2 className="text-3xl md:text-4xl font-serif text-white mb-2">
-                        {selectedAgent.title}
-                      </h2>
-                      <p className="text-white/80 text-lg">{selectedAgent.brokerage}</p>
-                    </div>
-                    <div className="flex items-center gap-3 mt-4 md:mt-0">
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-xl md:text-2xl font-serif text-secondary leading-tight line-clamp-1">
+                      {selectedAgent.title}
+                    </h2>
+                    <p className="text-sm text-slate-600 mt-1 line-clamp-1">{selectedAgent.brokerage}</p>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
                       {selectedAgent.verified && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#FFC636] text-white text-sm font-bold rounded-full">
-                          <CheckBadgeIcon className="w-4 h-4" />
-                          Verified Agent
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#FFC636] text-white text-xs font-bold rounded-full">
+                          <CheckBadgeIcon className="w-3.5 h-3.5" />
+                          Verified
                         </span>
                       )}
-                      <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary text-secondary text-sm font-bold rounded-full">
-                        <BriefcaseIcon className="w-4 h-4" />
-                        {selectedAgent.experience_years}+ Years
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary text-secondary text-xs font-bold rounded-full">
+                        <BriefcaseIcon className="w-3.5 h-3.5" />
+                        {selectedAgent.experience_years}+ years
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-full">
+                        <StarSolid className="w-3.5 h-3.5 text-primary" />
+                        {selectedAgent.rating.toFixed(1)}
                       </span>
                     </div>
                   </div>
@@ -880,12 +740,12 @@ export default function AgentListClient() {
               </div>
 
               {/* Main Content */}
-              <div className="p-6 md:p-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="p-5 md:p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                   {/* Left Column - Contact & Basic Info */}
                   <div className="lg:col-span-1 space-y-6">
                     {/* Contact Information */}
-                    <div className="bg-slate-50 rounded-xl p-6">
+                    <div className="bg-slate-50 rounded-xl p-4">
                       <h3 className="text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                         <PhoneIcon className="w-5 h-5 text-primary" />
                         Contact Information
@@ -987,7 +847,7 @@ export default function AgentListClient() {
                     </div>
 
                     {/* Basic Info */}
-                    <div className="bg-slate-50 rounded-xl p-6">
+                    <div className="bg-slate-50 rounded-xl p-4">
                       <h3 className="text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                         <UserIcon className="w-5 h-5 text-primary" />
                         Basic Information
@@ -1023,7 +883,7 @@ export default function AgentListClient() {
                   {/* Right Column - Detailed Information */}
                   <div className="lg:col-span-2 space-y-8">
                     {/* Rating & Reviews */}
-                    <div className="bg-linear-to-r from-primary/5 to-secondary/5 rounded-xl p-6">
+                    <div className="bg-linear-to-r from-primary/5 to-secondary/5 rounded-xl p-4">
                       <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
                         <div>
                          
@@ -1047,9 +907,9 @@ export default function AgentListClient() {
                     </div>
 
                     {/* Specializations & Areas */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Specializations */}
-                      <div className="bg-white border border-slate-200 rounded-xl p-6">
+                      <div className="bg-white border border-slate-200 rounded-xl p-4">
                         <h3 className="text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                           <BriefcaseIcon className="w-5 h-5 text-primary" />
                           Specializations
@@ -1067,7 +927,7 @@ export default function AgentListClient() {
                       </div>
 
                       {/* Areas */}
-                      <div className="bg-white border border-slate-200 rounded-xl p-6">
+                      <div className="bg-white border border-slate-200 rounded-xl p-4">
                         <h3 className="text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                           <MapPinIcon className="w-5 h-5 text-primary" />
                           Areas Covered
@@ -1086,9 +946,9 @@ export default function AgentListClient() {
                     </div>
 
                     {/* Languages & Certifications */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Languages */}
-                      <div className="bg-white border border-slate-200 rounded-xl p-6">
+                      <div className="bg-white border border-slate-200 rounded-xl p-4">
                         <h3 className="text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                           <LanguageIcon className="w-5 h-5 text-primary" />
                           Languages
@@ -1104,7 +964,7 @@ export default function AgentListClient() {
                       </div>
 
                       {/* Certifications */}
-                      <div className="bg-white border border-slate-200 rounded-xl p-6">
+                      <div className="bg-white border border-slate-200 rounded-xl p-4">
                         <h3 className="text-lg font-bold text-secondary mb-4 flex items-center gap-2">
                           <CheckBadgeIcon className="w-5 h-5 text-primary" />
                           Certifications
@@ -1126,7 +986,7 @@ export default function AgentListClient() {
                     </div>
 
                     {/* Additional Info */}
-                    <div className="bg-slate-50 rounded-xl p-6">
+                    <div className="bg-slate-50 rounded-xl p-4">
                       <h3 className="text-lg font-bold text-secondary mb-4">Additional Information</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>

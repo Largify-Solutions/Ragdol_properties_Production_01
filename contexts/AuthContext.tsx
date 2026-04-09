@@ -72,6 +72,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileType | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // Clean up broken refresh tokens from local storage/session state so
+  // public pages don't keep logging auth refresh errors for logged-out users.
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      const { error } = await supabase.auth.getSession()
+      if (!mounted || !error) return
+
+      if (error.message?.toLowerCase().includes('invalid refresh token')) {
+        await supabase.auth.signOut({ scope: 'local' })
+      }
+    })()
+
+    return () => {
+      mounted = false
+    }
+  }, [])
+
   /* ---------------------------------------------------------------------- */
   /*                    FETCH PROFILE FROM SUPABASE                          */
   /* ---------------------------------------------------------------------- */
