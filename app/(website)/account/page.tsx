@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/lib/supabase-browser'
 import Link from 'next/link'
 import {
   UserCircleIcon,
@@ -14,6 +15,7 @@ import {
   BuildingOfficeIcon,
   KeyIcon,
   PencilSquareIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline'
 
 interface SavedProperty {
@@ -29,7 +31,9 @@ interface SavedProperty {
 export default function AccountPage() {
   const { user, profile, signOut, loading } = useAuth()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'profile' | 'saved' | 'inquiries' | 'applications' | 'settings'>('profile')
+  const [activeTab, setActiveTab] = useState<'profile' | 'saved' | 'inquiries' | 'applications' | 'agents' | 'settings'>('profile')
+  const [topAgents, setTopAgents] = useState<any[]>([])
+  const [loadingAgents, setLoadingAgents] = useState(false)
   const [savedProperties] = useState<SavedProperty[]>([
     // Mock saved properties - in real app, this would come from database
     {
@@ -48,6 +52,48 @@ export default function AccountPage() {
       router.push('/auth/login')
     }
   }, [user, loading, router])
+
+  // Fetch top agents when agents tab is active
+  useEffect(() => {
+    if (activeTab === 'agents' && topAgents.length === 0) {
+      const fetchTopAgents = async () => {
+        try {
+          setLoadingAgents(true)
+          const { data, error } = await supabase
+            .from('agents')
+            .select('*, profiles(*)')
+            .eq('approved', true)
+            .order('rating', { ascending: false })
+            .limit(8)
+
+          if (error) throw error
+
+          if (data) {
+            const agents = data.map((agent: any) => ({
+              id: agent.id,
+              title: agent.title || "Real Estate Agent",
+              profile_image: agent.profile_image || agent.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(agent.title || "Agent")}&background=random`,
+              office: agent.office || "Dubai",
+              rating: agent.rating || 0,
+              review_count: agent.review_count || 0,
+              experience_years: agent.experience_years || 0,
+              verified: agent.verified || false,
+              bio: agent.bio || "Experienced real estate professional",
+              whatsapp: agent.whatsapp || null,
+              email: agent.email || null,
+            }))
+            setTopAgents(agents)
+          }
+        } catch (error) {
+          console.error('Error fetching agents:', error)
+        } finally {
+          setLoadingAgents(false)
+        }
+      }
+      
+      fetchTopAgents()
+    }
+  }, [activeTab, topAgents.length])
 
   const handleSignOut = async () => {
     await signOut()
@@ -166,6 +212,18 @@ export default function AccountPage() {
                 >
                   <KeyIcon className="h-5 w-5" />
                   Applications
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('agents')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
+                    activeTab === 'agents'
+                      ? 'bg-primary/10 text-primary border border-primary/20'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  <UserGroupIcon className="h-5 w-5" />
+                  Find an Agent
                 </button>
 
                 <button
@@ -460,6 +518,93 @@ export default function AccountPage() {
                     Browse Properties
                   </Link>
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'agents' && (
+              <div className="card-custom p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-foreground">Find an Agent</h2>
+                  <Link href="/agents" className="btn-primary flex items-center gap-2">
+                    Browse All Agents
+                  </Link>
+                </div>
+
+                {loadingAgents ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Loading agents...</p>
+                  </div>
+                ) : topAgents.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {topAgents.map((agent) => (
+                      <div key={agent.id} className="group rounded-2xl border border-border bg-white p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                        <div className="mb-4">
+                          <img
+                            src={agent.profile_image}
+                            alt={agent.title}
+                            className="w-full h-48 rounded-xl object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(agent.title || "Agent")}&background=random&size=200`;
+                            }}
+                          />
+                        </div>
+
+                        <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors mb-1">
+                          {agent.title}
+                        </h3>
+                        <p className="text-xs text-muted-foreground mb-3">{agent.office}</p>
+
+                        {agent.verified && (
+                          <div className="inline-flex items-center gap-1 mb-3">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/15 text-primary">
+                              ✓ Verified
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                          <div className="bg-muted p-2 rounded-lg">
+                            <p className="text-[10px] text-muted-foreground font-semibold">RATING</p>
+                            <p className="text-sm font-bold text-foreground">{(agent.rating || 0).toFixed(1)} ⭐</p>
+                          </div>
+                          <div className="bg-muted p-2 rounded-lg">
+                            <p className="text-[10px] text-muted-foreground font-semibold">EXPERIENCE</p>
+                            <p className="text-sm font-bold text-foreground">{agent.experience_years}+ yrs</p>
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-muted-foreground mb-4">
+                          {agent.review_count} reviews • {agent.bio?.substring(0, 40)}...
+                        </p>
+
+                        <div className="flex gap-2">
+                          <Link href={`/agents/${agent.id}`} className="flex-1 btn-primary py-2 text-xs font-bold text-center">
+                            View Profile
+                          </Link>
+                          {agent.whatsapp && (
+                            <a
+                              href={`https://wa.me/${agent.whatsapp.replace(/\D/g, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 btn-outline py-2 text-xs font-bold text-center"
+                            >
+                              WhatsApp
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 bg-muted/50 rounded-lg">
+                    <UserGroupIcon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground mb-4">No agents available at the moment</p>
+                    <Link href="/agents" className="btn-primary">
+                      Browse All Agents
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
 

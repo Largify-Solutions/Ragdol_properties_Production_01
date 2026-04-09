@@ -1731,7 +1731,7 @@ export default function HomePage() {
                 return (
                   <Link
                     key={agent.id}
-                    href="/agents"
+                    href={`/agents/${agent.id}`}
                     className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-slide-up"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >

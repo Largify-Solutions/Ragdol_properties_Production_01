@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Database } from '@/lib/database.types'
+import { createClient } from '@/lib/supabase-server'
 import { 
   StarIcon, 
   PhoneIcon, 
@@ -423,95 +424,68 @@ export default async function AgentDetail({ params }: { params: Promise<{ id: st
   const resolvedParams = await params
   const agentId = resolvedParams.id
 
-  // Use mock data
-  const mockAgent = mockAgents.find(a => a.id === agentId)
-  let agent: AgentWithProfile | null = mockAgent as AgentWithProfile || null
-  let profile: Profile | null = mockAgent?.profiles || null
+  try {
+    // Create Supabase client
+    const supabase = await createClient()
 
-  // Mock properties for this agent
-  const mockProperties = [
-    {
-      id: 'prop-1',
-      title: 'Luxury Penthouse in Downtown Dubai',
-      price: 12500000,
-      priceLabel: 'total',
-      images: ['https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800'],
-      image_url: 'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800',
-      location: 'Downtown Dubai, Dubai',
-      beds: 4,
-      baths: 5,
-      sqft: 4200,
-      type: 'Penthouse',
-      featured: true,
-      currency: 'AED',
-      status: 'sale',
-      area: 'Downtown Dubai',
-      city: 'Dubai',
-      agent_id: agentId,
-      created_at: new Date().toISOString()
-    },
-    {
-      id: 'prop-2',
-      title: 'Modern Villa with Private Beach',
-      price: 8900000,
-      priceLabel: 'total',
-      images: ['https://images.pexels.com/photos/209296/pexels-photo-209296.jpeg?auto=compress&cs=tinysrgb&w=800'],
-      image_url: 'https://images.pexels.com/photos/209296/pexels-photo-209296.jpeg?auto=compress&cs=tinysrgb&w=800',
-      location: 'Palm Jumeirah, Dubai',
-      beds: 5,
-      baths: 6,
-      sqft: 5500,
-      type: 'Villa',
-      featured: true,
-      currency: 'AED',
-      status: 'sale',
-      area: 'Palm Jumeirah',
-      city: 'Dubai',
-      agent_id: agentId,
-      created_at: new Date().toISOString()
-    }
-  ]
+    // Fetch real agent data from Supabase
+    const { data: agentData, error: agentError } = await supabase
+      .from('agents')
+      .select('*, profiles(*)')
+      .eq('id', agentId)
+      .single()
 
-  // Transform properties to include image field for PropertyCard
-  const transformedProperties: PropertyCardProperty[] = mockProperties.map(property => ({
-    ...property,
-    image: (property.images && Array.isArray(property.images) && property.images[0]) 
-      ? property.images[0] 
-      : property.image_url || '/api/placeholder/400/300',
-    location: property.location || undefined,
-    beds: property.beds || undefined,
-    baths: property.baths || undefined,
-    sqft: property.sqft || undefined,
-    type: property.type || undefined,
-    featured: property.featured || false,
-    currency: property.currency || undefined,
-    status: property.status || undefined,
-    area: property.area || undefined,
-    city: property.city || undefined,
-  })) || []
+    // Fetch agent's properties from Supabase
+    const { data: propertiesData, error: propertiesError } = await supabase
+      .from('properties')
+      .select('*')
+      .eq('agent_id', agentId)
+      .eq('published', true)
+      .order('created_at', { ascending: false })
 
-  const propertiesCount = Array.isArray(mockProperties) ? mockProperties.length : 0
-
-  if (agent! && !profile) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <BriefcaseIcon className="w-10 h-10 text-slate-300" />
+    // If agent not found, show error
+    if (agentError || !agentData) {
+      return (
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+          <div className="text-center max-w-md">
+            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <BriefcaseIcon className="w-10 h-10 text-slate-300" />
+            </div>
+            <h2 className="text-3xl font-serif text-secondary mb-4">Agent Not Found</h2>
+            <p className="text-slate-500 mb-8">The agent profile you are looking for might have been moved or is no longer active.</p>
+            <Link href="/agents" className="inline-block px-8 py-3 bg-primary text-secondary font-bold rounded-xl hover:bg-primary-light transition-all">
+              Back to Agents
+            </Link>
           </div>
-          <h2 className="text-3xl font-serif text-secondary mb-4">Agent Not Found</h2>
-          <p className="text-slate-500 mb-8">The agent profile you are looking for might have been moved or is no longer active.</p>
-          <Link href="/agents" className="inline-block px-8 py-3 bg-primary text-secondary font-bold rounded-xl hover:bg-primary-light transition-all">
-            Back to Agents
-          </Link>
         </div>
-      </div>
-    )
-  }
+      )
+    }
 
-  const name = profile?.full_name || 'Agent'
-  const title = agent?.title || 'Real Estate Agent'
-  const image = agent?.profile_image || profile?.avatar_url || '/api/placeholder/400/400'
+    const agent = agentData as any
+    const profile = agentData.profiles as any
+
+    // Transform properties for PropertyCard
+    const transformedProperties: PropertyCardProperty[] = (propertiesData || []).map((property: any) => ({
+      id: property.id,
+      title: property.title || 'Property',
+      price: property.price || 0,
+      image: property.images?.[0] || '/api/placeholder/400/300',
+      location: property.address || `${property.area || ''}, ${property.city || 'Dubai'}`,
+      beds: property.beds || undefined,
+      baths: property.bathrooms || undefined,
+      sqft: property.sqft || undefined,
+      type: property.type || 'Apartment',
+      featured: property.featured || false,
+      currency: property.currency || 'AED',
+      status: property.status || 'sale',
+      area: property.area,
+      city: property.city,
+    })) || []
+
+    const propertiesCount = transformedProperties.length
+    const name = profile?.full_name || agent?.title || 'Agent'
+    const title = agent?.title || 'Real Estate Agent'
+    const image = agent?.profile_image || profile?.avatar_url || '/api/placeholder/400/400'
 
   return (
     <div className="min-h-screen bg-slate-50/50">
@@ -552,7 +526,7 @@ export default async function AgentDetail({ params }: { params: Promise<{ id: st
                       <StarIcon className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-secondary">{agent?.rating || '5.0'} Rating</div>
+                      <div className="text-sm font-bold text-secondary">{agent?.rating?.toFixed(1) || '5.0'} Rating</div>
                       <div className="text-xs text-slate-400">{agent?.review_count || '0'} Reviews</div>
                     </div>
                   </div>
@@ -668,4 +642,21 @@ export default async function AgentDetail({ params }: { params: Promise<{ id: st
       </div>
     </div>
   )
+  } catch (error) {
+    console.error('Error loading agent:', error)
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <BriefcaseIcon className="w-10 h-10 text-slate-300" />
+          </div>
+          <h2 className="text-3xl font-serif text-secondary mb-4">Error Loading Agent</h2>
+          <p className="text-slate-500 mb-8">Unable to load the agent profile. Please try again later.</p>
+          <Link href="/agents" className="inline-block px-8 py-3 bg-primary text-secondary font-bold rounded-xl hover:bg-primary-light transition-all">
+            Back to Agents
+          </Link>
+        </div>
+      </div>
+    )
+  }
 }

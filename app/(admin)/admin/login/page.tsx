@@ -18,7 +18,7 @@ type UserRole = 'admin' | 'agent' | 'customer'
 
 export default function EnhancedLoginPage() {
   const [isLogin, setIsLogin] = useState(true)
-  const [selectedRole, setSelectedRole] = useState<UserRole>('customer')
+  const [selectedRole, setSelectedRole] = useState<UserRole>('admin')
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -165,22 +165,10 @@ export default function EnhancedLoginPage() {
             </p>
           </div>
 
-          {/* Role Selector */}
-          <div className="flex p-1 bg-slate-100 rounded-2xl mb-8">
-            {([ 'agent', 'admin'] as UserRole[]).map((role) => (
-              <button
-                key={role}
-                type="button"
-                onClick={() => handleRoleChange(role)}
-                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all duration-300 capitalize ${
-                  selectedRole === role
-                    ? 'bg-white text-secondary shadow-md'
-                    : 'text-slate-400 hover:text-secondary'
-                }`}
-              >
-                {role}
-              </button>
-            ))}
+          {/* Admin Only Login */}
+          <div className="text-center mb-8 bg-primary/10 border border-primary/20 rounded-2xl py-4">
+            <p className="text-sm font-semibold text-secondary">Admin Portal</p>
+            <p className="text-xs text-slate-500 mt-1">Access restricted to administrators</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
