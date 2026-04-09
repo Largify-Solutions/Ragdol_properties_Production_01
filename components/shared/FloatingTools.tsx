@@ -89,10 +89,10 @@ export default function FloatingTools() {
       <div className="fixed top-1/2 right-4 z-50 transform -translate-y-1/2">
         <button
           onClick={() => setIsToolsOpen(true)}
-          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 group relative"
+          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-105 group relative"
           aria-label="Open tools and settings"
         >
-          <Cog6ToothIcon className="w-5 h-5" />
+          <Cog6ToothIcon className="w-7 h-7" />
           {/* Tooltip */}
           <div className="absolute right-full mr-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
             Tools
