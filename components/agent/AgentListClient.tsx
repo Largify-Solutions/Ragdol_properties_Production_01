@@ -511,7 +511,7 @@ export default function AgentListClient() {
             </div>
 
             {filtered.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4 auto-rows-fr">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 auto-rows-fr">
                 {filtered.map((agent) => {
                   const profileImage = getProfileImage(agent)
                   const hasImage = profileImage && profileImage !== ''
