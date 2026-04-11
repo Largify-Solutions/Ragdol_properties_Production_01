@@ -18,8 +18,6 @@ const GOOGLE_TRANSLATE_MAX_ATTEMPTS = 20
 const GOOGLE_TRANSLATE_RETRY_DELAY_MS = 150
 const GOOGLE_TRANSLATE_REFRESH_DELAYS_MS = [900, 2400]
 const GOOGLE_TRANSLATE_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365
-const GOOGLE_TRANSLATE_OBSERVER_DEBOUNCE_MS = 700
-const GOOGLE_TRANSLATE_OBSERVER_MIN_INTERVAL_MS = 2800
 
 declare global {
   interface Window {
@@ -97,6 +95,18 @@ function clearGoogleTranslateCookie() {
   const rootDomain = getRootDomain(window.location.hostname)
   if (rootDomain) {
     document.cookie = `${expiredCookie};domain=${rootDomain}`
+  }
+}
+
+function resetGoogleTranslateToEnglish() {
+  if (typeof window === 'undefined') return
+
+  const languageSelector = document.querySelector<HTMLSelectElement>('.goog-te-combo')
+  if (!languageSelector) return
+
+  if (languageSelector.value !== 'en') {
+    languageSelector.value = 'en'
+    languageSelector.dispatchEvent(new Event('change'))
   }
 }
 
@@ -183,14 +193,17 @@ function loadGoogleTranslateScript() {
 export default function FloatingTools() {
   const { t, i18n } = useTranslation()
   const pathname = usePathname()
+  const [hasHydrated, setHasHydrated] = useState(false)
   const [isToolsOpen, setIsToolsOpen] = useState(false)
   const [selectedArea, setSelectedArea] = useState('All Areas')
   const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>('en')
   const [selectedCurrency, setSelectedCurrency] = useState('AED')
 
   useEffect(() => {
-    loadGoogleTranslateScript()
+    setHasHydrated(true)
+  }, [])
 
+  useEffect(() => {
     // Load saved preferences from localStorage
     const savedArea = localStorage.getItem('selectedArea')
     const savedLanguage = getSavedLanguageCode()
@@ -207,108 +220,53 @@ export default function FloatingTools() {
     }
 
     persistLanguageCode(initialLanguage)
-    applyGoogleTranslateLanguage(initialLanguage)
-    const clearRefreshTimers = scheduleGoogleTranslateRefresh(initialLanguage)
+    if (initialLanguage === 'en') {
+      clearGoogleTranslateCookie()
+    } else {
+      setGoogleTranslateCookie(initialLanguage)
+    }
 
     if (savedCurrency) setSelectedCurrency(savedCurrency)
-
-    return () => {
-      clearRefreshTimers()
-    }
   }, []) // Remove i18n dependency to prevent re-running
 
   useEffect(() => {
+    if (!hasHydrated) return
     if (!pathname) return
 
-    // Re-apply website translation after client-side route transitions.
-    applyGoogleTranslateLanguage(selectedLanguage)
-    const clearRefreshTimers = scheduleGoogleTranslateRefresh(selectedLanguage)
+    if (selectedLanguage === 'en') {
+      clearGoogleTranslateCookie()
+      resetGoogleTranslateToEnglish()
+      return
+    }
 
+    let clearRefreshTimers = () => {}
+    let bootTimer: number | null = null
+    let isCancelled = false
+
+    const startTranslator = () => {
+      if (isCancelled) return
+
+      loadGoogleTranslateScript()
+      applyGoogleTranslateLanguage(selectedLanguage)
+      clearRefreshTimers = scheduleGoogleTranslateRefresh(selectedLanguage)
+    }
+
+    if (document.readyState === 'complete') {
+      bootTimer = window.setTimeout(startTranslator, 350)
+    } else {
+      window.addEventListener('load', startTranslator, { once: true })
+    }
+
+    // Re-apply website translation after client-side route transitions.
     return () => {
+      isCancelled = true
+      if (bootTimer !== null) {
+        window.clearTimeout(bootTimer)
+      }
+      window.removeEventListener('load', startTranslator)
       clearRefreshTimers()
     }
-  }, [pathname, selectedLanguage])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (selectedLanguage === 'en') return
-
-    let refreshTimer: ReturnType<typeof setTimeout> | null = null
-    let releaseLockTimer: ReturnType<typeof setTimeout> | null = null
-    let isApplyingTranslation = false
-    let lastRefreshAt = 0
-
-    const triggerRefresh = () => {
-      const now = Date.now()
-      if (now - lastRefreshAt < GOOGLE_TRANSLATE_OBSERVER_MIN_INTERVAL_MS) {
-        return
-      }
-
-      if (refreshTimer) {
-        window.clearTimeout(refreshTimer)
-      }
-
-      refreshTimer = window.setTimeout(() => {
-        if (isApplyingTranslation) return
-
-        isApplyingTranslation = true
-        lastRefreshAt = Date.now()
-        applyGoogleTranslateLanguage(selectedLanguage, 0, true)
-
-        if (releaseLockTimer) {
-          window.clearTimeout(releaseLockTimer)
-        }
-
-        // Prevent mutation loop while translator updates DOM.
-        releaseLockTimer = window.setTimeout(() => {
-          isApplyingTranslation = false
-        }, 1500)
-      }, GOOGLE_TRANSLATE_OBSERVER_DEBOUNCE_MS)
-    }
-
-    const observer = new MutationObserver((mutations) => {
-      if (isApplyingTranslation) return
-
-      const hasRelevantMutation = mutations.some((mutation) => {
-        if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) {
-          return false
-        }
-
-        return Array.from(mutation.addedNodes).some((node) => {
-          if (node.nodeType === Node.TEXT_NODE) {
-            return Boolean(node.textContent?.trim())
-          }
-
-          if (node.nodeType !== Node.ELEMENT_NODE) {
-            return false
-          }
-
-          const element = node as Element
-          if (element.closest('#google_translate_element')) return false
-          if (element.closest('.goog-te-banner-frame')) return false
-          if (element.closest('.skiptranslate')) return false
-          if (element.className?.toString().includes('goog-')) return false
-
-          return Boolean(element.textContent?.trim())
-        })
-      })
-
-      if (hasRelevantMutation) {
-        triggerRefresh()
-      }
-    })
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    })
-
-    return () => {
-      observer.disconnect()
-      if (refreshTimer) window.clearTimeout(refreshTimer)
-      if (releaseLockTimer) window.clearTimeout(releaseLockTimer)
-    }
-  }, [selectedLanguage])
+  }, [hasHydrated, pathname, selectedLanguage])
 
   const areas = [
     'All Areas',
@@ -349,6 +307,15 @@ export default function FloatingTools() {
     setSelectedLanguage(languageCode)
     i18n.changeLanguage(languageCode)
     persistLanguageCode(languageCode)
+
+    if (languageCode === 'en') {
+      clearGoogleTranslateCookie()
+      resetGoogleTranslateToEnglish()
+      return
+    }
+
+    setGoogleTranslateCookie(languageCode)
+    loadGoogleTranslateScript()
     applyGoogleTranslateLanguage(languageCode)
     // Note: HTML lang and dir attributes are handled by DynamicHtml component
   }
@@ -478,7 +445,7 @@ export default function FloatingTools() {
                     setSelectedCurrency('AED')
                     i18n.changeLanguage('en')
                     clearGoogleTranslateCookie()
-                    applyGoogleTranslateLanguage('en', 0, true)
+                    resetGoogleTranslateToEnglish()
                     document.documentElement.lang = 'en'
                     document.documentElement.dir = 'ltr'
                     localStorage.removeItem('selectedArea')
