@@ -240,7 +240,7 @@ export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Premium Hero Section */}
-      <div className="relative overflow-hidden pt-20 pb-32 px-4 sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden pt-20 pb-24 px-4 sm:px-6 lg:px-8">
         <Image
           src="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1800"
           alt=""
@@ -266,13 +266,13 @@ export default function ServicesPage() {
       </div>
 
       {/* Services Grid - Premium Layout */}
-      <div className="container-custom mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      <div className="container-custom mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {services.map((service) => {
             const Icon = service.icon
             return (
               <Link key={service.id} href={service.href}>
-                <div className="group relative h-full bg-white border-2 border-[#8A6508]/30 rounded-3xl p-8 hover:border-[#8A6508] transition-all duration-500 cursor-pointer overflow-hidden shadow-sm hover:shadow-lg">
+                <div className="group relative h-full bg-white border-2 border-[#8A6508]/30 rounded-2xl p-5 lg:p-6 hover:border-[#8A6508] transition-all duration-500 cursor-pointer overflow-hidden shadow-sm hover:shadow-lg">
                   {/* Golden gradient overlay on hover */}
                   <div className={`absolute inset-0 bg-linear-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 -z-10`}></div>
                   
@@ -280,17 +280,17 @@ export default function ServicesPage() {
                   <div className="absolute top-0 left-0 h-1 w-0 group-hover:w-full bg-linear-to-r from-[#8A6508] to-[#5C4204] transition-all duration-500"></div>
                   
                   {/* Icon Container */}
-                  <div className="w-16 h-16 bg-linear-to-br from-[#F6E7C0] to-[#D2B377] border border-[#8A6508]/35 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
-                    <Icon className="h-8 w-8 text-[#5C4204]" />
+                  <div className="w-12 h-12 bg-linear-to-br from-[#F6E7C0] to-[#D2B377] border border-[#8A6508]/35 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 shadow-xl">
+                    <Icon className="h-6 w-6 text-[#5C4204]" />
                   </div>
                   
                   {/* Title */}
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#8A6508] transition-colors">
+                  <h3 className="text-base md:text-lg font-bold text-gray-900 mb-2 group-hover:text-[#8A6508] transition-colors">
                     {service.title}
                   </h3>
                   
                   {/* Description */}
-                  <p className="text-gray-600 text-sm leading-relaxed mb-6 transition-colors">
+                  <p className="text-gray-600 text-sm leading-relaxed mb-4 transition-colors">
                     {service.description}
                   </p>
                   
@@ -307,9 +307,9 @@ export default function ServicesPage() {
       </div>
 
       {/* Why Choose Ragdoll Properties Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-transparent to-[#8A6508]/6">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-transparent to-[#8A6508]/6">
         <div className="container-custom mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-14">
             <div className="inline-block px-6 py-2 bg-linear-to-r from-[#8A6508] to-[#8A6508] rounded-full mb-6">
               <span className="text-sm font-black text-[#F6E7C0] tracking-widest uppercase">Why Choose Us</span>
             </div>
@@ -318,7 +318,7 @@ export default function ServicesPage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
                 title: "Expert Team",
@@ -338,7 +338,7 @@ export default function ServicesPage() {
             ].map((item, idx) => {
               const Icon = item.icon
               return (
-                <div key={idx} className="group bg-white border-2 border-[#8A6508]/30 rounded-2xl p-8 hover:border-[#8A6508] transition-all duration-300 shadow-sm hover:shadow-md">
+                <div key={idx} className="group bg-white border-2 border-[#8A6508]/30 rounded-2xl p-6 hover:border-[#8A6508] transition-all duration-300 shadow-sm hover:shadow-md">
                   <div className="w-12 h-12 bg-linear-to-br from-[#F6E7C0] to-[#D2B377] border border-[#8A6508]/35 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                     <Icon className="h-6 w-6 text-[#5C4204]" />
                   </div>
@@ -352,7 +352,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Premium Property Gallery Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="container-custom mx-auto">
           <div className="text-center mb-16">
             <div className="inline-block px-6 py-2 bg-[#8A6508]/15 rounded-full mb-6">
@@ -430,9 +430,9 @@ export default function ServicesPage() {
       </section>
 
       {/* CTA Section - Premium */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="container-custom mx-auto">
-          <div className="relative overflow-hidden rounded-4xl p-12 md:p-20 bg-white border-2 border-[#8A6508]/40 shadow-lg">
+          <div className="relative overflow-hidden rounded-4xl p-10 md:p-16 bg-white border-2 border-[#8A6508]/40 shadow-lg">
             {/* Golden glow effects */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-[#8A6508]/12 rounded-full blur-3xl -z-10"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#8A6508]/6 rounded-full blur-3xl -z-10"></div>

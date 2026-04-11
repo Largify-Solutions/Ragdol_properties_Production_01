@@ -523,7 +523,7 @@ export default function AgentListClient() {
                       className="group flex h-full flex-col bg-white rounded-xl overflow-hidden border border-slate-200 hover:border-primary/30 transition-all duration-500 hover:shadow-lg hover:-translate-y-1"
                     >
                       {/* ✅ FIXED: Agent Image - Full Face */}
-                      <div className="relative w-full aspect-square min-h-[500px] overflow-hidden shrink-0 align-top">
+                      <div className="relative w-full h-80 sm:h-[360px] overflow-hidden shrink-0 align-top">
                         {hasImage ? (
                           <img
                             src={profileImage}

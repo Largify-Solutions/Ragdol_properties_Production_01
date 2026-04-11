@@ -18,6 +18,7 @@ interface Property {
   area?: number
   main_image?: string
   images?: string[]
+  image_url?: string
   address?: string
   city?: string
   description?: string
@@ -32,6 +33,53 @@ interface AgentPropertiesProps {
 export default function AgentProperties({ agentId, agentName, onClose }: AgentPropertiesProps) {
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
+
+  const normalizeImageList = (value: unknown): string[] => {
+    if (!value) return []
+
+    if (Array.isArray(value)) {
+      return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+    }
+
+    if (typeof value === 'string') {
+      const trimmed = value.trim()
+      if (!trimmed) return []
+
+      if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+        try {
+          const parsed = JSON.parse(trimmed)
+          if (Array.isArray(parsed)) {
+            return parsed.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
+          }
+        } catch {
+          // Fall through to comma-split parsing.
+        }
+      }
+
+      if (trimmed.includes(',')) {
+        return trimmed
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+      }
+
+      return [trimmed]
+    }
+
+    return []
+  }
+
+  const buildPropertyImages = (data: any): string[] => {
+    const candidates = [
+      data.main_image,
+      data.image_url,
+      ...normalizeImageList(data.images),
+      ...normalizeImageList(data.property_images),
+      ...normalizeImageList(data.gallery_images)
+    ]
+
+    return Array.from(new Set(candidates.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)))
+  }
 
   useEffect(() => {
     fetchAgentProperties()
@@ -54,6 +102,8 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
         
         if (propertiesData) {
           propertiesData.forEach((data) => {
+            const allImages = buildPropertyImages(data)
+
             allProperties.push({
               id: data.id,
               title: data.title || 'Property',
@@ -66,8 +116,9 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
               beds: data.beds || 0,
               baths: data.baths || 0,
               area: Number(data.area) || 0,
-              main_image: data.image_url || (data.images && data.images[0]) || '',
-              images: data.images || [],
+              main_image: allImages[0] || '',
+              images: allImages,
+              image_url: (data as any).image_url || undefined,
               address: data.address || undefined,
               city: data.city || undefined,
               description: data.description || undefined
@@ -92,6 +143,8 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
         
         if (agentPropertiesData) {
           agentPropertiesData.forEach((data) => {
+            const allImages = buildPropertyImages(data)
+
             allProperties.push({
               id: data.id,
               title: data.title || 'Property',
@@ -104,8 +157,9 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
               beds: data.beds || 0,
               baths: data.bathrooms || 0,
               area: Number(data.sqft) || 0,
-              main_image: (data.images && data.images[0]) || '',
-              images: data.images || [],
+              main_image: allImages[0] || '',
+              images: allImages,
+              image_url: (data as any).image_url || undefined,
               address: data.address || undefined,
               city: data.city || undefined,
               description: data.description || undefined
@@ -137,9 +191,15 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
   }
 
   const getPropertyImage = (property: Property) => {
-    if (property.main_image) return property.main_image
+    if (property.main_image && property.main_image.trim().length > 0) return property.main_image
+    if (property.image_url && property.image_url.trim().length > 0) return property.image_url
     if (property.images && property.images.length > 0) return property.images[0]
     return ''
+  }
+
+  const getPropertyImages = (property: Property) => {
+    const candidates = [property.main_image, property.image_url, ...(property.images || [])]
+    return Array.from(new Set(candidates.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)))
   }
 
   return (
@@ -175,9 +235,15 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
               <p className="text-slate-600">Loading properties...</p>
             </div>
           ) : properties.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className={`grid gap-6 ${
+              properties.length === 1
+                ? 'grid-cols-1 max-w-md mx-auto w-full'
+                : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+            }`}>
               {properties.map((property) => {
+                const images = getPropertyImages(property)
                 const imageUrl = getPropertyImage(property)
+
                 return (
                   <div key={property.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow group">
                     {/* Property Image */}
@@ -195,6 +261,12 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                           </div>
                         </div>
                       )}
+
+                      <div className="absolute top-3 left-3 flex items-center gap-2 text-white text-xs font-semibold">
+                        <span className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm">Gallery</span>
+                        <span className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm">Details</span>
+                      </div>
+
                       <div className="absolute top-3 right-3">
                         <span className={`text-xs px-2 py-1 rounded-full font-bold ${
                           property.status === 'sale' 
@@ -208,7 +280,32 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                            property.status}
                         </span>
                       </div>
+
+                      {images.length > 1 && (
+                        <div className="absolute bottom-3 right-3">
+                          <span className="text-[11px] px-2 py-0.5 rounded-full font-bold bg-black/50 text-white backdrop-blur-sm">
+                            {images.length} Photos
+                          </span>
+                        </div>
+                      )}
                     </div>
+
+                    {images.length > 1 && (
+                      <div className="px-3 py-2 bg-slate-50 border-y border-slate-100">
+                        <div className="flex gap-1.5">
+                          {images.slice(0, 4).map((img, idx) => (
+                            <div key={`${property.id}-${idx}`} className="w-10 h-8 rounded overflow-hidden bg-slate-100 shrink-0">
+                              <img src={img} alt={`${property.title} ${idx + 1}`} className="w-full h-full object-cover" />
+                            </div>
+                          ))}
+                          {images.length > 4 && (
+                            <div className="w-10 h-8 rounded bg-slate-200 text-slate-700 text-[11px] font-bold flex items-center justify-center shrink-0">
+                              +{images.length - 4}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Property Details */}
                     <div className="p-4">
@@ -245,6 +342,12 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                       <div className="text-sm text-slate-500 mb-2 line-clamp-1">
                         {property.location || property.address || property.city || 'Location not specified'}
                       </div>
+
+                      {property.description && (
+                        <p className="text-xs text-slate-500 mb-2 line-clamp-2">
+                          {property.description}
+                        </p>
+                      )}
                       
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-slate-500 capitalize">
