@@ -68,7 +68,7 @@ export default function HeroSearch({ initialValue = '' }: Props) {
               : 'bg-slate-900/40 text-white hover:bg-slate-900/60 backdrop-blur-md'
           }`}
         >
-          {t('common.buy').toUpperCase()}
+          <span suppressHydrationWarning>{t('common.buy').toUpperCase()}</span>
         </button>
         <button
           onClick={() => setActiveTab('rent')}
@@ -78,7 +78,7 @@ export default function HeroSearch({ initialValue = '' }: Props) {
               : 'bg-slate-900/40 text-white hover:bg-slate-900/60 backdrop-blur-md'
           }`}
         >
-          {t('common.rent').toUpperCase()}
+          <span suppressHydrationWarning>{t('common.rent').toUpperCase()}</span>
         </button>
       </div>
 
