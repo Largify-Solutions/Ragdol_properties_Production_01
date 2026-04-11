@@ -135,6 +135,53 @@ body {
   font-family: var(--font-cairo), var(--font-noto-sans-arabic), var(--font-amiri), 'Cairo', 'Noto Sans Arabic', 'Amiri', var(--font-geist-sans), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
 
+/* Google Translate: keep provider UI hidden and use custom language controls instead */
+#google_translate_element {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Legacy and new Google top bars / iframes */
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+iframe.skiptranslate,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q,
+[class*="VIpgJd-ZVi9od-"][class*="-OEVmcd"] {
+  display: none !important;
+}
+
+html,
+body,
+body.skiptranslate {
+  top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.goog-te-gadget,
+.goog-te-gadget .goog-te-combo,
+.goog-te-gadget span,
+.goog-logo-link {
+  display: none !important;
+}
+
+/* Remove translate hover tooltip/highlight artifacts */
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
 /* Custom utility classes */
 .container-custom {
   @apply container mx-auto px-4 sm:px-6 lg:px-8;

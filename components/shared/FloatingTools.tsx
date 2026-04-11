@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { Cog6ToothIcon, XMarkIcon, GlobeAltIcon, CurrencyDollarIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import {
@@ -11,29 +12,303 @@ import {
   type SupportedLanguage
 } from '@/lib/i18n'
 
+const GOOGLE_TRANSLATE_SCRIPT_ID = 'google-translate-script'
+const GOOGLE_TRANSLATE_ELEMENT_ID = 'google_translate_element'
+const GOOGLE_TRANSLATE_MAX_ATTEMPTS = 20
+const GOOGLE_TRANSLATE_RETRY_DELAY_MS = 150
+const GOOGLE_TRANSLATE_REFRESH_DELAYS_MS = [900, 2400]
+const GOOGLE_TRANSLATE_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365
+const GOOGLE_TRANSLATE_OBSERVER_DEBOUNCE_MS = 700
+const GOOGLE_TRANSLATE_OBSERVER_MIN_INTERVAL_MS = 2800
+
+declare global {
+  interface Window {
+    googleTranslateElementInit?: () => void
+    google?: {
+      translate?: {
+        TranslateElement?: new (
+          options: {
+            pageLanguage: string
+            includedLanguages: string
+            autoDisplay: boolean
+          },
+          elementId: string
+        ) => unknown
+      }
+    }
+  }
+}
+
+function ensureGoogleTranslateContainer() {
+  if (typeof window === 'undefined') return
+
+  if (!document.getElementById(GOOGLE_TRANSLATE_ELEMENT_ID)) {
+    const hiddenContainer = document.createElement('div')
+    hiddenContainer.id = GOOGLE_TRANSLATE_ELEMENT_ID
+    hiddenContainer.className = 'notranslate'
+    hiddenContainer.setAttribute('aria-hidden', 'true')
+    document.body.appendChild(hiddenContainer)
+  }
+}
+
+function getRootDomain(hostname: string): string | null {
+  if (!hostname || hostname === 'localhost' || /^\d+(\.\d+){3}$/.test(hostname)) {
+    return null
+  }
+
+  const parts = hostname.split('.')
+  if (parts.length < 2) return null
+
+  return `.${parts.slice(-2).join('.')}`
+}
+
+function getGoogleTranslateCookieLanguage(): SupportedLanguage | null {
+  if (typeof window === 'undefined') return null
+
+  const cookieMatch = document.cookie.match(/(?:^|; )googtrans=([^;]+)/)
+  if (!cookieMatch?.[1]) return null
+
+  const cookieValue = decodeURIComponent(cookieMatch[1])
+  const targetLanguage = cookieValue.split('/').pop()
+  if (!targetLanguage) return null
+
+  return normalizeLanguageCode(targetLanguage)
+}
+
+function setGoogleTranslateCookie(languageCode: SupportedLanguage) {
+  if (typeof window === 'undefined') return
+
+  const cookieValue = `/en/${languageCode}`
+  const cookieBase = `googtrans=${cookieValue};path=/;max-age=${GOOGLE_TRANSLATE_COOKIE_MAX_AGE_SECONDS};samesite=lax`
+  document.cookie = cookieBase
+
+  const rootDomain = getRootDomain(window.location.hostname)
+  if (rootDomain) {
+    document.cookie = `${cookieBase};domain=${rootDomain}`
+  }
+}
+
+function clearGoogleTranslateCookie() {
+  if (typeof window === 'undefined') return
+
+  const expiredCookie = 'googtrans=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT;samesite=lax'
+  document.cookie = expiredCookie
+
+  const rootDomain = getRootDomain(window.location.hostname)
+  if (rootDomain) {
+    document.cookie = `${expiredCookie};domain=${rootDomain}`
+  }
+}
+
+function applyGoogleTranslateLanguage(languageCode: SupportedLanguage, attempt = 0, forceRefresh = false) {
+  if (typeof window === 'undefined') return
+
+  setGoogleTranslateCookie(languageCode)
+
+  const languageSelector = document.querySelector<HTMLSelectElement>('.goog-te-combo')
+  if (!languageSelector) {
+    if (attempt < GOOGLE_TRANSLATE_MAX_ATTEMPTS) {
+      window.setTimeout(() => applyGoogleTranslateLanguage(languageCode, attempt + 1, forceRefresh), GOOGLE_TRANSLATE_RETRY_DELAY_MS)
+    }
+    return
+  }
+
+  const shouldSwitchLanguage = languageSelector.value !== languageCode
+
+  if (shouldSwitchLanguage) {
+    languageSelector.value = languageCode
+  }
+
+  if (shouldSwitchLanguage || forceRefresh) {
+    languageSelector.dispatchEvent(new Event('change'))
+  }
+}
+
+function scheduleGoogleTranslateRefresh(languageCode: SupportedLanguage) {
+  if (typeof window === 'undefined') return () => {}
+
+  const timers = GOOGLE_TRANSLATE_REFRESH_DELAYS_MS.map((delayMs) =>
+    window.setTimeout(() => {
+      applyGoogleTranslateLanguage(languageCode, 0, true)
+    }, delayMs)
+  )
+
+  return () => {
+    timers.forEach((timerId) => window.clearTimeout(timerId))
+  }
+}
+function initGoogleTranslateWidget() {
+  if (typeof window === 'undefined') return
+  if (!window.google?.translate?.TranslateElement) return
+
+  ensureGoogleTranslateContainer()
+
+  // Avoid duplicate widget initialization across route transitions.
+  if (!document.querySelector('.goog-te-combo')) {
+    new window.google.translate.TranslateElement(
+      {
+        pageLanguage: 'en',
+        includedLanguages: 'en,fr,ar',
+        autoDisplay: false
+      },
+      GOOGLE_TRANSLATE_ELEMENT_ID
+    )
+  }
+}
+
+function loadGoogleTranslateScript() {
+  if (typeof window === 'undefined') return
+
+  ensureGoogleTranslateContainer()
+
+  if (window.google?.translate?.TranslateElement) {
+    initGoogleTranslateWidget()
+    return
+  }
+
+  const existingScript = document.getElementById(GOOGLE_TRANSLATE_SCRIPT_ID) as HTMLScriptElement | null
+  if (existingScript) return
+
+  window.googleTranslateElementInit = () => {
+    initGoogleTranslateWidget()
+  }
+
+  const script = document.createElement('script')
+  script.id = GOOGLE_TRANSLATE_SCRIPT_ID
+  script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'
+  script.async = true
+  document.body.appendChild(script)
+}
+
 export default function FloatingTools() {
   const { t, i18n } = useTranslation()
+  const pathname = usePathname()
   const [isToolsOpen, setIsToolsOpen] = useState(false)
   const [selectedArea, setSelectedArea] = useState('All Areas')
   const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>('en')
   const [selectedCurrency, setSelectedCurrency] = useState('AED')
 
   useEffect(() => {
+    loadGoogleTranslateScript()
+
     // Load saved preferences from localStorage
     const savedArea = localStorage.getItem('selectedArea')
     const savedLanguage = getSavedLanguageCode()
+    const cookieLanguage = getGoogleTranslateCookieLanguage()
+    const initialLanguage = cookieLanguage ?? savedLanguage
     const savedCurrency = localStorage.getItem('selectedCurrency')
 
     if (savedArea) setSelectedArea(savedArea)
-    setSelectedLanguage(savedLanguage)
+    setSelectedLanguage(initialLanguage)
 
     // Set initial language
-    if (normalizeLanguageCode(i18n.language) !== savedLanguage) {
-      i18n.changeLanguage(savedLanguage)
+    if (normalizeLanguageCode(i18n.language) !== initialLanguage) {
+      i18n.changeLanguage(initialLanguage)
     }
 
+    persistLanguageCode(initialLanguage)
+    applyGoogleTranslateLanguage(initialLanguage)
+    const clearRefreshTimers = scheduleGoogleTranslateRefresh(initialLanguage)
+
     if (savedCurrency) setSelectedCurrency(savedCurrency)
+
+    return () => {
+      clearRefreshTimers()
+    }
   }, []) // Remove i18n dependency to prevent re-running
+
+  useEffect(() => {
+    if (!pathname) return
+
+    // Re-apply website translation after client-side route transitions.
+    applyGoogleTranslateLanguage(selectedLanguage)
+    const clearRefreshTimers = scheduleGoogleTranslateRefresh(selectedLanguage)
+
+    return () => {
+      clearRefreshTimers()
+    }
+  }, [pathname, selectedLanguage])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (selectedLanguage === 'en') return
+
+    let refreshTimer: ReturnType<typeof setTimeout> | null = null
+    let releaseLockTimer: ReturnType<typeof setTimeout> | null = null
+    let isApplyingTranslation = false
+    let lastRefreshAt = 0
+
+    const triggerRefresh = () => {
+      const now = Date.now()
+      if (now - lastRefreshAt < GOOGLE_TRANSLATE_OBSERVER_MIN_INTERVAL_MS) {
+        return
+      }
+
+      if (refreshTimer) {
+        window.clearTimeout(refreshTimer)
+      }
+
+      refreshTimer = window.setTimeout(() => {
+        if (isApplyingTranslation) return
+
+        isApplyingTranslation = true
+        lastRefreshAt = Date.now()
+        applyGoogleTranslateLanguage(selectedLanguage, 0, true)
+
+        if (releaseLockTimer) {
+          window.clearTimeout(releaseLockTimer)
+        }
+
+        // Prevent mutation loop while translator updates DOM.
+        releaseLockTimer = window.setTimeout(() => {
+          isApplyingTranslation = false
+        }, 1500)
+      }, GOOGLE_TRANSLATE_OBSERVER_DEBOUNCE_MS)
+    }
+
+    const observer = new MutationObserver((mutations) => {
+      if (isApplyingTranslation) return
+
+      const hasRelevantMutation = mutations.some((mutation) => {
+        if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) {
+          return false
+        }
+
+        return Array.from(mutation.addedNodes).some((node) => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            return Boolean(node.textContent?.trim())
+          }
+
+          if (node.nodeType !== Node.ELEMENT_NODE) {
+            return false
+          }
+
+          const element = node as Element
+          if (element.closest('#google_translate_element')) return false
+          if (element.closest('.goog-te-banner-frame')) return false
+          if (element.closest('.skiptranslate')) return false
+          if (element.className?.toString().includes('goog-')) return false
+
+          return Boolean(element.textContent?.trim())
+        })
+      })
+
+      if (hasRelevantMutation) {
+        triggerRefresh()
+      }
+    })
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    })
+
+    return () => {
+      observer.disconnect()
+      if (refreshTimer) window.clearTimeout(refreshTimer)
+      if (releaseLockTimer) window.clearTimeout(releaseLockTimer)
+    }
+  }, [selectedLanguage])
 
   const areas = [
     'All Areas',
@@ -74,6 +349,7 @@ export default function FloatingTools() {
     setSelectedLanguage(languageCode)
     i18n.changeLanguage(languageCode)
     persistLanguageCode(languageCode)
+    applyGoogleTranslateLanguage(languageCode)
     // Note: HTML lang and dir attributes are handled by DynamicHtml component
   }
 
@@ -201,6 +477,8 @@ export default function FloatingTools() {
                     setSelectedLanguage('en')
                     setSelectedCurrency('AED')
                     i18n.changeLanguage('en')
+                    clearGoogleTranslateCookie()
+                    applyGoogleTranslateLanguage('en', 0, true)
                     document.documentElement.lang = 'en'
                     document.documentElement.dir = 'ltr'
                     localStorage.removeItem('selectedArea')
