@@ -33,11 +33,21 @@ interface NavItem {
 
 interface NavSection {
   label: string;
+  menuKey?: MenuKey;
   hasDropdown: boolean;
   href?: string;
   items?: NavItem[];
   isValuation?: boolean;
 }
+
+type MenuKey =
+  | "buy"
+  | "rent"
+  | "luxe"
+  | "commercial"
+  | "services"
+  | "trends"
+  | "more";
 
 export default function Header() {
   const { user, profile, logout } = useAuth();
@@ -56,26 +66,56 @@ export default function Header() {
   const [isValuationModalOpen, setIsValuationModalOpen] = useState(false);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const openMenu = (label: string) => {
+  const closeAllMenus = () => {
+    setIsBuyOpen(false);
+    setIsRentOpen(false);
+    setIsLuxeOpen(false);
+    setIsCommercialOpen(false);
+    setIsServicesOpen(false);
+    setIsTrendsOpen(false);
+    setIsMoreOpen(false);
+  };
+
+  const setMenuOpen = (menuKey: MenuKey, open: boolean) => {
+    if (menuKey === "buy") setIsBuyOpen(open);
+    else if (menuKey === "rent") setIsRentOpen(open);
+    else if (menuKey === "luxe") setIsLuxeOpen(open);
+    else if (menuKey === "commercial") setIsCommercialOpen(open);
+    else if (menuKey === "services") setIsServicesOpen(open);
+    else if (menuKey === "trends") setIsTrendsOpen(open);
+    else if (menuKey === "more") setIsMoreOpen(open);
+  };
+
+  const isMenuOpen = (menuKey?: MenuKey) => {
+    if (!menuKey) return false;
+    if (menuKey === "buy") return isBuyOpen;
+    if (menuKey === "rent") return isRentOpen;
+    if (menuKey === "luxe") return isLuxeOpen;
+    if (menuKey === "commercial") return isCommercialOpen;
+    if (menuKey === "services") return isServicesOpen;
+    if (menuKey === "trends") return isTrendsOpen;
+    if (menuKey === "more") return isMoreOpen;
+    return false;
+  };
+
+  const openMenu = (menuKey?: MenuKey) => {
+    if (!menuKey) return;
     if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
-    if (label === "Buy") setIsBuyOpen(true);
-    else if (label === "Rent") setIsRentOpen(true);
-    else if (label === "Luxe") setIsLuxeOpen(true);
-    else if (label === "Commercial") setIsCommercialOpen(true);
-    else if (label === "Services") setIsServicesOpen(true);
-    else if (label === "Trends") setIsTrendsOpen(true);
-    else if (label === "More") setIsMoreOpen(true);
+    closeAllMenus();
+    setMenuOpen(menuKey, true);
+  };
+
+  const toggleMenu = (menuKey?: MenuKey) => {
+    if (!menuKey) return;
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    const currentlyOpen = isMenuOpen(menuKey);
+    closeAllMenus();
+    setMenuOpen(menuKey, !currentlyOpen);
   };
 
   const scheduleCloseAll = () => {
     closeTimerRef.current = setTimeout(() => {
-      setIsBuyOpen(false);
-      setIsRentOpen(false);
-      setIsLuxeOpen(false);
-      setIsCommercialOpen(false);
-      setIsServicesOpen(false);
-      setIsTrendsOpen(false);
-      setIsMoreOpen(false);
+      closeAllMenus();
     }, 150);
   };
 
@@ -117,6 +157,7 @@ export default function Header() {
     },
 
   {
+  menuKey: "buy",
   label: t("header.navigation.buy"),
   hasDropdown: true,
   items: [
@@ -160,6 +201,7 @@ export default function Header() {
 
 
     {
+      menuKey: "rent",
       label: t("header.navigation.rent"),
       hasDropdown: true,
       items: [
@@ -199,6 +241,7 @@ export default function Header() {
     },
 
     {
+      menuKey: "luxe",
   label: "Luxe",
   hasDropdown: true,
   items: [
@@ -229,6 +272,7 @@ export default function Header() {
   ],
 },
 {
+  menuKey: "commercial",
   label: t("header.navigation.commercial"),
   hasDropdown: true,
   items: [
@@ -293,6 +337,7 @@ export default function Header() {
     },
 
     {
+      menuKey: "trends",
       label: "Trends",
       hasDropdown: true,
       items: [
@@ -330,6 +375,7 @@ export default function Header() {
     },
 
     {
+      menuKey: "more",
       label: t("header.navigation.more"),
       hasDropdown: true,
       items: [
@@ -445,39 +491,18 @@ export default function Header() {
               {item.hasDropdown ? (
                 <div
                   className="relative"
-                  onMouseEnter={() => openMenu(item.label)}
+                  onMouseEnter={() => openMenu(item.menuKey)}
                   onMouseLeave={scheduleCloseAll}
                 >
                   <button
                     className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide transition-all hover:text-primary hover:bg-slate-50 cursor-pointer text-secondary"
-                    onClick={() => {
-                      if (item.label === "Buy") setIsBuyOpen(!isBuyOpen);
-                      else if (item.label === "Rent")
-                        setIsRentOpen(!isRentOpen);
-                      else if (item.label === "Luxe")
-                        setIsLuxeOpen(!isLuxeOpen);
-                      else if (item.label === "Commercial")
-                        setIsCommercialOpen(!isCommercialOpen);
-                      else if (item.label === "Services")
-                        setIsServicesOpen(!isServicesOpen);
-                      else if (item.label === "Trends")
-                        setIsTrendsOpen(!isTrendsOpen);
-                      else if (item.label === "More")
-                        setIsMoreOpen(!isMoreOpen);
-                    }}
+                    onClick={() => toggleMenu(item.menuKey)}
                   >
                     {item.label}
                     <ChevronDownIcon
                       className={cn(
                         "h-4 w-4 transition-transform",
-                        ((item.label === "Buy" && isBuyOpen) ||
-                          (item.label === "Rent" && isRentOpen) ||
-                          (item.label === "Luxe" && isLuxeOpen) ||
-                          (item.label === "Commercial" && isCommercialOpen) ||
-                          (item.label === "Services" && isServicesOpen) ||
-                          (item.label === "Trends" && isTrendsOpen) ||
-                          (item.label === "More" && isMoreOpen)) &&
-                          "rotate-180"
+                        isMenuOpen(item.menuKey) && "rotate-180"
                       )}
                     />
                   </button>
@@ -492,13 +517,7 @@ export default function Header() {
                       item.label === "Services"
                         ? "absolute right-0 w-64 py-4 rounded-xl mt-2"
                         : "fixed left-1/2 -translate-x-1/2 top-[88px] w-[min(1120px,94vw)] rounded-3xl p-8",
-                      (item.label === "Buy" && isBuyOpen) ||
-                        (item.label === "Rent" && isRentOpen) ||
-                        (item.label === "Luxe" && isLuxeOpen) ||
-                        (item.label === "Commercial" && isCommercialOpen) ||
-                        (item.label === "Services" && isServicesOpen) ||
-                        (item.label === "Trends" && isTrendsOpen) ||
-                        (item.label === "More" && isMoreOpen)
+                      isMenuOpen(item.menuKey)
                         ? "opacity-100 scale-100 translate-y-0 visible"
                         : "opacity-0 scale-95 -translate-y-2 invisible"
                     )}
@@ -522,9 +541,7 @@ export default function Header() {
                               key={navItem.label}
                               href={navItem.href}
                               className="block px-4 py-2.5 text-sm font-medium text-secondary hover:text-primary hover:bg-slate-50 rounded-lg transition-all"
-                              onClick={() => {
-                                setIsServicesOpen(false);
-                              }}
+                              onClick={closeAllMenus}
                             >
                               {navItem.label}
                             </Link>
@@ -541,17 +558,7 @@ export default function Header() {
                               <Link
                                 href={navItem.href}
                                 className="block text-base font-bold text-secondary hover:text-primary transition-all border-b border-slate-200 pb-3 mb-4"
-                                onClick={() => {
-                                  if (item.label === "Buy") setIsBuyOpen(false);
-                                  else if (item.label === "Rent")
-                                    setIsRentOpen(false);
-                                  else if (item.label === "Luxe")
-                                    setIsLuxeOpen(false);
-                                  else if (item.label === "Commercial")
-                                    setIsCommercialOpen(false);
-                                  else if (item.label === "More")
-                                    setIsMoreOpen(false);
-                                }}
+                                onClick={closeAllMenus}
                               >
                                 {navItem.label}
                               </Link>
@@ -563,18 +570,7 @@ export default function Header() {
                                         key={subItem.label}
                                         href={subItem.href}
                                         className="group flex items-center gap-2 transition-all px-2.5 py-2 rounded-lg hover:bg-slate-100"
-                                        onClick={() => {
-                                          if (item.label === "Buy")
-                                            setIsBuyOpen(false);
-                                          else if (item.label === "Rent")
-                                            setIsRentOpen(false);
-                                          else if (item.label === "Luxe")
-                                            setIsLuxeOpen(false);
-                                          else if (item.label === "Commercial")
-                                            setIsCommercialOpen(false);
-                                          else if (item.label === "More")
-                                            setIsMoreOpen(false);
-                                        }}
+                                        onClick={closeAllMenus}
                                       >
                                         <span className="w-1.5 h-1.5 rounded-full bg-primary/60 shrink-0 group-hover:bg-primary" />
                                         <span className="text-sm text-slate-600 group-hover:text-primary font-medium">

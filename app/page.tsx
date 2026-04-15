@@ -18,8 +18,6 @@ import {
   NewspaperIcon,
   StarIcon,
   ArrowRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolidIcon, PlayIcon, PauseIcon } from "@heroicons/react/24/solid";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
@@ -1105,8 +1103,7 @@ export default function HomePage() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
-  const [testimonialSlideIndex, setTestimonialSlideIndex] = useState(0);
-  const [testimonialsPerView, setTestimonialsPerView] = useState(3);
+  const [isRtl, setIsRtl] = useState(false);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -1269,53 +1266,23 @@ export default function HomePage() {
   }, [videoStates]);
 
   useEffect(() => {
-    const setResponsiveTestimonials = () => {
-      if (window.innerWidth < 640) {
-        setTestimonialsPerView(1)
-      } else if (window.innerWidth < 1024) {
-        setTestimonialsPerView(2)
-      } else if (window.innerWidth < 1280) {
-        setTestimonialsPerView(3)
-      } else if (window.innerWidth < 1536) {
-        setTestimonialsPerView(4)
-      } else {
-        setTestimonialsPerView(5)
-      }
-    }
+    const updateDirection = (language?: string) => {
+      const nextDirection = language ? i18n.dir(language) : document.documentElement.dir;
+      setIsRtl(nextDirection === 'rtl');
+    };
 
-    setResponsiveTestimonials()
-    window.addEventListener('resize', setResponsiveTestimonials)
+    updateDirection(i18n.language);
+    const handleLanguageChanged = (language: string) => updateDirection(language);
+    i18n.on('languageChanged', handleLanguageChanged);
 
-    return () => window.removeEventListener('resize', setResponsiveTestimonials)
-  }, [])
+    return () => {
+      i18n.off('languageChanged', handleLanguageChanged);
+    };
+  }, []);
 
-  const maxTestimonialIndex = Math.max(0, testimonials.length - testimonialsPerView)
-
-  useEffect(() => {
-    if (testimonialSlideIndex > maxTestimonialIndex) {
-      setTestimonialSlideIndex(maxTestimonialIndex)
-    }
-  }, [maxTestimonialIndex, testimonialSlideIndex])
-
-  const handlePrevTestimonials = () => {
-    setTestimonialSlideIndex((prev) => Math.max(0, prev - 1))
-  }
-
-  const handleNextTestimonials = () => {
-    setTestimonialSlideIndex((prev) => Math.min(maxTestimonialIndex, prev + 1))
-  }
-
-  useEffect(() => {
-    if (testimonials.length <= testimonialsPerView) return
-
-    const interval = setInterval(() => {
-      setTestimonialSlideIndex((prev) =>
-        prev >= maxTestimonialIndex ? 0 : prev + 1
-      )
-    }, 3500)
-
-    return () => clearInterval(interval)
-  }, [testimonials.length, testimonialsPerView, maxTestimonialIndex])
+  const marqueeTestimonials = testimonials.length > 0 ? [...testimonials, ...testimonials] : []
+  const shouldAnimateTestimonials = testimonials.length > 1
+  const testimonialMarqueeDuration = Math.max(20, testimonials.length * 5)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -1544,7 +1511,7 @@ export default function HomePage() {
         <div className="container-custom">
           <div className="text-center mb-12 sm:mb-16 px-4 sm:px-0">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-secondary tracking-tight mb-3 sm:mb-4">
-              Trusted <span className="text-primary">Partners</span>
+              {t("homepage.trustedPartners")}
             </h2>
 
             <p className="text-base sm:text-lg text-slate-600 max-w-3xl mx-auto">
@@ -2030,35 +1997,24 @@ export default function HomePage() {
             )}
           </div>
 
-          <div className="flex items-center justify-end gap-2 mb-6">
-            <button
-              onClick={handlePrevTestimonials}
-              disabled={testimonialSlideIndex === 0}
-              className="h-10 w-10 rounded-full border border-[#8B6914]/40 text-[#8B6914] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#8B6914] hover:text-white transition-colors"
-            >
-              <ChevronLeftIcon className="h-5 w-5" />
-            </button>
-            <button
-              onClick={handleNextTestimonials}
-              disabled={testimonialSlideIndex >= maxTestimonialIndex}
-              className="h-10 w-10 rounded-full border border-[#8B6914]/40 text-[#8B6914] flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#8B6914] hover:text-white transition-colors"
-            >
-              <ChevronRightIcon className="h-5 w-5" />
-            </button>
-          </div>
+          {/* Continuous marquee layout - seamless scrolling with hover pause */}
+          <div className="relative group overflow-hidden">
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 bg-linear-to-r from-white to-transparent z-10" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 bg-linear-to-l from-white to-transparent z-10" />
 
-          {/* Slider layout - shows all testimonials via navigation */}
-          <div className="overflow-hidden">
-            <div
-              className="flex transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${(testimonialSlideIndex * 100) / testimonialsPerView}%)` }}
-            >
             {testimonials.length > 0 ? (
-              testimonials.map((testimonial, index) => (
+              <div
+                className="flex items-stretch gap-6 w-max py-2 group-hover:[animation-play-state:paused]"
+                style={{
+                  animation: shouldAnimateTestimonials
+                    ? `${isRtl ? 'testimonial-marquee-rtl' : 'testimonial-marquee-ltr'} ${testimonialMarqueeDuration}s linear infinite`
+                    : 'none'
+                }}
+              >
+              {marqueeTestimonials.map((testimonial, index) => (
                 <div
-                  key={testimonial.id || index}
-                  className="shrink-0 px-3"
-                  style={{ width: `${100 / testimonialsPerView}%` }}
+                  key={`${testimonial.id || 'testimonial'}-${index}`}
+                  className="shrink-0 self-start w-[280px] sm:w-[310px] lg:w-[340px] px-2"
                 >
                   <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-100 hover:shadow-xl transition-shadow duration-300 h-full">
                   {/* QUOTE SYMBOL - Screenshot style */}
@@ -2115,16 +2071,36 @@ export default function HomePage() {
                   </div>
                   </div>
                 </div>
-              ))
+              ))}
+              </div>
             ) : (
               <div className="w-full text-center py-12">
                 <p className="text-slate-400">No testimonials available at the moment</p>
               </div>
             )}
-            </div>
           </div>
         </div>
       </section>
+
+      <style jsx global>{`
+        @keyframes testimonial-marquee-ltr {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(-50%, 0, 0);
+          }
+        }
+
+        @keyframes testimonial-marquee-rtl {
+          0% {
+            transform: translate3d(-50%, 0, 0);
+          }
+          100% {
+            transform: translate3d(0, 0, 0);
+          }
+        }
+      `}</style>
 
       
 

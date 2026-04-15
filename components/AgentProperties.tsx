@@ -2,6 +2,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase-browser'
 
 interface Property {
@@ -31,8 +33,13 @@ interface AgentPropertiesProps {
 }
 
 export default function AgentProperties({ agentId, agentName, onClose }: AgentPropertiesProps) {
+  const router = useRouter()
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
+
+  const handleCardNavigation = (href: string) => {
+    router.push(href)
+  }
 
   const normalizeImageList = (value: unknown): string[] => {
     if (!value) return []
@@ -243,28 +250,47 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
               {properties.map((property) => {
                 const images = getPropertyImages(property)
                 const imageUrl = getPropertyImage(property)
+                const propertyHref = `/properties/${property.id}`
 
                 return (
-                  <div key={property.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow group">
+                  <div
+                    key={property.id}
+                    className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer"
+                    onClick={() => handleCardNavigation(propertyHref)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault()
+                        handleCardNavigation(propertyHref)
+                      }
+                    }}
+                    role="link"
+                    tabIndex={0}
+                  >
                     {/* Property Image */}
                     <div className="h-48 overflow-hidden relative">
-                      {imageUrl ? (
-                        <img 
-                          src={imageUrl} 
-                          alt={property.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-                          <div className="text-4xl font-bold text-primary/30">
-                            {property.title.substring(0, 2).toUpperCase()}
+                      <Link href={propertyHref} className="block h-full w-full" aria-label={`View details for ${property.title}`}>
+                        {imageUrl ? (
+                          <img 
+                            src={imageUrl} 
+                            alt={property.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-linear-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+                            <div className="text-4xl font-bold text-primary/30">
+                              {property.title.substring(0, 2).toUpperCase()}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </Link>
 
                       <div className="absolute top-3 left-3 flex items-center gap-2 text-white text-xs font-semibold">
-                        <span className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm">Gallery</span>
-                        <span className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm">Details</span>
+                        <Link href={propertyHref} className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
+                          Gallery
+                        </Link>
+                        <Link href={propertyHref} className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
+                          Details
+                        </Link>
                       </div>
 
                       <div className="absolute top-3 right-3">
@@ -283,16 +309,16 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
 
                       {images.length > 1 && (
                         <div className="absolute bottom-3 right-3">
-                          <span className="text-[11px] px-2 py-0.5 rounded-full font-bold bg-black/50 text-white backdrop-blur-sm">
+                          <Link href={propertyHref} className="text-[11px] px-2 py-0.5 rounded-full font-bold bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors">
                             {images.length} Photos
-                          </span>
+                          </Link>
                         </div>
                       )}
                     </div>
 
                     {images.length > 1 && (
                       <div className="px-3 py-2 bg-slate-50 border-y border-slate-100">
-                        <div className="flex gap-1.5">
+                        <Link href={propertyHref} className="flex gap-1.5" aria-label={`Open ${property.title} gallery`}>
                           {images.slice(0, 4).map((img, idx) => (
                             <div key={`${property.id}-${idx}`} className="w-10 h-8 rounded overflow-hidden bg-slate-100 shrink-0">
                               <img src={img} alt={`${property.title} ${idx + 1}`} className="w-full h-full object-cover" />
@@ -303,15 +329,17 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                               +{images.length - 4}
                             </div>
                           )}
-                        </div>
+                        </Link>
                       </div>
                     )}
                     
                     {/* Property Details */}
                     <div className="p-4">
-                      <h3 className="font-bold text-lg text-secondary mb-2 line-clamp-1">
-                        {property.title}
-                      </h3>
+                      <Link href={propertyHref} className="block">
+                        <h3 className="font-bold text-lg text-secondary mb-2 line-clamp-1 hover:text-primary transition-colors">
+                          {property.title}
+                        </h3>
+                      </Link>
                       
                       <div className="text-primary text-xl font-bold mb-3">
                         AED {formatPrice(property.price)}

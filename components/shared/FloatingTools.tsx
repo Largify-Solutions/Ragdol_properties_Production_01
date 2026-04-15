@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
-import { Cog6ToothIcon, XMarkIcon, GlobeAltIcon, CurrencyDollarIcon, MapPinIcon } from '@heroicons/react/24/outline'
+import { usePathname, useRouter } from 'next/navigation'
+import { Cog6ToothIcon, XMarkIcon, LanguageIcon, CurrencyDollarIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import {
   clearSavedLanguageCode,
@@ -193,6 +193,7 @@ function loadGoogleTranslateScript() {
 export default function FloatingTools() {
   const { t, i18n } = useTranslation()
   const pathname = usePathname()
+  const router = useRouter()
   const [hasHydrated, setHasHydrated] = useState(false)
   const [isToolsOpen, setIsToolsOpen] = useState(false)
   const [selectedArea, setSelectedArea] = useState('All Areas')
@@ -326,19 +327,37 @@ export default function FloatingTools() {
     localStorage.setItem('selectedCurrency', currency)
   }
 
+  const applyAreaFilter = (area: string) => {
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+
+    if (!area || area === 'All Areas') {
+      params.delete('search')
+      params.delete('area')
+    } else {
+      params.set('search', area)
+    }
+
+    const query = params.toString()
+    const targetPath = pathname?.startsWith('/properties') ? '/properties' : '/properties'
+    router.push(query ? `${targetPath}?${query}` : targetPath)
+  }
+
   return (
     <>
       {/* Floating Tools Button */}
       <div className="fixed top-1/2 right-4 z-50 transform -translate-y-1/2">
         <button
           onClick={() => setIsToolsOpen(true)}
-          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 group relative"
-          aria-label="Open tools and settings"
+          className="bg-secondary hover:bg-secondary/90 text-secondary-foreground px-3 py-3 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 group relative flex items-center gap-2"
+          aria-label="Open language and settings"
         >
-          <Cog6ToothIcon className="w-5 h-5" />
+          <LanguageIcon className="w-6 h-6" />
+          <span className="text-xs font-semibold tracking-wide hidden sm:inline">
+            {t('tools.language')}
+          </span>
           {/* Tooltip */}
           <div className="absolute right-full mr-2 top-1/2 transform -translate-y-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            Tools
+            {t('tools.language')} &amp; {t('tools.title')}
             <div className="absolute left-full top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-3 border-b-3 border-r-3 border-transparent border-r-gray-800"></div>
           </div>
         </button>
@@ -384,7 +403,7 @@ export default function FloatingTools() {
               {/* Language Switcher */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-gray-700">
-                  <GlobeAltIcon className="w-4 h-4" />
+                  <LanguageIcon className="w-4 h-4" />
                   <h4 className="text-base font-semibold">{t('tools.language')}</h4>
                 </div>
                 <div className="grid grid-cols-1 gap-2">
@@ -451,13 +470,18 @@ export default function FloatingTools() {
                     localStorage.removeItem('selectedArea')
                     clearSavedLanguageCode()
                     localStorage.removeItem('selectedCurrency')
+                    applyAreaFilter('All Areas')
+                    setIsToolsOpen(false)
                   }}
                   className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                 >
                   {t('tools.reset')}
                 </button>
                 <button
-                  onClick={() => setIsToolsOpen(false)}
+                  onClick={() => {
+                    applyAreaFilter(selectedArea)
+                    setIsToolsOpen(false)
+                  }}
                   className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                 >
                   {t('tools.apply')}

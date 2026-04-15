@@ -1,11 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { ChatBubbleLeftRightIcon, XMarkIcon } from '@heroicons/react/24/outline'
-
 export default function FloatingActionButtons() {
-  const [isChatbotOpen, setIsChatbotOpen] = useState(false)
-
   const handleWhatsAppClick = () => {
     // Replace with your actual WhatsApp business number
     const phoneNumber = '+971501234567' // UAE format - update with actual number
@@ -38,68 +33,6 @@ export default function FloatingActionButtons() {
           </div>
         </button>
       </div>
-
-      {/* AI Chatbot Floating Button */}
-      <div className="fixed bottom-20 right-6 z-50 md:bottom-6 md:right-20">
-        <button
-          onClick={() => setIsChatbotOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-105 group relative"
-          aria-label="AI Chatbot"
-        >
-          <ChatBubbleLeftRightIcon className="w-5 h-5" />
-          {/* Tooltip */}
-          <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            AI Assistant
-            <div className="absolute top-full right-4 w-0 h-0 border-l-3 border-r-3 border-t-3 border-transparent border-t-gray-800"></div>
-          </div>
-        </button>
-      </div>
-
-      {/* Chatbot Modal */}
-      {isChatbotOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm">
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-gray-900">AI Assistant</h3>
-              <button
-                onClick={() => setIsChatbotOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <XMarkIcon className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-4">
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <div className="text-3xl mb-3">🤖</div>
-                <h4 className="text-base font-semibold text-gray-900 mb-2">AI Chatbot Coming Soon!</h4>
-                <p className="text-gray-600 text-sm">
-                  Our AI assistant is currently under development. We're working hard to bring you the best real estate AI experience.
-                </p>
-                <p className="text-xs text-gray-500 mt-3">
-                  For immediate assistance, please contact us via WhatsApp or phone.
-                </p>
-              </div>
-              <div className="mt-4 flex gap-2">
-                <button
-                  onClick={() => {
-                    setIsChatbotOpen(false)
-                    handleWhatsAppClick()
-                  }}
-                  className="flex-1 bg-[#FFC636] hover:bg-[#FFC636] text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  WhatsApp
-                </button>
-                <button
-                  onClick={() => setIsChatbotOpen(false)}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   )
 }
