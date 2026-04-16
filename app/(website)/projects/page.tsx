@@ -1914,20 +1914,14 @@ function ProjectsPageContent() {
                             const coords = getLocationCoordinates(
                               detailsModal.project,
                             );
-                            const address = encodeURIComponent(
-                              detailsModal.project.address ||
-                                detailsModal.project.area ||
-                                detailsModal.project.city ||
-                                "Dubai, United Arab Emirates",
-                            );
-                            const mapUrl = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d462562.65095637795!2d54.94728926249997!3d25.07575955953261!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!5e0!3m2!1sen!2s!4v1690465000000!5m2!1sen!2s`;
+                            const googleMapLanguageParams = '&hl=en&gl=US';
 
                             // If we have specific coordinates, use them
                             const preciseMapUrl =
                               detailsModal.project.latitude &&
                               detailsModal.project.longitude
-                                ? `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.178258875107!2d${detailsModal.project.longitude}!3d${detailsModal.project.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!4v${Date.now()}`
-                                : `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d462562.65095637795!2d54.94728926249997!3d25.07575955953261!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!5e0!3m2!1sen!2s!4v1690465000000!5m2!1sen!2s`;
+                                ? `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.178258875107!2d${detailsModal.project.longitude}!3d${detailsModal.project.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!4v${Date.now()}${googleMapLanguageParams}`
+                                : `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d462562.65095637795!2d54.94728926249997!3d25.07575955953261!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!5e0!3m2!1sen!2s!4v1690465000000!5m2!1sen!2s${googleMapLanguageParams}`;
 
                             return (
                               <iframe

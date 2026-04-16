@@ -4,6 +4,9 @@ import { useEffect, useState, useCallback } from 'react'
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet'
 import L from 'leaflet'
 
+const ENGLISH_TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+const ENGLISH_TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+
 // Fix for default marker icon in Leaflet with Next.js
 const icon = L.icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -52,8 +55,8 @@ function MapContent({ lat, lng, onChange }: LocationPickerProps) {
   return (
     <>
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution={ENGLISH_TILE_ATTRIBUTION}
+        url={ENGLISH_TILE_URL}
       />
       <Marker position={[lat, lng]} icon={icon} />
     </>
@@ -85,7 +88,7 @@ export default function LocationPicker({ lat, lng, onChange }: LocationPickerPro
       >
         <MapContent lat={lat} lng={lng} onChange={onChange} />
       </MapContainer>
-      <div className="absolute bottom-2 left-2 z-[1000] bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-border text-[10px] font-bold text-secondary shadow-sm">
+      <div className="absolute bottom-2 left-2 z-1000 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-border text-[10px] font-bold text-secondary shadow-sm">
         Click on map to set location
       </div>
     </div>

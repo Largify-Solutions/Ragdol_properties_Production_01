@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRealtimeMulti } from '@/lib/hooks/useRealtimeSubscription'
 import Link from 'next/link'
 import { 
@@ -11,6 +11,7 @@ import {
   MagnifyingGlassIcon,
   ClockIcon,
   XMarkIcon,
+  ArrowLeftIcon,
   TagIcon,
   ShareIcon,
   BookmarkIcon,
@@ -20,6 +21,7 @@ import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid'
 
 // Supabase import
 import { supabase } from '@/lib/supabase-browser'
+import i18n, { getSavedLanguageCode, normalizeLanguageCode, type SupportedLanguage } from '@/lib/i18n'
 
 // Blog type definition
 type Blog = {
@@ -122,14 +124,53 @@ function getCategoriesFromBlogs(blogs: Blog[]): string[] {
   return ['All', ...Array.from(new Set(categories))]
 }
 
+function getBlogLanguage(blog: Blog): SupportedLanguage | 'unknown' {
+  const normalizedTags = (blog.tags || []).map((tag) => String(tag).toLowerCase())
+
+  if (normalizedTags.includes('lang:ar') || blog.slug.endsWith('-ar')) return 'ar'
+  if (normalizedTags.includes('lang:fr') || blog.slug.endsWith('-fr')) return 'fr'
+  if (normalizedTags.includes('lang:en') || blog.slug.endsWith('-en')) return 'en'
+
+  return 'unknown'
+}
+
+function hasTag(blog: Blog, tag: string): boolean {
+  const normalizedTag = tag.toLowerCase()
+  return (blog.tags || []).some((currentTag) => String(currentTag).toLowerCase() === normalizedTag)
+}
+
+function getBlogsByTab(blogs: Blog[], tab: 'market-reports' | 'developments' | 'insights'): Blog[] {
+  const tagMap = {
+    'market-reports': 'tab:market-reports',
+    developments: 'tab:developments',
+    insights: 'tab:insights',
+  } as const
+
+  const byTag = blogs.filter((blog) => hasTag(blog, tagMap[tab]))
+  if (byTag.length > 0) return byTag
+
+  // Fallback for older records that don't have tab tags yet.
+  if (tab === 'market-reports') {
+    return blogs.filter((blog) => blog.category.toLowerCase().includes('market') || blog.category.toLowerCase().includes('report'))
+  }
+
+  if (tab === 'developments') {
+    return blogs.filter((blog) => blog.category.toLowerCase().includes('development') || blog.category.toLowerCase().includes('project'))
+  }
+
+  return blogs.filter((blog) => blog.category.toLowerCase().includes('investment') || blog.category.toLowerCase().includes('insight') || blog.category.toLowerCase().includes('trend'))
+}
+
 export default function NewsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('latest')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [searchTerm, setSearchTerm] = useState('')
+  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguage>('en')
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const modalPushedToHistoryRef = useRef(false)
   const [savedBlogs, setSavedBlogs] = useState<string[]>([])
   const [imageLoaded, setImageLoaded] = useState<{[key: string]: boolean}>({})
 
@@ -150,8 +191,30 @@ export default function NewsPage() {
     { table: 'posts', onChange: () => { loadBlogs() } }
   ])
 
-  // Filter blogs based on category and search
-  const filteredBlogs = blogs.filter(blog => {
+  useEffect(() => {
+    const initialLanguage = normalizeLanguageCode(i18n.language || getSavedLanguageCode())
+    setCurrentLanguage(initialLanguage)
+
+    const handleLanguageChange = (language: string) => {
+      setCurrentLanguage(normalizeLanguageCode(language))
+    }
+
+    i18n.on('languageChanged', handleLanguageChange)
+    return () => i18n.off('languageChanged', handleLanguageChange)
+  }, [])
+
+  const languageMatchedBlogs = blogs.filter((blog) => {
+    const blogLanguage = getBlogLanguage(blog)
+    if (currentLanguage === 'ar') return blogLanguage === 'ar'
+    if (currentLanguage === 'fr') return blogLanguage === 'fr'
+    return blogLanguage === 'en' || blogLanguage === 'unknown'
+  })
+
+  // Fallback keeps legacy records visible if language-tagged records are missing.
+  const visibleBlogs = languageMatchedBlogs.length > 0 ? languageMatchedBlogs : blogs
+
+  // Filter latest tab based on category and search
+  const filteredBlogs = visibleBlogs.filter(blog => {
     const matchesCategory = selectedCategory === 'All' || blog.category === selectedCategory
     const matchesSearch = blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -159,13 +222,89 @@ export default function NewsPage() {
     return matchesCategory && matchesSearch
   })
 
-  // Handle Read More click
-  const handleReadMore = (blog: Blog) => {
+  const marketReportBlogs = getBlogsByTab(visibleBlogs, 'market-reports')
+  const developmentBlogs = getBlogsByTab(visibleBlogs, 'developments')
+  const insightBlogs = getBlogsByTab(visibleBlogs, 'insights')
+
+  const closeBlogModal = useCallback((tryHistoryBack = true) => {
+    if (typeof window === 'undefined') {
+      setIsModalOpen(false)
+      setSelectedBlog(null)
+      return
+    }
+
+    if (tryHistoryBack && modalPushedToHistoryRef.current) {
+      window.history.back()
+      return
+    }
+
+    const url = new URL(window.location.href)
+    if (url.searchParams.has('article')) {
+      url.searchParams.delete('article')
+      window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`)
+    }
+
+    modalPushedToHistoryRef.current = false
+    setIsModalOpen(false)
+    setSelectedBlog(null)
+  }, [])
+
+  const openBlogModal = useCallback((blog: Blog, pushHistory = true) => {
     setSelectedBlog(blog)
     setIsModalOpen(true)
     // Reset image loaded state for this blog
     setImageLoaded(prev => ({...prev, [blog.id]: false}))
+
+    if (typeof window === 'undefined') return
+
+    if (pushHistory) {
+      const modalUrl = `/news?article=${encodeURIComponent(blog.slug || blog.id)}`
+      window.history.pushState({ newsModal: true, article: blog.slug || blog.id }, '', modalUrl)
+      modalPushedToHistoryRef.current = true
+    }
+  }, [])
+
+  // Handle Read More click
+  const handleReadMore = (blog: Blog) => {
+    openBlogModal(blog, true)
   }
+
+  // Keep browser back behavior intuitive: close modal first, then navigate away.
+  useEffect(() => {
+    const handlePopState = () => {
+      if (!isModalOpen) return
+
+      modalPushedToHistoryRef.current = false
+      setIsModalOpen(false)
+      setSelectedBlog(null)
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [isModalOpen])
+
+  // Open modal when article query param is present, so shared links work.
+  useEffect(() => {
+    if (typeof window === 'undefined' || blogs.length === 0 || isModalOpen) return
+
+    const article = new URLSearchParams(window.location.search).get('article')
+    if (!article) return
+
+    const directMatch = blogs.find((b) => b.slug === article || b.id === article)
+
+    if (directMatch) {
+      openBlogModal(directMatch, false)
+      return
+    }
+
+    const baseSlug = article.replace(/-(en|fr|ar)$/i, '')
+    const localizedSlug = `${baseSlug}-${currentLanguage}`
+    const localizedMatch = blogs.find((b) => b.slug === localizedSlug)
+
+    if (localizedMatch) {
+      openBlogModal(localizedMatch, false)
+    }
+  }, [blogs, currentLanguage, isModalOpen, openBlogModal])
 
   // Handle Save Blog
   const handleSaveBlog = (blogId: string) => {
@@ -178,14 +317,16 @@ export default function NewsPage() {
 
   // Handle Share
   const handleShare = (blog: Blog) => {
+    const articleUrl = `${window.location.origin}/news?article=${encodeURIComponent(blog.slug || blog.id)}`
+
     if (navigator.share) {
       navigator.share({
         title: blog.title,
         text: blog.excerpt,
-        url: window.location.origin + `/news/${blog.slug || blog.id}`,
+        url: articleUrl,
       })
     } else {
-      navigator.clipboard.writeText(window.location.origin + `/news/${blog.slug || blog.id}`)
+      navigator.clipboard.writeText(articleUrl)
       alert('Link copied to clipboard!')
     }
   }
@@ -196,7 +337,7 @@ export default function NewsPage() {
   }
 
   // Get categories from blogs
-  const categories = getCategoriesFromBlogs(blogs)
+  const categories = getCategoriesFromBlogs(visibleBlogs)
 
   if (loading) {
     return (
@@ -424,9 +565,7 @@ export default function NewsPage() {
               <span className="text-secondary">Market Reports</span> <span className="text-primary">& Analysis</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {blogs
-                .filter(blog => blog.category.toLowerCase().includes('market') || blog.category.toLowerCase().includes('report'))
-                .map((blog) => (
+              {marketReportBlogs.map((blog) => (
                 <div key={blog.id} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-lg">
                   <h3 className="text-xl font-bold text-secondary mb-3 hover:text-primary transition-colors">
                     {blog.title}
@@ -455,9 +594,7 @@ export default function NewsPage() {
               <span className="text-secondary">New Developments</span> <span className="text-primary">& Projects</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {blogs
-                .filter(blog => blog.category.toLowerCase().includes('development') || blog.category.toLowerCase().includes('project'))
-                .map((blog) => (
+              {developmentBlogs.map((blog) => (
                 <div key={blog.id} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-lg">
                   <h3 className="text-xl font-bold text-secondary mb-3 hover:text-primary transition-colors">
                     {blog.title}
@@ -486,13 +623,7 @@ export default function NewsPage() {
               <span className="text-secondary">Investment Insights</span> <span className="text-primary">& Trends</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {blogs
-                .filter(blog => 
-                  blog.category.toLowerCase().includes('investment') || 
-                  blog.category.toLowerCase().includes('insight') ||
-                  blog.category.toLowerCase().includes('trend')
-                )
-                .map((blog) => (
+              {insightBlogs.map((blog) => (
                 <div key={blog.id} className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-primary/40 transition-all duration-300 shadow-sm hover:shadow-md">
                   <h3 className="text-xl font-bold text-secondary mb-3 hover:text-primary transition-colors">
                     {blog.title}
@@ -534,9 +665,18 @@ export default function NewsPage() {
       {isModalOpen && selectedBlog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm h-full w-full mt-25">
           <div className="relative w-full h-full bg-white rounded-3xl shadow-2xl animate-fadeIn overflow-hidden">
+            {/* Back Button */}
+            <button
+              onClick={() => closeBlogModal(true)}
+              className="absolute top-4 left-4 z-50 h-10 px-3 bg-white/90 backdrop-blur-md rounded-full flex items-center gap-1.5 text-slate-700 hover:text-primary transition-colors shadow-lg hover:shadow-xl"
+            >
+              <ArrowLeftIcon className="h-5 w-5" />
+              <span className="text-xs font-semibold">Back</span>
+            </button>
+
             {/* Close Button */}
             <button
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => closeBlogModal(true)}
               className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-slate-700 hover:text-primary transition-colors shadow-lg hover:shadow-xl"
             >
               <XMarkIcon className="h-6 w-6" />

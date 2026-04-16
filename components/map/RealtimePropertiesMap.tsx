@@ -4,6 +4,9 @@ import { useMemo } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 
+const ENGLISH_TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+const ENGLISH_TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+
 const defaultCenter: [number, number] = [25.2048, 55.2708]
 
 const markerIcon = L.icon({
@@ -84,8 +87,8 @@ export default function RealtimePropertiesMap({ properties }: RealtimeProperties
           style={{ height: '100%', width: '100%' }}
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution={ENGLISH_TILE_ATTRIBUTION}
+            url={ENGLISH_TILE_URL}
           />
 
           {safeProperties.map((property) => (

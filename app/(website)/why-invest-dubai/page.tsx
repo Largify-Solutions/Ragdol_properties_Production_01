@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { ChartBarIcon, GlobeAltIcon, BuildingOfficeIcon, CurrencyDollarIcon, ShieldCheckIcon, ArrowTrendingUpIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 
 const investmentReasons = [
@@ -97,9 +98,21 @@ const propertyPriceData = [
   { area: 'JVC', '2021': 700, '2022': 800, '2023': 950, '2024': 1150, '2025': 1400 },
 ]
 
+const rentalYieldData = [
+  { area: 'Dubai Marina', '2021': 6.0, '2022': 6.2, '2023': 6.6, '2024': 6.9, '2025': 7.1 },
+  { area: 'Palm Jumeirah', '2021': 4.3, '2022': 4.5, '2023': 4.8, '2024': 5.0, '2025': 5.2 },
+  { area: 'Downtown Dubai', '2021': 5.1, '2022': 5.3, '2023': 5.7, '2024': 6.0, '2025': 6.3 },
+  { area: 'Business Bay', '2021': 6.5, '2022': 6.8, '2023': 7.1, '2024': 7.4, '2025': 7.7 },
+  { area: 'JVC', '2021': 7.2, '2022': 7.5, '2023': 7.9, '2024': 8.3, '2025': 8.7 },
+]
+
 export default function WhyInvestDubaiPage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [selectedChart, setSelectedChart] = useState('price-growth')
+  const activeChartData = selectedChart === 'price-growth' ? propertyPriceData : rentalYieldData
+  const maxChartValue = selectedChart === 'price-growth' ? 3500 : 10
+  const valuePrefix = selectedChart === 'price-growth' ? 'AED ' : ''
+  const valueSuffix = selectedChart === 'price-growth' ? '' : '%'
 
   return (
     <div className="min-h-screen bg-white text-secondary">
@@ -114,12 +127,12 @@ export default function WhyInvestDubaiPage() {
               Discover why Dubai is the world's premier destination for property investment
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+              <Link href="/contact?topic=investment-consultation&source=why-invest-dubai" className="px-8 py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
                 Start Investing Today
-              </button>
-              <button className="px-8 py-4 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition-colors">
+              </Link>
+              <Link href="/guides" className="px-8 py-4 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition-colors">
                 Download Investment Guide
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -376,9 +389,8 @@ export default function WhyInvestDubaiPage() {
 
                     {/* Graph Bars */}
                     <div className="space-y-8">
-                      {propertyPriceData.map((area, areaIndex) => {
+                      {activeChartData.map((area, areaIndex) => {
                         const colors = ['#c5a059', '#1e293b', '#3b82f6', '#10b981', '#8b5cf6']
-                        const maxValue = 3500
                         
                         return (
                           <div key={areaIndex} className="flex items-center">
@@ -387,7 +399,7 @@ export default function WhyInvestDubaiPage() {
                               <div className="flex items-center space-x-2">
                                 {['2021', '2022', '2023', '2024', '2025'].map((year, yearIndex) => {
                                   const value = area[year as keyof typeof area] as number
-                                  const percentage = (value / maxValue) * 100
+                                  const percentage = (value / maxChartValue) * 100
                                   
                                   return (
                                     <div key={yearIndex} className="flex-1">
@@ -403,7 +415,7 @@ export default function WhyInvestDubaiPage() {
                                           />
                                           <div className="absolute inset-0 flex items-center justify-center">
                                             <span className="text-xs font-semibold text-white mix-blend-difference">
-                                              AED {value}
+                                              {valuePrefix}{value}{valueSuffix}
                                             </span>
                                           </div>
                                         </div>
@@ -431,19 +443,19 @@ export default function WhyInvestDubaiPage() {
                   {/* Graph Summary */}
                   <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                      <div className="text-sm text-blue-700 mb-1">Highest Growth</div>
-                      <div className="text-lg font-bold text-blue-800">Palm Jumeirah</div>
-                      <div className="text-sm text-blue-600">+92% over 4 years</div>
+                      <div className="text-sm text-blue-700 mb-1">{selectedChart === 'price-growth' ? 'Highest Growth' : 'Top Rental Yield'}</div>
+                      <div className="text-lg font-bold text-blue-800">{selectedChart === 'price-growth' ? 'Palm Jumeirah' : 'JVC'}</div>
+                      <div className="text-sm text-blue-600">{selectedChart === 'price-growth' ? '+92% over 4 years' : '8.7% in 2025'}</div>
                     </div>
                     <div className="bg-[#FFC636]/10 p-4 rounded-lg border border-[#FFC636]/20">
-                      <div className="text-sm text-[#FFC636] mb-1">Average Growth</div>
-                      <div className="text-lg font-bold text-[#FFC636]">+87%</div>
-                      <div className="text-sm text-[#FFC636]">Across all prime areas</div>
+                      <div className="text-sm text-[#FFC636] mb-1">{selectedChart === 'price-growth' ? 'Average Growth' : 'Average Yield'}</div>
+                      <div className="text-lg font-bold text-[#FFC636]">{selectedChart === 'price-growth' ? '+87%' : '7.0%'}</div>
+                      <div className="text-sm text-[#FFC636]">{selectedChart === 'price-growth' ? 'Across all prime areas' : 'Across key residential areas'}</div>
                     </div>
                     <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
-                      <div className="text-sm text-purple-700 mb-1">Best Value</div>
-                      <div className="text-lg font-bold text-purple-800">JVC</div>
-                      <div className="text-sm text-purple-600">+100% growth at lower entry</div>
+                      <div className="text-sm text-purple-700 mb-1">{selectedChart === 'price-growth' ? 'Best Value' : 'Most Stable Yield'}</div>
+                      <div className="text-lg font-bold text-purple-800">{selectedChart === 'price-growth' ? 'JVC' : 'Dubai Marina'}</div>
+                      <div className="text-sm text-purple-600">{selectedChart === 'price-growth' ? '+100% growth at lower entry' : 'Consistent rise from 6.0% to 7.1%'}</div>
                     </div>
                   </div>
                 </div>
@@ -676,12 +688,12 @@ export default function WhyInvestDubaiPage() {
             Join thousands of successful investors who have discovered Dubai's unparalleled investment potential.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
+            <Link href="/contact?topic=investment-consultation&source=why-invest-dubai-cta" className="px-8 py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors">
               Get Investment Consultation
-            </button>
-            <button className="px-8 py-4 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition-colors">
+            </Link>
+            <Link href="/contact?topic=property-tour&source=why-invest-dubai-cta" className="px-8 py-4 border-2 border-primary text-primary rounded-lg font-semibold hover:bg-primary hover:text-white transition-colors">
               Schedule Property Tour
-            </button>
+            </Link>
           </div>
         </div>
       </div>
