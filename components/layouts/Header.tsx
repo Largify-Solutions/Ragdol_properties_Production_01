@@ -485,7 +485,7 @@ export default function Header() {
       />
     </Link>
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-2 flex-1 justify-center px-">
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-2 flex-1 justify-center px-2 xl:px-4 min-w-0">
           {navigation.map((item) => (
             <div key={item.label} className="relative">
               {item.hasDropdown ? (
@@ -495,7 +495,7 @@ export default function Header() {
                   onMouseLeave={scheduleCloseAll}
                 >
                   <button
-                    className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide transition-all hover:text-primary hover:bg-slate-50 cursor-pointer text-secondary"
+                    className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide whitespace-nowrap transition-all hover:text-primary hover:bg-slate-50 cursor-pointer text-secondary"
                     onClick={() => toggleMenu(item.menuKey)}
                   >
                     {item.label}
@@ -591,14 +591,14 @@ export default function Header() {
               ) : item.isValuation ? (
                 <button
                   onClick={() => setIsValuationModalOpen(true)}
-                  className="px-2 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide transition-all hover:text-primary hover:bg-slate-50 relative group text-secondary"
+                  className="px-2 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide whitespace-nowrap transition-all hover:text-primary hover:bg-slate-50 relative group text-secondary"
                 >
                   {item.label}
                 </button>
               ) : (
                 <Link
                   href={item.href!}
-                  className="px-2 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide transition-all hover:text-primary hover:bg-slate-50 relative group text-secondary"
+                  className="px-2 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide whitespace-nowrap transition-all hover:text-primary hover:bg-slate-50 relative group text-secondary"
                 >
                   {item.label}
                 </Link>
@@ -608,14 +608,14 @@ export default function Header() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-3 ml-6">
+        <div className="flex items-center gap-2 xl:gap-3 ml-2 xl:ml-6 shrink-0">
           <button
             onClick={() => setIsValuationModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg font-bold text-xs transition-all bg-primary text-white hover:bg-primary/90 hover:shadow-lg shadow-md active:scale-95"
+            className="flex items-center gap-1 px-2 xl:px-3 py-2 rounded-lg font-bold text-xs whitespace-nowrap transition-all bg-primary text-white hover:bg-primary/90 hover:shadow-lg shadow-md active:scale-95"
             title="Get property valuation"
           >
             <CalculatorIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">Valuation</span>
+            <span className="hidden xl:inline">Valuation</span>
           </button>
 
           {/* User Profile or Sign In */}
@@ -624,13 +624,13 @@ export default function Header() {
             <div className="relative" data-profile-dropdown>
               <button
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg font-bold text-xs transition-all bg-secondary text-white hover:bg-primary group"
+                className="flex items-center gap-1 px-2 py-2 rounded-lg font-bold text-xs whitespace-nowrap transition-all bg-secondary text-white hover:bg-primary group"
                 title={profile.full_name || profile.email}
               >
                 <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center group-hover:bg-white/30">
                   <UserIcon className="h-4 w-4" />
                 </div>
-                <span className="hidden sm:inline text-[11px]">{profile.full_name?.split(' ')[0] || 'Profile'}</span>
+                <span className="hidden xl:inline text-[11px]">{profile.full_name?.split(' ')[0] || 'Profile'}</span>
                 <ChevronDownIcon className={cn(
                   "h-4 w-4 transition-transform",
                   isProfileDropdownOpen && "rotate-180"
@@ -675,13 +675,13 @@ export default function Header() {
             <div className="relative" data-profile-dropdown>
               <button
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg font-bold text-xs transition-all bg-primary text-white hover:bg-secondary group"
+                className="flex items-center gap-1 px-2 py-2 rounded-lg font-bold text-xs whitespace-nowrap transition-all bg-primary text-white hover:bg-secondary group"
                 title="Account"
               >
                 <div className="w-6 h-6 rounded-lg bg-white/20 flex items-center justify-center group-hover:bg-white/30">
                   <UserIcon className="h-4 w-4" />
                 </div>
-                <span className="hidden sm:inline text-[11px]">Account</span>
+                <span className="hidden xl:inline text-[11px]">Account</span>
                 <ChevronDownIcon className={cn(
                   "h-4 w-4 transition-transform",
                   isProfileDropdownOpen && "rotate-180"
