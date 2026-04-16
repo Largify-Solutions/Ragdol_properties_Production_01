@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Cog6ToothIcon, XMarkIcon, LanguageIcon, CurrencyDollarIcon, MapPinIcon } from '@heroicons/react/24/outline'
+import { Cog6ToothIcon, XMarkIcon, LanguageIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import {
   clearSavedLanguageCode,
@@ -198,7 +198,6 @@ export default function FloatingTools() {
   const [isToolsOpen, setIsToolsOpen] = useState(false)
   const [selectedArea, setSelectedArea] = useState('All Areas')
   const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>('en')
-  const [selectedCurrency, setSelectedCurrency] = useState('AED')
 
   useEffect(() => {
     setHasHydrated(true)
@@ -210,7 +209,6 @@ export default function FloatingTools() {
     const savedLanguage = getSavedLanguageCode()
     const cookieLanguage = getGoogleTranslateCookieLanguage()
     const initialLanguage = cookieLanguage ?? savedLanguage
-    const savedCurrency = localStorage.getItem('selectedCurrency')
 
     if (savedArea) setSelectedArea(savedArea)
     setSelectedLanguage(initialLanguage)
@@ -226,8 +224,6 @@ export default function FloatingTools() {
     } else {
       setGoogleTranslateCookie(initialLanguage)
     }
-
-    if (savedCurrency) setSelectedCurrency(savedCurrency)
   }, []) // Remove i18n dependency to prevent re-running
 
   useEffect(() => {
@@ -288,15 +284,6 @@ export default function FloatingTools() {
     { code: 'ar', name: 'العربية', flag: '🇦🇪' }
   ]
 
-  const currencies = [
-    { code: 'AED', name: 'AED', symbol: 'د.إ' },
-    { code: 'USD', name: 'USD', symbol: '$' },
-    { code: 'PKR', name: 'PKR', symbol: '₨' },
-    { code: 'EUR', name: 'EUR', symbol: '€' },
-    { code: 'GBP', name: 'GBP', symbol: '£' },
-    { code: 'INR', name: 'INR', symbol: '₹' }
-  ]
-
   const handleAreaChange = (area: string) => {
     setSelectedArea(area)
     // Here you would typically update the global state or context
@@ -319,12 +306,6 @@ export default function FloatingTools() {
     loadGoogleTranslateScript()
     applyGoogleTranslateLanguage(languageCode)
     // Note: HTML lang and dir attributes are handled by DynamicHtml component
-  }
-
-  const handleCurrencyChange = (currency: string) => {
-    setSelectedCurrency(currency)
-    // Here you would typically update the global currency state
-    localStorage.setItem('selectedCurrency', currency)
   }
 
   const applyAreaFilter = (area: string) => {
@@ -427,33 +408,6 @@ export default function FloatingTools() {
                 </div>
               </div>
 
-              {/* Currency Switcher */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <CurrencyDollarIcon className="w-4 h-4" />
-                  <h4 className="text-base font-semibold">{t('tools.currency')}</h4>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {currencies.map((currency) => (
-                    <button
-                      key={currency.code}
-                      onClick={() => handleCurrencyChange(currency.code)}
-                      className={`flex items-center gap-1 px-2 py-2 rounded-lg border text-xs transition-all ${
-                        selectedCurrency === currency.code
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                    >
-                      <span className="font-medium">{currency.symbol}</span>
-                      <span>{currency.name}</span>
-                      {selectedCurrency === currency.code && (
-                        <div className="ml-auto w-1.5 h-1.5 bg-primary rounded-full"></div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Action Buttons */}
               <div className="flex gap-2 pt-3 border-t border-gray-200">
                 <button
@@ -461,7 +415,6 @@ export default function FloatingTools() {
                     // Reset to defaults
                     setSelectedArea('All Areas')
                     setSelectedLanguage('en')
-                    setSelectedCurrency('AED')
                     i18n.changeLanguage('en')
                     clearGoogleTranslateCookie()
                     resetGoogleTranslateToEnglish()
@@ -469,7 +422,6 @@ export default function FloatingTools() {
                     document.documentElement.dir = 'ltr'
                     localStorage.removeItem('selectedArea')
                     clearSavedLanguageCode()
-                    localStorage.removeItem('selectedCurrency')
                     applyAreaFilter('All Areas')
                     setIsToolsOpen(false)
                   }}
