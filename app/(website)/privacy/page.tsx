@@ -2,6 +2,7 @@
 
 import { EyeIcon, LockClosedIcon, UserGroupIcon, ShieldCheckIcon, DocumentCheckIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function PrivacyPolicyPage() {
   const sections = [
@@ -158,9 +159,12 @@ export default function PrivacyPolicyPage() {
         <div className="container-custom text-center">
           <h2 className="text-3xl font-serif text-secondary mb-6">Privacy Concerns?</h2>
           <p className="text-slate-500 mb-10">Our Data Protection Officer is here to help.</p>
-          <button className="px-10 py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300">
+          <Link
+            href="/contact?subject=privacy"
+            className="inline-block px-10 py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300"
+          >
             Contact DPO
-          </button>
+          </Link>
         </div>
       </section>
     </div>

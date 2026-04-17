@@ -195,6 +195,9 @@ export default function PricesIndexPage() {
               {otherSearches.map((search, index) => (
                 <button
                   key={index}
+                  onClick={() => {
+                    window.location.href = `/properties?search=${encodeURIComponent(search)}`
+                  }}
                   className="text-left py-3 px-4 rounded-lg transition-all hover:shadow-md"
                   style={{
                     backgroundColor: lightGold,
@@ -229,7 +232,7 @@ export default function PricesIndexPage() {
             <button
               className="font-bold py-3 px-8 rounded-lg transition-colors"
               style={{ borderColor: goldColor, color: goldColor, borderWidth: '2px' }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = lightGold)}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#a88549')}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
             >
               Schedule Consultation

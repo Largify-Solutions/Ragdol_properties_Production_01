@@ -247,7 +247,7 @@ export default function AccountPage() {
               <div className="card-custom p-8">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-foreground">Profile Information</h2>
-                  <button className="btn-outline flex items-center gap-2">
+                  <button onClick={() => setActiveTab('settings')} className="btn-outline flex items-center gap-2">
                     <PencilSquareIcon className="h-4 w-4" />
                     Edit Profile
                   </button>
@@ -646,9 +646,9 @@ export default function AccountPage() {
                   </div>
 
                   <div className="pt-6 border-t border-border">
-                    <button className="btn-outline text-red-400 border-red-400 hover:bg-red-400/10">
+                    <Link href="/contact?subject=delete-account-request" className="btn-outline inline-flex text-red-400 border-red-400 hover:bg-red-400/10">
                       Delete Account
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

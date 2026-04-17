@@ -248,16 +248,19 @@ export default function MarketInsightsPage() {
           </p>
 
           <div className="max-w-md mx-auto">
-            <div className="flex gap-4">
+            <form action="/contact" method="get" className="flex gap-4">
               <input
                 type="email"
+                name="email"
                 placeholder="Enter your email"
+                required
                 className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
-              <button className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+              <input type="hidden" name="subject" value="newsletter" />
+              <button type="submit" className="bg-primary hover:bg-primary/90 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
                 Subscribe
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>

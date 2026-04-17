@@ -125,9 +125,12 @@ export default function ProjectsPage() {
                   >
                     View Properties
                   </Link>
-                  <button className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-colors text-sm">
+                  <Link
+                    href={`/projects?search=${project.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-colors text-sm text-center"
+                  >
                     More Info
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

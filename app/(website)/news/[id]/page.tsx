@@ -267,6 +267,7 @@ export default function NewsArticlePage() {
   const router = useRouter()
   const [article, setArticle] = useState<any>(null)
   const [currentArticleIndex, setCurrentArticleIndex] = useState<number>(-1)
+  const [isBookmarked, setIsBookmarked] = useState(false)
 
   useEffect(() => {
     const articleId = parseInt(params.id as string)
@@ -294,6 +295,55 @@ export default function NewsArticlePage() {
 
   const previousArticle = currentArticleIndex > 0 ? newsArticles[currentArticleIndex - 1] : null
   const nextArticle = currentArticleIndex < newsArticles.length - 1 ? newsArticles[currentArticleIndex + 1] : null
+
+  useEffect(() => {
+    if (!article || typeof window === 'undefined') return
+
+    try {
+      const stored = localStorage.getItem('bookmarked_news_articles')
+      const bookmarks: number[] = stored ? JSON.parse(stored) : []
+      setIsBookmarked(bookmarks.includes(article.id))
+    } catch {
+      setIsBookmarked(false)
+    }
+  }, [article])
+
+  const handleShare = async () => {
+    if (typeof window === 'undefined' || !article) return
+
+    const shareData = {
+      title: article.title,
+      text: article.excerpt,
+      url: window.location.href,
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(window.location.href)
+      }
+    } catch {
+      // User cancelled share or clipboard failed.
+    }
+  }
+
+  const handleBookmark = () => {
+    if (typeof window === 'undefined' || !article) return
+
+    try {
+      const stored = localStorage.getItem('bookmarked_news_articles')
+      const bookmarks: number[] = stored ? JSON.parse(stored) : []
+      const nextBookmarks = bookmarks.includes(article.id)
+        ? bookmarks.filter((id) => id !== article.id)
+        : [...bookmarks, article.id]
+
+      localStorage.setItem('bookmarked_news_articles', JSON.stringify(nextBookmarks))
+      setIsBookmarked(nextBookmarks.includes(article.id))
+    } catch {
+      // Ignore localStorage failures for privacy-restricted environments.
+    }
+  }
 
   return (
     <div className="min-h-screen bg-secondary">
@@ -340,11 +390,11 @@ export default function NewsArticlePage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <button className="p-2 rounded-full hover:bg-slate-800 transition-colors">
+              <button onClick={handleShare} aria-label="Share article" className="p-2 rounded-full hover:bg-slate-800 transition-colors">
                 <ShareIcon className="h-5 w-5 text-slate-300" />
               </button>
-              <button className="p-2 rounded-full hover:bg-slate-800 transition-colors">
-                <BookmarkIcon className="h-5 w-5 text-slate-300" />
+              <button onClick={handleBookmark} aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark article'} className="p-2 rounded-full hover:bg-slate-800 transition-colors">
+                <BookmarkIcon className={`h-5 w-5 ${isBookmarked ? 'text-primary' : 'text-slate-300'}`} />
               </button>
             </div>
           </div>
@@ -459,16 +509,19 @@ export default function NewsArticlePage() {
           <p className="text-lg mb-8 text-slate-300 max-w-2xl mx-auto">
             Subscribe to our newsletter for exclusive market insights and property updates.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+          <form action="/contact" method="get" className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <input
               type="email"
+              name="email"
               placeholder="Enter your email"
+              required
               className="flex-1 px-4 py-3 border border-primary/30 bg-slate-800 text-white rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
             />
-            <button className="px-8 py-3 bg-primary text-secondary font-bold rounded-xl hover:bg-white transition-all whitespace-nowrap">
+            <input type="hidden" name="subject" value="newsletter" />
+            <button type="submit" className="px-8 py-3 bg-primary text-secondary font-bold rounded-xl hover:bg-white transition-all whitespace-nowrap">
               Subscribe
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

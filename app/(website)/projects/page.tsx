@@ -1024,6 +1024,42 @@ function ProjectsPageContent() {
     setRequestInfoModal({ isOpen: true, project: project });
   };
 
+  const handleSaveProject = (project: Project | null) => {
+    if (!project || typeof window === "undefined") return;
+
+    try {
+      const key = "saved_projects";
+      const existing: string[] = JSON.parse(localStorage.getItem(key) || "[]");
+      const updated = existing.includes(project.id)
+        ? existing
+        : [...existing, project.id];
+      localStorage.setItem(key, JSON.stringify(updated));
+    } catch {
+      // Ignore localStorage failures.
+    }
+  };
+
+  const handleShareProject = async (project: Project | null) => {
+    if (!project || typeof window === "undefined") return;
+
+    const shareUrl = `${window.location.origin}/projects/${project.id}`;
+    const shareData = {
+      title: project.name,
+      text: `Check out ${project.name} on Ragdoll Properties`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+      }
+    } catch {
+      // User cancelled share or clipboard failed.
+    }
+  };
+
   const filteredProjects =
     selectedDeveloper === "all"
       ? projects
@@ -1579,11 +1615,17 @@ function ProjectsPageContent() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <button className="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-colors text-sm">
+                  <button
+                    onClick={() => handleSaveProject(detailsModal.project)}
+                    className="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-colors text-sm"
+                  >
                     <HeartIcon className="h-4 w-4 mr-2 inline" />
                     Save Project
                   </button>
-                  <button className="px-5 py-2 border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-colors text-sm">
+                  <button
+                    onClick={() => handleShareProject(detailsModal.project)}
+                    className="px-5 py-2 border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-colors text-sm"
+                  >
                     <ShareIcon className="h-4 w-4 mr-2 inline" />
                     Share
                   </button>

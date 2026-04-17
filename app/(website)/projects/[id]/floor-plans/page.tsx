@@ -431,7 +431,10 @@ function FloorPlansContent() {
                       >
                         Request More Information
                       </button>
-                      <button className="flex-1 py-4 bg-slate-100 text-secondary font-bold rounded-xl hover:bg-slate-200 transition-all duration-300">
+                      <button
+                        onClick={() => setInquiryModal(true)}
+                        className="flex-1 py-4 bg-slate-100 text-secondary font-bold rounded-xl hover:bg-slate-200 transition-all duration-300"
+                      >
                         Schedule Viewing
                       </button>
                     </div>

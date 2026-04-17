@@ -96,6 +96,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
     })
   }
 
+  const projectUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://ragdol.com'}/projects/${id}`
+  const shareText = encodeURIComponent(`Check out ${project.name} on Ragdoll Properties: ${projectUrl}`)
+
   return (
     <div className="w-full min-h-screen bg-background">
       {/* Breadcrumbs */}
@@ -122,14 +125,22 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
             Back to Projects
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
-            <button className="flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-muted transition-colors">
+            <a
+              href={`https://wa.me/?text=${shareText}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-muted transition-colors"
+            >
               <ShareIcon className="w-4 h-4" />
               <span className="hidden sm:inline">Share</span>
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-muted transition-colors">
+            </a>
+            <Link
+              href={`/contact?subject=save-project&project=${encodeURIComponent(project.name || id)}`}
+              className="flex items-center gap-2 px-3 py-2 text-sm border border-border rounded-lg hover:bg-muted transition-colors"
+            >
               <HeartIcon className="w-4 h-4" />
               <span className="hidden sm:inline">Save</span>
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -506,9 +517,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
               <p className="text-muted-foreground mb-6">
                 Check out reviews and share your rating for this project to help others make informed decisions.
               </p>
-              <button className="btn-primary">
+              <Link href={`/contact?subject=project-review&project=${encodeURIComponent(project.name || id)}`} className="btn-primary inline-flex items-center justify-center">
                 REVIEW THIS PROJECT
-              </button>
+              </Link>
             </div>
 
             {/* FAQ Section */}
@@ -543,9 +554,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                   </div>
                 </details>
               </div>
-              <button className="w-full btn-outline mt-6">
+              <Link href="/faqs" className="w-full btn-outline mt-6 inline-flex items-center justify-center">
                 MORE FAQS
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -597,9 +608,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 </div>
               </div>
 
-              <button className="w-full btn-primary mb-4">
+              <Link href={`/contact?subject=exclusive-offers&project=${encodeURIComponent(project.name || id)}`} className="w-full btn-primary mb-4 inline-flex items-center justify-center">
                 Continue
-              </button>
+              </Link>
 
               <div className="text-center">
                 <p className="text-sm text-muted-foreground mb-4">
@@ -610,9 +621,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                   placeholder="Email Address"
                   className="w-full p-3 border border-border rounded-lg bg-background mb-4"
                 />
-                <button className="w-full btn-primary">
+                <Link href={`/contact?subject=project-contact&project=${encodeURIComponent(project.name || id)}`} className="w-full btn-primary inline-flex items-center justify-center">
                   Submit
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -681,9 +692,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
                 placeholder="Email Address"
                 className="w-full p-3 border border-border rounded-lg bg-background mb-4"
               />
-              <button className="w-full btn-primary">
+              <Link href={`/contact?subject=project-newsletter&project=${encodeURIComponent(project.name || id)}`} className="w-full btn-primary inline-flex items-center justify-center">
                 SUBSCRIBE
-              </button>
+              </Link>
             </div>
           </div>
         </div>

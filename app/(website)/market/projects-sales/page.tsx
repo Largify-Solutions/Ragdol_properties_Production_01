@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import {
   HomeIcon,
   MapPinIcon,
@@ -465,9 +466,9 @@ function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         {/* CTA Button */}
-        <button className="w-full bg-[#FFC636] text-white font-semibold py-2 rounded-lg hover:bg-[#FFC636] transition-colors">
+        <Link href="/projects" className="block w-full text-center bg-[#FFC636] text-white font-semibold py-2 rounded-lg hover:bg-[#FFC636] transition-colors">
           Learn More
-        </button>
+        </Link>
       </div>
     </div>
   );

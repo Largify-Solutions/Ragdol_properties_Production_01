@@ -305,6 +305,19 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   const [relatedProperties, setRelatedProperties] = useState<RelatedProperty[]>([])
   const [loading, setLoading] = useState(true)
   const [notFoundState, setNotFoundState] = useState(false)
+  const [savedPropertyIds, setSavedPropertyIds] = useState<string[]>([])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    try {
+      const saved = JSON.parse(localStorage.getItem('saved_properties') || '[]')
+      if (Array.isArray(saved)) {
+        setSavedPropertyIds(saved)
+      }
+    } catch {
+      setSavedPropertyIds([])
+    }
+  }, [])
 
   useEffect(() => {
     async function loadData() {
@@ -351,6 +364,42 @@ export default function PropertyPage({ params }: PropertyPageProps) {
     }
     loadData()
   }, [slug])
+
+  const handleShareProperty = async () => {
+    if (!property || typeof window === 'undefined') return
+
+    const shareUrl = window.location.href
+    const shareData = {
+      title: property.title,
+      text: `Check out this property: ${property.title}`,
+      url: shareUrl,
+    }
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData)
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl)
+      }
+    } catch {
+      // User cancelled share or clipboard failed.
+    }
+  }
+
+  const handleSaveProperty = () => {
+    if (!property) return
+    try {
+      const key = 'saved_properties'
+      const existing: string[] = JSON.parse(localStorage.getItem(key) || '[]')
+      const updated = existing.includes(property.id)
+        ? existing.filter((id) => id !== property.id)
+        : [...existing, property.id]
+      localStorage.setItem(key, JSON.stringify(updated))
+      setSavedPropertyIds(updated)
+    } catch {
+      // Ignore localStorage failures.
+    }
+  }
 
   const formatPrice = (price: number, currency: string = 'AED') => {
     return `${currency} ${price.toLocaleString()}`
@@ -486,11 +535,15 @@ export default function PropertyPage({ params }: PropertyPageProps) {
                 Back to Search
               </Link>
               <div className="h-4 w-px bg-slate-200 mx-2" />
-              <button className="p-2 text-slate-400 hover:text-primary transition-colors">
+              <button onClick={handleShareProperty} aria-label="Share property" className="p-2 text-slate-400 hover:text-primary transition-colors">
                 <ShareIcon className="w-5 h-5" />
               </button>
-              <button className="p-2 text-slate-400 hover:text-red-500 transition-colors">
-                <HeartIcon className="w-5 h-5" />
+              <button onClick={handleSaveProperty} aria-label="Save property" className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                {property && savedPropertyIds.includes(property.id) ? (
+                  <HeartSolidIcon className="w-5 h-5 text-red-500" />
+                ) : (
+                  <HeartIcon className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>

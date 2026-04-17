@@ -300,7 +300,7 @@ export default function PerformancePage() {
             <button
               className="font-bold py-3 px-8 rounded-lg transition-colors"
               style={{ borderColor: goldColor, color: goldColor, borderWidth: '2px' }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = lightGold)}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#a88549')}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
             >
               Contact an Agent

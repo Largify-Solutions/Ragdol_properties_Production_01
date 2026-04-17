@@ -114,9 +114,9 @@ export default function YearlyUpdatesPage() {
                 </div>
 
                 <div className="mt-6 pt-6 border-t border-slate-200">
-                  <button className="px-6 py-2 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] transition-colors text-sm">
+                  <Link href="/contact?subject=yearly-market-report" className="inline-block px-6 py-2 bg-[#8A6508] text-white font-semibold rounded-lg hover:bg-[#6E4F05] transition-colors text-sm">
                     Download Full Report
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

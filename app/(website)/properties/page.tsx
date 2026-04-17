@@ -1594,6 +1594,42 @@ function ViewDetailsModal({
     document.body.style.overflow = 'auto';
   };
 
+  const handleSaveProperty = () => {
+    if (!property?.id || typeof window === 'undefined') return;
+
+    try {
+      const key = 'saved_properties';
+      const existing: string[] = JSON.parse(localStorage.getItem(key) || '[]');
+      const updated = existing.includes(property.id)
+        ? existing
+        : [...existing, property.id];
+      localStorage.setItem(key, JSON.stringify(updated));
+    } catch {
+      // Ignore localStorage failures.
+    }
+  };
+
+  const handleShareProperty = async () => {
+    if (!property?.id || typeof window === 'undefined') return;
+
+    const shareUrl = `${window.location.origin}/properties/${property.id}`;
+    const shareData = {
+      title: property.title,
+      text: `Check out this property: ${property.title}`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+      }
+    } catch {
+      // User cancelled share or clipboard failed.
+    }
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US').format(price);
   };
@@ -1704,10 +1740,10 @@ function ViewDetailsModal({
               </div>
 
               <div className="flex items-center gap-4">
-                <button className="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-colors text-sm">
+                <button onClick={handleSaveProperty} className="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-colors text-sm">
                   Save Property
                 </button>
-                <button className="px-5 py-2 border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-colors text-sm">
+                <button onClick={handleShareProperty} className="px-5 py-2 border border-slate-300 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-colors text-sm">
                   Share
                 </button>
               </div>

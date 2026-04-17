@@ -12,6 +12,7 @@ import {
 import {
   StarIcon as StarSolidIcon,
 } from '@heroicons/react/24/solid';
+import Link from 'next/link';
 import { InvestmentTipsSection } from '@/components/property/InvestmentTipsSection';
 
 interface Property {
@@ -400,9 +401,12 @@ function PropertyInvestmentCard({ property }: PropertyInvestmentCardProps) {
         </div>
 
         {/* View Details Button */}
-        <button className="w-full bg-linear-to-r from-blue-600 to-blue-700 text-white font-semibold py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200">
+        <Link
+          href={`/properties/${property.id}`}
+          className="block w-full text-center bg-linear-to-r from-blue-600 to-blue-700 text-white font-semibold py-2 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200"
+        >
           View Investment Details
-        </button>
+        </Link>
       </div>
     </div>
   );

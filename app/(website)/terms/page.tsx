@@ -2,6 +2,7 @@
 
 import { DocumentTextIcon, ScaleIcon, ShieldCheckIcon, LockClosedIcon, GlobeAltIcon, UserGroupIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function TermsOfServicePage() {
   const sections = [
@@ -139,9 +140,12 @@ export default function TermsOfServicePage() {
         <div className="container-custom text-center">
           <h2 className="text-3xl font-serif text-secondary mb-6">Questions about our terms?</h2>
           <p className="text-slate-500 mb-10">Our legal team is available for clarification.</p>
-          <button className="px-10 py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300">
+          <Link
+            href="/contact?subject=legal"
+            className="inline-block px-10 py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all duration-300"
+          >
             Contact Legal Team
-          </button>
+          </Link>
         </div>
       </section>
     </div>

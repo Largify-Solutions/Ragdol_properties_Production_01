@@ -556,14 +556,14 @@ export default async function AgentDetail({ params }: { params: Promise<{ id: st
                 </div>
 
                 <div className="pt-4 space-y-3">
-                  <button className="w-full py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all flex items-center justify-center gap-2">
+                  <a href={`tel:${profile?.phone || ''}`} className="w-full py-4 bg-secondary text-white font-bold rounded-xl hover:bg-primary hover:text-secondary transition-all flex items-center justify-center gap-2">
                     <PhoneIcon className="w-5 h-5" />
                     Call Now
-                  </button>
-                  <button className="w-full py-4 border-2 border-secondary text-secondary font-bold rounded-xl hover:bg-secondary hover:text-white transition-all flex items-center justify-center gap-2">
+                  </a>
+                  <Link href={`/contact?subject=agent-inquiry&agent=${encodeURIComponent(name)}`} className="w-full py-4 border-2 border-secondary text-secondary font-bold rounded-xl hover:bg-secondary hover:text-white transition-all flex items-center justify-center gap-2">
                     <ChatBubbleLeftRightIcon className="w-5 h-5" />
                     Send Message
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

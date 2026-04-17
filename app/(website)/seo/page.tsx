@@ -178,6 +178,11 @@ const SEOPage: React.FC = () => {
     }
   }
 
+  const handleSeoAction = (action: string) => {
+    if (typeof window === 'undefined') return
+    window.location.href = `/contact?subject=seo-${encodeURIComponent(action)}`
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -336,7 +341,7 @@ const SEOPage: React.FC = () => {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-foreground">Keyword Tracking</h2>
-                <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                <button onClick={() => handleSeoAction('open-tool')} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                   <PlusIcon className="h-4 w-4" />
                   Add Keyword
                 </button>
@@ -352,7 +357,7 @@ const SEOPage: React.FC = () => {
                         className="w-full px-3 py-2 bg-muted/30 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
-                    <button className="px-4 py-2 bg-muted/30 text-foreground rounded-lg hover:bg-muted/50 transition-colors">
+                    <button onClick={() => handleSeoAction('open-tool')} className="px-4 py-2 bg-muted/30 text-foreground rounded-lg hover:bg-muted/50 transition-colors">
                       <FunnelIcon className="h-4 w-4" />
                     </button>
                   </div>
@@ -411,10 +416,10 @@ const SEOPage: React.FC = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center gap-2">
-                              <button className="p-1 text-muted-foreground hover:text-foreground">
+                              <button onClick={() => handleSeoAction('open-tool')} className="p-1 text-muted-foreground hover:text-foreground">
                                 <EyeIcon className="h-4 w-4" />
                               </button>
-                              <button className="p-1 text-muted-foreground hover:text-foreground">
+                              <button onClick={() => handleSeoAction('open-tool')} className="p-1 text-muted-foreground hover:text-foreground">
                                 <PencilIcon className="h-4 w-4" />
                               </button>
                             </div>
@@ -433,7 +438,7 @@ const SEOPage: React.FC = () => {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-foreground">Page Optimization</h2>
-                <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                <button onClick={() => handleSeoAction('open-tool')} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                   <PlusIcon className="h-4 w-4" />
                   Analyze Page
                 </button>
@@ -485,11 +490,11 @@ const SEOPage: React.FC = () => {
                     )}
 
                     <div className="flex items-center gap-2">
-                      <button className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm">
+                      <button onClick={() => handleSeoAction('open-tool')} className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm">
                         <PencilIcon className="h-4 w-4" />
                         Edit SEO
                       </button>
-                      <button className="flex items-center gap-2 px-3 py-2 bg-muted/30 text-foreground rounded-lg hover:bg-muted/50 transition-colors text-sm">
+                      <button onClick={() => handleSeoAction('open-tool')} className="flex items-center gap-2 px-3 py-2 bg-muted/30 text-foreground rounded-lg hover:bg-muted/50 transition-colors text-sm">
                         <EyeIcon className="h-4 w-4" />
                         Preview
                       </button>
@@ -506,11 +511,11 @@ const SEOPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-foreground">Backlink Analysis</h2>
                 <div className="flex items-center gap-2">
-                  <button className="flex items-center gap-2 px-4 py-2 bg-muted/30 text-foreground rounded-lg hover:bg-muted/50 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="flex items-center gap-2 px-4 py-2 bg-muted/30 text-foreground rounded-lg hover:bg-muted/50 transition-colors">
                     <ArrowDownTrayIcon className="h-4 w-4" />
                     Export
                   </button>
-                  <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                     <ArrowUpTrayIcon className="h-4 w-4" />
                     Import
                   </button>
@@ -577,7 +582,7 @@ const SEOPage: React.FC = () => {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-foreground">Social Media Performance</h2>
-                <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                <button onClick={() => handleSeoAction('open-tool')} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                   <PlusIcon className="h-4 w-4" />
                   Connect Platform
                 </button>
@@ -676,7 +681,7 @@ const SEOPage: React.FC = () => {
                       <p className="text-sm text-muted-foreground">Find high-value keywords</p>
                     </div>
                   </div>
-                  <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                     Start Research
                   </button>
                 </div>
@@ -691,7 +696,7 @@ const SEOPage: React.FC = () => {
                       <p className="text-sm text-muted-foreground">Analyze content quality</p>
                     </div>
                   </div>
-                  <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                     Analyze Content
                   </button>
                 </div>
@@ -706,7 +711,7 @@ const SEOPage: React.FC = () => {
                       <p className="text-sm text-muted-foreground">Monitor backlink profile</p>
                     </div>
                   </div>
-                  <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                     Check Backlinks
                   </button>
                 </div>
@@ -721,7 +726,7 @@ const SEOPage: React.FC = () => {
                       <p className="text-sm text-muted-foreground">Comprehensive site analysis</p>
                     </div>
                   </div>
-                  <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                     Run Audit
                   </button>
                 </div>
@@ -736,7 +741,7 @@ const SEOPage: React.FC = () => {
                       <p className="text-sm text-muted-foreground">Monitor keyword rankings</p>
                     </div>
                   </div>
-                  <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                     Track Rankings
                   </button>
                 </div>
@@ -751,7 +756,7 @@ const SEOPage: React.FC = () => {
                       <p className="text-sm text-muted-foreground">Set up monitoring alerts</p>
                     </div>
                   </div>
-                  <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                     Configure Alerts
                   </button>
                 </div>
@@ -761,7 +766,7 @@ const SEOPage: React.FC = () => {
               <div className="bg-card border border-border rounded-xl p-6">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <button className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
                     <div>
                       <p className="font-semibold text-foreground">Generate Sitemap</p>
                       <p className="text-sm text-muted-foreground">Create XML sitemap for search engines</p>
@@ -769,7 +774,7 @@ const SEOPage: React.FC = () => {
                     <GlobeAltIcon className="h-5 w-5 text-muted-foreground" />
                   </button>
 
-                  <button className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
                     <div>
                       <p className="font-semibold text-foreground">Submit to Search Engines</p>
                       <p className="text-sm text-muted-foreground">Submit sitemap to Google, Bing, etc.</p>
@@ -777,7 +782,7 @@ const SEOPage: React.FC = () => {
                     <ArrowUpTrayIcon className="h-5 w-5 text-muted-foreground" />
                   </button>
 
-                  <button className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
                     <div>
                       <p className="font-semibold text-foreground">Meta Tags Generator</p>
                       <p className="text-sm text-muted-foreground">Generate optimized meta tags</p>
@@ -785,7 +790,7 @@ const SEOPage: React.FC = () => {
                     <TagIcon className="h-5 w-5 text-muted-foreground" />
                   </button>
 
-                  <button className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                  <button onClick={() => handleSeoAction('open-tool')} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
                     <div>
                       <p className="font-semibold text-foreground">SEO Report</p>
                       <p className="text-sm text-muted-foreground">Generate comprehensive SEO report</p>

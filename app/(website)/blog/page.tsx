@@ -266,13 +266,16 @@ export default function BlogPage() {
               <p className="text-xl text-secondary/80 mb-12 font-medium">
                 Subscribe to our newsletter and receive the most important Dubai real estate news and market reports directly in your inbox.
               </p>
-              <form className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
+              <form action="/contact" method="get" className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">
                 <input 
                   type="email" 
+                  name="email"
                   placeholder="Your Email Address" 
+                  required
                   className="flex-1 px-8 py-5 rounded-2xl bg-white/20 border border-white/30 text-secondary placeholder:text-secondary/50 focus:outline-none focus:ring-2 focus:ring-white/50 font-bold"
                 />
-                <button className="px-10 py-5 bg-secondary text-white font-black uppercase tracking-widest rounded-2xl hover:bg-white hover:text-secondary transition-all">
+                <input type="hidden" name="subject" value="newsletter" />
+                <button type="submit" className="px-10 py-5 bg-secondary text-white font-black uppercase tracking-widest rounded-2xl hover:bg-white hover:text-secondary transition-all">
                   Subscribe Now
                 </button>
               </form>

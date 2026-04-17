@@ -510,16 +510,19 @@ export default function DubaiProjectsMapPage() {
           <p className="text-lg mb-8 opacity-90">
             Subscribe to our newsletter to receive updates on upcoming projects, pre-launch offers, and exclusive investment opportunities
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+          <form action="/contact" method="get" className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
             <input
               type="email"
+              name="email"
               placeholder="Enter your email"
+              required
               className="flex-1 px-4 py-3 rounded-lg text-slate-900 placeholder-slate-500 focus:outline-none"
             />
-            <button className="px-8 py-3 bg-white text-[#c5a059] font-bold rounded-lg hover:bg-slate-100 transition-colors whitespace-nowrap">
+            <input type="hidden" name="subject" value="projects-updates" />
+            <button type="submit" className="px-8 py-3 bg-white text-[#c5a059] font-bold rounded-lg hover:bg-slate-100 transition-colors whitespace-nowrap">
               Subscribe
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

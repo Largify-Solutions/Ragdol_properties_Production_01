@@ -145,9 +145,9 @@ export default function ToolsPage() {
                     ))}
                   </div>
 
-                  <button className="w-full px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm group-hover:shadow-md">
+                  <span className="block w-full text-center px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition-colors text-sm group-hover:shadow-md">
                     Open Tool
-                  </button>
+                  </span>
                 </div>
               </Link>
             )

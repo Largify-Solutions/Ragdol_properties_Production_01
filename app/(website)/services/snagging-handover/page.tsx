@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 import { CheckCircleIcon, ClipboardDocumentListIcon, CameraIcon, WrenchScrewdriverIcon, ClockIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
 
@@ -85,18 +86,20 @@ export default function SnaggingHandoverPage() {
               Professional property inspection and handover services in Dubai
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
+              <Link
+                href="/contact?subject=snagging-inspection"
                 className="px-8 py-4 rounded-lg font-semibold transition-colors"
                 style={{ backgroundColor: '#d4af37', color: '#0d0d0d' }}
               >
                 Book Inspection
-              </button>
-              <button
+              </Link>
+              <Link
+                href="/services/snagging-handover#services"
                 className="px-8 py-4 border-2 rounded-lg font-semibold transition-colors"
                 style={{ borderColor: '#374151', color: '#374151' }}
               >
                 Learn More
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -331,18 +334,20 @@ export default function SnaggingHandoverPage() {
             Protect your investment with our professional snagging inspection services.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
+            <Link
+              href="/contact?subject=snagging-inspection"
               className="px-8 py-4 rounded-lg font-semibold transition-colors"
               style={{ backgroundColor: '#d4af37', color: '#0d0d0d' }}
             >
               Book Inspection Now
-            </button>
-            <button
+            </Link>
+            <a
+              href="tel:+971000000000"
               className="px-8 py-4 border-2 rounded-lg font-semibold transition-colors"
               style={{ borderColor: '#374151', color: '#374151' }}
             >
               Call Now: +971 XX XXX XXXX
-            </button>
+            </a>
           </div>
         </div>
       </div>

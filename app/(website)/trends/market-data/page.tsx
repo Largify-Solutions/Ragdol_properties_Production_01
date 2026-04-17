@@ -220,9 +220,12 @@ export default function MarketDataPage() {
           <p className="text-lg mb-8 opacity-90">
             Download comprehensive market reports, data sheets, and analysis in PDF or Excel format
           </p>
-          <button className="px-8 py-4 bg-white text-primary font-bold rounded-lg hover:bg-slate-100 transition-colors">
+          <Link
+            href="/contact?subject=market-reports"
+            className="inline-block px-8 py-4 bg-white text-primary font-bold rounded-lg hover:bg-slate-100 transition-colors"
+          >
             Download Reports
-          </button>
+          </Link>
         </div>
       </div>
     </div>
