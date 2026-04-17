@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
+import { hasArabicContent } from '@/lib/utils'
 
 // Re-validate every 60 seconds at the edge (ISR)
 export const revalidate = 60
@@ -83,8 +84,12 @@ export async function GET() {
         .select('id,title,created_at,category,featured_image,excerpt,slug')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
-        .limit(4),
+        .limit(20),
     ])
+
+    const filteredBlogPosts = (blogsResult.data || [])
+      .filter((post: any) => !hasArabicContent([post.title, post.excerpt, post.category, post.slug]))
+      .slice(0, 4)
 
     return NextResponse.json(
       {
@@ -95,7 +100,7 @@ export async function GET() {
         partners: partnersResult.data || [],
         agents: agentsResult.data || [],
         testimonials: testimonialsResult.data || [],
-        blogPosts: blogsResult.data || [],
+        blogPosts: filteredBlogPosts,
       },
       {
         headers: {

@@ -69,3 +69,14 @@ export function getInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2)
 }
+
+const ARABIC_CHAR_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/
+
+export function containsArabicText(value: unknown): boolean {
+  if (typeof value !== 'string') return false
+  return ARABIC_CHAR_REGEX.test(value)
+}
+
+export function hasArabicContent(fields: Array<unknown>): boolean {
+  return fields.some((field) => containsArabicText(field))
+}

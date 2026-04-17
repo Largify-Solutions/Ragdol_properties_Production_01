@@ -22,6 +22,7 @@ import { BookmarkIcon as BookmarkSolidIcon } from '@heroicons/react/24/solid'
 // Supabase import
 import { supabase } from '@/lib/supabase-browser'
 import i18n, { getSavedLanguageCode, normalizeLanguageCode, type SupportedLanguage } from '@/lib/i18n'
+import { hasArabicContent } from '@/lib/utils'
 
 // Blog type definition
 type Blog = {
@@ -75,7 +76,7 @@ async function fetchBlogs() {
         slug: row.slug || row.id,
         tags: row.tags || []
       };
-    });
+    }).filter((blog) => !hasArabicContent([blog.title, blog.excerpt, blog.content, blog.category, blog.slug]));
     
     // Sort by creation date (newest first)
     blogs.sort((a, b) => {
@@ -130,6 +131,8 @@ function getBlogLanguage(blog: Blog): SupportedLanguage | 'unknown' {
   if (normalizedTags.includes('lang:ar') || blog.slug.endsWith('-ar')) return 'ar'
   if (normalizedTags.includes('lang:fr') || blog.slug.endsWith('-fr')) return 'fr'
   if (normalizedTags.includes('lang:en') || blog.slug.endsWith('-en')) return 'en'
+
+  if (hasArabicContent([blog.title, blog.excerpt, blog.content, blog.category, blog.slug])) return 'ar'
 
   return 'unknown'
 }
