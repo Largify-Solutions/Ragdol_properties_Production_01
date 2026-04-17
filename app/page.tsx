@@ -1284,6 +1284,28 @@ export default function HomePage() {
   const shouldAnimateTestimonials = testimonials.length > 1
   const testimonialMarqueeDuration = Math.max(20, testimonials.length * 5)
 
+  const heroPropertyCount = featuredProperties.length + rentalProperties.length + projectVideos.length
+  const heroHappyClientsCount = testimonials.length * 100
+  const heroExpertAgentsCount = topAgents.length
+  const heroYearsExperienceCount =
+    topAgents.length > 0
+      ? Math.max(...topAgents.map((agent) => Math.max(0, Number(agent.experience_years) || 0)))
+      : 0
+
+  const formatHeroStat = (value: number, fallback: number) => {
+    const safeValue = Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0
+
+    if (safeValue > 0) {
+      return `${safeValue.toLocaleString()}+`
+    }
+
+    if (!dataLoaded) {
+      return '...'
+    }
+
+    return `${fallback.toLocaleString()}+`
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Landing Section with Image Slider */}
@@ -1312,10 +1334,7 @@ export default function HomePage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 pt-4 sm:pt-6 max-w-3xl mx-auto animate-fade-in [animation-delay:400ms] px-4 sm:px-0">
                 <div className="text-center group">
                   <div className="text-3xl sm:text-4xl font-black text-white mb-1 group-hover:text-primary transition-colors">
-                    {featuredProperties.length +
-                      rentalProperties.length +
-                      projectVideos.length}
-                    +
+                    {formatHeroStat(heroPropertyCount, 500)}
                   </div>
                   <div className="text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
                     {t("homepage.properties")}
@@ -1323,7 +1342,7 @@ export default function HomePage() {
                 </div>
                 <div className="text-center group">
                   <div className="text-3xl sm:text-4xl font-black text-white mb-1 group-hover:text-primary transition-colors">
-                    {testimonials.length * 100}+
+                    {formatHeroStat(heroHappyClientsCount, 1000)}
                   </div>
                   <div className="text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
                     {t("homepage.happyClients")}
@@ -1331,7 +1350,7 @@ export default function HomePage() {
                 </div>
                 <div className="text-center group">
                   <div className="text-3xl sm:text-4xl font-black text-white mb-1 group-hover:text-primary transition-colors">
-                    {topAgents.length}+
+                    {formatHeroStat(heroExpertAgentsCount, 50)}
                   </div>
                   <div className="text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
                     {t("homepage.expertAgents")}
@@ -1339,8 +1358,7 @@ export default function HomePage() {
                 </div>
                 <div className="text-center group">
                   <div className="text-3xl sm:text-4xl font-black text-white mb-1 group-hover:text-primary transition-colors">
-                    {Math.max(...topAgents.map((a) => a.experience_years || 0))}
-                    +
+                    {formatHeroStat(heroYearsExperienceCount, 10)}
                   </div>
                   <div className="text-[8px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
                     {t("homepage.yearsExperience")}

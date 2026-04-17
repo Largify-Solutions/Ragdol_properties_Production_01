@@ -2,29 +2,91 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { CalculatorIcon, CurrencyDollarIcon, CalendarIcon, PercentBadgeIcon } from '@heroicons/react/24/outline'
+import { CalculatorIcon, CurrencyDollarIcon, PercentBadgeIcon } from '@heroicons/react/24/outline'
 
 interface MortgageCalculatorProps {
   defaultPrice?: number
 }
 
+const ARABIC_INDIC_DIGIT_MAP: Record<string, string> = {
+  '٠': '0',
+  '١': '1',
+  '٢': '2',
+  '٣': '3',
+  '٤': '4',
+  '٥': '5',
+  '٦': '6',
+  '٧': '7',
+  '٨': '8',
+  '٩': '9',
+  '۰': '0',
+  '۱': '1',
+  '۲': '2',
+  '۳': '3',
+  '۴': '4',
+  '۵': '5',
+  '۶': '6',
+  '۷': '7',
+  '۸': '8',
+  '۹': '9',
+}
+
+function parseLocaleNumber(value: string | number): number {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : 0
+  }
+
+  const normalizedDigits = String(value)
+    .trim()
+    .split('')
+    .map((char) => ARABIC_INDIC_DIGIT_MAP[char] ?? char)
+    .join('')
+    .replace(/[\u066B]/g, '.')
+    .replace(/[\u066C,\s]/g, '')
+
+  const parsed = Number(normalizedDigits)
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
+function toPositiveNumber(value: string | number, fallback: number): number {
+  const parsed = parseLocaleNumber(value)
+  return parsed > 0 ? parsed : fallback
+}
+
 export default function MortgageCalculator({ defaultPrice = 1000000 }: MortgageCalculatorProps) {
-  const [price, setPrice] = useState(defaultPrice)
-  const [downPayment, setDownPayment] = useState(defaultPrice * 0.2)
+  const initialPrice = toPositiveNumber(defaultPrice, 1000000)
+  const [price, setPrice] = useState(initialPrice)
+  const [downPayment, setDownPayment] = useState(initialPrice * 0.2)
   const [interestRate, setInterestRate] = useState(4.5)
   const [loanTerm, setLoanTerm] = useState(25)
   const [monthlyPayment, setMonthlyPayment] = useState(0)
 
   useEffect(() => {
-    const loanAmount = price - downPayment
-    const monthlyRate = interestRate / 100 / 12
-    const numberOfPayments = loanTerm * 12
+    const safeDefaultPrice = toPositiveNumber(defaultPrice, 1000000)
+    setPrice(safeDefaultPrice)
+    setDownPayment((prev) => {
+      const nextDownPayment = prev > 0 ? prev : safeDefaultPrice * 0.2
+      return Math.min(nextDownPayment, safeDefaultPrice)
+    })
+  }, [defaultPrice])
+
+  useEffect(() => {
+    const safePrice = toPositiveNumber(price, 1000000)
+    const safeDownPayment = Math.min(parseLocaleNumber(downPayment), safePrice)
+    const loanAmount = Math.max(0, safePrice - safeDownPayment)
+    const monthlyRate = parseLocaleNumber(interestRate) / 100 / 12
+    const numberOfPayments = Math.max(1, parseLocaleNumber(loanTerm) * 12)
+
+    if (loanAmount <= 0) {
+      setMonthlyPayment(0)
+      return
+    }
     
     if (monthlyRate === 0) {
       setMonthlyPayment(loanAmount / numberOfPayments)
     } else {
       const payment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1)
-      setMonthlyPayment(payment)
+      setMonthlyPayment(Number.isFinite(payment) ? payment : 0)
     }
   }, [price, downPayment, interestRate, loanTerm])
 
@@ -52,7 +114,11 @@ export default function MortgageCalculator({ defaultPrice = 1000000 }: MortgageC
             <input
               type="number"
               value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
+              onChange={(e) => {
+                const nextPrice = toPositiveNumber(e.target.value, 1000000)
+                setPrice(nextPrice)
+                setDownPayment((prev) => Math.min(prev, nextPrice))
+              }}
               className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-xl text-secondary font-bold focus:ring-2 focus:ring-primary/20 transition-all"
             />
           </div>
@@ -62,7 +128,11 @@ export default function MortgageCalculator({ defaultPrice = 1000000 }: MortgageC
             max={50000000}
             step={100000}
             value={price}
-            onChange={(e) => setPrice(Number(e.target.value))}
+            onChange={(e) => {
+              const nextPrice = toPositiveNumber(e.target.value, 1000000)
+              setPrice(nextPrice)
+              setDownPayment((prev) => Math.min(prev, nextPrice))
+            }}
             className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
           />
         </div>
@@ -80,7 +150,10 @@ export default function MortgageCalculator({ defaultPrice = 1000000 }: MortgageC
             <input
               type="number"
               value={downPayment}
-              onChange={(e) => setDownPayment(Number(e.target.value))}
+              onChange={(e) => {
+                const nextDownPayment = Math.max(0, parseLocaleNumber(e.target.value))
+                setDownPayment(Math.min(nextDownPayment, price))
+              }}
               className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-xl text-secondary font-bold focus:ring-2 focus:ring-primary/20 transition-all"
             />
           </div>
@@ -90,7 +163,7 @@ export default function MortgageCalculator({ defaultPrice = 1000000 }: MortgageC
             max={price}
             step={10000}
             value={downPayment}
-            onChange={(e) => setDownPayment(Number(e.target.value))}
+            onChange={(e) => setDownPayment(Math.min(parseLocaleNumber(e.target.value), price))}
             className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
           />
         </div>
@@ -104,7 +177,7 @@ export default function MortgageCalculator({ defaultPrice = 1000000 }: MortgageC
                 type="number"
                 step="0.1"
                 value={interestRate}
-                onChange={(e) => setInterestRate(Number(e.target.value))}
+                onChange={(e) => setInterestRate(parseLocaleNumber(e.target.value))}
                 className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-secondary font-bold focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
@@ -116,7 +189,7 @@ export default function MortgageCalculator({ defaultPrice = 1000000 }: MortgageC
             <div className="relative">
               <select
                 value={loanTerm}
-                onChange={(e) => setLoanTerm(Number(e.target.value))}
+                onChange={(e) => setLoanTerm(Math.max(1, parseLocaleNumber(e.target.value)))}
                 className="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-secondary font-bold focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
               >
                 {[5, 10, 15, 20, 25, 30].map((year) => (
