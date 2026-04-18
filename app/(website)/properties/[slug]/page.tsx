@@ -305,6 +305,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   const [relatedProperties, setRelatedProperties] = useState<RelatedProperty[]>([])
   const [loading, setLoading] = useState(true)
   const [notFoundState, setNotFoundState] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [savedPropertyIds, setSavedPropertyIds] = useState<string[]>([])
 
   useEffect(() => {
@@ -322,14 +323,36 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch(`/api/properties/slug/${slug}`)
-        if (res.status === 404) {
+        setLoadError(null)
+        let data: any = null
+
+        const slugRes = await fetch(`/api/properties/slug/${slug}`)
+        if (slugRes.ok) {
+          const slugJson = await slugRes.json()
+          data = slugJson?.data || null
+        } else if (slugRes.status !== 404) {
+          throw new Error('Failed to load property')
+        }
+
+        // Fallback for legacy links that still use UUID IDs instead of slugs.
+        if (!data && slugRes.status === 404) {
+          const idRes = await fetch(`/api/properties/${slug}`)
+          if (idRes.ok) {
+            const idJson = await idRes.json()
+            data = idJson?.data || null
+          } else if (idRes.status === 404) {
+            setNotFoundState(true)
+            return
+          } else {
+            throw new Error('Failed to load property')
+          }
+        }
+
+        if (!data) {
           setNotFoundState(true)
-          setLoading(false)
           return
         }
-        if (!res.ok) throw new Error('Failed to load property')
-        const { data } = await res.json()
+
         // Map the agents join to the shape the component expects
         if (data?.agents) {
           const ag = Array.isArray(data.agents) ? data.agents[0] : data.agents
@@ -353,11 +376,12 @@ export default function PropertyPage({ params }: PropertyPageProps) {
         if (relatedRes.ok) {
           const relatedJson = await relatedRes.json()
           setRelatedProperties(
-            (relatedJson.data || []).filter((p: RelatedProperty) => p.id !== data.id).slice(0, 3)
+            (relatedJson.properties || []).filter((p: RelatedProperty) => p.id !== data.id).slice(0, 3)
           )
         }
       } catch (err) {
         console.error('Error loading property:', err)
+        setLoadError('Unable to load this property right now. Please try again.')
       } finally {
         setLoading(false)
       }
@@ -503,7 +527,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   }
 
   if (notFoundState) return notFound()
-  if (loading || !property) return (
+  if (loading) return (
     <div className="w-full min-h-screen flex items-center justify-center bg-slate-50/50">
       <div className="flex flex-col items-center gap-4">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -511,6 +535,23 @@ export default function PropertyPage({ params }: PropertyPageProps) {
       </div>
     </div>
   )
+
+  if (!property) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-slate-50/50 px-4">
+        <div className="max-w-md w-full bg-white border border-slate-200 rounded-2xl p-8 text-center shadow-sm">
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Property unavailable</h2>
+          <p className="text-slate-600 mb-6">{loadError || 'This property could not be loaded.'}</p>
+          <Link
+            href="/properties"
+            className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 transition-colors"
+          >
+            Back to Properties
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="w-full min-h-screen bg-slate-50/50">
@@ -555,7 +596,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
           {/* Main Content */}
           <div className="lg:col-span-8 space-y-12">
             {/* Image Gallery */}
-            <div className="rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50">
+            <div id="gallery" className="rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50 scroll-mt-32">
               <PropertyImageGallery
                 images={property.images || []}
                 title={property.title}
@@ -567,7 +608,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
             </div>
 
             {/* Property Details Card */}
-            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100">
+            <div id="details" className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-slate-200/50 border border-slate-100 scroll-mt-32">
               <div className="space-y-10">
                 {/* Header Info */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">

@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase-browser'
+import type { MouseEvent } from 'react'
 
 interface Property {
   id: string
@@ -36,6 +37,10 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
   const router = useRouter()
   const [properties, setProperties] = useState<Property[]>([])
   const [loading, setLoading] = useState(true)
+
+  const preventCardClickBubbling = (event: MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
+  }
 
   const handleCardNavigation = (href: string) => {
     router.push(href)
@@ -251,6 +256,8 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                 const images = getPropertyImages(property)
                 const imageUrl = getPropertyImage(property)
                 const propertyHref = `/properties/${property.id}`
+                const galleryHref = `${propertyHref}#gallery`
+                const detailsHref = `${propertyHref}#details`
 
                 return (
                   <div
@@ -268,7 +275,7 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                   >
                     {/* Property Image */}
                     <div className="h-48 overflow-hidden relative">
-                      <Link href={propertyHref} className="block h-full w-full" aria-label={`View details for ${property.title}`}>
+                      <Link href={propertyHref} onClick={preventCardClickBubbling} className="block h-full w-full" aria-label={`View details for ${property.title}`}>
                         {imageUrl ? (
                           <img 
                             src={imageUrl} 
@@ -285,10 +292,10 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                       </Link>
 
                       <div className="absolute top-3 left-3 flex items-center gap-2 text-white text-xs font-semibold">
-                        <Link href={propertyHref} className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
+                        <Link href={galleryHref} onClick={preventCardClickBubbling} className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
                           Gallery
                         </Link>
-                        <Link href={propertyHref} className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
+                        <Link href={detailsHref} onClick={preventCardClickBubbling} className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
                           Details
                         </Link>
                       </div>
@@ -309,7 +316,7 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
 
                       {images.length > 1 && (
                         <div className="absolute bottom-3 right-3">
-                          <Link href={propertyHref} className="text-[11px] px-2 py-0.5 rounded-full font-bold bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors">
+                          <Link href={galleryHref} onClick={preventCardClickBubbling} className="text-[11px] px-2 py-0.5 rounded-full font-bold bg-black/50 text-white backdrop-blur-sm hover:bg-black/70 transition-colors">
                             {images.length} Photos
                           </Link>
                         </div>
@@ -318,7 +325,7 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
 
                     {images.length > 1 && (
                       <div className="px-3 py-2 bg-slate-50 border-y border-slate-100">
-                        <Link href={propertyHref} className="flex gap-1.5" aria-label={`Open ${property.title} gallery`}>
+                        <Link href={galleryHref} onClick={preventCardClickBubbling} className="flex gap-1.5" aria-label={`Open ${property.title} gallery`}>
                           {images.slice(0, 4).map((img, idx) => (
                             <div key={`${property.id}-${idx}`} className="w-10 h-8 rounded overflow-hidden bg-slate-100 shrink-0">
                               <img src={img} alt={`${property.title} ${idx + 1}`} className="w-full h-full object-cover" />
@@ -335,7 +342,7 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                     
                     {/* Property Details */}
                     <div className="p-4">
-                      <Link href={propertyHref} className="block">
+                      <Link href={propertyHref} onClick={preventCardClickBubbling} className="block">
                         <h3 className="font-bold text-lg text-secondary mb-2 line-clamp-1 hover:text-primary transition-colors">
                           {property.title}
                         </h3>
