@@ -255,9 +255,9 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
               {properties.map((property) => {
                 const images = getPropertyImages(property)
                 const imageUrl = getPropertyImage(property)
-                const propertyHref = `/properties/${property.id}`
-                const galleryHref = `${propertyHref}#gallery`
-                const detailsHref = `${propertyHref}#details`
+                const propertyHref = '/properties'
+                const galleryHref = '/properties'
+                const detailsHref = '/properties'
 
                 return (
                   <div
@@ -292,11 +292,8 @@ export default function AgentProperties({ agentId, agentName, onClose }: AgentPr
                       </Link>
 
                       <div className="absolute top-3 left-3 flex items-center gap-2 text-white text-xs font-semibold">
-                        <Link href={galleryHref} onClick={preventCardClickBubbling} className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
-                          Gallery
-                        </Link>
                         <Link href={detailsHref} onClick={preventCardClickBubbling} className="px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors">
-                          Details
+                          View Details
                         </Link>
                       </div>
 

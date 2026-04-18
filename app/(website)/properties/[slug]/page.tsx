@@ -1,6 +1,6 @@
 'use client'
 
-import { notFound } from 'next/navigation'
+import { notFound, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Database } from '@/lib/database.types'
@@ -292,6 +292,8 @@ interface PropertyPageProps {
 
 export default function PropertyPage({ params }: PropertyPageProps) {
   const { slug } = use(params)
+  const router = useRouter()
+  const isUuidLikeRoute = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(slug)
 
   // Form state
   const [showFloorPlanForm, setShowFloorPlanForm] = useState(false)
@@ -321,30 +323,71 @@ export default function PropertyPage({ params }: PropertyPageProps) {
   }, [])
 
   useEffect(() => {
+    if (isUuidLikeRoute) {
+      router.replace('/properties')
+    }
+  }, [isUuidLikeRoute, router])
+
+  useEffect(() => {
     async function loadData() {
+      if (isUuidLikeRoute) return
+
+      const readJsonSafely = async (res: Response) => {
+        try {
+          return await res.json()
+        } catch {
+          return null
+        }
+      }
+
       try {
         setLoadError(null)
+        setNotFoundState(false)
         let data: any = null
+          const isUuidLike = isUuidLikeRoute
 
-        const slugRes = await fetch(`/api/properties/slug/${slug}`)
-        if (slugRes.ok) {
-          const slugJson = await slugRes.json()
-          data = slugJson?.data || null
-        } else if (slugRes.status !== 404) {
-          throw new Error('Failed to load property')
-        }
-
-        // Fallback for legacy links that still use UUID IDs instead of slugs.
-        if (!data && slugRes.status === 404) {
+        // UUID routes are legacy ID links: fetch by ID first.
+        if (isUuidLike) {
           const idRes = await fetch(`/api/properties/${slug}`)
           if (idRes.ok) {
-            const idJson = await idRes.json()
+            const idJson = await readJsonSafely(idRes)
             data = idJson?.data || null
-          } else if (idRes.status === 404) {
-            setNotFoundState(true)
-            return
-          } else {
-            throw new Error('Failed to load property')
+          }
+
+          if (!data) {
+            if (idRes.status === 404) {
+              setNotFoundState(true)
+              return
+            }
+
+            const idErrorJson = await readJsonSafely(idRes)
+            throw new Error(idErrorJson?.error || `Failed to load property (id API status ${idRes.status})`)
+          }
+        } else {
+          const slugRes = await fetch(`/api/properties/slug/${slug}`)
+          if (slugRes.ok) {
+            const slugJson = await readJsonSafely(slugRes)
+            data = slugJson?.data || null
+          }
+
+          // Slug not found: fallback to ID lookup in case a UUID-like segment slipped through.
+          if (!data && slugRes.status === 404) {
+            const idRes = await fetch(`/api/properties/${slug}`)
+            if (idRes.ok) {
+              const idJson = await readJsonSafely(idRes)
+              data = idJson?.data || null
+            } else if (idRes.status === 404) {
+              setNotFoundState(true)
+              return
+            } else {
+              const idErrorJson = await readJsonSafely(idRes)
+              throw new Error(idErrorJson?.error || `Failed to load property (id API status ${idRes.status})`)
+            }
+          }
+
+          if (!data && slugRes.status !== 404) {
+            const slugErrorJson = await readJsonSafely(slugRes)
+            throw new Error(slugErrorJson?.error || `Failed to load property (slug API status ${slugRes.status})`)
           }
         }
 
@@ -387,7 +430,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
       }
     }
     loadData()
-  }, [slug])
+  }, [slug, isUuidLikeRoute])
 
   const handleShareProperty = async () => {
     if (!property || typeof window === 'undefined') return

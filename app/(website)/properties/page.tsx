@@ -2448,6 +2448,13 @@ async function fetchAllProperties() {
 function PropertiesPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const getPropertyHref = (property: NormalizedProperty) => {
+    const routeSegment = property.slug && property.slug.trim().length > 0
+      ? property.slug
+      : property.id
+    return `/properties/${routeSegment}`
+  }
   
   const [allProperties, setAllProperties] = useState<NormalizedProperty[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<NormalizedProperty[]>([]);
@@ -3496,6 +3503,7 @@ function PropertiesPageContent() {
                         <PropertyCard
                           property={{
                             id: String(property.id),
+                            href: getPropertyHref(property),
                             title: property.title || 'Property',
                             price: property.price ?? 0,
                             priceLabel: property.status === 'rent' ? 'yearly' : 'total',
@@ -3526,7 +3534,7 @@ function PropertiesPageContent() {
                         
                         {/* View Details Button */}
                         <button
-                          onClick={() => handleViewDetails(property)}
+                          onClick={() => router.push('/properties')}
                           className="absolute top-10 left-3 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-white/95 backdrop-blur-sm rounded-xl px-3 py-2 shadow-lg hover:shadow-xl hover:bg-white border border-slate-200 flex items-center gap-2 text-slate-700 hover:text-primary font-bold text-xs"
                         >
                           <ArrowsPointingOutIcon className="h-4 w-4" />
